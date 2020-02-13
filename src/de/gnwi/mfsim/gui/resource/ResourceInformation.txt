@@ -1,0 +1,17 @@
+--------------------------------------------------------------------------------
+Dependencies:
+--------------------------------------------------------------------------------
+Resource location 
+
+   /de/gnwi/mfsim/gui/resource/
+   
+and resource names 
+
+   *.jpg
+
+must correspond to (identical) definitions in class DefinitionGui.java in  
+"Region: Resource related definitions":
+String RESOURCE_LOCATION = "/de/gnwi/mfsim/gui/resource/";
+String RESOURCE_IMAGE_ENDING = ".jpg";
+
+

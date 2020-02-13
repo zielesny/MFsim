@@ -1,4 +1,37 @@
 # MFsim
-MFsim - An open Java all-in-one rich-client simulation environment for Molecular Fragment Dissipative Particle Dynamics
+MFsim - An open Java all-in-one rich-client simulation environment for mesoscopic simulation
 
-... under construction
+MFsim is an open Java all-in-one rich-client computing environment for mesoscopic simulation with [Jdpd](https://github.com/zielesny/Jdpd) as its default simulation kernel for Molecular Fragment (Dissipative Particle) Dynamics. The new environment integrates and supports the complete preparation-simulation-evaluation triad of a mesoscopic simulation task. Productive highlights are a [SPICES](https://github.com/zielesny/SPICES) molecular structure editor, a PDB-to-SPICES parser for particle-based peptide/protein representations, a support of polymer definitions, a compartment editor for complex simulation box start configurations, interactive and flexible simulation box views including analytics, simulation movie generation or animated diagrams. As an open project, MFsim enables customized extensions for different fields of research.
+
+MFsim uses several open libraries (see *MFSimVersionHistory.txt* for details) and is published as open source under the GNU General Public License version 3 (see *LICENSE*).
+
+### Project overview
+
+* **MFSimVersionHistory.txt** shows the version history of MFsim.
+
+* The **Installer for Windows OS** folder provides a Windows OS installer executable for MFsim. Download this executable, start and follow the instructions to install MFsim. Note, that the installation includes a Java Runtime Environment (JRE). After installation, create a shortcut to an appropriate MFsim start batch file on your Windows desktop (e.g. for MFsim to use up to 8 gigabyte of RAM copy a shortcut to batch file *Start_MFsim_64bit_8GB.bat* which is located in the MFsim program folder *C:\Program Files\GNWI\MFsim 2.2.4.0*). To start MFsim double click the created shortcut. MFsim can be easily uninstalled by the provided *Uninstall.exe* executable in the MFsim program folder.
+
+* The **src** folder contains all (Netbeans) source code packages including Unit tests.
+
+* The **lib** folder comprises the open Java libraries used by MFsim (see *MFSimVersionHistory.txt* for details).
+
+* The **javadoc** folder provides the source code Javadoc HTML documentations.
+
+* The **MFsim_Source** folder is a complete MFsim installation with all Java bytecode libraries including *MFsim.jar* and splash image *MFsimSplash.jpg* (in subfolder *lib*), MFsim version history (in subfolder *info*), particle set files (in subfolder *particles*), tutorial PDF documents (in subfolder *tutorials*) and utility programs (in subfolder *winUtils* for Windows OS only). *MFsim.jar* may be started with an appropriate batch file of the operating system.
+
+* The **tutorials** folder offers tutorial Job Input archive files in subfolder *Job Input archive files for import* and tutorial PDF documents which are also available in animated form (see *Links to animated tutorials*).
+
+# References
+MFsim is currently under scientific review.
+
+- [K. van den Broek, H. Kuhn and A. Zielesny, _Jdpd - An open Java Simulation Kernel for Molecular Fragment Dissipative Particle Dynamics_, Journal of Cheminformatics (2018), 10:25](https://doi.org/10.1186/s13321-018-0278-7)
+- [Jdpd repository on GitHub](https://github.com/zielesny/Jdpd)
+
+- [K. van den Broek, M. Daniel, M. Epple, H. Kuhn, J. Schaub and A. Zielesny, _SPICES: a particle-based molecular structure line notation and support library for mesoscopic simulation_, Journal of Cheminformatics (2018), 10:35](https://doi.org/10.1186/s13321-018-0294-7)
+- [SPICES repository on GitHub](https://github.com/zielesny/SPICES)
+
+- [A. Truszkowski, M. Daniel, H. Kuhn, S. Neumann, C. Steinbeck, A. Zielesny and M. Epple, _A molecular fragment cheminformatics roadmap for mesoscopic simulation_, Journal of Cheminformatics (2014), 6:45](https://doi.org/10.1186/s13321-014-0045-3)
+
+# Acknowledgements
+The support of [CAM-D Technologies GmbH](http://www.molecular-dynamics.de) and [GNWI - Gesellschaft für naturwissenschaftliche Informatik mbH](http://www.gnwi.de) is gratefully acknowledged.
+
