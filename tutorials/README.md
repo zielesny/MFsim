@@ -12,7 +12,7 @@ with corresponding MFsim job input archive files in subfolder *Job Input Archive
 
 ### Links to animated MFsim tutorials
 
-* [MFsim - Installation and initial test (Windows OS)](https://w-hs.sciebo.de/s/axSceob9EvquXiz)
-* [MFsim - Simulation of a DMPC bilayer membrane model](https://w-hs.sciebo.de/s/wzfNGCrXSGeqEna)
-* [MFsim - Cyclotide-membrane sandwich interaction model](https://w-hs.sciebo.de/s/yYAyLdRxyLrUoWx)
+* [MFsim - Installation and initial test (Windows OS)](https://w-hs.sciebo.de/s/Ln0Q6OIQhWxUC8i)
+* [MFsim - Simulation of a DMPC bilayer membrane model](https://w-hs.sciebo.de/s/gDEuvoEWNy82ysA)
+* [MFsim - Cyclotide-membrane sandwich interaction model](https://w-hs.sciebo.de/s/XDgcNDwM6KtYxrh)
 
