@@ -5,7 +5,7 @@ MFsim is an open Java all-in-one rich-client computing environment for mesoscopi
 
 MFsim uses several open libraries (see *MFSimVersionHistory.txt* for details and references below) and is published as open source under the GNU General Public License version 3 (see *LICENSE*).
 
-MFsim is currently under scientific review.
+A more detailed description is provided in the scientific literature (see references below).
 
 ### Content
 
@@ -16,11 +16,13 @@ MFsim is currently under scientific review.
 * The **javadoc** folder provides the source code Javadoc HTML documentations.
 * The **MFsim_Source** folder is a complete MFsim installation with all Java bytecode libraries including *MFsim.jar* and splash image *MFsimSplash.jpg* (in subfolder *lib*), MFsim version history (in subfolder *info*), particle set files (in subfolder *particles*), tutorial PDF documents (in subfolder *tutorials*) and utility programs (in subfolder *winUtils* for Windows OS only). *MFsim.jar* may be started with an appropriate batch file of the operating system.
 * The **tutorials** folder offers tutorial PDF documents which are also available in animated form (see corresponding *README*).
-* The **2020 Cyclotide-membrane interaction study** folder contains supplementary information for a cyclotide/membrane interaction study which is currently under scientific review  (see corresponding *README*).
+* The **2020 Cyclotide-membrane interaction study** folder contains supplementary information for a cyclotide/membrane interaction study (see corresponding *README*).
 
 
 
 # References
+
+- [K. van den Broek, M. Daniel, M. Epple, J.-M. Hein, H. Kuhn, S. Neumann, A. Truszkowski and A. Zielesny , _MFsim - an open Java all-in-one rich-client simulation environment for mesoscopic simulation_, Journal of Cheminformatics (2020), 12:29](https://doi.org/10.1186/s13321-020-00432-9)
 
 MFsim is an integration project of the open molecular fragment cheminformatics roadmap
 
