@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -86,7 +86,7 @@ public final class PdbToDpd {
     private Protein protein = null;
 
     /**
-     * Pseudorandom generator.
+     * Random number generator
      */
     private Random random = null;
 
@@ -1762,6 +1762,24 @@ public final class PdbToDpd {
     //
     // <editor-fold defaultstate="collapsed" desc="Public properties (set only)">
     /**
+     * Sets the random number generator
+     *
+     * @param aRandomNumberGenerator Random number generator
+     */
+    public void setRandomNumberGenerator(Random aRandomNumberGenerator) {
+        this.random = aRandomNumberGenerator;
+    }
+    
+    /**
+     * Sets the random number generator seed value
+     *
+     * @param aRandomSeed Random number generator seed
+     */
+    public void setSeed(long aRandomSeed) {
+        this.masterdata.setSeed(aRandomSeed);
+    }
+
+    /**
      * Orientates the protein in a random direction.
      */
     public void setRandomOrientation() {
@@ -1779,16 +1797,6 @@ public final class PdbToDpd {
      */
     public void setRadius(Double aRadius) {
         this.masterdata.setRadius(aRadius);
-    }
-    
-    /**
-     * Sets the Pseudorandom generator seed and resets it.
-     *
-     * @param aSeed Pseudorandom generator seed.
-     */
-    public void setSeed(long aSeed) {
-        this.random = null;
-        this.masterdata.setSeed(aSeed);
     }
     // </editor-fold>
     //

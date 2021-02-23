@@ -4,7 +4,7 @@
  */
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -533,7 +533,7 @@ public class PdbToDpdMasterdata extends AbstractMasterdata {
      */
     public long getSeed() {
         if (!this.containsKey(PdbToDpdMasterdata.SEED)) {
-            return 1;
+            return 1L;
         } else {
             return Long.valueOf(this.get(PdbToDpdMasterdata.SEED));
         }

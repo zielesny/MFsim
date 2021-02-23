@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -31,7 +31,7 @@ import java.util.List;
  * absolute orientation using unit quaternions", B.K.P. Horn,
  * Journal of the Optical Society of America, Vol. 4(4), pp 629--642, 1987.
  * 
- * @author: Ziv Yaniv 
+ * @author Ziv Yaniv 
  */
 public class AbsoluteOrienation {
     /**

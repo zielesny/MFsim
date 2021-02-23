@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -19,8 +19,6 @@
  */
 package de.gnwi.mfsim.gui.chart;
 
-import de.gnwi.mfsim.gui.chart.XyChartDataManipulator;
-import de.gnwi.mfsim.gui.chart.ChartInterface;
 import de.gnwi.mfsim.gui.message.GuiMessage;
 import de.gnwi.mfsim.model.util.ModelUtils;
 import de.gnwi.mfsim.model.util.StringUtilityMethods;

@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -21,6 +21,7 @@ package de.gnwi.mfsim.model.graphics.body.test;
 
 import de.gnwi.mfsim.model.graphics.body.BodySphere;
 import de.gnwi.spices.PointInSpace;
+import java.util.Random;
 import junit.framework.TestCase;
 
 /**
@@ -36,11 +37,12 @@ public class TestBodySphere extends TestCase {
     public void testGetRandomValueInVolume() {
         PointInSpace testPoint = new PointInSpace(0, 0, 0);
         BodySphere testSphere = new BodySphere(10, 20, 30, 40);
+        Random tmpRandom = new Random();
         for (int loop = 0; loop < 100; ++loop) {
-            testPoint = testSphere.getRandomPointInVolume();
+            testPoint = testSphere.getRandomPointInVolume(tmpRandom);
             assertTrue(testSphere.isInVolume(testPoint));
         }
-        PointInSpace tmpPoint[] = testSphere.getRandomPointsInVolume(100);
+        PointInSpace tmpPoint[] = testSphere.getRandomPointsInVolume(100, tmpRandom);
         for (int loop = 0; loop < 100; ++loop) {
             assertTrue(testSphere.isInVolume(tmpPoint[loop]));
         }
@@ -52,11 +54,12 @@ public class TestBodySphere extends TestCase {
     public void testgetRandomPointOnSurface() {
         PointInSpace testPoint;
         BodySphere testSphere = new BodySphere(10, 20, 30, 40);
+        Random tmpRandom = new Random();
         for (int loop = 0; loop < 100; ++loop) {
-            testPoint = testSphere.getRandomPointOnSurface();
+            testPoint = testSphere.getRandomPointOnSurface(tmpRandom);
             assertTrue(testSphere.isInVolume(testPoint));
         }
-        PointInSpace tmpPoint[] = testSphere.getRandomPointsOnSurface(100);
+        PointInSpace tmpPoint[] = testSphere.getRandomPointsOnSurface(100, tmpRandom);
         for (int loop = 0; loop < 100; ++loop) {
             assertTrue(testSphere.isInVolume(tmpPoint[loop]));
         }

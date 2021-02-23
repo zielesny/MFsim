@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -52,6 +52,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import de.gnwi.mfsim.model.util.ModelUtils;
 import de.gnwi.mfsim.gui.preference.GuiDefinitions;
+import javax.swing.ComboBoxModel;
 
 /**
  * Controller class for CustomPanelProteinEdit
@@ -128,7 +129,6 @@ public class CustomPanelProteinEditController extends ChangeNotifier {
             this.changeInformation = new ChangeInformation();
             this.jmol3dPeptideController = new Jmol3dPeptideController(this.customPanelProteinEdit.getProperty3dStructureJmol3dPanel());
             this.jmol3dPeptideController.setBackgroundColor(Preferences.getInstance().getProteinViewerBackgroundColor());
-
             // Initialize PDB-to-DPD conversion
             if (aProteinData == null || aProteinData.isEmpty()) {
                 this.pdbToDpd = null;
@@ -321,7 +321,6 @@ public class CustomPanelProteinEditController extends ChangeNotifier {
                 }
 
             });
-
             // </editor-fold>
         } catch (Exception anException) {
             ModelUtils.appendToLogfile(true, anException);
@@ -345,7 +344,6 @@ public class CustomPanelProteinEditController extends ChangeNotifier {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public properties (get)">
-
     /**
      * Protein data XML string from PDB-to-DPD master data
      *
@@ -785,11 +783,10 @@ public class CustomPanelProteinEditController extends ChangeNotifier {
             // <editor-fold defaultstate="collapsed" desc="Set mutant value item container">
             ValueItemContainer tmpMutantValueItemContainer = new ValueItemContainer(null);
             int tmpVerticalPosition = 1;
-
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="Set mutant value item">
             String[] tmpNodeNames = new String[]{GuiMessage.get("proteinMutant.Nodename")};
-            ValueItem tmpMutantValueItem = GuiUtils.getMutantValueItem(this.pdbToDpd);
+            ValueItem tmpMutantValueItem = GuiUtils.getMutantValueItemForEdit(this.pdbToDpd);
             if (tmpMutantValueItem == null) {
                 MouseCursorManagement.getInstance().setDefaultCursor();
                 // <editor-fold defaultstate="collapsed" desc="Message that method failed">

@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -49,7 +49,6 @@ public class StandardParticleUpdateUtils implements ValueItemUpdateNotifierInter
      * @param anUpdateNotifierValueItem Value item that notifies update
      */
     public void notifyDependentValueItemsForUpdate(ValueItem anUpdateNotifierValueItem) {
-
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (anUpdateNotifierValueItem == null) {
             return;
@@ -61,7 +60,6 @@ public class StandardParticleUpdateUtils implements ValueItemUpdateNotifierInter
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Update notifier ParticleTable">
         if (anUpdateNotifierValueItem.getName().equals("ParticleTable")) {
-
             // <editor-fold defaultstate="collapsed" desc="Set often used value items">
             ValueItem tmpInteractionTableValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("MFSIM_SOURCE_INTERACTIONS_MATRIX");
 
@@ -72,31 +70,24 @@ public class StandardParticleUpdateUtils implements ValueItemUpdateNotifierInter
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="Update receiver MFSIM_SOURCE_INTERACTIONS_MATRIX">
             this.updateInteractionMatrix(anUpdateNotifierValueItem, tmpInteractionTableValueItem);
-
             // </editor-fold>
             return;
         }
-
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Update notifier MFSIM_SOURCE_INTERACTIONS_MATRIX">
         if (anUpdateNotifierValueItem.getName().equals("MFSIM_SOURCE_INTERACTIONS_MATRIX")) {
-
             // <editor-fold defaultstate="collapsed" desc="Update itself">
             this.updateInteractionMatrixItself(anUpdateNotifierValueItem);
-
             // </editor-fold>
             return;
         }
-
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Update notifier PARTICLE_DUPLICATE_MATRIX">
         if (anUpdateNotifierValueItem.getName().equals("PARTICLE_DUPLICATE_MATRIX")) {
             // <editor-fold defaultstate="collapsed" desc="Update itself">
             this.updateParticleDuplicateMatrixItself(anUpdateNotifierValueItem);
             // </editor-fold>
-            return;
         }
-
         // </editor-fold>
     }
     // </editor-fold>

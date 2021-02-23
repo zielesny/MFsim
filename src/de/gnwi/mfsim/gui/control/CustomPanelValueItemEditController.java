@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -661,11 +661,6 @@ public class CustomPanelValueItemEditController extends ChangeNotifier implement
      * View particles in simulation box
      */
     private void viewParticlesInCompartments() {
-        // <editor-fold defaultstate="collapsed" desc="IMPORTANT: Initialize random value generation">
-        // Initialize random value generation: This means generating the same graphical particle positions for deterministic random preference
-        this.currentValueItem.getCompartmentContainer().getCompartmentBox().initializeRandomValueGeneration();
-
-        // </editor-fold>
         GraphicalParticlePositionCalculationTask tmpProgressTask = new GraphicalParticlePositionCalculationTask(this.currentValueItem.getCompartmentContainer());
         if (!DialogProgress.hasCanceled(GuiMessage.get("GraphicalParticlePositionCalculation"), tmpProgressTask)) {
             // <editor-fold defaultstate="collapsed" desc="Set value item container for molecule/particles display settings in Preferences">

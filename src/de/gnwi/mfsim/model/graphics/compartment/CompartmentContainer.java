@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -58,13 +58,6 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
 
     // <editor-fold defaultstate="collapsed" desc="Private final class variables">
     /**
-     * Utility graphics methods
-     */
-    private final GraphicsUtilityMethods graphicsUtilityMethods = new GraphicsUtilityMethods();
-    // </editor-fold>
-    //
-    // <editor-fold defaultstate="collapsed" desc="Private class variables">
-    /**
      * String utility methods
      */
     private final StringUtilityMethods stringUtilityMethods = new StringUtilityMethods();
@@ -74,6 +67,13 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
      */
     private final JobUtilityMethods jobUtilityMethods = new JobUtilityMethods();
 
+    /**
+     * Utility graphics methods
+     */
+    private final GraphicsUtilityMethods graphicsUtilityMethods = new GraphicsUtilityMethods();
+    // </editor-fold>
+    //
+    // <editor-fold defaultstate="collapsed" desc="Private class variables">
     /**
      * Change Information
      */
@@ -111,8 +111,8 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
      * Constructor
      *
      * @param aValueItemContainer ValueItemContainer instance with value items
-     * for BoxSize, MonomerTable, MoleculeTable, Density, Quantity and ParticleTable
-     * (are not changed)
+     * for BoxSize, MonomerTable, MoleculeTable, Density, Quantity, 
+     * GeometryRandomSeed and ParticleTable (value items are not changed)
      * @throws IllegalArgumentException Thrown if an argument is illegal
      */
     public CompartmentContainer(ValueItemContainer aValueItemContainer) {
@@ -122,8 +122,15 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Set value item container">
         this.valueItemContainer = new ValueItemContainer(this);
-        // <editor-fold defaultstate="collapsed" desc="- Hidden value items (vertical positions 1 and 5)">
-        // NOTE: tmpLengthConversionValueItem MUST be first value item since tmpLengthConversionFactor is used in the following
+        // <editor-fold defaultstate="collapsed" desc="- Hidden value items (vertical positions 0 to 5)">
+        // <editor-fold defaultstate="collapsed" desc="-- tmpGeometryRandomSeedValueItem (vertical position 0)">
+        this.valueItemContainer.addValueItem(
+            this.getGeometryRandomSeedValueItem(
+                aValueItemContainer.getValueItem("GeometryRandomSeed").getValueAsLong()
+            )
+        );
+        // </editor-fold>
+        // NOTE: tmpLengthConversionValueItem MUST be second value item since tmpLengthConversionFactor is used in the following
         // <editor-fold defaultstate="collapsed" desc="-- tmpLengthConversionValueItem (vertical position 1)">
         // NOTE: Length conversion value item is NOT displayed and SHOULD be last value item
         ValueItem tmpLengthConversionValueItem = new ValueItem();
@@ -146,7 +153,6 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
         tmpBoxInfoValueItem.setDisplay(false);
         tmpBoxInfoValueItem.setBlockName(ModelDefinitions.COMPARTMENT_BLOCK_HIDDEN);
         this.valueItemContainer.addValueItem(tmpBoxInfoValueItem);
-
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="-- aDensityInfoValueItem (vertical position 3)">
         ValueItem tmpDensityInfoValueItem = this.jobUtilityMethods.createDensityInfoValueItem(aValueItemContainer);
@@ -158,7 +164,6 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
         tmpDensityInfoValueItem.setDisplay(false);
         tmpDensityInfoValueItem.setBlockName(ModelDefinitions.COMPARTMENT_BLOCK_HIDDEN);
         this.valueItemContainer.addValueItem(tmpDensityInfoValueItem);
-
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="-- aMoleculeInfoValueItem (vertical position 4)">
         ValueItem tmpMoleculeInfoValueItem = this.jobUtilityMethods.createMoleculeInfoValueItem(aValueItemContainer);
@@ -211,24 +216,22 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
      */
     public CompartmentContainer(Element aXmlElement) {
         super();
-
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aXmlElement == null) {
             throw new IllegalArgumentException("aXmlElement is null.");
         }
 
         // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Initialize">
         this.initialize();
-
+        // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Set value item container">
         if (!this.readXmlInformation(aXmlElement)) {
             throw new IllegalArgumentException("Can not read XML information.");
         }
-
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Set compartment box">
         this.setCompartmentBox();
-
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Add this instance as changeInformation receiver for value item container">
         this.valueItemContainer.addChangeReceiver(this);
@@ -1534,7 +1537,6 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
             return false;
         }
     }
-
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- XML related methods">
     /**
@@ -1575,7 +1577,6 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
             throw new Exception("XML string could not be created.", anException);
         }
     }
-
     // </editor-fold>
     // </editor-fold>
     //
@@ -1627,6 +1628,24 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
      */
     public void removeCompartmentName() {
         this.compartmentName = "";
+    }
+    
+    /**
+     * Returns geometry random seed value
+     * 
+     * @return Geometry random seed value
+     */
+    public long getGeometryRandomSeed() {
+        return this.valueItemContainer.getValueItem(ModelDefinitions.COMPARTMENT_GEOMETRY_RANDOM_SEED_NAME).getValueAsLong();
+    }
+    
+    /**
+     * Set geometry random seed value
+     * 
+     * @param aSeedValue Random seed value 
+     */
+    public void setGeometryRandomSeed(long aSeedValue) {
+        this.valueItemContainer.getValueItem(ModelDefinitions.COMPARTMENT_GEOMETRY_RANDOM_SEED_NAME).setValue(String.valueOf(aSeedValue));
     }
     // </editor-fold>
     //
@@ -2427,7 +2446,12 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
             // boxInfoValueItem.getValueAsDouble(0, 0) : X-length of box
             // boxInfoValueItem.getValueAsDouble(0, 1) : Y-length of box
             // boxInfoValueItem.getValueAsDouble(0, 2) : Z-length of box
-            this.compartmentBox = new CompartmentBox(tmpBoxInfoValueItem.getValueAsDouble(0, 0), tmpBoxInfoValueItem.getValueAsDouble(0, 1), tmpBoxInfoValueItem.getValueAsDouble(0, 2));
+            this.compartmentBox = 
+                new CompartmentBox(
+                    tmpBoxInfoValueItem.getValueAsDouble(0, 0), 
+                    tmpBoxInfoValueItem.getValueAsDouble(0, 1), 
+                    tmpBoxInfoValueItem.getValueAsDouble(0, 2)
+                );
             // Set geometry information
             LinkedList<ValueItem> tmpGeometryDataValueItemList = this.valueItemContainer.getValueItems(new String[]{ModelDefinitions.GEOMETRY_PREFIX_NAME});
             if (tmpGeometryDataValueItemList != null) {
@@ -2446,6 +2470,23 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
             }
         }
     }
+    
+    /**
+     * Return geometry random seed value item with vertical position 0
+     * 
+     * @param aSeedValue Seed value
+     * @return Geometry random seed value item
+     */
+    private ValueItem getGeometryRandomSeedValueItem(long aSeedValue) {
+        ValueItem tmpGeometryRandomSeedValueItem = new ValueItem();
+        tmpGeometryRandomSeedValueItem.setName(ModelDefinitions.COMPARTMENT_GEOMETRY_RANDOM_SEED_NAME);
+        // IMPORTANT: tmpGeometryRandomSeedValueItem is NOT displayed
+        tmpGeometryRandomSeedValueItem.setDisplay(false);
+        tmpGeometryRandomSeedValueItem.setVerticalPosition(0);
+        tmpGeometryRandomSeedValueItem.setBlockName(ModelDefinitions.COMPARTMENT_BLOCK_HIDDEN);
+        tmpGeometryRandomSeedValueItem.setValue(String.valueOf(aSeedValue));
+        return tmpGeometryRandomSeedValueItem;
+    }
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- XML related methods">
     /**
@@ -2455,7 +2496,6 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
      * @return True: Operation successful, false: Otherwise
      */
     private boolean readXmlInformation(Element anElement) {
-
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (anElement == null) {
             return false;
@@ -2466,18 +2506,15 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
         if (anElement.getChild(CompartmentContainerXmlName.VERSION) == null) {
             return false;
         }
-
         // </editor-fold>
         String tmpVersion = anElement.getChild(CompartmentContainerXmlName.VERSION).getText();
         if (tmpVersion == null || tmpVersion.isEmpty()) {
             return false;
         }
-
         // <editor-fold defaultstate="collapsed" desc="Version 1.0.0">
         if (tmpVersion.equals("Version 1.0.0")) {
             return this.readXmlInformationV_1_0_0(anElement);
         }
-
         // </editor-fold>
         return false;
     }
@@ -2489,7 +2526,6 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
      * @return True: Operation successful, false: Otherwise
      */
     private boolean readXmlInformationV_1_0_0(Element anElement) {
-
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (anElement == null) {
             return false;
@@ -2502,6 +2538,12 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
                 return false;
             } else {
                 this.valueItemContainer = new ValueItemContainer(tmpValueItemContainerElement, this);
+                // Add geometry random seed value item for compatibility if not present
+                if (!this.valueItemContainer.hasValueItem(ModelDefinitions.COMPARTMENT_GEOMETRY_RANDOM_SEED_NAME)) {
+                    this.valueItemContainer.addValueItem(
+                        this.getGeometryRandomSeedValueItem(ModelDefinitions.DETERMINISTIC_RANDOM_SEED_DEFAULT)
+                    );
+                }
                 return true;
             }
         } catch (Exception anException) {
@@ -2509,7 +2551,6 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
             return false;
         }
     }
-
     // </editor-fold>
     // </editor-fold>
     //
@@ -2523,7 +2564,6 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
         this.valueItemContainer = aValueItemContainer;
         // IMPORTANT: Set this instance as UpdateNotificationObject
         this.valueItemContainer.setUpdateNotificationObject(this);
-
         // <editor-fold defaultstate="collapsed" desc="Set compartment box">
         this.setCompartmentBox();
         // </editor-fold>

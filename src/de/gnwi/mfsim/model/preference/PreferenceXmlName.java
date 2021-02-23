@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -55,6 +55,11 @@ public interface PreferenceXmlName {
      */
     String TIME_STEP_DISPLAY_SLICER = "TimeStepDisplaySlicer";
 
+    /**
+     * Name of volume scaling for concentration calculation
+     */
+    String IS_VOLUME_SCALING_FOR_CONCENTRATION_CALCULATION = "IsVolumeScalingForConcentrationCalculation";
+    
     /**
      * Name of particle update for job input
      */

@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -28,6 +28,11 @@ import java.util.zip.Inflater;
 import java.util.Base64;
 import java.util.UUID;
 import de.gnwi.mfsim.model.preference.ModelDefinitions;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.LinkedList;
 
 /**
  * String utility methods to be instantiated
@@ -76,7 +81,6 @@ public class StringUtilityMethods {
         return tmpItems;
     }
     // </editor-fold>
-    //
     // <editor-fold defaultstate="collapsed" desc="- GUID creation methods">
     /**
      * String with globally unique ID
@@ -87,7 +91,6 @@ public class StringUtilityMethods {
         return ModelDefinitions.NON_WORDNUMERIC_CHARACTER_PATTERN.matcher((UUID.randomUUID()).toString()).replaceAll("");
     }
     // </editor-fold>
-    //
     // <editor-fold defaultstate="collapsed" desc="- Number related methods">
     /**
      * Formats a double value to specified number of decimals. NOTE: Double
@@ -325,7 +328,6 @@ public class StringUtilityMethods {
         }
     }
     // </editor-fold>
-    //
     // <editor-fold defaultstate="collapsed" desc="- Compress/decompress strings">
     /**
      * Comresses string into Base64 string that encodes the underlying
@@ -395,7 +397,6 @@ public class StringUtilityMethods {
         }
     }
     // </editor-fold>
-    //
     // <editor-fold defaultstate="collapsed" desc="- Token related methods">
     /**
      * Returns first token of a string with (white)space separated tokens.
@@ -512,7 +513,6 @@ public class StringUtilityMethods {
         }
     }
     // </editor-fold>
-    //
     // <editor-fold defaultstate="collapsed" desc="- Clone methods">
     /**
      * Clones a string
@@ -578,7 +578,6 @@ public class StringUtilityMethods {
         return tmpNewMatrix;
     }
     // </editor-fold>
-    //
     // <editor-fold defaultstate="collapsed" desc="- Miscellaneous methods">
     /**
      * Replaces anOldEnding of the string with aNewEnding. NOTE: Check of old
@@ -795,8 +794,103 @@ public class StringUtilityMethods {
         Arrays.sort(newStringArray);
         return newStringArray;
     }
+    
+    /**
+     * Concatenates strings of string array with a single space character
+     *
+     * @param aStringArray Contains strings to be concatenated
+     * @return Result string with concatenated strings separated by
+     * single space character or null if strings could not be concatenated
+     */
+    public String concatenateStringsWithSpace(String[] aStringArray) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aStringArray == null || aStringArray.length == 0) {
+            return null;
+        }
+        // </editor-fold>
+        StringBuilder tmpStringBuilder = new StringBuilder(aStringArray.length * 20);
+        String tmpSingleSpace = " ";
+        for (int i = 0; i < aStringArray.length; i++) {
+            if (aStringArray[i] != null) {
+                if (tmpStringBuilder.length() == 0) {
+                    tmpStringBuilder.append(aStringArray[i]);
+                } else {
+                    tmpStringBuilder.append(tmpSingleSpace);
+                    tmpStringBuilder.append(aStringArray[i]);
+                }
+            }
+        }
+        return tmpStringBuilder.toString();
+    }
+    
+    /**
+     * Reads jagged string array from specified section of line list. 
+     * Each line is split after one or more whitespace characters.
+     *
+     * @param aLineList Line list (may be null then null
+     * is returned)
+     * @param aCommentLinePrefix Prefix of comment line to ignore (may be
+     * null/empty)
+     * @param aSectionTag Section tag (if null/empty then null is returned)
+     * @return Jagged string array from specified section of line list 
+     * or null if jagged string array could not be read
+     */
+    public String[][] readJaggedStringArrayPartFromLineList(LinkedList<String> aLineList, String aCommentLinePrefix, String aSectionTag) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aLineList == null || aLineList.isEmpty()) {
+            return null;
+        }
+        if (aSectionTag == null || aSectionTag.isEmpty()) {
+            return null;
+        }
+        // </editor-fold>
+        try {
+            LinkedList<String[]> tmpLinkedList = new LinkedList<String[]>();
+            boolean tmpIsStarted = false;
+            String tmpStartLine = String.format(ModelDefinitions.SECTION_START_TAG_FORMAT, aSectionTag);
+            String tmpEndLine = String.format(ModelDefinitions.SECTION_END_TAG_FORMAT, aSectionTag);
+            if (aCommentLinePrefix == null || aCommentLinePrefix.isEmpty()) {
+                for (String tmpLine : aLineList) {
+                    if (tmpIsStarted) {
+                        if (tmpLine.trim().equalsIgnoreCase(tmpEndLine)) {
+                            break;
+                        }
+                        String[] tmpItems = this.splitAndTrim(tmpLine.trim());
+                        if (tmpItems != null) {
+                            tmpLinkedList.add(tmpItems);
+                        }
+                    } else {
+                        tmpIsStarted = tmpLine.trim().equalsIgnoreCase(tmpStartLine);
+                    }
+                }
+            } else {
+                for (String tmpLine : aLineList) {
+                    if (tmpIsStarted) {
+                        if (tmpLine.trim().equalsIgnoreCase(tmpEndLine)) {
+                            break;
+                        }
+                        if (!tmpLine.startsWith(aCommentLinePrefix)) {
+                            String[] tmpItems = this.splitAndTrim(tmpLine.trim());
+                            if (tmpItems != null) {
+                                tmpLinkedList.add(tmpItems);
+                            }
+                        }
+                    } else {
+                        tmpIsStarted = tmpLine.trim().equalsIgnoreCase(tmpStartLine);
+                    }
+                }
+            }
+            if (tmpLinkedList.size() > 0) {
+                return tmpLinkedList.toArray(new String[0][]);
+            } else {
+                return null;
+            }
+        } catch (Exception anException) {
+            ModelUtils.appendToLogfile(true, anException);
+            return null;
+        }
+    }
     // </editor-fold>
-    //
     // <editor-fold defaultstate="collapsed" desc="- Protein distance force related methods">
     /**
      * Returns first protein distance force index in aLine, 

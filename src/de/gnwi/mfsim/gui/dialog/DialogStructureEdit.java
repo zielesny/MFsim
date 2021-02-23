@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -266,7 +266,7 @@ public class DialogStructureEdit extends CustomDialogApplyCancelSize implements 
                             false,
                             anAvailableParticles, 
                             anAvailableMonomers, 
-                            StandardParticleInteractionData.getInstance().getDefaultParticle()
+                            StandardParticleInteractionData.getInstance().getDefaultWaterParticle()
                         );
                 } else {
                     // Set molecular structure edit tab (index 0) and set molecular structure edit mode

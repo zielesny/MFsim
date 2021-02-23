@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -1762,7 +1762,7 @@ public class GraphicsUtilityMethods {
         }
     }
     // </editor-fold>
-    // <editor-fold defaultstate="collapsed" desc="- Random points related method">
+    // <editor-fold defaultstate="collapsed" desc="- Random points related methods">
     /**
      * Fills buffer with random points in sphere
      *
@@ -1771,10 +1771,17 @@ public class GraphicsUtilityMethods {
      * @param aNumber Number of random points (not allowed to be less than 1)
      * @param aCenterPoint Center point of sphere
      * @param aRadius Radius of sphere
+     * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
-    public void fillRandomPointsInSphere(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, IPointInSpace aCenterPoint, double aRadius)
-            throws IllegalArgumentException {
+    public void fillRandomPointsInSphere(
+        IPointInSpace[] aBuffer, 
+        int aFirstIndex, 
+        int aNumber, 
+        IPointInSpace aCenterPoint, 
+        double aRadius,
+        Random aRandomNumberGenerator
+    ) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
             throw new IllegalArgumentException("aNumber is less than 1.");
@@ -1794,7 +1801,6 @@ public class GraphicsUtilityMethods {
         if (aRadius <= 0) {
             throw new IllegalArgumentException("aRadius is less/equal 0.");
         }
-
         // </editor-fold>
         // Reduce value to avoid points outside the compartment due to round-off errors
         double tmpRadius = aRadius * ModelDefinitions.DECREASE_FACTOR;
@@ -1806,16 +1812,15 @@ public class GraphicsUtilityMethods {
         double tmpX = 0;
         double tmpY = 0;
         double tmpZ = 0;
-        Random tmpRandom = this.miscUtilityMethods.getRandom();
         int tmpIndex = aFirstIndex;
         // FIRST check if instance of GraphicalParticlePosition[]
         if (aBuffer instanceof GraphicalParticlePosition[]) {
             // <editor-fold defaultstate="collapsed" desc="A buffer is an instance of GraphicalParticlePosition[]">
             for (int i = 0; i < aNumber; i++) {
                 do {
-                    tmpX = tmpCubeLength * tmpRandom.nextDouble();
-                    tmpY = tmpCubeLength * tmpRandom.nextDouble();
-                    tmpZ = tmpCubeLength * tmpRandom.nextDouble();
+                    tmpX = tmpCubeLength * aRandomNumberGenerator.nextDouble();
+                    tmpY = tmpCubeLength * aRandomNumberGenerator.nextDouble();
+                    tmpZ = tmpCubeLength * aRandomNumberGenerator.nextDouble();
                     tmpDeltaX = tmpX - tmpRadius;
                     tmpDeltaY = tmpY - tmpRadius;
                     tmpDeltaZ = tmpZ - tmpRadius;
@@ -1827,9 +1832,9 @@ public class GraphicsUtilityMethods {
             // <editor-fold defaultstate="collapsed" desc="A buffer is an instance of PointInSpace[]">
             for (int i = 0; i < aNumber; i++) {
                 do {
-                    tmpX = tmpCubeLength * tmpRandom.nextDouble();
-                    tmpY = tmpCubeLength * tmpRandom.nextDouble();
-                    tmpZ = tmpCubeLength * tmpRandom.nextDouble();
+                    tmpX = tmpCubeLength * aRandomNumberGenerator.nextDouble();
+                    tmpY = tmpCubeLength * aRandomNumberGenerator.nextDouble();
+                    tmpZ = tmpCubeLength * aRandomNumberGenerator.nextDouble();
                     tmpDeltaX = tmpX - tmpRadius;
                     tmpDeltaY = tmpY - tmpRadius;
                     tmpDeltaZ = tmpZ - tmpRadius;
@@ -1849,10 +1854,18 @@ public class GraphicsUtilityMethods {
      * @param aNumber Number of random points (not allowed to be less than 1)
      * @param aCenterPoint Center point of sphere
      * @param aRadius Radius of sphere
+     * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
-    public void fillRandomPointsInSphere(IPointInSpace[] aBuffer1, IPointInSpace[] aBuffer2, int aFirstIndex, int aNumber, IPointInSpace aCenterPoint,
-            double aRadius) throws IllegalArgumentException {
+    public void fillRandomPointsInSphere(
+        IPointInSpace[] aBuffer1, 
+        IPointInSpace[] aBuffer2, 
+        int aFirstIndex, 
+        int aNumber, 
+        IPointInSpace aCenterPoint,
+        double aRadius, 
+        Random aRandomNumberGenerator
+    ) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
             throw new IllegalArgumentException("aNumber is less than 1.");
@@ -1899,7 +1912,6 @@ public class GraphicsUtilityMethods {
         double tmpX = 0;
         double tmpY = 0;
         double tmpZ = 0;
-        Random tmpRandom = this.miscUtilityMethods.getRandom();
         int tmpIndex1 = aFirstIndex;
         int tmpIndex2 = aFirstIndex;
 
@@ -1908,18 +1920,18 @@ public class GraphicsUtilityMethods {
             // <editor-fold defaultstate="collapsed" desc="A buffer is an instance of GraphicalParticlePosition[]">
             for (int i = 0; i < aNumber; i++) {
                 do {
-                    tmpX = tmpCubeLength * tmpRandom.nextDouble();
-                    tmpY = tmpCubeLength * tmpRandom.nextDouble();
-                    tmpZ = tmpCubeLength * tmpRandom.nextDouble();
+                    tmpX = tmpCubeLength * aRandomNumberGenerator.nextDouble();
+                    tmpY = tmpCubeLength * aRandomNumberGenerator.nextDouble();
+                    tmpZ = tmpCubeLength * aRandomNumberGenerator.nextDouble();
                     tmpDeltaX = tmpX - tmpRadius;
                     tmpDeltaY = tmpY - tmpRadius;
                     tmpDeltaZ = tmpZ - tmpRadius;
                 } while (tmpDeltaX * tmpDeltaX + tmpDeltaY * tmpDeltaY + tmpDeltaZ * tmpDeltaZ > tmpRadiusSquare);
                 aBuffer1[tmpIndex1++] = new GraphicalParticlePosition(aCenterPoint.getX() - tmpRadius + tmpX, aCenterPoint.getY() - tmpRadius + tmpY, aCenterPoint.getZ() - tmpRadius + tmpZ);
                 do {
-                    tmpX = tmpCubeLength * tmpRandom.nextDouble();
-                    tmpY = tmpCubeLength * tmpRandom.nextDouble();
-                    tmpZ = tmpCubeLength * tmpRandom.nextDouble();
+                    tmpX = tmpCubeLength * aRandomNumberGenerator.nextDouble();
+                    tmpY = tmpCubeLength * aRandomNumberGenerator.nextDouble();
+                    tmpZ = tmpCubeLength * aRandomNumberGenerator.nextDouble();
                     tmpDeltaX = tmpX - tmpRadius;
                     tmpDeltaY = tmpY - tmpRadius;
                     tmpDeltaZ = tmpZ - tmpRadius;
@@ -1932,18 +1944,18 @@ public class GraphicsUtilityMethods {
             // <editor-fold defaultstate="collapsed" desc="A buffer is an instance of PointInSpace[]">
             for (int i = 0; i < aNumber; i++) {
                 do {
-                    tmpX = tmpCubeLength * tmpRandom.nextDouble();
-                    tmpY = tmpCubeLength * tmpRandom.nextDouble();
-                    tmpZ = tmpCubeLength * tmpRandom.nextDouble();
+                    tmpX = tmpCubeLength * aRandomNumberGenerator.nextDouble();
+                    tmpY = tmpCubeLength * aRandomNumberGenerator.nextDouble();
+                    tmpZ = tmpCubeLength * aRandomNumberGenerator.nextDouble();
                     tmpDeltaX = tmpX - tmpRadius;
                     tmpDeltaY = tmpY - tmpRadius;
                     tmpDeltaZ = tmpZ - tmpRadius;
                 } while (tmpDeltaX * tmpDeltaX + tmpDeltaY * tmpDeltaY + tmpDeltaZ * tmpDeltaZ > tmpRadiusSquare);
                 aBuffer1[tmpIndex1++] = new PointInSpace(aCenterPoint.getX() - tmpRadius + tmpX, aCenterPoint.getY() - tmpRadius + tmpY, aCenterPoint.getZ() - tmpRadius + tmpZ);
                 do {
-                    tmpX = tmpCubeLength * tmpRandom.nextDouble();
-                    tmpY = tmpCubeLength * tmpRandom.nextDouble();
-                    tmpZ = tmpCubeLength * tmpRandom.nextDouble();
+                    tmpX = tmpCubeLength * aRandomNumberGenerator.nextDouble();
+                    tmpY = tmpCubeLength * aRandomNumberGenerator.nextDouble();
+                    tmpZ = tmpCubeLength * aRandomNumberGenerator.nextDouble();
                     tmpDeltaX = tmpX - tmpRadius;
                     tmpDeltaY = tmpY - tmpRadius;
                     tmpDeltaZ = tmpZ - tmpRadius;
@@ -1964,6 +1976,7 @@ public class GraphicsUtilityMethods {
      * @param aXLength X-Length of xy-layer
      * @param aYLength Y-Length of xy-layer
      * @param aZLength Z-Length of xy-layer
+     * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
     public void fillRandomPointsInXyLayer(
@@ -1973,7 +1986,8 @@ public class GraphicsUtilityMethods {
         IPointInSpace aCenterPoint, 
         double aXLength, 
         double aYLength, 
-        double aZLength
+        double aZLength,
+        Random aRandomNumberGenerator
     ) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -2011,25 +2025,24 @@ public class GraphicsUtilityMethods {
         double tmpDeltaX;
         double tmpDeltaY;
         double tmpDeltaZ;
-        Random tmpRandom = this.miscUtilityMethods.getRandom();
         int tmpIndex = aFirstIndex;
 
         // FIRST check if instance of GraphicalParticlePosition[]
         if (aBuffer instanceof GraphicalParticlePosition[]) {
             // <editor-fold defaultstate="collapsed" desc="A buffer is an instance of GraphicalParticlePosition[]">
             for (int i = 0; i < aNumber; i++) {
-                tmpDeltaX = tmpXLength * tmpRandom.nextDouble() - tmpHalfXLength;
-                tmpDeltaY = tmpYLength * tmpRandom.nextDouble() - tmpHalfYLength;
-                tmpDeltaZ = tmpZLength * tmpRandom.nextDouble() - tmpHalfZLength;
+                tmpDeltaX = tmpXLength * aRandomNumberGenerator.nextDouble() - tmpHalfXLength;
+                tmpDeltaY = tmpYLength * aRandomNumberGenerator.nextDouble() - tmpHalfYLength;
+                tmpDeltaZ = tmpZLength * aRandomNumberGenerator.nextDouble() - tmpHalfZLength;
                 aBuffer[tmpIndex++] = new GraphicalParticlePosition(aCenterPoint.getX() + tmpDeltaX, aCenterPoint.getY() + tmpDeltaY, aCenterPoint.getZ() + tmpDeltaZ);
             }
             // </editor-fold>
         } else if (aBuffer instanceof PointInSpace[]) {
             // <editor-fold defaultstate="collapsed" desc="A buffer is an instance of PointInSpace[]">
             for (int i = 0; i < aNumber; i++) {
-                tmpDeltaX = tmpXLength * tmpRandom.nextDouble() - tmpHalfXLength;
-                tmpDeltaY = tmpYLength * tmpRandom.nextDouble() - tmpHalfYLength;
-                tmpDeltaZ = tmpZLength * tmpRandom.nextDouble() - tmpHalfZLength;
+                tmpDeltaX = tmpXLength * aRandomNumberGenerator.nextDouble() - tmpHalfXLength;
+                tmpDeltaY = tmpYLength * aRandomNumberGenerator.nextDouble() - tmpHalfYLength;
+                tmpDeltaZ = tmpZLength * aRandomNumberGenerator.nextDouble() - tmpHalfZLength;
                 aBuffer[tmpIndex++] = new PointInSpace(aCenterPoint.getX() + tmpDeltaX, aCenterPoint.getY() + tmpDeltaY, aCenterPoint.getZ() + tmpDeltaZ);
             }
             // </editor-fold>
@@ -2048,6 +2061,7 @@ public class GraphicsUtilityMethods {
      * @param aXLength X-Length of xy-layer
      * @param aYLength Y-Length of xy-layer
      * @param aZLength Z-Length of xy-layer
+     * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
     public void fillRandomPointsInXyLayer(
@@ -2058,7 +2072,8 @@ public class GraphicsUtilityMethods {
         IPointInSpace aCenterPoint, 
         double aXLength,
         double aYLength, 
-        double aZLength
+        double aZLength,
+        Random aRandomNumberGenerator
     ) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -2109,21 +2124,20 @@ public class GraphicsUtilityMethods {
         double tmpDeltaX;
         double tmpDeltaY;
         double tmpDeltaZ;
-        Random tmpRandom = this.miscUtilityMethods.getRandom();
         int tmpIndex = aFirstIndex;
 
         // FIRST check if instance of GraphicalParticlePosition[]
         if (aBuffer1 instanceof GraphicalParticlePosition[]) {
             // <editor-fold defaultstate="collapsed" desc="Buffers are an instance of GraphicalParticlePosition[]">
             for (int i = 0; i < aNumber; i++) {
-                tmpDeltaX = tmpXLength * tmpRandom.nextDouble() - tmpHalfXLength;
-                tmpDeltaY = tmpYLength * tmpRandom.nextDouble() - tmpHalfYLength;
-                tmpDeltaZ = tmpZLength * tmpRandom.nextDouble() - tmpHalfZLength;
+                tmpDeltaX = tmpXLength * aRandomNumberGenerator.nextDouble() - tmpHalfXLength;
+                tmpDeltaY = tmpYLength * aRandomNumberGenerator.nextDouble() - tmpHalfYLength;
+                tmpDeltaZ = tmpZLength * aRandomNumberGenerator.nextDouble() - tmpHalfZLength;
                 aBuffer1[tmpIndex] = new GraphicalParticlePosition(aCenterPoint.getX() + tmpDeltaX, aCenterPoint.getY() + tmpDeltaY, aCenterPoint.getZ() + tmpDeltaZ);
 
-                tmpDeltaX = tmpXLength * tmpRandom.nextDouble() - tmpHalfXLength;
-                tmpDeltaY = tmpYLength * tmpRandom.nextDouble() - tmpHalfYLength;
-                tmpDeltaZ = tmpZLength * tmpRandom.nextDouble() - tmpHalfZLength;
+                tmpDeltaX = tmpXLength * aRandomNumberGenerator.nextDouble() - tmpHalfXLength;
+                tmpDeltaY = tmpYLength * aRandomNumberGenerator.nextDouble() - tmpHalfYLength;
+                tmpDeltaZ = tmpZLength * aRandomNumberGenerator.nextDouble() - tmpHalfZLength;
                 aBuffer2[tmpIndex] = new GraphicalParticlePosition(aCenterPoint.getX() + tmpDeltaX, aCenterPoint.getY() + tmpDeltaY, aCenterPoint.getZ() + tmpDeltaZ);
 
                 tmpIndex++;
@@ -2133,13 +2147,13 @@ public class GraphicsUtilityMethods {
         } else if (aBuffer1 instanceof PointInSpace[]) {
             // <editor-fold defaultstate="collapsed" desc="A buffer is an instance of PointInSpace[]">
             for (int i = 0; i < aNumber; i++) {
-                tmpDeltaX = tmpXLength * tmpRandom.nextDouble() - tmpHalfXLength;
-                tmpDeltaY = tmpYLength * tmpRandom.nextDouble() - tmpHalfYLength;
-                tmpDeltaZ = tmpZLength * tmpRandom.nextDouble() - tmpHalfZLength;
+                tmpDeltaX = tmpXLength * aRandomNumberGenerator.nextDouble() - tmpHalfXLength;
+                tmpDeltaY = tmpYLength * aRandomNumberGenerator.nextDouble() - tmpHalfYLength;
+                tmpDeltaZ = tmpZLength * aRandomNumberGenerator.nextDouble() - tmpHalfZLength;
                 aBuffer1[tmpIndex] = new PointInSpace(aCenterPoint.getX() + tmpDeltaX, aCenterPoint.getY() + tmpDeltaY, aCenterPoint.getZ() + tmpDeltaZ);
-                tmpDeltaX = tmpXLength * tmpRandom.nextDouble() - tmpHalfXLength;
-                tmpDeltaY = tmpYLength * tmpRandom.nextDouble() - tmpHalfYLength;
-                tmpDeltaZ = tmpZLength * tmpRandom.nextDouble() - tmpHalfZLength;
+                tmpDeltaX = tmpXLength * aRandomNumberGenerator.nextDouble() - tmpHalfXLength;
+                tmpDeltaY = tmpYLength * aRandomNumberGenerator.nextDouble() - tmpHalfYLength;
+                tmpDeltaZ = tmpZLength * aRandomNumberGenerator.nextDouble() - tmpHalfZLength;
                 aBuffer2[tmpIndex] = new PointInSpace(aCenterPoint.getX() + tmpDeltaX, aCenterPoint.getY() + tmpDeltaY, aCenterPoint.getZ() + tmpDeltaZ);
                 tmpIndex++;
             }
@@ -2162,6 +2176,7 @@ public class GraphicsUtilityMethods {
      * @param aSphereRadius Radius of sphere
      * @param anExistingSphereList List with existing spheres (may be null or empty)
      * @param aNumberOfTrials Number of trials for random point generation
+     * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
     public void fillRandomPointsInSphereWithExcludingSpheres(
@@ -2171,7 +2186,8 @@ public class GraphicsUtilityMethods {
         IPointInSpace aSphereCenterPoint, 
         double aSphereRadius, 
         LinkedList<BodySphere> anExistingSphereList, 
-        int aNumberOfTrials
+        int aNumberOfTrials,
+        Random aRandomNumberGenerator
     ) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -2197,7 +2213,6 @@ public class GraphicsUtilityMethods {
         }
         // </editor-fold>
         boolean tmpAreExistingSpheresDefined = anExistingSphereList != null && !anExistingSphereList.isEmpty();
-        Random tmpRandom = this.miscUtilityMethods.getRandom();
 
         // Reduce value to avoid points outside the compartment due to round-off errors
         double tmpSphereRadius = aSphereRadius * ModelDefinitions.DECREASE_FACTOR;
@@ -2219,9 +2234,9 @@ public class GraphicsUtilityMethods {
             boolean isOutsideSphereExcludedVolume = true;
             do {
                 do {
-                    tmpX = tmpCubeLength * tmpRandom.nextDouble();
-                    tmpY = tmpCubeLength * tmpRandom.nextDouble();
-                    tmpZ = tmpCubeLength * tmpRandom.nextDouble();
+                    tmpX = tmpCubeLength * aRandomNumberGenerator.nextDouble();
+                    tmpY = tmpCubeLength * aRandomNumberGenerator.nextDouble();
+                    tmpZ = tmpCubeLength * aRandomNumberGenerator.nextDouble();
                     tmpDeltaX = tmpX - tmpSphereRadius;
                     tmpDeltaY = tmpY - tmpSphereRadius;
                     tmpDeltaZ = tmpZ - tmpSphereRadius;
@@ -2274,6 +2289,7 @@ public class GraphicsUtilityMethods {
      * @param aStepDistance Step distance for points along the straight lines
      * between aBuffer1[i] and aBuffer2[i]
      * @param aNumberOfTrials Number of trials for random point generation
+     * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
     public void fillRandomPointsInSphereWithExcludingSpheres(
@@ -2285,7 +2301,8 @@ public class GraphicsUtilityMethods {
         double aSphereRadius, 
         LinkedList<BodySphere> anExistingSphereList, 
         double aStepDistance, 
-        int aNumberOfTrials
+        int aNumberOfTrials,
+        Random aRandomNumberGenerator
     ) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -2326,7 +2343,6 @@ public class GraphicsUtilityMethods {
         }
         // </editor-fold>
         boolean tmpAreExistingSpheresDefined = anExistingSphereList != null && !anExistingSphereList.isEmpty();
-        Random tmpRandom = this.miscUtilityMethods.getRandom();
 
         // Reduce value to avoid points outside the compartment due to round-off errors
         double tmpSphereRadius = aSphereRadius * ModelDefinitions.DECREASE_FACTOR;
@@ -2352,9 +2368,9 @@ public class GraphicsUtilityMethods {
                 boolean isOutsideSphereExcludedVolume = true;
                 do {
                     do {
-                        tmpX = tmpCubeLength * tmpRandom.nextDouble();
-                        tmpY = tmpCubeLength * tmpRandom.nextDouble();
-                        tmpZ = tmpCubeLength * tmpRandom.nextDouble();
+                        tmpX = tmpCubeLength * aRandomNumberGenerator.nextDouble();
+                        tmpY = tmpCubeLength * aRandomNumberGenerator.nextDouble();
+                        tmpZ = tmpCubeLength * aRandomNumberGenerator.nextDouble();
                         tmpDeltaX = tmpX - tmpSphereRadius;
                         tmpDeltaY = tmpY - tmpSphereRadius;
                         tmpDeltaZ = tmpZ - tmpSphereRadius;
@@ -2380,9 +2396,9 @@ public class GraphicsUtilityMethods {
                 isOutsideSphereExcludedVolume = true;
                 do {
                     do {
-                        tmpX = tmpCubeLength * tmpRandom.nextDouble();
-                        tmpY = tmpCubeLength * tmpRandom.nextDouble();
-                        tmpZ = tmpCubeLength * tmpRandom.nextDouble();
+                        tmpX = tmpCubeLength * aRandomNumberGenerator.nextDouble();
+                        tmpY = tmpCubeLength * aRandomNumberGenerator.nextDouble();
+                        tmpZ = tmpCubeLength * aRandomNumberGenerator.nextDouble();
                         tmpDeltaX = tmpX - tmpSphereRadius;
                         tmpDeltaY = tmpY - tmpSphereRadius;
                         tmpDeltaZ = tmpZ - tmpSphereRadius;
@@ -2458,6 +2474,7 @@ public class GraphicsUtilityMethods {
      * @param aXyLayerZLength Z-Length of xy-layer
      * @param anExistingSphereList List with existing spheres (may be null or empty)
      * @param aNumberOfTrials Number of trials for random point generation
+     * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
     public void fillRandomPointsInXyLayerWithExcludingSpheres(
@@ -2469,7 +2486,8 @@ public class GraphicsUtilityMethods {
         double aXyLayerYLength,
         double aXyLayerZLength, 
         LinkedList<BodySphere> anExistingSphereList, 
-        int aNumberOfTrials
+        int aNumberOfTrials,
+        Random aRandomNumberGenerator
     ) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -2501,7 +2519,6 @@ public class GraphicsUtilityMethods {
         }
         // </editor-fold>
         boolean tmpAreExistingSpheresDefined = anExistingSphereList != null && !anExistingSphereList.isEmpty();
-        Random tmpRandom = this.miscUtilityMethods.getRandom();
 
         // Reduce values to avoid points outside the compartment due to round-off errors
         double tmpXLength = aXyLayerXLength * ModelDefinitions.DECREASE_FACTOR;
@@ -2519,9 +2536,9 @@ public class GraphicsUtilityMethods {
             int tmpTrialCounter = 0;
             boolean isOutsideSphereExcludedVolume = true;
             do {
-                tmpTestPoint.setX(aXyLayerCenterPoint.getX() + tmpXLength * tmpRandom.nextDouble() - tmpHalfXLength);
-                tmpTestPoint.setY(aXyLayerCenterPoint.getY() + tmpYLength * tmpRandom.nextDouble() - tmpHalfYLength);
-                tmpTestPoint.setZ(aXyLayerCenterPoint.getZ() + tmpZLength * tmpRandom.nextDouble() - tmpHalfZLength);
+                tmpTestPoint.setX(aXyLayerCenterPoint.getX() + tmpXLength * aRandomNumberGenerator.nextDouble() - tmpHalfXLength);
+                tmpTestPoint.setY(aXyLayerCenterPoint.getY() + tmpYLength * aRandomNumberGenerator.nextDouble() - tmpHalfYLength);
+                tmpTestPoint.setZ(aXyLayerCenterPoint.getZ() + tmpZLength * aRandomNumberGenerator.nextDouble() - tmpHalfZLength);
                 if (tmpAreExistingSpheresDefined) {
                     for (BodySphere tmpSingleSphere : anExistingSphereList) {
                         if (tmpSingleSphere.isInVolume(tmpTestPoint)) {
@@ -2563,14 +2580,27 @@ public class GraphicsUtilityMethods {
      * @param aXyLayerXLength X-Length of xy-layer
      * @param aXyLayerYLength Y-Length of xy-layer
      * @param aXyLayerZLength Z-Length of xy-layer
-     * @param aSphereList List with spheres (NOT allowed to be null or empty)
+     * @param anExistingSphereList List with existing spheres (may be null or empty)
      * @param aStepDistance Step distance for points along the straight lines
      * between aBuffer1[i] and aBuffer2[i]
      * @param aNumberOfTrials Number of trials for random point generation
+     * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
-    public void fillRandomPointsInXyLayerWithExcludingSpheres(IPointInSpace[] aBuffer1, IPointInSpace[] aBuffer2, int aFirstIndex, int aNumber, IPointInSpace aXyLayerCenterPoint,
-            double aXyLayerXLength, double aXyLayerYLength, double aXyLayerZLength, LinkedList<BodySphere> aSphereList, double aStepDistance, int aNumberOfTrials) throws IllegalArgumentException {
+    public void fillRandomPointsInXyLayerWithExcludingSpheres(
+        IPointInSpace[] aBuffer1, 
+        IPointInSpace[] aBuffer2, 
+        int aFirstIndex, 
+        int aNumber, 
+        IPointInSpace aXyLayerCenterPoint,
+        double aXyLayerXLength, 
+        double aXyLayerYLength, 
+        double aXyLayerZLength, 
+        LinkedList<BodySphere> anExistingSphereList, 
+        double aStepDistance, 
+        int aNumberOfTrials,
+        Random aRandomNumberGenerator
+    ) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
             throw new IllegalArgumentException("aNumber is less than 1.");
@@ -2608,18 +2638,14 @@ public class GraphicsUtilityMethods {
         if (aXyLayerZLength <= 0) {
             throw new IllegalArgumentException("aZLength is less/equal 0.");
         }
-        if (aSphereList == null || aSphereList.isEmpty()) {
-            throw new IllegalArgumentException("aSphereList is null/empty.");
-        }
         if (aStepDistance <= 0.0) {
             throw new IllegalArgumentException("aDistance is less/equal 0.");
         }
         if (aNumberOfTrials < 1) {
             throw new IllegalArgumentException("aNumberOfTrials is less than 1.");
         }
-
         // </editor-fold>
-        Random tmpRandom = this.miscUtilityMethods.getRandom();
+        boolean tmpAreExistingSpheresDefined = anExistingSphereList != null && !anExistingSphereList.isEmpty();
 
         // Reduce values to avoid points outside the compartment due to round-off errors
         double tmpXLength = aXyLayerXLength * ModelDefinitions.DECREASE_FACTOR;
@@ -2641,13 +2667,15 @@ public class GraphicsUtilityMethods {
                 int tmpTrialCounter2 = 0;
                 boolean isOutsideSphereExcludedVolume = true;
                 do {
-                    tmpTestPoint1.setX(aXyLayerCenterPoint.getX() + tmpXLength * tmpRandom.nextDouble() - tmpHalfXLength);
-                    tmpTestPoint1.setY(aXyLayerCenterPoint.getY() + tmpYLength * tmpRandom.nextDouble() - tmpHalfYLength);
-                    tmpTestPoint1.setZ(aXyLayerCenterPoint.getZ() + tmpZLength * tmpRandom.nextDouble() - tmpHalfZLength);
-                    for (BodySphere tmpSingleSphere : aSphereList) {
-                        if (tmpSingleSphere.isInVolume(tmpTestPoint1)) {
-                            isOutsideSphereExcludedVolume = false;
-                            break;
+                    tmpTestPoint1.setX(aXyLayerCenterPoint.getX() + tmpXLength * aRandomNumberGenerator.nextDouble() - tmpHalfXLength);
+                    tmpTestPoint1.setY(aXyLayerCenterPoint.getY() + tmpYLength * aRandomNumberGenerator.nextDouble() - tmpHalfYLength);
+                    tmpTestPoint1.setZ(aXyLayerCenterPoint.getZ() + tmpZLength * aRandomNumberGenerator.nextDouble() - tmpHalfZLength);
+                    if (tmpAreExistingSpheresDefined) {
+                        for (BodySphere tmpSingleSphere : anExistingSphereList) {
+                            if (tmpSingleSphere.isInVolume(tmpTestPoint1)) {
+                                isOutsideSphereExcludedVolume = false;
+                                break;
+                            }
                         }
                     }
                     tmpTrialCounter2++;
@@ -2659,13 +2687,15 @@ public class GraphicsUtilityMethods {
                 tmpTrialCounter2 = 0;
                 isOutsideSphereExcludedVolume = true;
                 do {
-                    tmpTestPoint2.setX(aXyLayerCenterPoint.getX() + tmpXLength * tmpRandom.nextDouble() - tmpHalfXLength);
-                    tmpTestPoint2.setY(aXyLayerCenterPoint.getY() + tmpYLength * tmpRandom.nextDouble() - tmpHalfYLength);
-                    tmpTestPoint2.setZ(aXyLayerCenterPoint.getZ() + tmpZLength * tmpRandom.nextDouble() - tmpHalfZLength);
-                    for (BodySphere tmpSingleSphere : aSphereList) {
-                        if (tmpSingleSphere.isInVolume(tmpTestPoint1)) {
-                            isOutsideSphereExcludedVolume = false;
-                            break;
+                    tmpTestPoint2.setX(aXyLayerCenterPoint.getX() + tmpXLength * aRandomNumberGenerator.nextDouble() - tmpHalfXLength);
+                    tmpTestPoint2.setY(aXyLayerCenterPoint.getY() + tmpYLength * aRandomNumberGenerator.nextDouble() - tmpHalfYLength);
+                    tmpTestPoint2.setZ(aXyLayerCenterPoint.getZ() + tmpZLength * aRandomNumberGenerator.nextDouble() - tmpHalfZLength);
+                    if (tmpAreExistingSpheresDefined) {
+                        for (BodySphere tmpSingleSphere : anExistingSphereList) {
+                            if (tmpSingleSphere.isInVolume(tmpTestPoint1)) {
+                                isOutsideSphereExcludedVolume = false;
+                                break;
+                            }
                         }
                     }
                     tmpTrialCounter2++;
@@ -2678,10 +2708,12 @@ public class GraphicsUtilityMethods {
                 if (tmpTestPointList.size() > 1) {
                     for (PointInSpace tmpSinglePoint : tmpTestPointList) {
                         boolean tmpIsInSphere = false;
-                        for (BodySphere tmpSingleSphere : aSphereList) {
-                            if (tmpSingleSphere.isInVolume(tmpSinglePoint)) {
-                                tmpIsInSphere = true;
-                                break;
+                        if (tmpAreExistingSpheresDefined) {
+                            for (BodySphere tmpSingleSphere : anExistingSphereList) {
+                                if (tmpSingleSphere.isInVolume(tmpSinglePoint)) {
+                                    tmpIsInSphere = true;
+                                    break;
+                                }
                             }
                         }
                         if (!tmpIsInSphere) {
@@ -2719,9 +2751,10 @@ public class GraphicsUtilityMethods {
      * @param aNumber Number of random points (not allowed to be less than 1)
      * @param aCenterPoint Center point of sphere
      * @param aRadius Radius of sphere
+     * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
-    public void fillRandomPointsOnSphereSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, PointInSpace aCenterPoint, double aRadius) throws IllegalArgumentException {
+    public void fillRandomPointsOnSphereSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, PointInSpace aCenterPoint, double aRadius, Random aRandomNumberGenerator) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
             throw new IllegalArgumentException("aNumber is less than 1.");
@@ -2742,7 +2775,6 @@ public class GraphicsUtilityMethods {
             throw new IllegalArgumentException("aRadius is less/equal 0.");
         }
         // </editor-fold>
-        Random tmpRandom = this.miscUtilityMethods.getRandom();
         // Reduce value to avoid points outside the compartment due to round-off errors
         double tmpRadius = aRadius * ModelDefinitions.DECREASE_FACTOR;
         int tmpIndex = aFirstIndex;
@@ -2750,8 +2782,8 @@ public class GraphicsUtilityMethods {
         if (aBuffer instanceof GraphicalParticlePosition[]) {
             // <editor-fold defaultstate="collapsed" desc="A buffer is an instance of GraphicalParticlePosition[]">
             for (int i = 0; i < aNumber; i++) {
-                double tmpPhi = Math.acos(2.0 * tmpRandom.nextDouble() - 1.0);
-                double tmpTheta = tmpRandom.nextDouble() * ModelDefinitions.TWO_PI;
+                double tmpPhi = Math.acos(2.0 * aRandomNumberGenerator.nextDouble() - 1.0);
+                double tmpTheta = aRandomNumberGenerator.nextDouble() * ModelDefinitions.TWO_PI;
                 double tmpFactor = tmpRadius * Math.sin(tmpPhi);
                 double tmpDx = tmpFactor * Math.cos(tmpTheta);
                 double tmpDy = tmpFactor * Math.sin(tmpTheta);
@@ -2767,8 +2799,8 @@ public class GraphicsUtilityMethods {
         } else if (aBuffer instanceof PointInSpace[]) {
             // <editor-fold defaultstate="collapsed" desc="A buffer is an instance of PointInSpace[]">
             for (int i = 0; i < aNumber; i++) {
-                double tmpPhi = Math.acos(2.0 * tmpRandom.nextDouble() - 1.0);
-                double tmpTheta = tmpRandom.nextDouble() * ModelDefinitions.TWO_PI;
+                double tmpPhi = Math.acos(2.0 * aRandomNumberGenerator.nextDouble() - 1.0);
+                double tmpTheta = aRandomNumberGenerator.nextDouble() * ModelDefinitions.TWO_PI;
                 double tmpFactor = tmpRadius * Math.sin(tmpPhi);
                 double tmpDx = tmpFactor * Math.cos(tmpTheta);
                 double tmpDy = tmpFactor * Math.sin(tmpTheta);
@@ -2793,9 +2825,10 @@ public class GraphicsUtilityMethods {
      * @param aNumber Number of random points (not allowed to be less than 1)
      * @param aCenterPoint Center point of sphere
      * @param aRadius Radius of sphere
+     * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
-    public void fillUpperRandomPointsOnSphereSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, PointInSpace aCenterPoint, double aRadius) throws IllegalArgumentException {
+    public void fillUpperRandomPointsOnSphereSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, PointInSpace aCenterPoint, double aRadius, Random aRandomNumberGenerator) throws IllegalArgumentException {
 
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -2818,7 +2851,6 @@ public class GraphicsUtilityMethods {
         }
 
         // </editor-fold>
-        Random tmpRandom = this.miscUtilityMethods.getRandom();
         // Reduce value to avoid points outside the compartment due to round-off errors
         double tmpRadius = aRadius * ModelDefinitions.DECREASE_FACTOR;
         int tmpIndex = aFirstIndex;
@@ -2832,8 +2864,8 @@ public class GraphicsUtilityMethods {
             // <editor-fold defaultstate="collapsed" desc="A buffer is an instance of GraphicalParticlePosition[]">
             for (int i = 0; i < aNumber; i++) {
                 do {
-                    double tmpPhi = Math.acos(2.0 * tmpRandom.nextDouble() - 1.0);
-                    double tmpTheta = tmpRandom.nextDouble() * ModelDefinitions.TWO_PI;
+                    double tmpPhi = Math.acos(2.0 * aRandomNumberGenerator.nextDouble() - 1.0);
+                    double tmpTheta = aRandomNumberGenerator.nextDouble() * ModelDefinitions.TWO_PI;
                     double tmpFactor = tmpRadius * Math.sin(tmpPhi);
                     tmpDx = tmpFactor * Math.cos(tmpTheta);
                     tmpDy = tmpFactor * Math.sin(tmpTheta);
@@ -2851,8 +2883,8 @@ public class GraphicsUtilityMethods {
             // <editor-fold defaultstate="collapsed" desc="A buffer is an instance of PointInSpace[]">
             for (int i = 0; i < aNumber; i++) {
                 do {
-                    double tmpPhi = Math.acos(2.0 * tmpRandom.nextDouble() - 1.0);
-                    double tmpTheta = tmpRandom.nextDouble() * ModelDefinitions.TWO_PI;
+                    double tmpPhi = Math.acos(2.0 * aRandomNumberGenerator.nextDouble() - 1.0);
+                    double tmpTheta = aRandomNumberGenerator.nextDouble() * ModelDefinitions.TWO_PI;
                     double tmpFactor = tmpRadius * Math.sin(tmpPhi);
                     tmpDx = tmpFactor * Math.cos(tmpTheta);
                     tmpDy = tmpFactor * Math.sin(tmpTheta);
@@ -2879,9 +2911,10 @@ public class GraphicsUtilityMethods {
      * @param aNumber Number of random points (not allowed to be less than 1)
      * @param aCenterPoint Center point of sphere
      * @param aRadius Radius of sphere
+     * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
-    public void fillMiddleRandomPointsOnSphereSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, PointInSpace aCenterPoint, double aRadius) throws IllegalArgumentException {
+    public void fillMiddleRandomPointsOnSphereSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, PointInSpace aCenterPoint, double aRadius, Random aRandomNumberGenerator) throws IllegalArgumentException {
 
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -2904,7 +2937,6 @@ public class GraphicsUtilityMethods {
         }
 
         // </editor-fold>
-        Random tmpRandom = this.miscUtilityMethods.getRandom();
         // Reduce value to avoid points outside the compartment due to round-off errors
         double tmpRadius = aRadius * ModelDefinitions.DECREASE_FACTOR;
         int tmpIndex = aFirstIndex;
@@ -2918,8 +2950,8 @@ public class GraphicsUtilityMethods {
             // <editor-fold defaultstate="collapsed" desc="A buffer is an instance of GraphicalParticlePosition[]">
             for (int i = 0; i < aNumber; i++) {
                 do {
-                    double tmpPhi = Math.acos(2.0 * tmpRandom.nextDouble() - 1.0);
-                    double tmpTheta = tmpRandom.nextDouble() * ModelDefinitions.TWO_PI;
+                    double tmpPhi = Math.acos(2.0 * aRandomNumberGenerator.nextDouble() - 1.0);
+                    double tmpTheta = aRandomNumberGenerator.nextDouble() * ModelDefinitions.TWO_PI;
                     double tmpFactor = tmpRadius * Math.sin(tmpPhi);
                     tmpDx = tmpFactor * Math.cos(tmpTheta);
                     tmpDy = tmpFactor * Math.sin(tmpTheta);
@@ -2937,8 +2969,8 @@ public class GraphicsUtilityMethods {
             // <editor-fold defaultstate="collapsed" desc="A buffer is an instance of PointInSpace[]">
             for (int i = 0; i < aNumber; i++) {
                 do {
-                    double tmpPhi = Math.acos(2.0 * tmpRandom.nextDouble() - 1.0);
-                    double tmpTheta = tmpRandom.nextDouble() * ModelDefinitions.TWO_PI;
+                    double tmpPhi = Math.acos(2.0 * aRandomNumberGenerator.nextDouble() - 1.0);
+                    double tmpTheta = aRandomNumberGenerator.nextDouble() * ModelDefinitions.TWO_PI;
                     double tmpFactor = tmpRadius * Math.sin(tmpPhi);
                     tmpDx = tmpFactor * Math.cos(tmpTheta);
                     tmpDy = tmpFactor * Math.sin(tmpTheta);
@@ -2965,6 +2997,7 @@ public class GraphicsUtilityMethods {
      * @param aXLength X-Length of xy-layer
      * @param aYLength Y-Length of xy-layer
      * @param aZLength Z-Length of xy-layer
+     * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
     public void fillRandomPointsOnXyLayerTopBottomSurface(
@@ -2974,7 +3007,8 @@ public class GraphicsUtilityMethods {
         PointInSpace aCenterPoint, 
         double aXLength, 
         double aYLength, 
-        double aZLength
+        double aZLength,
+        Random aRandomNumberGenerator
     ) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -3013,15 +3047,14 @@ public class GraphicsUtilityMethods {
         double tmpDeltaY = 0;
         double tmpZUpper = aCenterPoint.getZ() + tmpHalfZLength;
         double tmpZLower = aCenterPoint.getZ() - tmpHalfZLength;
-        Random tmpRandom = this.miscUtilityMethods.getRandom();
         int tmpIndex = aFirstIndex;
         // FIRST check if instance of GraphicalParticlePosition[]
         if (aBuffer instanceof GraphicalParticlePosition[]) {
             // <editor-fold defaultstate="collapsed" desc="A buffer is an instance of GraphicalParticlePosition[]">
             for (int i = 0; i < aNumber; i++) {
-                tmpDeltaX = tmpXLength * tmpRandom.nextDouble() - tmpHalfXLength;
-                tmpDeltaY = tmpYLength * tmpRandom.nextDouble() - tmpHalfYLength;
-                if (tmpRandom.nextDouble() > 0.5) {
+                tmpDeltaX = tmpXLength * aRandomNumberGenerator.nextDouble() - tmpHalfXLength;
+                tmpDeltaY = tmpYLength * aRandomNumberGenerator.nextDouble() - tmpHalfYLength;
+                if (aRandomNumberGenerator.nextDouble() > 0.5) {
                     aBuffer[tmpIndex++] = new GraphicalParticlePosition(aCenterPoint.getX() + tmpDeltaX, aCenterPoint.getY() + tmpDeltaY, tmpZUpper);
                 } else {
                     aBuffer[tmpIndex++] = new GraphicalParticlePosition(aCenterPoint.getX() + tmpDeltaX, aCenterPoint.getY() + tmpDeltaY, tmpZLower);
@@ -3031,9 +3064,9 @@ public class GraphicsUtilityMethods {
         } else if (aBuffer instanceof PointInSpace[]) {
             // <editor-fold defaultstate="collapsed" desc="A buffer is an instance of PointInSpace[]">
             for (int i = 0; i < aNumber; i++) {
-                tmpDeltaX = tmpXLength * tmpRandom.nextDouble() - tmpHalfXLength;
-                tmpDeltaY = tmpYLength * tmpRandom.nextDouble() - tmpHalfYLength;
-                if (tmpRandom.nextDouble() > 0.5) {
+                tmpDeltaX = tmpXLength * aRandomNumberGenerator.nextDouble() - tmpHalfXLength;
+                tmpDeltaY = tmpYLength * aRandomNumberGenerator.nextDouble() - tmpHalfYLength;
+                if (aRandomNumberGenerator.nextDouble() > 0.5) {
                     aBuffer[tmpIndex++] = new PointInSpace(aCenterPoint.getX() + tmpDeltaX, aCenterPoint.getY() + tmpDeltaY, tmpZUpper);
                 } else {
                     aBuffer[tmpIndex++] = new PointInSpace(aCenterPoint.getX() + tmpDeltaX, aCenterPoint.getY() + tmpDeltaY, tmpZLower);
@@ -3053,6 +3086,7 @@ public class GraphicsUtilityMethods {
      * @param aXLength X-Length of xy-layer
      * @param aYLength Y-Length of xy-layer
      * @param aZLength Z-Length of xy-layer
+     * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
     public void fillRandomPointsOnXyLayerLeftRightSurface(
@@ -3062,7 +3096,8 @@ public class GraphicsUtilityMethods {
         PointInSpace aCenterPoint, 
         double aXLength, 
         double aYLength, 
-        double aZLength
+        double aZLength,
+        Random aRandomNumberGenerator
     ) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -3101,15 +3136,14 @@ public class GraphicsUtilityMethods {
         double tmpDeltaZ = 0;
         double tmpXUpper = aCenterPoint.getX() + tmpHalfXLength;
         double tmpXLower = aCenterPoint.getX() - tmpHalfXLength;
-        Random tmpRandom = this.miscUtilityMethods.getRandom();
         int tmpIndex = aFirstIndex;
         // FIRST check if instance of GraphicalParticlePosition[]
         if (aBuffer instanceof GraphicalParticlePosition[]) {
             // <editor-fold defaultstate="collapsed" desc="A buffer is an instance of GraphicalParticlePosition[]">
             for (int i = 0; i < aNumber; i++) {
-                tmpDeltaY = tmpYLength * tmpRandom.nextDouble() - tmpHalfYLength;
-                tmpDeltaZ = tmpZLength * tmpRandom.nextDouble() - tmpHalfZLength;
-                if (tmpRandom.nextDouble() > 0.5) {
+                tmpDeltaY = tmpYLength * aRandomNumberGenerator.nextDouble() - tmpHalfYLength;
+                tmpDeltaZ = tmpZLength * aRandomNumberGenerator.nextDouble() - tmpHalfZLength;
+                if (aRandomNumberGenerator.nextDouble() > 0.5) {
                     aBuffer[tmpIndex++] = new GraphicalParticlePosition(tmpXUpper, aCenterPoint.getY() + tmpDeltaY, aCenterPoint.getZ() + tmpDeltaZ);
                 } else {
                     aBuffer[tmpIndex++] = new GraphicalParticlePosition(tmpXLower, aCenterPoint.getY() + tmpDeltaY, aCenterPoint.getZ() + tmpDeltaZ);
@@ -3119,9 +3153,9 @@ public class GraphicsUtilityMethods {
         } else if (aBuffer instanceof PointInSpace[]) {
             // <editor-fold defaultstate="collapsed" desc="A buffer is an instance of PointInSpace[]">
             for (int i = 0; i < aNumber; i++) {
-                tmpDeltaY = tmpYLength * tmpRandom.nextDouble() - tmpHalfYLength;
-                tmpDeltaZ = tmpZLength * tmpRandom.nextDouble() - tmpHalfZLength;
-                if (tmpRandom.nextDouble() > 0.5) {
+                tmpDeltaY = tmpYLength * aRandomNumberGenerator.nextDouble() - tmpHalfYLength;
+                tmpDeltaZ = tmpZLength * aRandomNumberGenerator.nextDouble() - tmpHalfZLength;
+                if (aRandomNumberGenerator.nextDouble() > 0.5) {
                     aBuffer[tmpIndex++] = new PointInSpace(tmpXUpper, aCenterPoint.getY() + tmpDeltaY, aCenterPoint.getZ() + tmpDeltaZ);
                 } else {
                     aBuffer[tmpIndex++] = new PointInSpace(tmpXLower, aCenterPoint.getY() + tmpDeltaY, aCenterPoint.getZ() + tmpDeltaZ);
@@ -3141,6 +3175,7 @@ public class GraphicsUtilityMethods {
      * @param aXLength X-Length of xy-layer
      * @param aYLength Y-Length of xy-layer
      * @param aZLength Z-Length of xy-layer
+     * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
     public void fillRandomPointsOnXyLayerFrontBackSurface(
@@ -3150,7 +3185,8 @@ public class GraphicsUtilityMethods {
         PointInSpace aCenterPoint, 
         double aXLength, 
         double aYLength, 
-        double aZLength
+        double aZLength,
+        Random aRandomNumberGenerator
     ) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -3189,15 +3225,14 @@ public class GraphicsUtilityMethods {
         double tmpDeltaZ = 0;
         double tmpYUpper = aCenterPoint.getY() + tmpHalfYLength;
         double tmpYLower = aCenterPoint.getY() - tmpHalfYLength;
-        Random tmpRandom = this.miscUtilityMethods.getRandom();
         int tmpIndex = aFirstIndex;
         // FIRST check if instance of GraphicalParticlePosition[]
         if (aBuffer instanceof GraphicalParticlePosition[]) {
             // <editor-fold defaultstate="collapsed" desc="A buffer is an instance of GraphicalParticlePosition[]">
             for (int i = 0; i < aNumber; i++) {
-                tmpDeltaX = tmpXLength * tmpRandom.nextDouble() - tmpHalfXLength;
-                tmpDeltaZ = tmpZLength * tmpRandom.nextDouble() - tmpHalfZLength;
-                if (tmpRandom.nextDouble() > 0.5) {
+                tmpDeltaX = tmpXLength * aRandomNumberGenerator.nextDouble() - tmpHalfXLength;
+                tmpDeltaZ = tmpZLength * aRandomNumberGenerator.nextDouble() - tmpHalfZLength;
+                if (aRandomNumberGenerator.nextDouble() > 0.5) {
                     aBuffer[tmpIndex++] = new GraphicalParticlePosition(aCenterPoint.getX() + tmpDeltaX, tmpYUpper, aCenterPoint.getZ() + tmpDeltaZ);
                 } else {
                     aBuffer[tmpIndex++] = new GraphicalParticlePosition(aCenterPoint.getX() + tmpDeltaX, tmpYLower, aCenterPoint.getZ() + tmpDeltaZ);
@@ -3207,9 +3242,9 @@ public class GraphicsUtilityMethods {
         } else if (aBuffer instanceof PointInSpace[]) {
             // <editor-fold defaultstate="collapsed" desc="A buffer is an instance of PointInSpace[]">
             for (int i = 0; i < aNumber; i++) {
-                tmpDeltaX = tmpXLength * tmpRandom.nextDouble() - tmpHalfXLength;
-                tmpDeltaZ = tmpZLength * tmpRandom.nextDouble() - tmpHalfZLength;
-                if (tmpRandom.nextDouble() > 0.5) {
+                tmpDeltaX = tmpXLength * aRandomNumberGenerator.nextDouble() - tmpHalfXLength;
+                tmpDeltaZ = tmpZLength * aRandomNumberGenerator.nextDouble() - tmpHalfZLength;
+                if (aRandomNumberGenerator.nextDouble() > 0.5) {
                     aBuffer[tmpIndex++] = new PointInSpace(aCenterPoint.getX() + tmpDeltaX, tmpYUpper, aCenterPoint.getZ() + tmpDeltaZ);
                 } else {
                     aBuffer[tmpIndex++] = new PointInSpace(aCenterPoint.getX() + tmpDeltaX, tmpYLower, aCenterPoint.getZ() + tmpDeltaZ);
@@ -3230,10 +3265,11 @@ public class GraphicsUtilityMethods {
      * @param aYLength Y-Length of xy-layer
      * @param aZLength Z-Length of xy-layer
      * @param aSingleSurface Single surface of xy-layer
+     * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
     public void fillRandomPointsOnSingleXyLayerSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, PointInSpace aCenterPoint, double aXLength, double aYLength,
-            double aZLength, BodyXyLayerSingleSurfaceEnum aSingleSurface)
+            double aZLength, BodyXyLayerSingleSurfaceEnum aSingleSurface, Random aRandomNumberGenerator)
             throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -3276,7 +3312,6 @@ public class GraphicsUtilityMethods {
         double tmpX = 0.0;
         double tmpY = 0.0;
         double tmpZ = 0.0;
-        Random tmpRandom = this.miscUtilityMethods.getRandom();
         int tmpIndex = aFirstIndex;
         // </editor-fold>
         switch (aSingleSurface) {
@@ -3287,8 +3322,8 @@ public class GraphicsUtilityMethods {
                 if (aBuffer instanceof GraphicalParticlePosition[]) {
                     // <editor-fold defaultstate="collapsed" desc="A buffer is an instance of GraphicalParticlePosition[]">
                     for (int i = 0; i < aNumber; i++) {
-                        tmpDeltaX = tmpXLength * tmpRandom.nextDouble() - tmpHalfXLength;
-                        tmpDeltaY = tmpYLength * tmpRandom.nextDouble() - tmpHalfYLength;
+                        tmpDeltaX = tmpXLength * aRandomNumberGenerator.nextDouble() - tmpHalfXLength;
+                        tmpDeltaY = tmpYLength * aRandomNumberGenerator.nextDouble() - tmpHalfYLength;
                         aBuffer[tmpIndex++] = new GraphicalParticlePosition(aCenterPoint.getX() + tmpDeltaX, aCenterPoint.getY() + tmpDeltaY, tmpZ);
                     }
 
@@ -3296,8 +3331,8 @@ public class GraphicsUtilityMethods {
                 } else if (aBuffer instanceof PointInSpace[]) {
                     // <editor-fold defaultstate="collapsed" desc="A buffer is an instance of PointInSpace[]">
                     for (int i = 0; i < aNumber; i++) {
-                        tmpDeltaX = tmpXLength * tmpRandom.nextDouble() - tmpHalfXLength;
-                        tmpDeltaY = tmpYLength * tmpRandom.nextDouble() - tmpHalfYLength;
+                        tmpDeltaX = tmpXLength * aRandomNumberGenerator.nextDouble() - tmpHalfXLength;
+                        tmpDeltaY = tmpYLength * aRandomNumberGenerator.nextDouble() - tmpHalfYLength;
                         aBuffer[tmpIndex++] = new PointInSpace(aCenterPoint.getX() + tmpDeltaX, aCenterPoint.getY() + tmpDeltaY, tmpZ);
                     }
                     // </editor-fold>
@@ -3311,8 +3346,8 @@ public class GraphicsUtilityMethods {
                 if (aBuffer instanceof GraphicalParticlePosition[]) {
                     // <editor-fold defaultstate="collapsed" desc="A buffer is an instance of GraphicalParticlePosition[]">
                     for (int i = 0; i < aNumber; i++) {
-                        tmpDeltaX = tmpXLength * tmpRandom.nextDouble() - tmpHalfXLength;
-                        tmpDeltaY = tmpYLength * tmpRandom.nextDouble() - tmpHalfYLength;
+                        tmpDeltaX = tmpXLength * aRandomNumberGenerator.nextDouble() - tmpHalfXLength;
+                        tmpDeltaY = tmpYLength * aRandomNumberGenerator.nextDouble() - tmpHalfYLength;
                         aBuffer[tmpIndex++] = new GraphicalParticlePosition(aCenterPoint.getX() + tmpDeltaX, aCenterPoint.getY() + tmpDeltaY, tmpZ);
                     }
 
@@ -3320,8 +3355,8 @@ public class GraphicsUtilityMethods {
                 } else if (aBuffer instanceof PointInSpace[]) {
                     // <editor-fold defaultstate="collapsed" desc="A buffer is an instance of PointInSpace[]">
                     for (int i = 0; i < aNumber; i++) {
-                        tmpDeltaX = tmpXLength * tmpRandom.nextDouble() - tmpHalfXLength;
-                        tmpDeltaY = tmpYLength * tmpRandom.nextDouble() - tmpHalfYLength;
+                        tmpDeltaX = tmpXLength * aRandomNumberGenerator.nextDouble() - tmpHalfXLength;
+                        tmpDeltaY = tmpYLength * aRandomNumberGenerator.nextDouble() - tmpHalfYLength;
                         aBuffer[tmpIndex++] = new PointInSpace(aCenterPoint.getX() + tmpDeltaX, aCenterPoint.getY() + tmpDeltaY, tmpZ);
                     }
 
@@ -3336,8 +3371,8 @@ public class GraphicsUtilityMethods {
                 if (aBuffer instanceof GraphicalParticlePosition[]) {
                     // <editor-fold defaultstate="collapsed" desc="A buffer is an instance of GraphicalParticlePosition[]">
                     for (int i = 0; i < aNumber; i++) {
-                        tmpDeltaY = tmpYLength * tmpRandom.nextDouble() - tmpHalfYLength;
-                        tmpDeltaZ = tmpZLength * tmpRandom.nextDouble() - tmpHalfZLength;
+                        tmpDeltaY = tmpYLength * aRandomNumberGenerator.nextDouble() - tmpHalfYLength;
+                        tmpDeltaZ = tmpZLength * aRandomNumberGenerator.nextDouble() - tmpHalfZLength;
                         aBuffer[tmpIndex++] = new GraphicalParticlePosition(tmpX, aCenterPoint.getY() + tmpDeltaY, aCenterPoint.getZ() + tmpDeltaZ);
                     }
 
@@ -3345,8 +3380,8 @@ public class GraphicsUtilityMethods {
                 } else if (aBuffer instanceof PointInSpace[]) {
                     // <editor-fold defaultstate="collapsed" desc="A buffer is an instance of PointInSpace[]">
                     for (int i = 0; i < aNumber; i++) {
-                        tmpDeltaY = tmpYLength * tmpRandom.nextDouble() - tmpHalfYLength;
-                        tmpDeltaZ = tmpZLength * tmpRandom.nextDouble() - tmpHalfZLength;
+                        tmpDeltaY = tmpYLength * aRandomNumberGenerator.nextDouble() - tmpHalfYLength;
+                        tmpDeltaZ = tmpZLength * aRandomNumberGenerator.nextDouble() - tmpHalfZLength;
                         aBuffer[tmpIndex++] = new PointInSpace(tmpX, aCenterPoint.getY() + tmpDeltaY, aCenterPoint.getZ() + tmpDeltaZ);
                     }
 
@@ -3361,8 +3396,8 @@ public class GraphicsUtilityMethods {
                 if (aBuffer instanceof GraphicalParticlePosition[]) {
                     // <editor-fold defaultstate="collapsed" desc="A buffer is an instance of GraphicalParticlePosition[]">
                     for (int i = 0; i < aNumber; i++) {
-                        tmpDeltaY = tmpYLength * tmpRandom.nextDouble() - tmpHalfYLength;
-                        tmpDeltaZ = tmpZLength * tmpRandom.nextDouble() - tmpHalfZLength;
+                        tmpDeltaY = tmpYLength * aRandomNumberGenerator.nextDouble() - tmpHalfYLength;
+                        tmpDeltaZ = tmpZLength * aRandomNumberGenerator.nextDouble() - tmpHalfZLength;
                         aBuffer[tmpIndex++] = new GraphicalParticlePosition(tmpX, aCenterPoint.getY() + tmpDeltaY, aCenterPoint.getZ() + tmpDeltaZ);
                     }
 
@@ -3370,8 +3405,8 @@ public class GraphicsUtilityMethods {
                 } else if (aBuffer instanceof PointInSpace[]) {
                     // <editor-fold defaultstate="collapsed" desc="A buffer is an instance of PointInSpace[]">
                     for (int i = 0; i < aNumber; i++) {
-                        tmpDeltaY = tmpYLength * tmpRandom.nextDouble() - tmpHalfYLength;
-                        tmpDeltaZ = tmpZLength * tmpRandom.nextDouble() - tmpHalfZLength;
+                        tmpDeltaY = tmpYLength * aRandomNumberGenerator.nextDouble() - tmpHalfYLength;
+                        tmpDeltaZ = tmpZLength * aRandomNumberGenerator.nextDouble() - tmpHalfZLength;
                         aBuffer[tmpIndex++] = new PointInSpace(tmpX, aCenterPoint.getY() + tmpDeltaY, aCenterPoint.getZ() + tmpDeltaZ);
                     }
 
@@ -3386,8 +3421,8 @@ public class GraphicsUtilityMethods {
                 if (aBuffer instanceof GraphicalParticlePosition[]) {
                     // <editor-fold defaultstate="collapsed" desc="A buffer is an instance of GraphicalParticlePosition[]">
                     for (int i = 0; i < aNumber; i++) {
-                        tmpDeltaX = tmpXLength * tmpRandom.nextDouble() - tmpHalfXLength;
-                        tmpDeltaZ = tmpZLength * tmpRandom.nextDouble() - tmpHalfZLength;
+                        tmpDeltaX = tmpXLength * aRandomNumberGenerator.nextDouble() - tmpHalfXLength;
+                        tmpDeltaZ = tmpZLength * aRandomNumberGenerator.nextDouble() - tmpHalfZLength;
                         aBuffer[tmpIndex++] = new GraphicalParticlePosition(aCenterPoint.getX() + tmpDeltaX, tmpY, aCenterPoint.getZ() + tmpDeltaZ);
                     }
 
@@ -3395,8 +3430,8 @@ public class GraphicsUtilityMethods {
                 } else if (aBuffer instanceof PointInSpace[]) {
                     // <editor-fold defaultstate="collapsed" desc="A buffer is an instance of PointInSpace[]">
                     for (int i = 0; i < aNumber; i++) {
-                        tmpDeltaX = tmpXLength * tmpRandom.nextDouble() - tmpHalfXLength;
-                        tmpDeltaZ = tmpZLength * tmpRandom.nextDouble() - tmpHalfZLength;
+                        tmpDeltaX = tmpXLength * aRandomNumberGenerator.nextDouble() - tmpHalfXLength;
+                        tmpDeltaZ = tmpZLength * aRandomNumberGenerator.nextDouble() - tmpHalfZLength;
                         aBuffer[tmpIndex++] = new PointInSpace(aCenterPoint.getX() + tmpDeltaX, tmpY, aCenterPoint.getZ() + tmpDeltaZ);
                     }
 
@@ -3411,8 +3446,8 @@ public class GraphicsUtilityMethods {
                 if (aBuffer instanceof GraphicalParticlePosition[]) {
                     // <editor-fold defaultstate="collapsed" desc="A buffer is an instance of GraphicalParticlePosition[]">
                     for (int i = 0; i < aNumber; i++) {
-                        tmpDeltaX = tmpXLength * tmpRandom.nextDouble() - tmpHalfXLength;
-                        tmpDeltaZ = tmpZLength * tmpRandom.nextDouble() - tmpHalfZLength;
+                        tmpDeltaX = tmpXLength * aRandomNumberGenerator.nextDouble() - tmpHalfXLength;
+                        tmpDeltaZ = tmpZLength * aRandomNumberGenerator.nextDouble() - tmpHalfZLength;
                         aBuffer[tmpIndex++] = new GraphicalParticlePosition(aCenterPoint.getX() + tmpDeltaX, tmpY, aCenterPoint.getZ() + tmpDeltaZ);
                     }
 
@@ -3420,8 +3455,8 @@ public class GraphicsUtilityMethods {
                 } else if (aBuffer instanceof PointInSpace[]) {
                     // <editor-fold defaultstate="collapsed" desc="A buffer is an instance of PointInSpace[]">
                     for (int i = 0; i < aNumber; i++) {
-                        tmpDeltaX = tmpXLength * tmpRandom.nextDouble() - tmpHalfXLength;
-                        tmpDeltaZ = tmpZLength * tmpRandom.nextDouble() - tmpHalfZLength;
+                        tmpDeltaX = tmpXLength * aRandomNumberGenerator.nextDouble() - tmpHalfXLength;
+                        tmpDeltaZ = tmpZLength * aRandomNumberGenerator.nextDouble() - tmpHalfZLength;
                         aBuffer[tmpIndex++] = new PointInSpace(aCenterPoint.getX() + tmpDeltaX, tmpY, aCenterPoint.getZ() + tmpDeltaZ);
                     }
 
@@ -3442,10 +3477,11 @@ public class GraphicsUtilityMethods {
      * @param aXLength X-Length of xy-layer
      * @param aYLength Y-Length of xy-layer
      * @param aZLength Z-Length of xy-layer
+     * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
     public void fillRandomPointsOnAllXyLayerSurfaces(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, PointInSpace aCenterPoint, double aXLength, double aYLength,
-            double aZLength)
+            double aZLength, Random aRandomNumberGenerator)
             throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -3504,35 +3540,33 @@ public class GraphicsUtilityMethods {
         double tmpZLower = aCenterPoint.getZ() - tmpHalfZLength;
         double tmpZUpper = aCenterPoint.getZ() + tmpHalfZLength;
 
-        Random tmpRandom = this.miscUtilityMethods.getRandom();
-
         int tmpIndex = aFirstIndex;
 
         // FIRST check if instance of GraphicalParticlePosition[]
         if (aBuffer instanceof GraphicalParticlePosition[]) {
             // <editor-fold defaultstate="collapsed" desc="A buffer is an instance of GraphicalParticlePosition[]">
             for (int i = 0; i < tmpXYNumber; i++) {
-                tmpDeltaX = tmpXLength * tmpRandom.nextDouble() - tmpHalfXLength;
-                tmpDeltaY = tmpYLength * tmpRandom.nextDouble() - tmpHalfYLength;
-                if (tmpRandom.nextDouble() > 0.5) {
+                tmpDeltaX = tmpXLength * aRandomNumberGenerator.nextDouble() - tmpHalfXLength;
+                tmpDeltaY = tmpYLength * aRandomNumberGenerator.nextDouble() - tmpHalfYLength;
+                if (aRandomNumberGenerator.nextDouble() > 0.5) {
                     aBuffer[tmpIndex++] = new GraphicalParticlePosition(aCenterPoint.getX() + tmpDeltaX, aCenterPoint.getY() + tmpDeltaY, tmpZUpper);
                 } else {
                     aBuffer[tmpIndex++] = new GraphicalParticlePosition(aCenterPoint.getX() + tmpDeltaX, aCenterPoint.getY() + tmpDeltaY, tmpZLower);
                 }
             }
             for (int i = 0; i < tmpXZNumber; i++) {
-                tmpDeltaX = tmpXLength * tmpRandom.nextDouble() - tmpHalfXLength;
-                tmpDeltaZ = tmpZLength * tmpRandom.nextDouble() - tmpHalfZLength;
-                if (tmpRandom.nextDouble() > 0.5) {
+                tmpDeltaX = tmpXLength * aRandomNumberGenerator.nextDouble() - tmpHalfXLength;
+                tmpDeltaZ = tmpZLength * aRandomNumberGenerator.nextDouble() - tmpHalfZLength;
+                if (aRandomNumberGenerator.nextDouble() > 0.5) {
                     aBuffer[tmpIndex++] = new GraphicalParticlePosition(aCenterPoint.getX() + tmpDeltaX, tmpYFront, aCenterPoint.getZ() + tmpDeltaZ);
                 } else {
                     aBuffer[tmpIndex++] = new GraphicalParticlePosition(aCenterPoint.getX() + tmpDeltaX, tmpYBack, aCenterPoint.getZ() + tmpDeltaZ);
                 }
             }
             for (int i = 0; i < tmpYZNumber; i++) {
-                tmpDeltaY = tmpYLength * tmpRandom.nextDouble() - tmpHalfYLength;
-                tmpDeltaZ = tmpZLength * tmpRandom.nextDouble() - tmpHalfZLength;
-                if (tmpRandom.nextDouble() > 0.5) {
+                tmpDeltaY = tmpYLength * aRandomNumberGenerator.nextDouble() - tmpHalfYLength;
+                tmpDeltaZ = tmpZLength * aRandomNumberGenerator.nextDouble() - tmpHalfZLength;
+                if (aRandomNumberGenerator.nextDouble() > 0.5) {
                     aBuffer[tmpIndex++] = new GraphicalParticlePosition(tmpXLeft, aCenterPoint.getY() + tmpDeltaY, aCenterPoint.getZ() + tmpDeltaZ);
                 } else {
                     aBuffer[tmpIndex++] = new GraphicalParticlePosition(tmpXRight, aCenterPoint.getY() + tmpDeltaY, aCenterPoint.getZ() + tmpDeltaZ);
@@ -3543,27 +3577,27 @@ public class GraphicsUtilityMethods {
         } else if (aBuffer instanceof PointInSpace[]) {
             // <editor-fold defaultstate="collapsed" desc="A buffer is an instance of PointInSpace[]">
             for (int i = 0; i < tmpXYNumber; i++) {
-                tmpDeltaX = tmpXLength * tmpRandom.nextDouble() - tmpHalfXLength;
-                tmpDeltaY = tmpYLength * tmpRandom.nextDouble() - tmpHalfYLength;
-                if (tmpRandom.nextDouble() > 0.5) {
+                tmpDeltaX = tmpXLength * aRandomNumberGenerator.nextDouble() - tmpHalfXLength;
+                tmpDeltaY = tmpYLength * aRandomNumberGenerator.nextDouble() - tmpHalfYLength;
+                if (aRandomNumberGenerator.nextDouble() > 0.5) {
                     aBuffer[tmpIndex++] = new PointInSpace(aCenterPoint.getX() + tmpDeltaX, aCenterPoint.getY() + tmpDeltaY, tmpZUpper);
                 } else {
                     aBuffer[tmpIndex++] = new PointInSpace(aCenterPoint.getX() + tmpDeltaX, aCenterPoint.getY() + tmpDeltaY, tmpZLower);
                 }
             }
             for (int i = 0; i < tmpXZNumber; i++) {
-                tmpDeltaX = tmpXLength * tmpRandom.nextDouble() - tmpHalfXLength;
-                tmpDeltaZ = tmpZLength * tmpRandom.nextDouble() - tmpHalfZLength;
-                if (tmpRandom.nextDouble() > 0.5) {
+                tmpDeltaX = tmpXLength * aRandomNumberGenerator.nextDouble() - tmpHalfXLength;
+                tmpDeltaZ = tmpZLength * aRandomNumberGenerator.nextDouble() - tmpHalfZLength;
+                if (aRandomNumberGenerator.nextDouble() > 0.5) {
                     aBuffer[tmpIndex++] = new PointInSpace(aCenterPoint.getX() + tmpDeltaX, tmpYFront, aCenterPoint.getZ() + tmpDeltaZ);
                 } else {
                     aBuffer[tmpIndex++] = new PointInSpace(aCenterPoint.getX() + tmpDeltaX, tmpYBack, aCenterPoint.getZ() + tmpDeltaZ);
                 }
             }
             for (int i = 0; i < tmpYZNumber; i++) {
-                tmpDeltaY = tmpYLength * tmpRandom.nextDouble() - tmpHalfYLength;
-                tmpDeltaZ = tmpZLength * tmpRandom.nextDouble() - tmpHalfZLength;
-                if (tmpRandom.nextDouble() > 0.5) {
+                tmpDeltaY = tmpYLength * aRandomNumberGenerator.nextDouble() - tmpHalfYLength;
+                tmpDeltaZ = tmpZLength * aRandomNumberGenerator.nextDouble() - tmpHalfZLength;
+                if (aRandomNumberGenerator.nextDouble() > 0.5) {
                     aBuffer[tmpIndex++] = new PointInSpace(tmpXLeft, aCenterPoint.getY() + tmpDeltaY, aCenterPoint.getZ() + tmpDeltaZ);
                 } else {
                     aBuffer[tmpIndex++] = new PointInSpace(tmpXRight, aCenterPoint.getY() + tmpDeltaY, aCenterPoint.getZ() + tmpDeltaZ);
@@ -3592,6 +3626,7 @@ public class GraphicsUtilityMethods {
      * @param aNumberOfSpheres Number of spheres
      * @param aRadius Radius of spheres
      * @param aNumberOfTrials Number of trials for sphere generation
+     * @param aRandomNumberGenerator Random number generator
      * @return List of non-overlapping spheres or null if none could be created
      */
     public LinkedList<BodySphere> getNonOverlappingRandomSpheresInXyLayer(
@@ -3602,7 +3637,8 @@ public class GraphicsUtilityMethods {
         double aXyLayerZLength,
         int aNumberOfSpheres, 
         double aRadius, 
-        int aNumberOfTrials
+        int aNumberOfTrials,
+        Random aRandomNumberGenerator
     ) {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aXyLayerCenterPoint == null) {
@@ -3636,8 +3672,6 @@ public class GraphicsUtilityMethods {
             tmpRadius /= 2.0;
         }
 
-        Random tmpRandom = this.miscUtilityMethods.getRandom();
-
         double tmpCorrectedXyLayerXLength = aXyLayerXLength - tmpRadius - tmpRadius;
         double tmpCorrectedXyLayerYLength = aXyLayerYLength - tmpRadius - tmpRadius;
         double tmpCorrectedXyLayerZLength = aXyLayerZLength - tmpRadius - tmpRadius;
@@ -3651,9 +3685,9 @@ public class GraphicsUtilityMethods {
         int tmpTrialCounter = 0;
         int tmpSphereCounter = 0;
         while (tmpSphereCounter < aNumberOfSpheres && tmpTrialCounter < aNumberOfTrials) {
-            tmpTestPoint.setX(aXyLayerCenterPoint.getX() + tmpCorrectedXyLayerXLength * tmpRandom.nextDouble() - tmpOffsetX);
-            tmpTestPoint.setY(aXyLayerCenterPoint.getY() + tmpCorrectedXyLayerYLength * tmpRandom.nextDouble() - tmpOffsetY);
-            tmpTestPoint.setZ(aXyLayerCenterPoint.getZ() + tmpCorrectedXyLayerZLength * tmpRandom.nextDouble() - tmpOffsetZ);
+            tmpTestPoint.setX(aXyLayerCenterPoint.getX() + tmpCorrectedXyLayerXLength * aRandomNumberGenerator.nextDouble() - tmpOffsetX);
+            tmpTestPoint.setY(aXyLayerCenterPoint.getY() + tmpCorrectedXyLayerYLength * aRandomNumberGenerator.nextDouble() - tmpOffsetY);
+            tmpTestPoint.setZ(aXyLayerCenterPoint.getZ() + tmpCorrectedXyLayerZLength * aRandomNumberGenerator.nextDouble() - tmpOffsetZ);
             tmpTestSphere.setBodyCenterWithoutInitialisation(tmpTestPoint);
             boolean tmpIsOverlap = false;
             for (BodySphere tmpSingleSphere : tmpSphereList) {
@@ -3683,9 +3717,9 @@ public class GraphicsUtilityMethods {
         if (numberOfRemainingSpheres > 0) {
             // Create possibly overlapping spheres
             for (int i = 0; i < numberOfRemainingSpheres; i++) {
-                tmpTestPoint.setX(aXyLayerCenterPoint.getX() + tmpCorrectedXyLayerXLength * tmpRandom.nextDouble() - tmpOffsetX);
-                tmpTestPoint.setY(aXyLayerCenterPoint.getY() + tmpCorrectedXyLayerYLength * tmpRandom.nextDouble() - tmpOffsetY);
-                tmpTestPoint.setZ(aXyLayerCenterPoint.getZ() + tmpCorrectedXyLayerZLength * tmpRandom.nextDouble() - tmpOffsetZ);
+                tmpTestPoint.setX(aXyLayerCenterPoint.getX() + tmpCorrectedXyLayerXLength * aRandomNumberGenerator.nextDouble() - tmpOffsetX);
+                tmpTestPoint.setY(aXyLayerCenterPoint.getY() + tmpCorrectedXyLayerYLength * aRandomNumberGenerator.nextDouble() - tmpOffsetY);
+                tmpTestPoint.setZ(aXyLayerCenterPoint.getZ() + tmpCorrectedXyLayerZLength * aRandomNumberGenerator.nextDouble() - tmpOffsetZ);
                 tmpSphereList.add(new BodySphere(tmpRadius, tmpTestPoint.getClone()));
             }
         }
@@ -3709,6 +3743,7 @@ public class GraphicsUtilityMethods {
      * @param aNumberOfSpheres Number of spheres
      * @param aRadius Radius of spheres
      * @param aNumberOfTrials Number of trials for sphere generation
+     * @param aRandomNumberGenerator Random number generator
      * @return List of non-overlapping spheres or null if none could be created
      */
     public LinkedList<BodySphere> getNonOverlappingRandomSpheresInSphere(
@@ -3717,7 +3752,8 @@ public class GraphicsUtilityMethods {
         double aSphereRadius, 
         int aNumberOfSpheres, 
         double aRadius, 
-        int aNumberOfTrials
+        int aNumberOfTrials,
+        Random aRandomNumberGenerator
     ) {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aSphereCenterPoint == null) {
@@ -3744,8 +3780,6 @@ public class GraphicsUtilityMethods {
             tmpRadius = aSphereRadius;
         }
 
-        Random tmpRandom = this.miscUtilityMethods.getRandom();
-
         PointInSpace tmpTestPoint = new PointInSpace(aSphereCenterPoint.getX(), aSphereCenterPoint.getY(), aSphereCenterPoint.getZ());
         BodySphere tmpTestSphere = new BodySphere(tmpRadius, aSphereCenterPoint);
 
@@ -3763,9 +3797,9 @@ public class GraphicsUtilityMethods {
         int tmpSphereCounter = 0;
         while (tmpSphereCounter < aNumberOfSpheres && tmpTrialCounter < aNumberOfTrials) {
             do {
-                tmpX = tmpCubeLength * tmpRandom.nextDouble();
-                tmpY = tmpCubeLength * tmpRandom.nextDouble();
-                tmpZ = tmpCubeLength * tmpRandom.nextDouble();
+                tmpX = tmpCubeLength * aRandomNumberGenerator.nextDouble();
+                tmpY = tmpCubeLength * aRandomNumberGenerator.nextDouble();
+                tmpZ = tmpCubeLength * aRandomNumberGenerator.nextDouble();
                 tmpDeltaX = tmpX - tmpCorrectedSphereRadius;
                 tmpDeltaY = tmpY - tmpCorrectedSphereRadius;
                 tmpDeltaZ = tmpZ - tmpCorrectedSphereRadius;
@@ -3803,9 +3837,9 @@ public class GraphicsUtilityMethods {
             // Create possibly overlapping spheres
             for (int i = 0; i < numberOfRemainingSpheres; i++) {
                 do {
-                    tmpX = tmpCubeLength * tmpRandom.nextDouble();
-                    tmpY = tmpCubeLength * tmpRandom.nextDouble();
-                    tmpZ = tmpCubeLength * tmpRandom.nextDouble();
+                    tmpX = tmpCubeLength * aRandomNumberGenerator.nextDouble();
+                    tmpY = tmpCubeLength * aRandomNumberGenerator.nextDouble();
+                    tmpZ = tmpCubeLength * aRandomNumberGenerator.nextDouble();
                     tmpDeltaX = tmpX - tmpCorrectedSphereRadius;
                     tmpDeltaY = tmpY - tmpCorrectedSphereRadius;
                     tmpDeltaZ = tmpZ - tmpCorrectedSphereRadius;
@@ -3840,6 +3874,7 @@ public class GraphicsUtilityMethods {
      * @param aNumberOfSpheres Number of spheres
      * @param aRadius Radius of spheres
      * @param aNumberOfTrials Number of trials for sphere generation
+     * @param aRandomNumberGenerator Random number generator
      * @return List of non-overlapping spheres or null if none could be created
      */
     public LinkedList<BodySphere> getNonOverlappingRandomSpheresIntoCompartmentBox(
@@ -3851,7 +3886,8 @@ public class GraphicsUtilityMethods {
         double aCompartmentBoxZLength,
         int aNumberOfSpheres, 
         double aRadius, 
-        int aNumberOfTrials
+        int aNumberOfTrials,
+        Random aRandomNumberGenerator
     ) {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aCompartmentBoxCenterPoint == null) {
@@ -3886,8 +3922,6 @@ public class GraphicsUtilityMethods {
             tmpRadius /= 2.0;
         }
 
-        Random tmpRandom = this.miscUtilityMethods.getRandom();
-
         double tmpCorrectedCompartmentBoxXLength = aCompartmentBoxXLength - tmpRadius - tmpRadius;
         double tmpCorrectedCompartmentBoxYLength = aCompartmentBoxYLength - tmpRadius - tmpRadius;
         double tmpCorrectedCompartmentBoxZLength = aCompartmentBoxZLength - tmpRadius - tmpRadius;
@@ -3902,9 +3936,9 @@ public class GraphicsUtilityMethods {
         int tmpTrialCounter = 0;
         int tmpSphereCounter = 0;
         while (tmpSphereCounter < aNumberOfSpheres && tmpTrialCounter < aNumberOfTrials) {
-            tmpTestPoint.setX(aCompartmentBoxCenterPoint.getX() + tmpCorrectedCompartmentBoxXLength * tmpRandom.nextDouble() - tmpOffsetX);
-            tmpTestPoint.setY(aCompartmentBoxCenterPoint.getY() + tmpCorrectedCompartmentBoxYLength * tmpRandom.nextDouble() - tmpOffsetY);
-            tmpTestPoint.setZ(aCompartmentBoxCenterPoint.getZ() + tmpCorrectedCompartmentBoxZLength * tmpRandom.nextDouble() - tmpOffsetZ);
+            tmpTestPoint.setX(aCompartmentBoxCenterPoint.getX() + tmpCorrectedCompartmentBoxXLength * aRandomNumberGenerator.nextDouble() - tmpOffsetX);
+            tmpTestPoint.setY(aCompartmentBoxCenterPoint.getY() + tmpCorrectedCompartmentBoxYLength * aRandomNumberGenerator.nextDouble() - tmpOffsetY);
+            tmpTestPoint.setZ(aCompartmentBoxCenterPoint.getZ() + tmpCorrectedCompartmentBoxZLength * aRandomNumberGenerator.nextDouble() - tmpOffsetZ);
             tmpTestSphere.setBodyCenterWithoutInitialisation(tmpTestPoint);
             boolean tmpIsOverlap = false;
             for (BodySphere tmpSingleSphere : tmpSphereList) {
@@ -3950,9 +3984,9 @@ public class GraphicsUtilityMethods {
             if (tmpUsedPoints == null) {
                 // Re-use of spheres is impossible (pathological case): Place sphere SOMEWHERE
                 for (int i = 0; i < numberOfRemainingSpheres; i++) {
-                    tmpTestPoint.setX(aCompartmentBoxCenterPoint.getX() + tmpCorrectedCompartmentBoxXLength * tmpRandom.nextDouble() - tmpOffsetX);
-                    tmpTestPoint.setY(aCompartmentBoxCenterPoint.getY() + tmpCorrectedCompartmentBoxYLength * tmpRandom.nextDouble() - tmpOffsetY);
-                    tmpTestPoint.setZ(aCompartmentBoxCenterPoint.getZ() + tmpCorrectedCompartmentBoxZLength * tmpRandom.nextDouble() - tmpOffsetZ);
+                    tmpTestPoint.setX(aCompartmentBoxCenterPoint.getX() + tmpCorrectedCompartmentBoxXLength * aRandomNumberGenerator.nextDouble() - tmpOffsetX);
+                    tmpTestPoint.setY(aCompartmentBoxCenterPoint.getY() + tmpCorrectedCompartmentBoxYLength * aRandomNumberGenerator.nextDouble() - tmpOffsetY);
+                    tmpTestPoint.setZ(aCompartmentBoxCenterPoint.getZ() + tmpCorrectedCompartmentBoxZLength * aRandomNumberGenerator.nextDouble() - tmpOffsetZ);
                     tmpSphereList.add(new BodySphere(tmpRadius, tmpTestPoint.getClone()));
                 }
             } else {

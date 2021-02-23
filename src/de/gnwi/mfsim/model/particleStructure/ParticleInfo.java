@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -106,7 +106,6 @@ public class ParticleInfo implements Comparable<ParticleInfo> {
 	// </editor-fold>
 	//
 	// <editor-fold defaultstate="collapsed" desc="Public properties">
-
 	// <editor-fold defaultstate="collapsed" desc="- Particle (get)">
 
 	/**
@@ -119,7 +118,6 @@ public class ParticleInfo implements Comparable<ParticleInfo> {
 	}
 
 	// </editor-fold>
-
 	// <editor-fold defaultstate="collapsed" desc="- Volume (get)">
 
 	/**
@@ -132,7 +130,6 @@ public class ParticleInfo implements Comparable<ParticleInfo> {
 	}
 
 	// </editor-fold>
-
 	// <editor-fold defaultstate="collapsed" desc="- MolarWeight (get)">
 
 	/**
@@ -145,9 +142,7 @@ public class ParticleInfo implements Comparable<ParticleInfo> {
 	}
 
 	// </editor-fold>
-
 	// <editor-fold defaultstate="collapsed" desc="- ScalingFactor (get/set)">
-
 	/**
 	 * Scaling factor
 	 * 
@@ -156,7 +151,6 @@ public class ParticleInfo implements Comparable<ParticleInfo> {
 	public double getScalingFactor() {
 		return this.scalingFactor;
 	}
-
 	/**
 	 * Scaling factor
 	 * 
@@ -166,9 +160,7 @@ public class ParticleInfo implements Comparable<ParticleInfo> {
 	public void setScalingFactor(double aScalingFactor) {
 		this.scalingFactor = aScalingFactor;
 	}
-
 	// </editor-fold>
-
 	// </editor-fold>
 
 }

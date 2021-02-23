@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -42,6 +42,7 @@ import de.gnwi.mfsim.model.util.ProgressTaskInterface;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import de.gnwi.mfsim.model.preference.ModelDefinitions;
+import java.util.Random;
 
 /**
  * Task for graphical particle position calculation
@@ -236,13 +237,14 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
             // Miscellaneous utility methods
             MiscUtilityMethods tmpMiscUtilityMethods = new MiscUtilityMethods();
             // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="Set random number generator and seed">
+            long tmpRandomSeed = this.compartmentContainer.getGeometryRandomSeed();
+            Random tmpRandomNumberGenerator = this.miscUtilityMethods.getRandomNumberGenerator(tmpRandomSeed);
+            // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="Set minimum number of trials for compartment">
             // Compartment trials may lead to very long start geometry 
             // calculations which are NOT necessary for simple viewing tasks
             Preferences.getInstance().setNumberOfTrialsForCompartment(ModelDefinitions.MINIMUM_NUMBER_OF_TRIALS_FOR_COMPARTMENT);
-            // </editor-fold>
-            // <editor-fold defaultstate="collapsed" desc="Set deterministic random seed to default value">
-            Preferences.getInstance().setDefaultDeterministicRandomSeed();
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="Set bond length">
             // Bond length = 2 * radius of single particle in DPD units
@@ -295,9 +297,6 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                                     return returnCancelled();
                                 }
                                 // </editor-fold>
-                                // <editor-fold defaultstate="collapsed" desc="Increment deterministic random seed value">
-                                Preferences.getInstance().incrementDeterministicRandomSeed();
-                                // </editor-fold>
                                 // <editor-fold defaultstate="collapsed" desc="Set molecule information">
                                 // Molecule name
                                 String tmpMoleculeName = tmpChemicalCompositionValueItem.getValue(i, 0);
@@ -328,9 +327,8 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                                         boolean tmpIsProteinRandom3DOrientation = false;
                                         if (this.graphicsUtilityMethods.isRandom3dStructureGeometryInSphere(tmpChemicalCompositionValueItem, i)) {
                                             tmpIsProteinRandom3DOrientation = true;
-                                            if (Preferences.getInstance().isDeterministicRandom()) {
-                                                tmpPdbToDpd.setSeed(Preferences.getInstance().getDeterministicRandomSeed());
-                                            }
+                                            tmpPdbToDpd.setSeed(tmpRandomSeed);
+                                            tmpPdbToDpd.setRandomNumberGenerator(tmpRandomNumberGenerator);
                                         } else {
                                             tmpPdbToDpd.setDefaultRotation();
                                         }
@@ -417,7 +415,8 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                                                 tmpSphere.getNonOverlappingRandomSpheres(
                                                     tmpQuantityInVolume, 
                                                     tmpRadiusOfProtein,
-                                                    Preferences.getInstance().getNumberOfTrialsForCompartment()
+                                                    Preferences.getInstance().getNumberOfTrialsForCompartment(),
+                                                    tmpRandomNumberGenerator
                                                 );
                                             for (BodySphere tmpSingleSphere : tmpSphereList) {
                                                 tmpPdbToDpd.setCenter(tmpSingleSphere.getBodyCenter().getX(), tmpSingleSphere.getBodyCenter().getY(), tmpSingleSphere.getBodyCenter().getZ());
@@ -469,7 +468,8 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                                                     tmpFirstParticleCoordinates, 
                                                     0, 
                                                     tmpQuantityInVolume, 
-                                                    tmpOldNumberOfTrialsForCompartment
+                                                    tmpOldNumberOfTrialsForCompartment,
+                                                    tmpRandomNumberGenerator
                                                 );
                                                 tmpLastParticleCoordinates = tmpFirstParticleCoordinates;
                                             } else {
@@ -479,7 +479,8 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                                                     0, 
                                                     tmpQuantityInVolume,
                                                     tmpBondLength, 
-                                                    Preferences.getInstance().getNumberOfTrialsForCompartment()
+                                                    Preferences.getInstance().getNumberOfTrialsForCompartment(),
+                                                    tmpRandomNumberGenerator
                                                 );
                                             }
                                         }
@@ -490,11 +491,11 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                                         // </editor-fold>
                                         if (tmpQuantityOnSurface > 0) {
                                             if (this.graphicsUtilityMethods.isUpperSurfaceGeometryInSphere(tmpChemicalCompositionValueItem, i)) {
-                                                tmpSphere.fillUpperRandomPointsOnSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface);
+                                                tmpSphere.fillUpperRandomPointsOnSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpRandomNumberGenerator);
                                             } else if (this.graphicsUtilityMethods.isMiddleSurfaceGeometryInSphere(tmpChemicalCompositionValueItem, i)) {
-                                                tmpSphere.fillMiddleRandomPointsOnSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface);
+                                                tmpSphere.fillMiddleRandomPointsOnSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpRandomNumberGenerator);
                                             } else {
-                                                tmpSphere.fillRandomPointsOnSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface);
+                                                tmpSphere.fillRandomPointsOnSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpRandomNumberGenerator);
                                             }
                                             // Center of sphere
                                             GraphicalParticlePosition tmpCenterOfSphere = new GraphicalParticlePosition(tmpSphere.getBodyCenter().getX(), tmpSphere.getBodyCenter().getY(),
@@ -640,10 +641,6 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                                         return returnCancelled();
                                     }
                                     // </editor-fold>
-                                    // <editor-fold defaultstate="collapsed" desc="Increment deterministic random seed value">
-                                    Preferences.getInstance().incrementDeterministicRandomSeed();
-
-                                    // </editor-fold>
                                     // <editor-fold defaultstate="collapsed" desc="Set molecule information">
                                     // Molecule name
                                     String tmpMoleculeName = tmpChemicalCompositionValueItem.getValue(i, 0);
@@ -674,9 +671,8 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                                             boolean tmpIsProteinRandom3DOrientation = false;
                                             if (this.graphicsUtilityMethods.isRandom3dStructureGeometryInXyLayer(tmpChemicalCompositionValueItem, i)) {
                                                 tmpIsProteinRandom3DOrientation = true;
-                                                if (Preferences.getInstance().isDeterministicRandom()) {
-                                                    tmpPdbToDpd.setSeed(Preferences.getInstance().getDeterministicRandomSeed());
-                                                }
+                                                tmpPdbToDpd.setSeed(tmpRandomSeed);
+                                                tmpPdbToDpd.setRandomNumberGenerator(tmpRandomNumberGenerator);
                                             } else {
                                                 tmpPdbToDpd.setDefaultRotation();
                                             }
@@ -722,7 +718,8 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                                                 tmpXyLayer.getNonOverlappingRandomSpheres(
                                                     tmpQuantityInVolume, 
                                                     tmpRadiusOfProtein,
-                                                    Preferences.getInstance().getNumberOfTrialsForCompartment()
+                                                    Preferences.getInstance().getNumberOfTrialsForCompartment(),
+                                                    tmpRandomNumberGenerator
                                                 );
                                             for (BodySphere tmpSingleSphere : tmpSphereList) {
                                                 tmpPdbToDpd.setCenter(tmpSingleSphere.getBodyCenter().getX(), tmpSingleSphere.getBodyCenter().getY(), tmpSingleSphere.getBodyCenter().getZ());
@@ -789,7 +786,8 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                                                         tmpFirstParticleCoordinates, 
                                                         0, 
                                                         tmpQuantityInVolume, 
-                                                        tmpOldNumberOfTrialsForCompartment
+                                                        tmpOldNumberOfTrialsForCompartment,
+                                                        tmpRandomNumberGenerator
                                                     );
                                                     tmpLastParticleCoordinates = tmpFirstParticleCoordinates;
                                                 } else {
@@ -799,7 +797,8 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                                                         0, 
                                                         tmpQuantityInVolume,
                                                         tmpBondLength, 
-                                                        Preferences.getInstance().getNumberOfTrialsForCompartment()
+                                                        Preferences.getInstance().getNumberOfTrialsForCompartment(),
+                                                        tmpRandomNumberGenerator
                                                     );
                                                 }
                                             }
@@ -812,7 +811,7 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                                             // </editor-fold>
                                             if (tmpQuantityOnSurface > 0) {
                                                 if (this.graphicsUtilityMethods.isAllSurfacesGeometryInXyLayer(tmpChemicalCompositionValueItem, i)) {
-                                                    tmpXyLayer.fillRandomPointsOnAllSurfaces(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface);
+                                                    tmpXyLayer.fillRandomPointsOnAllSurfaces(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpRandomNumberGenerator);
                                                     GraphicalParticlePosition tmpCenterOfXyLayer = new GraphicalParticlePosition(
                                                             tmpXyLayer.getBodyCenter().getX(), tmpXyLayer.getBodyCenter().getY(), tmpXyLayer.getBodyCenter().getZ());
                                                     Arrays.fill(tmpLastParticleCoordinates, tmpQuantityInVolume, tmpQuantityInVolume + tmpQuantityOnSurface, tmpCenterOfXyLayer);
@@ -822,42 +821,42 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                                                         if (this.graphicsUtilityMethods.isSingleSurfaceXyTopGeometryInXyLayer(tmpChemicalCompositionValueItem, i)) {
                                                             BodyXyLayerSingleSurfaceEnum tmpSingleSurface = BodyXyLayerSingleSurfaceEnum.XY_TOP;
                                                             tmpOffsetZ = tmpXyLayerCenterZCoordinate - tmpHalfZLength;
-                                                            tmpXyLayer.fillRandomPointsOnSingleSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpSingleSurface);
+                                                            tmpXyLayer.fillRandomPointsOnSingleSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpSingleSurface, tmpRandomNumberGenerator);
                                                             for (int j = tmpQuantityInVolume; j < tmpQuantityOnSurface; j++) {
                                                                 tmpLastParticleCoordinates[j] = new GraphicalParticlePosition(tmpFirstParticleCoordinates[j].getX(), tmpFirstParticleCoordinates[j].getY(), tmpOffsetZ);
                                                             }
                                                         } else if (this.graphicsUtilityMethods.isSingleSurfaceXyBottomGeometryInXyLayer(tmpChemicalCompositionValueItem, i)) {
                                                             BodyXyLayerSingleSurfaceEnum tmpSingleSurface = BodyXyLayerSingleSurfaceEnum.XY_BOTTOM;
                                                             tmpOffsetZ = tmpXyLayerCenterZCoordinate + tmpHalfZLength;
-                                                            tmpXyLayer.fillRandomPointsOnSingleSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpSingleSurface);
+                                                            tmpXyLayer.fillRandomPointsOnSingleSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpSingleSurface, tmpRandomNumberGenerator);
                                                             for (int j = tmpQuantityInVolume; j < tmpQuantityOnSurface; j++) {
                                                                 tmpLastParticleCoordinates[j] = new GraphicalParticlePosition(tmpFirstParticleCoordinates[j].getX(), tmpFirstParticleCoordinates[j].getY(), tmpOffsetZ);
                                                             }
                                                         } else if (this.graphicsUtilityMethods.isSingleSurfaceYzLeftGeometryInXyLayer(tmpChemicalCompositionValueItem, i)) {
                                                             BodyXyLayerSingleSurfaceEnum tmpSingleSurface = BodyXyLayerSingleSurfaceEnum.YZ_LEFT;
                                                             tmpOffsetX = tmpXyLayerCenterXCoordinate + tmpHalfXLength;
-                                                            tmpXyLayer.fillRandomPointsOnSingleSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpSingleSurface);
+                                                            tmpXyLayer.fillRandomPointsOnSingleSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpSingleSurface, tmpRandomNumberGenerator);
                                                             for (int j = tmpQuantityInVolume; j < tmpQuantityOnSurface; j++) {
                                                                 tmpLastParticleCoordinates[j] = new GraphicalParticlePosition(tmpOffsetX, tmpFirstParticleCoordinates[j].getY(), tmpFirstParticleCoordinates[j].getZ());
                                                             }
                                                         } else if (this.graphicsUtilityMethods.isSingleSurfaceYzRightGeometryInXyLayer(tmpChemicalCompositionValueItem, i)) {
                                                             BodyXyLayerSingleSurfaceEnum tmpSingleSurface = BodyXyLayerSingleSurfaceEnum.YZ_RIGHT;
                                                             tmpOffsetX = tmpXyLayerCenterXCoordinate - tmpHalfXLength;
-                                                            tmpXyLayer.fillRandomPointsOnSingleSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpSingleSurface);
+                                                            tmpXyLayer.fillRandomPointsOnSingleSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpSingleSurface, tmpRandomNumberGenerator);
                                                             for (int j = tmpQuantityInVolume; j < tmpQuantityOnSurface; j++) {
                                                                 tmpLastParticleCoordinates[j] = new GraphicalParticlePosition(tmpOffsetX, tmpFirstParticleCoordinates[j].getY(), tmpFirstParticleCoordinates[j].getZ());
                                                             }
                                                         } else if (this.graphicsUtilityMethods.isSingleSurfaceXzFrontGeometryInXyLayer(tmpChemicalCompositionValueItem, i)) {
                                                             BodyXyLayerSingleSurfaceEnum tmpSingleSurface = BodyXyLayerSingleSurfaceEnum.XZ_FRONT;
                                                             tmpOffsetY = tmpXyLayerCenterYCoordinate + tmpHalfYLength;
-                                                            tmpXyLayer.fillRandomPointsOnSingleSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpSingleSurface);
+                                                            tmpXyLayer.fillRandomPointsOnSingleSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpSingleSurface, tmpRandomNumberGenerator);
                                                             for (int j = tmpQuantityInVolume; j < tmpQuantityOnSurface; j++) {
                                                                 tmpLastParticleCoordinates[j] = new GraphicalParticlePosition(tmpFirstParticleCoordinates[j].getX(), tmpOffsetY, tmpFirstParticleCoordinates[j].getZ());
                                                             }
                                                         } else if (this.graphicsUtilityMethods.isSingleSurfaceXzBackGeometryInXyLayer(tmpChemicalCompositionValueItem, i)) {
                                                             BodyXyLayerSingleSurfaceEnum tmpSingleSurface = BodyXyLayerSingleSurfaceEnum.XZ_BACK;
                                                             tmpOffsetY = tmpXyLayerCenterYCoordinate - tmpHalfYLength;
-                                                            tmpXyLayer.fillRandomPointsOnSingleSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpSingleSurface);
+                                                            tmpXyLayer.fillRandomPointsOnSingleSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpSingleSurface, tmpRandomNumberGenerator);
                                                             for (int j = tmpQuantityInVolume; j < tmpQuantityOnSurface; j++) {
                                                                 tmpLastParticleCoordinates[j] = new GraphicalParticlePosition(tmpFirstParticleCoordinates[j].getX(), tmpOffsetY, tmpFirstParticleCoordinates[j].getZ());
                                                             }
@@ -866,17 +865,17 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                                                     } else {
                                                         // <editor-fold defaultstate="collapsed" desc="xy top and bottom surface geometry">
                                                         if (this.graphicsUtilityMethods.isXyTopBottomGeometryInXyLayer(tmpChemicalCompositionValueItem, i)) {
-                                                            tmpXyLayer.fillRandomPointsOnTopBottomSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface);
+                                                            tmpXyLayer.fillRandomPointsOnTopBottomSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpRandomNumberGenerator);
                                                             for (int j = tmpQuantityInVolume; j < tmpQuantityOnSurface; j++) {
                                                                 tmpLastParticleCoordinates[j] = new GraphicalParticlePosition(tmpFirstParticleCoordinates[j].getX(), tmpFirstParticleCoordinates[j].getY(), tmpOffsetZ);
                                                             }
                                                         } else if (this.graphicsUtilityMethods.isYzLeftRightGeometryInXyLayer(tmpChemicalCompositionValueItem, i)) {
-                                                            tmpXyLayer.fillRandomPointsOnLeftRightSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface);
+                                                            tmpXyLayer.fillRandomPointsOnLeftRightSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpRandomNumberGenerator);
                                                             for (int j = tmpQuantityInVolume; j < tmpQuantityOnSurface; j++) {
                                                                 tmpLastParticleCoordinates[j] = new GraphicalParticlePosition(tmpOffsetX, tmpFirstParticleCoordinates[j].getY(), tmpFirstParticleCoordinates[j].getZ());
                                                             }
                                                         } else if (this.graphicsUtilityMethods.isXzFrontBackGeometryInXyLayer(tmpChemicalCompositionValueItem, i)) {
-                                                            tmpXyLayer.fillRandomPointsOnFrontBackSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface);
+                                                            tmpXyLayer.fillRandomPointsOnFrontBackSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpRandomNumberGenerator);
                                                             for (int j = tmpQuantityInVolume; j < tmpQuantityOnSurface; j++) {
                                                                 tmpLastParticleCoordinates[j] = new GraphicalParticlePosition(tmpFirstParticleCoordinates[j].getX(), tmpOffsetY, tmpFirstParticleCoordinates[j].getZ());
                                                             }
@@ -964,11 +963,6 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
             tmpBulkInfoValueItem.sortMatrixRowsWithProteinDataRowsFirst();
             // </editor-fold>
             for (int i = 0; i < tmpBulkInfoValueItem.getMatrixRowCount(); i++) {
-                // <editor-fold defaultstate="collapsed" desc="Increment deterministic random seed value">
-                Preferences.getInstance().incrementDeterministicRandomSeed();
-                // IMPORTANT: After change of seed value re-initialize random value generation in compartment box
-                this.compartmentContainer.getCompartmentBox().initializeRandomValueGeneration();
-                // </editor-fold>
                 // <editor-fold defaultstate="collapsed" desc="Set molecule information">
                 // Molecule name
                 String tmpMoleculeName = tmpBulkInfoValueItem.getValue(i, 0);
@@ -997,9 +991,8 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                         boolean tmpIsProteinRandom3DOrientation = false;
                         if (this.graphicsUtilityMethods.isRandom3dStructureGeometryInBulk(tmpBulkInfoValueItem, i)) {
                             tmpIsProteinRandom3DOrientation = true;
-                            if (Preferences.getInstance().isDeterministicRandom()) {
-                                tmpPdbToDpd.setSeed(Preferences.getInstance().getDeterministicRandomSeed());
-                            }
+                            tmpPdbToDpd.setSeed(tmpRandomSeed);
+                            tmpPdbToDpd.setRandomNumberGenerator(tmpRandomNumberGenerator);
                         } else {
                             tmpPdbToDpd.setDefaultRotation();
                         }
@@ -1045,7 +1038,8 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                             this.compartmentContainer.getCompartmentBox().getNonOverlappingRandomSpheres(
                                 tmpQuantity, 
                                 tmpRadiusOfProtein,
-                                Preferences.getInstance().getNumberOfTrialsForCompartment()
+                                Preferences.getInstance().getNumberOfTrialsForCompartment(),
+                                tmpRandomNumberGenerator
                             );
                         for (BodySphere tmpSingleSphere : tmpNonOverlappingSphereList) {
                             tmpPdbToDpd.setCenter(tmpSingleSphere.getBodyCenter().getX(), tmpSingleSphere.getBodyCenter().getY(), tmpSingleSphere.getBodyCenter().getZ());
@@ -1092,14 +1086,16 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                                 tmpFirstParticleCoordinates, 
                                 0, 
                                 tmpQuantity, 
-                                tmpOldNumberOfTrialsForCompartment
+                                tmpOldNumberOfTrialsForCompartment,
+                                tmpRandomNumberGenerator
                             );
                         } else {
                             this.compartmentContainer.getCompartmentBox().fillFreeVolumeRandomPoints(
                                 tmpFirstParticleCoordinates, 
                                 0, 
                                 tmpQuantity, 
-                                Preferences.getInstance().getNumberOfTrialsForCompartment()
+                                Preferences.getInstance().getNumberOfTrialsForCompartment(),
+                                tmpRandomNumberGenerator
                             );
                         }
                         // <editor-fold defaultstate="collapsed" desc="Check if canceled">
@@ -1116,7 +1112,8 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                                 tmpLastParticleCoordinates, 
                                 0, 
                                 tmpQuantity, 
-                                Preferences.getInstance().getNumberOfTrialsForCompartment()
+                                Preferences.getInstance().getNumberOfTrialsForCompartment(),
+                                tmpRandomNumberGenerator
                             );
                         }
                         // <editor-fold defaultstate="collapsed" desc="Check if canceled">
@@ -1179,7 +1176,7 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                                     } else {
                                         // <editor-fold defaultstate="collapsed" desc="Get other orientation">
                                         GraphicalParticlePosition tmpNewLastParticleCoordinate = 
-                                            this.compartmentContainer.getCompartmentBox().getRandomPositionInFreeVolume();
+                                            this.compartmentContainer.getCompartmentBox().getRandomPositionInFreeVolume(tmpRandomNumberGenerator);
                                         // NOTE: tmpCorrectGraphicalParticlePositions[0] MUST be correct since it is deduced from 
                                         //       tmpFirstParticleCoordinates which are all in free volume by definition
                                         GraphicalParticlePosition[][] tmpNewGraphicalParticlePositionArray = 
@@ -1263,28 +1260,9 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
             // <editor-fold defaultstate="collapsed" desc="Restore number of trials for compartment">
             Preferences.getInstance().setNumberOfTrialsForCompartment(tmpOldNumberOfTrialsForCompartment);
             // </editor-fold>
-            // <editor-fold defaultstate="collapsed" desc="Set deterministic random seed to default value">
-            Preferences.getInstance().setDefaultDeterministicRandomSeed();
-            // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="Release memory">
             this.releaseMemory();
             // </editor-fold>
-        }
-    }
-    // </editor-fold>
-    // <editor-fold defaultstate="collapsed" desc="- finalize">
-    /**
-     * Finalize method to end all memory claims and running threads. The method
-     * will called when the object is destroyed.
-     *
-     * @throws Throwable This should never happen.
-     *
-     */
-    @Override
-    public void finalize() throws Throwable {
-        super.finalize();
-        if (!this.isFinished) {
-            this.stop();
         }
     }
     // </editor-fold>

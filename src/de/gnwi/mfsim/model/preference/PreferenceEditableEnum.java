@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -152,6 +152,10 @@ public enum PreferenceEditableEnum {
      * PreferenceBasic: this.isJobResultArchiveStepFileInclusion
      */
     IS_JOB_RESULT_ARCHIVE_STEP_FILE_INCLUSION,
+    /**
+     * PreferenceBasic: this.isVolumeScalingForConcentrationCalculation
+     */
+    IS_VOLUME_SCALING_FOR_CONCENTRATION_CALCULATION,
     /**
      * PreferenceBasic: this.isJobInputInclusion
      */
@@ -421,6 +425,7 @@ public enum PreferenceEditableEnum {
             PreferenceEditableEnum.representationToPreferenceEditableEnumMap.put(PreferenceEditableEnum.INTERNAL_TEMP_PATH.name(), PreferenceEditableEnum.INTERNAL_TEMP_PATH);
             PreferenceEditableEnum.representationToPreferenceEditableEnumMap.put(PreferenceEditableEnum.IS_JOB_RESULT_ARCHIVE_STEP_FILE_INCLUSION.name(),
                     PreferenceEditableEnum.IS_JOB_RESULT_ARCHIVE_STEP_FILE_INCLUSION);
+            PreferenceEditableEnum.representationToPreferenceEditableEnumMap.put(PreferenceEditableEnum.IS_VOLUME_SCALING_FOR_CONCENTRATION_CALCULATION.name(),PreferenceEditableEnum.IS_VOLUME_SCALING_FOR_CONCENTRATION_CALCULATION);
             PreferenceEditableEnum.representationToPreferenceEditableEnumMap.put(PreferenceEditableEnum.IS_JOB_INPUT_INCLUSION.name(),PreferenceEditableEnum.IS_JOB_INPUT_INCLUSION);
             PreferenceEditableEnum.representationToPreferenceEditableEnumMap.put(PreferenceEditableEnum.IS_PARTICLE_DISTRICUTION_INCLUSION.name(),PreferenceEditableEnum.IS_PARTICLE_DISTRICUTION_INCLUSION);
             PreferenceEditableEnum.representationToPreferenceEditableEnumMap.put(PreferenceEditableEnum.IS_SIMULATION_STEP_INCLUSION.name(),PreferenceEditableEnum.IS_SIMULATION_STEP_INCLUSION);

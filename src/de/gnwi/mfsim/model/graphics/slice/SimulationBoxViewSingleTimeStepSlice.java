@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -614,21 +614,6 @@ public class SimulationBoxViewSingleTimeStepSlice implements Callable<Boolean> {
         } finally {
             // Set this.graphicalParticlePositionArrayList to null to free memory (heap space)
             this.releaseMemory();
-        }
-    }
-
-    /**
-     * Finalize method to end all memory claims and running threads. The method
-     * will called when the object is destroyed.
-     *
-     * @throws Throwable This should never happen.
-     *
-     */
-    @Override
-    public void finalize() throws Throwable {
-        super.finalize();
-        if (!this.isFinished) {
-            this.stop();
         }
     }
     // </editor-fold>

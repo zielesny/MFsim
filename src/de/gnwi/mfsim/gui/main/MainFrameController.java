@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -19,7 +19,6 @@
  */
 package de.gnwi.mfsim.gui.main;
 
-import de.gnwi.mfsim.gui.main.MainFrame;
 import de.gnwi.jdpd.utilities.FileOutputStrings;
 import de.gnwi.mfsim.model.util.FileDeletionTask;
 import de.gnwi.mfsim.model.util.ArchiveTask;
@@ -324,15 +323,12 @@ public class MainFrameController implements PropertyChangeListener {
             // <editor-fold defaultstate="collapsed" desc="Set and check MainFrame size">
             this.mainFrame.setSize(Preferences.getInstance().getMainFrameWidth(), Preferences.getInstance().getMainFrameHeight());
             GuiUtils.checkFrameSize(this.mainFrame);
-
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="Set home panel images">
             this.setHomePanelImage();
-
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="Set info label for job restart steps">
             this.mainFrame.getStepsForRestartInfoLabel().setText(String.format(GuiMessage.get("MainFrame.stepsForRestartInfoLabel.text"), String.valueOf(Preferences.getInstance().getNumberOfAdditionalStepsForJobRestart())));
-
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="Initialize models and related lists">
             // <editor-fold defaultstate="collapsed" desc="- Initialize job input list models and lists">
@@ -344,50 +340,41 @@ public class MainFrameController implements PropertyChangeListener {
                 this.jobExecutionInputListModel = new FastListModel();
             }
             this.mainFrame.getSelectExecutionJobInputSelectionPanel().getList().setModel(this.jobExecutionInputListModel);
-
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="- Initialize jobResultListModel and list">
             if (this.jobResultListModel == null) {
                 this.jobResultListModel = new FastListModel();
             }
             this.mainFrame.getSelectJobResultPanel().getList().setModel(this.jobResultListModel);
-
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="- Initialize jobRestartListModel and list">
             if (this.jobRestartListModel == null) {
                 this.jobRestartListModel = new FastListModel();
             }
             this.mainFrame.getSelectJobForRestartSelectionPanel().getList().setModel(this.jobRestartListModel);
-
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="- Initialize jobExecutionListModel and list">
             if (this.jobExecutionListModel == null) {
                 this.jobExecutionListModel = new FastListModel();
             }
             this.mainFrame.getJobExecutionList().setModel(this.jobExecutionListModel);
-
             // </editor-fold>
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="Initialize GUI">
             // <editor-fold defaultstate="collapsed" desc="- Initialize job design panel">
             this.updateJobDesignDisplay();
-
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="- Initialize job execution panel">
             this.updateJobExecutionDisplay();
-
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="- Initialize job result panel">
             this.updateJobResultsDisplay();
-
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="- Initialize menu">
             this.updateMenuDisplay();
-
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="- Initialize status display">
             this.updateStatusDisplay();
-
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="- Set ParticleUpdateForJobInput flag">
             this.mainFrame.getParticleUpdateForJobInputMenuItem().setSelected(Preferences.getInstance().isParticleUpdateForJobInput());
@@ -396,7 +383,6 @@ public class MainFrameController implements PropertyChangeListener {
             // <editor-fold defaultstate="collapsed" desc="Fill job input and job result models">
             this.fillJobInputRelatedListModels();
             this.fillJobResultRelatedListModels();
-
             // </editor-fold>
         } catch (Exception anException) {
             ModelUtils.appendToLogfile(true, anException);
@@ -691,6 +677,34 @@ public class MainFrameController implements PropertyChangeListener {
     }
 
     /**
+     * Display morph-particle dialog
+     */
+    public void displayMorphParticleDialog() {
+        try {
+            MouseCursorManagement.getInstance().setWaitCursor();
+            ValueItemContainer tmpMorphParticleValueItemContainer = StandardParticleInteractionData.getInstance().getParticlesValueItemContainerForMorph();
+            MouseCursorManagement.getInstance().setDefaultCursor();
+            if (DialogValueItemEdit.hasChanged(GuiMessage.get("MorphParticleDialog.title"), tmpMorphParticleValueItemContainer)) {
+                MouseCursorManagement.getInstance().setWaitCursor();
+                StandardParticleInteractionData.getInstance().morphParticle(tmpMorphParticleValueItemContainer);
+            }
+        } catch (Exception anException) {
+            ModelUtils.appendToLogfile(true, anException);
+            MouseCursorManagement.getInstance().setDefaultCursor();
+            // <editor-fold defaultstate="collapsed" desc="Message CommandExecutionFailed">
+            JOptionPane.showMessageDialog(
+                null, 
+                String.format(GuiMessage.get("Error.CommandExecutionFailed"), "displayMorphParticleDialog()", "MainFrameController"),
+                GuiMessage.get("Error.ErrorNotificationTitle"), 
+                JOptionPane.ERROR_MESSAGE
+            );
+            // </editor-fold>
+        } finally {
+            MouseCursorManagement.getInstance().setDefaultCursor();
+        }
+    }
+
+    /**
      * Display rescale-Vmin dialog
      */
     public void displayRescaleVminDialog() {
@@ -717,6 +731,37 @@ public class MainFrameController implements PropertyChangeListener {
             MouseCursorManagement.getInstance().setDefaultCursor();
         }
     }
+
+    /**
+     * Display rescale-repulsions dialog
+     * 
+     * @param isIndividualScaling True: Every temperature is individually 
+     * scaled, false: All temperatures are scaled with global scaling factor
+     */
+    public void displayRescaleRepulsionsDialog(boolean isIndividualScaling) {
+        try {
+            MouseCursorManagement.getInstance().setWaitCursor();
+            ValueItemContainer tmpRepulsionsRescaleValueItemContainer = StandardParticleInteractionData.getInstance().getValueItemContainerForRepulsionsRescale();
+            MouseCursorManagement.getInstance().setDefaultCursor();
+            if (DialogValueItemEdit.hasChanged(GuiMessage.get("RescaleRepulsionsDialog.title"), tmpRepulsionsRescaleValueItemContainer)) {
+                MouseCursorManagement.getInstance().setWaitCursor();
+                StandardParticleInteractionData.getInstance().rescaleRepulsions(tmpRepulsionsRescaleValueItemContainer, isIndividualScaling);
+            }
+        } catch (Exception anException) {
+            ModelUtils.appendToLogfile(true, anException);
+            MouseCursorManagement.getInstance().setDefaultCursor();
+            // <editor-fold defaultstate="collapsed" desc="Message CommandExecutionFailed">
+            JOptionPane.showMessageDialog(
+                null, 
+                String.format(GuiMessage.get("Error.CommandExecutionFailed"), "displayRescaleRepulsionsDialog()", "MainFrameController"),
+                GuiMessage.get("Error.ErrorNotificationTitle"), 
+                JOptionPane.ERROR_MESSAGE
+            );
+            // </editor-fold>
+        } finally {
+            MouseCursorManagement.getInstance().setDefaultCursor();
+        }
+    }
     
     /**
      * Display increment-probe-particles dialog
@@ -724,10 +769,15 @@ public class MainFrameController implements PropertyChangeListener {
     public void displayIncrementProbeParticlesDialog() {
         try {
             MouseCursorManagement.getInstance().setWaitCursor();
-            ValueItemContainer tmpValueItemContainerForProbeParticleIncrement = StandardParticleInteractionData.getInstance().getValueItemContainerForProbeParticleIncrement();
+            ValueItemContainer tmpValueItemContainerForProbeParticleIncrement = 
+                StandardParticleInteractionData.getInstance().getValueItemContainerForProbeParticleIncrement();
             if (tmpValueItemContainerForProbeParticleIncrement == null) {
-                JOptionPane.showMessageDialog(null, GuiMessage.get("proteinBackboneProbeParticles.NoProbeParticles"),
-                        GuiMessage.get("proteinBackboneProbeParticles.NoProbeParticlesDialogTitle"), JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(
+                    null, 
+                    GuiMessage.get("proteinBackboneProbeParticles.NoProbeParticles"),
+                    GuiMessage.get("proteinBackboneProbeParticles.NoProbeParticlesDialogTitle"), 
+                    JOptionPane.INFORMATION_MESSAGE
+                );
                 return;
             }
             MouseCursorManagement.getInstance().setDefaultCursor();
@@ -947,19 +997,17 @@ public class MainFrameController implements PropertyChangeListener {
                 ) + 
                 "\n\n" +
                 "using" + "\n" +
-                "- Apache Commons IO Version 2.5" + "\n" +
                 "- Apache Commons Lang Version 3.4" + "\n" +
-                "- Apache Commons RNG Version 1.1" + "\n" +
+                "- Apache Commons RNG Version 1.3" + "\n" +
                 "- BioJava Version 3.0.8" + "\n" +
                 "- FFmpeg (Static) Version 3.2.4" + "\n" +
                 "- GraphStream Version 1.3" + "\n" +
                 "- Jama Version 1.0.3" + "\n" +
                 "- JCommon Version 1.0.9" + "\n" +
                 "- JDOM Version 2.0.6" + "\n" +
-                "- Jdpd Version 1.3.0.0" + "\n" +
+                "- Jdpd Version 1.4.0.0" + "\n" +
                 "- JFreeChart Version 1.0.5" + "\n" +
                 "- Jmol Version 14.2.7" + "\n" +
-                "- Pcg32.java Version 0.9.1" + "\n" +
                 "- SPICES Version 1.0.0.0" + "\n" +
                 "- Vecmath Version 1.5.2" + "\n\n" +
                 "Compatibility:" + "\n" +
@@ -1009,25 +1057,21 @@ public class MainFrameController implements PropertyChangeListener {
                 // <editor-fold defaultstate="collapsed" desc="Home panel">
                 case 0:
                     break;
-
                 // </editor-fold>
-                // <editor-fold defaultstate="collapsed" desc="JobResult design panel">
+                // <editor-fold defaultstate="collapsed" desc="Job design panel">
                 case 1:
                     this.updateJobDesignDisplay();
                     break;
-
                 // </editor-fold>
-                // <editor-fold defaultstate="collapsed" desc="JobResult execution panel">
+                // <editor-fold defaultstate="collapsed" desc="Job execution panel">
                 case 2:
                     this.updateJobExecutionDisplay();
                     break;
-
                 // </editor-fold>
-                // <editor-fold defaultstate="collapsed" desc="JobResults panel">
+                // <editor-fold defaultstate="collapsed" desc="Job results panel">
                 case 3:
                     this.updateJobResultsDisplay();
                     break;
-
                 // </editor-fold>
             }
         } catch (Exception anException) {
@@ -1493,11 +1537,7 @@ public class MainFrameController implements PropertyChangeListener {
                     tmpSelectedJobInput = (JobInput) this.jobDesignInputListModel.getElementAt(tmpSelectedIndex);
                 }
                 // Update possible old job input
-                this.jobUpdateUtils.updateMoleculeAccelerationForMaxTimeStep(tmpSelectedJobInput);
-                this.jobUpdateUtils.updateMoleculeFixationForMaxTimeStep(tmpSelectedJobInput);
-                this.jobUpdateUtils.updateMoleculeBoundaryForMaxTimeStep(tmpSelectedJobInput);
-                this.jobUpdateUtils.updateMoleculeFixedVelocityForMaxTimeStep(tmpSelectedJobInput);
-                this.jobUpdateUtils.updateVelocityScalingInformation(tmpSelectedJobInput);
+                this.updateJobInput(tmpSelectedJobInput);
                 ValueItemContainer tmpValueItemJobContainer = tmpSelectedJobInput.getValueItemContainer();
                 String tmpJobInputPath = tmpSelectedJobInput.getJobInputPath();
                 String tmpTimestamp = tmpSelectedJobInput.getTimestamp();
@@ -1604,11 +1644,7 @@ public class MainFrameController implements PropertyChangeListener {
                     tmpSelectedJobInput = (JobInput) this.jobDesignInputListModel.getElementAt(tmpSelectedIndex);
                 }
                 // Update possible old job input
-                this.jobUpdateUtils.updateMoleculeAccelerationForMaxTimeStep(tmpSelectedJobInput);
-                this.jobUpdateUtils.updateMoleculeFixationForMaxTimeStep(tmpSelectedJobInput);
-                this.jobUpdateUtils.updateMoleculeBoundaryForMaxTimeStep(tmpSelectedJobInput);
-                this.jobUpdateUtils.updateMoleculeFixedVelocityForMaxTimeStep(tmpSelectedJobInput);
-                this.jobUpdateUtils.updateVelocityScalingInformation(tmpSelectedJobInput);
+                this.updateJobInput(tmpSelectedJobInput);
                 ValueItemContainer tmpValueItemJobContainer = tmpSelectedJobInput.getValueItemContainer();
                 // IMPORTANT: Set current (new) timestamp
                 tmpValueItemJobContainer.setValueOfValueItem("Timestamp", ModelUtils.getTimestampInStandardFormat());
@@ -1723,7 +1759,6 @@ public class MainFrameController implements PropertyChangeListener {
             // </editor-fold>
         }
     }
-
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- Update display">
     /**
@@ -1740,7 +1775,6 @@ public class MainFrameController implements PropertyChangeListener {
             this.mainFrame.getJobInputArchiveButton().setVisible(false);
             this.mainFrame.getBrowseJobInputFolderButton().setVisible(false);
             this.mainFrame.getRemoveSelectedJobInputButton().setVisible(false);
-
             // </editor-fold>
         } else if (this.jobDesignInputListModel.size() == 0) {
             // <editor-fold defaultstate="collapsed" desc="No filtered job inputs">
@@ -1750,7 +1784,6 @@ public class MainFrameController implements PropertyChangeListener {
             this.mainFrame.getJobInputArchiveButton().setVisible(false);
             this.mainFrame.getBrowseJobInputFolderButton().setVisible(false);
             this.mainFrame.getRemoveSelectedJobInputButton().setVisible(false);
-
             // </editor-fold>
         } else {
             // <editor-fold defaultstate="collapsed" desc="Filtered job inputs exist">
@@ -1763,7 +1796,6 @@ public class MainFrameController implements PropertyChangeListener {
             // </editor-fold>
         }
     }
-
     // </editor-fold>
     // </editor-fold>
     //
@@ -2190,10 +2222,18 @@ public class MainFrameController implements PropertyChangeListener {
      */
     private void updateJobExecutionDisplay() {
         int tmpIndexOfJobExecutionPanel = 2;
-        if (this.jobExecutionInputListModel.size() == 0 && this.jobRestartListModel.size() == 0) {
+        if (this.jobExecutionInputListModel.size() == 0 && 
+            this.jobRestartListModel.size() == 0 &&
+            !this.isSubmittedJobResultExecutionTaskWorking()
+        ) {
             // <editor-fold defaultstate="collapsed" desc="Disable job execution tab">
             // No Jdpd available or no job inputs and no jobs for restart: Disable job execution tab
             this.mainFrame.getMainTabbedPanel().setEnabledAt(tmpIndexOfJobExecutionPanel, false);
+            // ... and switch to job design tab if job execution tab is selected
+            if (this.mainFrame.getMainTabbedPanel().getSelectedIndex() == tmpIndexOfJobExecutionPanel) {
+                int tmpIndexOfJobDesignPanel = 1;
+                this.mainFrame.getMainTabbedPanel().setSelectedIndex(tmpIndexOfJobDesignPanel);
+            }
             // </editor-fold>
         } else {
             // <editor-fold defaultstate="collapsed" desc="Enable job execution tab">
@@ -2866,6 +2906,29 @@ public class MainFrameController implements PropertyChangeListener {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Private methods">
+    // <editor-fold defaultstate="collapsed" desc="- Job update related methods">
+    /**
+     * Updates (legacy) job input for compatibility if necessary
+     * 
+     * @param tmpJobInput Job input to be updated
+     */
+    private void updateJobInput(JobInput tmpJobInput) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (tmpJobInput == null) {
+            return;
+        }
+        // </editor-fold>
+        this.jobUpdateUtils.updateMoleculeAccelerationForMaxTimeStep(tmpJobInput);
+        this.jobUpdateUtils.updateMoleculeFixationForMaxTimeStep(tmpJobInput);
+        this.jobUpdateUtils.updateMoleculeBoundaryForMaxTimeStep(tmpJobInput);
+        this.jobUpdateUtils.updateMoleculeFixedVelocityForMaxTimeStep(tmpJobInput);
+        this.jobUpdateUtils.updateVelocityScalingInformation(tmpJobInput);
+        this.jobUpdateUtils.updateRandomNumberGenerator(tmpJobInput);
+        this.jobUpdateUtils.updateMoleculeBackboneForcesWithBehaviour(tmpJobInput);
+        this.jobUpdateUtils.updateProteinBackboneForcesWithBehaviour(tmpJobInput);
+        this.jobUpdateUtils.insertGeometryRandomSeedValueItem(tmpJobInput);
+    }
+    // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- Preference change related methods">
     /**
      * Performs several actions directly after changing preferences
@@ -2878,14 +2941,12 @@ public class MainFrameController implements PropertyChangeListener {
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Set main frame title (MUST be set AFTER application mode setting)">
         this.mainFrame.setTitle(this.getApplicationTitle());
-
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Set particle set filename in jobInputsPanelTitledBorder">
         this.mainFrame.getJobInputsPanelTitledBorder().setTitle(String.format(GuiMessage.get("JobInputsPanelTitledBorder.TitleFormat"),
                         GuiMessage.get("MainFrame.jobInputsPanelTitledBorder.title"),
                         Preferences.getInstance().getCurrentParticleSetFilename()));
         this.mainFrame.getJobInputsPanel().repaint();
-
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Manage possible job input changes">
         // Update job input path related variables and displays since job input path may have changed
@@ -2894,7 +2955,6 @@ public class MainFrameController implements PropertyChangeListener {
         JobManager.getInstance().getJobInputManager().cleanJobInputPathInBackground();
         // Fill fillExistingJobInputsListModel since jobs inputs may have changed
         this.fillJobInputRelatedListModels();
-
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Manage possible job result changes">
         // Reset job result path related variables and displays since job result path may have changed
@@ -2903,18 +2963,14 @@ public class MainFrameController implements PropertyChangeListener {
         JobManager.getInstance().getJobResultManager().cleanJobResultPathInBackground();
         // Fill jobResultListModel/jobRestartListModel since jobs results may have changed
         this.fillJobResultRelatedListModels();
-
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Update menu display">
         this.updateMenuDisplay();
-
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Update status display">
         this.updateStatusDisplay();
-
         // </editor-fold>
     }
-
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- Job execution related methods">
     /**

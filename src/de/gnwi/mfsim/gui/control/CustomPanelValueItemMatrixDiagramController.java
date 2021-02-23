@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -175,7 +175,7 @@ public class CustomPanelValueItemMatrixDiagramController implements IImageProvid
                     boolean tmpHasReducedTrendLine = false;
                     boolean tmpHasReducedStatistics = false;
                     boolean tmpHasLastPointMarked = this.chartConfiguration.getHasLastPointMarked();
-                    boolean tmpIsZoom = this.chartConfiguration.getIsZoom();
+                    boolean tmpIsZoom = this.chartConfiguration.hasZoom();
                     // </editor-fold>
                     // <editor-fold defaultstate="collapsed" desc="- Set up dialog">
                     this.customPanelValueItemMatrixDiagram.getThickCheckBox().setSelected(tmpIsThickLines);
@@ -423,7 +423,6 @@ public class CustomPanelValueItemMatrixDiagramController implements IImageProvid
                         if (tmpNewDataBoundaryValues != null) {
                             tmpXyChart.setZoomValues(tmpNewDataBoundaryValues);
                             CustomPanelValueItemMatrixDiagramController.this.chartConfiguration.setZoomValues(tmpNewDataBoundaryValues);
-                            CustomPanelValueItemMatrixDiagramController.this.chartConfiguration.setIsZoom(true);
                             CustomPanelValueItemMatrixDiagramController.this.setImage(
                                 tmpXyChart.getImage(
                                     CustomPanelValueItemMatrixDiagramController.this.customPanelValueItemMatrixDiagram.getImagePanel().getWidth(), 
@@ -455,10 +454,7 @@ public class CustomPanelValueItemMatrixDiagramController implements IImageProvid
                     try {
                         XyChart tmpXyChart = (XyChart) CustomPanelValueItemMatrixDiagramController.this.chart;
                         tmpXyChart.reset();
-                        CustomPanelValueItemMatrixDiagramController.this.chartConfiguration.setZoomValues(
-                            new double[] {-Double.MAX_VALUE, Double.MAX_VALUE, -Double.MAX_VALUE, Double.MAX_VALUE}
-                        );
-                        CustomPanelValueItemMatrixDiagramController.this.chartConfiguration.setIsZoom(false);
+                        CustomPanelValueItemMatrixDiagramController.this.chartConfiguration.removeZoomValues();
                         CustomPanelValueItemMatrixDiagramController.this.chartConfiguration.setNumberOfDiscardedInitialPoints(0);
                         CustomPanelValueItemMatrixDiagramController.this.setImage(tmpXyChart.getImage(
                             CustomPanelValueItemMatrixDiagramController.this.customPanelValueItemMatrixDiagram.getImagePanel().getWidth(), 

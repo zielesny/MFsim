@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -2309,12 +2309,12 @@ public final class GuiUtils {
     }
 
     /**
-     * Returns MutantValueItem
+     * Returns MutantValueItem for edit purposes
      *
      * @param aPdbToDPD A PdbToDpd instance (is NOT changed)
-     * @return MutantValueItem or null if none could be created
+     * @return MutantValueItem for edit purposes or null if none could be created
      */
-    public static ValueItem getMutantValueItem(PdbToDpd aPdbToDPD) {
+    public static ValueItem getMutantValueItemForEdit(PdbToDpd aPdbToDPD) {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aPdbToDPD == null) {
             return null;
@@ -2377,6 +2377,73 @@ public final class GuiUtils {
         }
     }
 
+    /**
+     * Returns MutantValueItem for show purposes
+     *
+     * @param aPdbToDPD A PdbToDpd instance (is NOT changed)
+     * @return MutantValueItem for show purposes or null if none could be created
+     */
+    public static ValueItem getMutantValueItemForShow(PdbToDpd aPdbToDPD) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aPdbToDPD == null) {
+            return null;
+        }
+        // </editor-fold>
+        try {
+            ValueItem tmpMutantValueItem = new ValueItem();
+            tmpMutantValueItem.setName("PROTEIN_MUTANT");
+            tmpMutantValueItem.setDisplayName(GuiMessage.get("ProteinMutant.DisplayName"));
+            tmpMutantValueItem.setDescription(GuiMessage.get("ProteinMutant.Description"));
+
+            tmpMutantValueItem.setBasicType(ValueItemEnumBasicType.MATRIX);
+            tmpMutantValueItem.setMatrixColumnNames(new String[]{GuiMessage.get("ProteinMutant.Chain"),
+                GuiMessage.get("ProteinMutant.Index"),
+                GuiMessage.get("ProteinMutant.AminoAcid"),
+                GuiMessage.get("ProteinMutant.Replacement")});
+            tmpMutantValueItem.setMatrixColumnWidths(new String[]{ModelDefinitions.CELL_WIDTH_TEXT_400, // Chain
+                ModelDefinitions.CELL_WIDTH_TEXT_100, // Index
+                ModelDefinitions.CELL_WIDTH_TEXT_150, // AminoAcid
+                ModelDefinitions.CELL_WIDTH_TEXT_150}); // Replacement
+
+            String[] tmpChainNameArray = aPdbToDPD.getCompoundNames();
+            HashMap<String, String> tmpChainNameToIdMap = aPdbToDPD.getNameChainIDMap();
+            ArrayList<String> tmpActiveChainIdList = aPdbToDPD.getMasterdata().getActiveChains();
+            HashMap<String, AminoAcid[]> tmpOriginalAminoAcidSequenceMap = aPdbToDPD.getOriginalAminoAcidSequence();
+            HashMap<String, AminoAcid[]> tmpCurrentAminoAcidSequenceMap = aPdbToDPD.getCurrentAminoAcidSequence();
+            int tmpNumberOfAminoAcids = 0;
+            for (String tmpChainName : tmpChainNameArray) {
+                String tmpId = tmpChainNameToIdMap.get(tmpChainName);
+                if (tmpActiveChainIdList.contains(tmpId)) {
+                    tmpNumberOfAminoAcids += tmpOriginalAminoAcidSequenceMap.get(tmpId).length;
+                }
+            }
+            ValueItemMatrixElement[][] tmpMatrix = new ValueItemMatrixElement[tmpNumberOfAminoAcids][];
+            int tmpIndex = 0;
+            for (String tmpChainName : tmpChainNameArray) {
+                String tmpId = tmpChainNameToIdMap.get(tmpChainName);
+                if (tmpActiveChainIdList.contains(tmpId)) {
+                    AminoAcid[] tmpOriginalAminoAcids = tmpOriginalAminoAcidSequenceMap.get(tmpId);
+                    AminoAcid[] tmpCurrentAminoAcids = tmpCurrentAminoAcidSequenceMap.get(tmpId);
+                    for (int i = 0; i < tmpOriginalAminoAcids.length; i++) {
+                        tmpMatrix[tmpIndex] = new ValueItemMatrixElement[4];
+                        // Set chain name. Parameter false: Not editable
+                        tmpMatrix[tmpIndex][0] = new ValueItemMatrixElement(new ValueItemDataTypeFormat(tmpChainName, ValueItemEnumDataType.TEXT, false));
+                        // Set amino acid index (NOTE: Starts with index = 1). Parameter false: Not editable
+                        tmpMatrix[tmpIndex][1] = new ValueItemMatrixElement(new ValueItemDataTypeFormat(String.valueOf(i + 1), ValueItemEnumDataType.TEXT, false));
+                        // Set original amino acid. Parameter false: Not editable
+                        tmpMatrix[tmpIndex][2] = new ValueItemMatrixElement(new ValueItemDataTypeFormat(tmpOriginalAminoAcids[i].getName(), ValueItemEnumDataType.TEXT, false));
+                        // Set replacement
+                        tmpMatrix[tmpIndex++][3] = new ValueItemMatrixElement(new ValueItemDataTypeFormat(tmpCurrentAminoAcids[i].getName(), ValueItemEnumDataType.TEXT, false));
+                    }
+                }
+            }
+            tmpMutantValueItem.setMatrix(tmpMatrix);
+            return tmpMutantValueItem;
+        } catch (Exception anException) {
+            ModelUtils.appendToLogfile(true, anException);
+            return null;
+        }
+    }
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="Movie creation related methods">
     /**

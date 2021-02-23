@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -294,7 +294,7 @@ public class SpherePackingUtils {
 	 * @param yCuboid: Length of cuboid
 	 * @param zCuboid: Height of cuboid
 	 * @param startVector: Start vector
-	 * @return: coordinates of particles
+	 * @return Coordinates of particles
 	 */
 	public PointInSpace[] particleCoordinatesHexagonalCloseInCuboid(double rParticle, double xCuboid, double yCuboid, double zCuboid, PointInSpace startVector){
 		return this.moveVector(particleCoordinatesHexagonalCloseInCuboid(rParticle, xCuboid, yCuboid, zCuboid), startVector);
@@ -651,7 +651,7 @@ public class SpherePackingUtils {
 	 * @param rParticle: Radius of particle
 	 * @param rSphere: Radius of sphere
 	 * @param startVector: Start vector
-	 * @return: coordinates of particles
+	 * @return Coordinates of particles
 	 */
 	public PointInSpace[] particleCoordinatesHexagonalCloseInSphere(double rParticle, double rSphere, PointInSpace startVector){
 		return this.moveVector(particleCoordinatesHexagonalCloseInSphere(rParticle, rSphere), startVector);
@@ -801,7 +801,7 @@ public class SpherePackingUtils {
 	 * @param yCuboid: Length of cuboid
 	 * @param zCuboid: Height of cuboid
 	 * @param startVector: Start vector
-	 * @return: coordinates of particles
+	 * @return Coordinates of particles
 	 */
 	public PointInSpace[] particleCoordinatesFaceCenteredCubicInCuboid(double rParticle, double xCuboid, double yCuboid, double zCuboid, PointInSpace startVector){
 		return this.moveVector(particleCoordinatesFaceCenteredCubicInCuboid(rParticle, xCuboid, yCuboid, zCuboid), startVector);

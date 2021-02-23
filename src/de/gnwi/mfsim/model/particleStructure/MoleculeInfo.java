@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -69,15 +69,11 @@ public class MoleculeInfo {
      * @throws IllegalArgumentException Thrown if molecule is not defined
      */
     public MoleculeInfo(Molecule aMolecule) throws IllegalArgumentException {
-
         // <editor-fold defaultstate="collapsed" desc="Checks">
-
         if (aMolecule == null) {
             throw new IllegalArgumentException("Molecule is not defined.");
         }
-
         // </editor-fold>
-
         this.molecule = aMolecule;
         this.molarFraction = -1.0;
         this.gram = -1.0;
@@ -99,7 +95,6 @@ public class MoleculeInfo {
     public Molecule getMolecule() {
         return this.molecule;
     }
-
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="- Gram (get/set)">
@@ -141,7 +136,6 @@ public class MoleculeInfo {
     public void setMolarFraction(double aMolarFraction) {
         this.molarFraction = aMolarFraction;
     }
-
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="- Mol (get/set)">
@@ -162,7 +156,6 @@ public class MoleculeInfo {
     public void setMol(double aMol) {
         this.mol = aMol;
     }
-
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="- NumberOfMolecules (get/set)">
@@ -183,7 +176,6 @@ public class MoleculeInfo {
     public void setNumberOfMolecules(int aNumberOfMolecules) {
         this.numberOfMolecules = aNumberOfMolecules;
     }
-
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="- ScaledMolarFraction (get/set)">
@@ -204,7 +196,6 @@ public class MoleculeInfo {
     public void setScaledMolarFraction(double aScaledMolarFraction) {
         this.scaledMolarFraction = aScaledMolarFraction;
     }
-
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="- WeightFraction (get/set)">
@@ -225,7 +216,6 @@ public class MoleculeInfo {
     public void setWeightFraction(double aWeightFraction) {
         this.weightFraction = aWeightFraction;
     }
-
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="- ScalingFactor (get/set)">

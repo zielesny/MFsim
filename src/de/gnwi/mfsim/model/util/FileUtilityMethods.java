@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -1701,7 +1701,6 @@ public class FileUtilityMethods {
      * read
      */
     public String[][] readJaggedStringArrayFromFile(String aSourceFilePathname, String aCommentLinePrefix) {
-
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aSourceFilePathname == null || aSourceFilePathname.isEmpty()) {
             return null;
@@ -1842,7 +1841,6 @@ public class FileUtilityMethods {
      * @return String list or null if string array could not be read
      */
     public LinkedList<String> readStringListFromFile(String aSourceFilePathname, String aCommentLinePrefix) {
-
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aSourceFilePathname == null || aSourceFilePathname.isEmpty()) {
             return null;
@@ -2209,7 +2207,9 @@ public class FileUtilityMethods {
             for (File tmpFile : tmpFileArray) {
                 if (tmpFile.isFile()) {
                     if (tmpFile.getName().startsWith(aFilePrefix)) {
-                        aFilenameList.addLast(tmpFile.getName());
+                        if (!aFilenameList.contains(tmpFile.getName())) {
+                            aFilenameList.addLast(tmpFile.getName());
+                        }
                     }
                 }
             }

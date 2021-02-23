@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -833,28 +833,6 @@ public class CustomPanelMoveStepSlicerController extends ChangeNotifier implemen
     // </editor-fold>
     // </editor-fold>
     //
-    // <editor-fold defaultstate="collapsed" desc="Protected finalize method">
-    /**
-     * Finalize method for clean up: Stop all running tasks
-     */
-    @Override
-    protected void finalize() throws Throwable {
-        try {
-            this.kill();
-        } catch (Exception anException) {
-            ModelUtils.appendToLogfile(true, anException);
-            // <editor-fold defaultstate="collapsed" desc="Message CommandExecutionFailed">
-            JOptionPane.showMessageDialog(null, String.format(GuiMessage.get("Error.CommandExecutionFailed"), "finalize()", "CustomPanelMoveStepSlicerController"),
-                    GuiMessage.get("Error.ErrorNotificationTitle"), JOptionPane.ERROR_MESSAGE);
-
-            // </editor-fold>
-        } finally {
-            super.finalize();
-        }
-    }
-
-    // </editor-fold>
-    //
     // <editor-fold defaultstate="collapsed" desc="Private methods">
     // <editor-fold defaultstate="collapsed" desc="- Show methods">
     /**
@@ -1053,7 +1031,7 @@ public class CustomPanelMoveStepSlicerController extends ChangeNotifier implemen
                     Preferences.getInstance().getDefaultFirstSliceIndex(),
                     Preferences.getInstance().getNumberOfSlicesPerView()
             );
-            this.moveStepInfoArray[i].setFirstSliceIndex((new Double(tmpCorrectedValue)).intValue());
+            this.moveStepInfoArray[i].setFirstSliceIndex((Double.valueOf(tmpCorrectedValue)).intValue());
         }
         // </editor-fold>
     }

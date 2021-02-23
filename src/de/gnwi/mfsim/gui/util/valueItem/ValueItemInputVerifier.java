@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -72,11 +72,12 @@ public class ValueItemInputVerifier extends InputVerifier {
     /**
      * Should yield focus
      *
-     * @param anInput An input
+     * @param anInput Input (source)
+     * @param aTarget Target (not used)
      * @return True: anInput is correct so yield focus, false: Otherwise
      */
     @Override
-    public boolean shouldYieldFocus(JComponent anInput) {
+    public boolean shouldYieldFocus(JComponent anInput, JComponent aTarget) {
         try {
             if (this.verify(anInput) && this.valueItem != null) {
                 // Set mouse wait cursor since value item update cascade may take its time
@@ -92,12 +93,9 @@ public class ValueItemInputVerifier extends InputVerifier {
             ModelUtils.appendToLogfile(true, anException);
             MouseCursorManagement.getInstance().setDefaultCursor();
             // <editor-fold defaultstate="collapsed" desc="Message CommandExecutionFailed">
-
             JOptionPane.showMessageDialog(null, String.format(GuiMessage.get("Error.CommandExecutionFailed"), "shouldYieldFocus()",
                     "ValueItemInputVerifier"), GuiMessage.get("Error.ErrorNotificationTitle"), JOptionPane.ERROR_MESSAGE);
-
             // </editor-fold>
-
         } finally {
             MouseCursorManagement.getInstance().setDefaultCursor();
         }

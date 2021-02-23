@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -43,7 +43,7 @@ public interface ModelDefinitions {
     /**
      * Version of application. NOTE: MUST match version pattern below!
      */
-    String APPLICATION_VERSION = "2.2.4.0";
+    String APPLICATION_VERSION = "2.3.0.0";
 
     /**
      * Minimum job input application version. NOTE: MUST match version pattern below!
@@ -1027,7 +1027,6 @@ public interface ModelDefinitions {
      * Regex pattern for GENERAL_KEY_VALUE_SEPARATOR string
      */
     Pattern GENERAL_KEY_VALUE_SEPARATOR_PATTERN = Pattern.compile("\\" + ModelDefinitions.GENERAL_KEY_VALUE_SEPARATOR);
-
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="- Property change related definitions">
@@ -1223,6 +1222,14 @@ public interface ModelDefinitions {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="- Miscellaneous definitions">
+    /**
+     * Default volume scaling for concentration calculation flag: 
+     * True: Molecule numbers are calculated with volume scaling, false: 
+     * Molecule numbers are calculated without volume scaling (i.e. scale 
+     * factors are all 1.0)
+     */
+    boolean IS_VOLUME_SCALING_FOR_CONCENTRATION_CALCULATION_DEFAULT = true;
+    
     /**
      * Default value for deterministic random seed
      */
@@ -1546,6 +1553,11 @@ public interface ModelDefinitions {
      * Compartments: Length conversion value item name
      */
     String COMPARTMENT_LENGTH_CONVERSION_NAME = "COMPARTMENT_LENGTH_CONVERSION";
+
+    /**
+     * Compartments: Geometry random seed value item name
+     */
+    String COMPARTMENT_GEOMETRY_RANDOM_SEED_NAME = "COMPARTMENT_GEOMETRY_RANDOM_SEED";
 
     /**
      * Prefix for molecule display settings value items

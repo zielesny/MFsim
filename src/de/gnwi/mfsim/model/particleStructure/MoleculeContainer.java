@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -22,6 +22,7 @@ package de.gnwi.mfsim.model.particleStructure;
 import de.gnwi.spices.ParticleFrequency;
 import de.gnwi.mfsim.model.graphics.SpicesGraphics;
 import java.util.HashMap;
+import de.gnwi.mfsim.model.preference.Preferences;
 import de.gnwi.mfsim.model.preference.ModelDefinitions;
 
 /**
@@ -138,7 +139,6 @@ public class MoleculeContainer {
         if (this.currentMoleculeNameToInfoMap.size() == 0) {
             return false;
         }
-
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Calculate molar fraction of molecules if necessary">
         switch (this.concentrationType) {
@@ -152,7 +152,6 @@ public class MoleculeContainer {
                 this.transformGramToMolarFraction();
                 break;
         }
-
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Get particles of current molecules">
         this.currentParticleInfoContainer = new ParticleInfoContainer();
@@ -168,7 +167,6 @@ public class MoleculeContainer {
                 }
             }
         }
-
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Calculate scaling factors of particles">
         if (!this.currentParticleInfoContainer.setScalingFactors()) {
@@ -176,20 +174,26 @@ public class MoleculeContainer {
         }
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Calculate scaling factors of molecules">
-        for (MoleculeInfo tmpSingleMoleculeInfo : this.currentMoleculeNameToInfoMap.values()) {
-            SpicesGraphics tmpSpices = SpicesPool.getInstance().getSpices(tmpSingleMoleculeInfo.getMolecule().getMolecularStructureString());
-            ParticleFrequency[] tmpParticleFrequencies = tmpSpices.getParticleFrequencies();
-            double tmpSum = 0;
-            for (ParticleFrequency tmpSingleParticleFrequency : tmpParticleFrequencies) {
-                tmpSum += (double) tmpSingleParticleFrequency.getFrequency()
-                        * this.currentParticleInfoContainer.getParticleInfo(tmpSingleParticleFrequency.getParticle()).getScalingFactor();
+        if (Preferences.getInstance().isVolumeScalingForConcentrationCalculation()) {
+            for (MoleculeInfo tmpSingleMoleculeInfo : this.currentMoleculeNameToInfoMap.values()) {
+                SpicesGraphics tmpSpices = SpicesPool.getInstance().getSpices(tmpSingleMoleculeInfo.getMolecule().getMolecularStructureString());
+                ParticleFrequency[] tmpParticleFrequencies = tmpSpices.getParticleFrequencies();
+                double tmpSum = 0;
+                for (ParticleFrequency tmpSingleParticleFrequency : tmpParticleFrequencies) {
+                    tmpSum += (double) tmpSingleParticleFrequency.getFrequency() * this.currentParticleInfoContainer.getParticleInfo(tmpSingleParticleFrequency.getParticle()).getScalingFactor();
+                }
+                tmpSingleMoleculeInfo.setScalingFactor(tmpSum / (double) tmpSpices.getTotalNumberOfParticles());
+                SpicesPool.getInstance().setSpicesForReuse(tmpSpices);
             }
-            tmpSingleMoleculeInfo.setScalingFactor(tmpSum / (double) tmpSpices.getTotalNumberOfParticles());
-            SpicesPool.getInstance().setSpicesForReuse(tmpSpices);
+        } else {
+            // No volume scaling, set scaling factors to 1.0
+            for (MoleculeInfo tmpSingleMoleculeInfo : this.currentMoleculeNameToInfoMap.values()) {
+                tmpSingleMoleculeInfo.setScalingFactor(1.0);
+            }
         }
-
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Calculate scaled molar fractions of molecules">
+        // NOTE: Scaling factors are 1.0, scaled molar fraction is the molar fraction
         double tmpSumOfScaledMolarFractions = 0;
         for (MoleculeInfo tmpSingleMoleculeInfo : this.currentMoleculeNameToInfoMap.values()) {
             tmpSumOfScaledMolarFractions += tmpSingleMoleculeInfo.getMolarFraction() * tmpSingleMoleculeInfo.getScalingFactor();
@@ -198,16 +202,15 @@ public class MoleculeContainer {
             tmpSingleMoleculeInfo.setScaledMolarFraction(tmpSingleMoleculeInfo.getMolarFraction() * tmpSingleMoleculeInfo.getScalingFactor()
                     / tmpSumOfScaledMolarFractions);
         }
-
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Calculate discrete number of molecules in the box">
+        // NOTE: Scaling factors are 1.0, scaled molar fraction is the molar fraction
         double tmpTotalNumberOfParticles = this.dpdDensity * this.boxVolume;
         MoleculeInfo[] tmpMoleculeInfoArray = this.currentMoleculeNameToInfoMap.values().toArray(new MoleculeInfo[0]);
         double tmpSum = 0;
         for (int i = 1; i < tmpMoleculeInfoArray.length; i++) {
             SpicesGraphics tmpSpices = SpicesPool.getInstance().getSpices(tmpMoleculeInfoArray[i].getMolecule().getMolecularStructureString());
-            tmpSum += (double) tmpSpices.getTotalNumberOfParticles() * tmpMoleculeInfoArray[i].getScaledMolarFraction()
-                    / tmpMoleculeInfoArray[0].getScaledMolarFraction();
+            tmpSum += (double) tmpSpices.getTotalNumberOfParticles() * tmpMoleculeInfoArray[i].getScaledMolarFraction() / tmpMoleculeInfoArray[0].getScaledMolarFraction();
             SpicesPool.getInstance().setSpicesForReuse(tmpSpices);
         }
         SpicesGraphics tmpSpices = SpicesPool.getInstance().getSpices(tmpMoleculeInfoArray[0].getMolecule().getMolecularStructureString());
@@ -215,8 +218,7 @@ public class MoleculeContainer {
         SpicesPool.getInstance().setSpicesForReuse(tmpSpices);
         tmpMoleculeInfoArray[0].setNumberOfMolecules((int) Math.floor(tmpNumberOfMolecules));
         for (int i = 1; i < tmpMoleculeInfoArray.length; i++) {
-            tmpMoleculeInfoArray[i].setNumberOfMolecules((int) Math.floor(tmpNumberOfMolecules * tmpMoleculeInfoArray[i].getScaledMolarFraction()
-                    / tmpMoleculeInfoArray[0].getScaledMolarFraction()));
+            tmpMoleculeInfoArray[i].setNumberOfMolecules((int) Math.floor(tmpNumberOfMolecules * tmpMoleculeInfoArray[i].getScaledMolarFraction() / tmpMoleculeInfoArray[0].getScaledMolarFraction()));
         }
         // </editor-fold>
         return true;
@@ -255,7 +257,6 @@ public class MoleculeContainer {
         // </editor-fold>
         return this.currentMoleculeNameToInfoMap.values().toArray(new MoleculeInfo[0]);
     }
-
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public properties">
@@ -267,7 +268,6 @@ public class MoleculeContainer {
     public int getSize() {
         return this.currentMoleculeNameToInfoMap.size();
     }
-
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Private methods">
@@ -307,8 +307,9 @@ public class MoleculeContainer {
             tmpDenominator += tmpSingleMoleculeInfo.getWeightFraction() / tmpSingleMoleculeInfo.getMolecule().getMolarWeight();
         }
         for (MoleculeInfo tmpSingleMoleculeInfo : this.currentMoleculeNameToInfoMap.values()) {
-            tmpSingleMoleculeInfo.setMolarFraction((tmpSingleMoleculeInfo.getWeightFraction() / tmpSingleMoleculeInfo.getMolecule().getMolarWeight())
-                    / tmpDenominator);
+            tmpSingleMoleculeInfo.setMolarFraction(
+                (tmpSingleMoleculeInfo.getWeightFraction() / tmpSingleMoleculeInfo.getMolecule().getMolarWeight()) / tmpDenominator
+            );
         }
     }
     // </editor-fold>

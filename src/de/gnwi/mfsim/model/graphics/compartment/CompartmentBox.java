@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -33,7 +33,6 @@ import de.gnwi.mfsim.model.graphics.BoxSizeInfo;
 import de.gnwi.mfsim.model.graphics.point.PointInPlane;
 import de.gnwi.mfsim.model.graphics.SimulationBoxViewEnum;
 import de.gnwi.mfsim.model.preference.Preferences;
-import de.gnwi.mfsim.model.util.MiscUtilityMethods;
 import de.gnwi.mfsim.model.valueItem.ValueItem;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,11 +55,6 @@ public class CompartmentBox extends ChangeNotifier implements ChangeReceiverInte
      * Utility graphics methods
      */
     private final GraphicsUtilityMethods graphicsUtilityMethods = new GraphicsUtilityMethods();
-
-    /**
-     * Utility misc methods
-     */
-    private final MiscUtilityMethods miscUtilityMethods = new MiscUtilityMethods();
 
     /**
      * Change
@@ -87,11 +81,6 @@ public class CompartmentBox extends ChangeNotifier implements ChangeReceiverInte
      * the simulation box)
      */
     private PointInSpace boxSize;
-
-    /**
-     * Random values
-     */
-    private Random randomValues;
 
     /**
      * Selected body
@@ -172,12 +161,10 @@ public class CompartmentBox extends ChangeNotifier implements ChangeReceiverInte
         if (aZLength <= 0) {
             throw new IllegalArgumentException("aZLength was less/equal 0");
         }
-
         // </editor-fold>
         this.boxSize = new PointInSpace(aXLength, aYLength, aZLength);
         this.boxSizeInfo = new BoxSizeInfo(0.0, aXLength, 0.0, aYLength, 0.0, aZLength);
         this.bodiesInContainer = new ArrayList<BodyInterface>(ModelDefinitions.INITIAL_NUMBER_OF_BODIES);
-        this.randomValues = this.miscUtilityMethods.getRandom();
         this.boxView = SimulationBoxViewEnum.XZ_FRONT;
         this.thirdDimensionValue = 0.0;
         this.selectedBody = null;
@@ -1075,28 +1062,21 @@ public class CompartmentBox extends ChangeNotifier implements ChangeReceiverInte
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- Random value related methods">
     /**
-     * Initializes random value generation (i.e. seed is set if defined in
-     * preferences)
-     */
-    public void initializeRandomValueGeneration() {
-        this.randomValues = this.miscUtilityMethods.getRandom();
-    }
-
-    /**
      * Returns a random point in the free volume of the simulation box.
      *
+     * @param aRandomNumberGenerator Random number generator
      * @return Random point in the free volume of the simulation box
      */
-    public PointInSpace getRandomPointInFreeVolume() {
-        this.pointInSpace1.setX(this.randomValues.nextDouble() * this.boxSize.getX());
-        this.pointInSpace1.setY(this.randomValues.nextDouble() * this.boxSize.getY());
-        this.pointInSpace1.setZ(this.randomValues.nextDouble() * this.boxSize.getZ());
+    public PointInSpace getRandomPointInFreeVolume(Random aRandomNumberGenerator) {
+        this.pointInSpace1.setX(aRandomNumberGenerator.nextDouble() * this.boxSize.getX());
+        this.pointInSpace1.setY(aRandomNumberGenerator.nextDouble() * this.boxSize.getY());
+        this.pointInSpace1.setZ(aRandomNumberGenerator.nextDouble() * this.boxSize.getZ());
         int tmpCounter = 0;
         int tmpNumberOfTrials = Preferences.getInstance().getNumberOfTrialsForCompartment();
         while (!this.isInFreeVolume(this.pointInSpace1) && tmpCounter < tmpNumberOfTrials) {
-            this.pointInSpace1.setX(this.randomValues.nextDouble() * this.boxSize.getX());
-            this.pointInSpace1.setY(this.randomValues.nextDouble() * this.boxSize.getY());
-            this.pointInSpace1.setZ(this.randomValues.nextDouble() * this.boxSize.getZ());
+            this.pointInSpace1.setX(aRandomNumberGenerator.nextDouble() * this.boxSize.getX());
+            this.pointInSpace1.setY(aRandomNumberGenerator.nextDouble() * this.boxSize.getY());
+            this.pointInSpace1.setZ(aRandomNumberGenerator.nextDouble() * this.boxSize.getZ());
             tmpCounter++;
         }
         return this.pointInSpace1.getClone();
@@ -1106,19 +1086,20 @@ public class CompartmentBox extends ChangeNotifier implements ChangeReceiverInte
      * Returns a random graphical particle position in the free volume of the
      * simulation box.
      *
+     * @param aRandomNumberGenerator Random number generator
      * @return Random graphical particle position in the free volume of the
      * simulation box
      */
-    public GraphicalParticlePosition getRandomPositionInFreeVolume() {
-        this.graphicalParticlePosition1.setX(this.randomValues.nextDouble() * this.boxSize.getX());
-        this.graphicalParticlePosition1.setY(this.randomValues.nextDouble() * this.boxSize.getY());
-        this.graphicalParticlePosition1.setZ(this.randomValues.nextDouble() * this.boxSize.getZ());
+    public GraphicalParticlePosition getRandomPositionInFreeVolume(Random aRandomNumberGenerator) {
+        this.graphicalParticlePosition1.setX(aRandomNumberGenerator.nextDouble() * this.boxSize.getX());
+        this.graphicalParticlePosition1.setY(aRandomNumberGenerator.nextDouble() * this.boxSize.getY());
+        this.graphicalParticlePosition1.setZ(aRandomNumberGenerator.nextDouble() * this.boxSize.getZ());
         int tmpCounter = 0;
         int tmpNumberOfTrials = Preferences.getInstance().getNumberOfTrialsForCompartment();
         while (!this.isInFreeVolume(this.graphicalParticlePosition1) && tmpCounter < tmpNumberOfTrials) {
-            this.graphicalParticlePosition1.setX(this.randomValues.nextDouble() * this.boxSize.getX());
-            this.graphicalParticlePosition1.setY(this.randomValues.nextDouble() * this.boxSize.getY());
-            this.graphicalParticlePosition1.setZ(this.randomValues.nextDouble() * this.boxSize.getZ());
+            this.graphicalParticlePosition1.setX(aRandomNumberGenerator.nextDouble() * this.boxSize.getX());
+            this.graphicalParticlePosition1.setY(aRandomNumberGenerator.nextDouble() * this.boxSize.getY());
+            this.graphicalParticlePosition1.setZ(aRandomNumberGenerator.nextDouble() * this.boxSize.getZ());
             tmpCounter++;
         }
         return this.graphicalParticlePosition1.getClone();
@@ -1131,9 +1112,10 @@ public class CompartmentBox extends ChangeNotifier implements ChangeReceiverInte
      * @param aFirstIndex First index in buffer
      * @param aNumber Number of random points (not allowed to be less than 1)
      * @param aNumberOfTrials Number of trials for random point generation
+     * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
-    public void fillFreeVolumeRandomPoints(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, int aNumberOfTrials) {
+    public void fillFreeVolumeRandomPoints(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, int aNumberOfTrials, Random aRandomNumberGenerator) {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
             throw new IllegalArgumentException("aNumber is less than 1.");
@@ -1154,14 +1136,14 @@ public class CompartmentBox extends ChangeNotifier implements ChangeReceiverInte
         if (aBuffer instanceof GraphicalParticlePosition[]) {
             // <editor-fold defaultstate="collapsed" desc="aBuffer is an instance of GraphicalParticlePosition[]">
             for (int i = 0; i < aNumber; i++) {
-                this.graphicalParticlePosition2.setX(this.randomValues.nextDouble() * this.boxSize.getX());
-                this.graphicalParticlePosition2.setY(this.randomValues.nextDouble() * this.boxSize.getY());
-                this.graphicalParticlePosition2.setZ(this.randomValues.nextDouble() * this.boxSize.getZ());
+                this.graphicalParticlePosition2.setX(aRandomNumberGenerator.nextDouble() * this.boxSize.getX());
+                this.graphicalParticlePosition2.setY(aRandomNumberGenerator.nextDouble() * this.boxSize.getY());
+                this.graphicalParticlePosition2.setZ(aRandomNumberGenerator.nextDouble() * this.boxSize.getZ());
                 int tmpCounter = 0;
                 while (!this.isInFreeVolume(this.graphicalParticlePosition2) && tmpCounter < aNumberOfTrials) {
-                    this.graphicalParticlePosition2.setX(this.randomValues.nextDouble() * this.boxSize.getX());
-                    this.graphicalParticlePosition2.setY(this.randomValues.nextDouble() * this.boxSize.getY());
-                    this.graphicalParticlePosition2.setZ(this.randomValues.nextDouble() * this.boxSize.getZ());
+                    this.graphicalParticlePosition2.setX(aRandomNumberGenerator.nextDouble() * this.boxSize.getX());
+                    this.graphicalParticlePosition2.setY(aRandomNumberGenerator.nextDouble() * this.boxSize.getY());
+                    this.graphicalParticlePosition2.setZ(aRandomNumberGenerator.nextDouble() * this.boxSize.getZ());
                     tmpCounter++;
                 }
                 aBuffer[tmpIndex++] = this.graphicalParticlePosition2.getClone();
@@ -1170,14 +1152,14 @@ public class CompartmentBox extends ChangeNotifier implements ChangeReceiverInte
         } else if (aBuffer instanceof PointInSpace[]) {
             // <editor-fold defaultstate="collapsed" desc="aBuffer is an instance of PointInSpace[]">
             for (int i = 0; i < aNumber; i++) {
-                this.pointInSpace2.setX(this.randomValues.nextDouble() * this.boxSize.getX());
-                this.pointInSpace2.setY(this.randomValues.nextDouble() * this.boxSize.getY());
-                this.pointInSpace2.setZ(this.randomValues.nextDouble() * this.boxSize.getZ());
+                this.pointInSpace2.setX(aRandomNumberGenerator.nextDouble() * this.boxSize.getX());
+                this.pointInSpace2.setY(aRandomNumberGenerator.nextDouble() * this.boxSize.getY());
+                this.pointInSpace2.setZ(aRandomNumberGenerator.nextDouble() * this.boxSize.getZ());
                 int tmpCounter = 0;
                 while (!this.isInFreeVolume(this.pointInSpace2) && tmpCounter < aNumberOfTrials) {
-                    this.pointInSpace2.setX(this.randomValues.nextDouble() * this.boxSize.getX());
-                    this.pointInSpace2.setY(this.randomValues.nextDouble() * this.boxSize.getY());
-                    this.pointInSpace2.setZ(this.randomValues.nextDouble() * this.boxSize.getZ());
+                    this.pointInSpace2.setX(aRandomNumberGenerator.nextDouble() * this.boxSize.getX());
+                    this.pointInSpace2.setY(aRandomNumberGenerator.nextDouble() * this.boxSize.getY());
+                    this.pointInSpace2.setZ(aRandomNumberGenerator.nextDouble() * this.boxSize.getZ());
                     tmpCounter++;
                 }
                 aBuffer[tmpIndex++] = this.pointInSpace2.getClone();
@@ -1199,13 +1181,15 @@ public class CompartmentBox extends ChangeNotifier implements ChangeReceiverInte
      * @param aNumberOfSpheres Number of spheres
      * @param aRadius Radius of spheres
      * @param aNumberOfTrials Number of trials for sphere generation
+     * @param aRandomNumberGenerator Random number generator
      * @return Linked list with non-overlapping spheres or null if none could be 
      * created
      */
     public LinkedList<BodySphere> getNonOverlappingRandomSpheres(
         int aNumberOfSpheres, 
         double aRadius, 
-        int aNumberOfTrials
+        int aNumberOfTrials,
+        Random aRandomNumberGenerator
     ) {
         PointInSpace tmpBodyCenter = new PointInSpace(
             this.boxSize.getX() / 2.0,
@@ -1222,7 +1206,8 @@ public class CompartmentBox extends ChangeNotifier implements ChangeReceiverInte
                 this.boxSize.getZ(), 
                 aNumberOfSpheres, 
                 aRadius, 
-                aNumberOfTrials
+                aNumberOfTrials,
+                aRandomNumberGenerator
             );
         if (tmpSphereList != null && !tmpSphereList.isEmpty()) {
             for (BodySphere tmpSphere : tmpSphereList) {

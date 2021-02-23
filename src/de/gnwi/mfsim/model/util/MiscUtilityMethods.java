@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -69,7 +69,6 @@ public class MiscUtilityMethods {
     }
 
     // </editor-fold>
-    //
     // <editor-fold defaultstate="collapsed" desc="- Miscellaneous methods">
     /**
      * Returns fraction aCurrentValue of aTotalValue in percent (0 to 100,
@@ -163,7 +162,6 @@ public class MiscUtilityMethods {
         }
     }
     // </editor-fold>
-    //
     // <editor-fold defaultstate="collapsed" desc="- String array related methods">
     /**
      * Returns number of elements in specified jagged array of strings
@@ -362,7 +360,6 @@ public class MiscUtilityMethods {
         return tmpIndexStringArray;
     }
     // </editor-fold>
-    //
     // <editor-fold defaultstate="collapsed" desc="- Generic sort methods">
     /**
      * Sorts array according to aComparator. 
@@ -455,16 +452,16 @@ public class MiscUtilityMethods {
         } while (true);
     }
     // </editor-fold>
-    //
     // <editor-fold defaultstate="collapsed" desc="- Random number related methods">
     /**
-     * Returns random number generator according to definitions
+     * Returns random number generator with defined seed
      *
+     * @param aRandomSeed Random seed value
      * @return Random number generator
      */
-    public Random getRandom() {
+    public Random getRandomNumberGenerator(long aRandomSeed) {
         if (Preferences.getInstance().isDeterministicRandom()) {
-            return new Random(Preferences.getInstance().getDeterministicRandomSeed());
+            return new Random(aRandomSeed);
         } else {
             return new Random();
         }

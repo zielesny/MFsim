@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -189,7 +189,7 @@ public class DialogSlicerShow extends CustomDialogApplyCancelSize implements Cha
             // <editor-fold defaultstate="collapsed" desc="- Add listeners">
             tmpSlicerShowDialog.addWindowListener(new WindowAdapter() {
                 public void windowOpened(final WindowEvent e) {
-                    // Do nothing!
+                    tmpCustomPanelSlicerController.createSlices();
                 }
 
                 public void windowClosing(final WindowEvent e) {
@@ -332,10 +332,8 @@ public class DialogSlicerShow extends CustomDialogApplyCancelSize implements Cha
             GuiUtils.checkDialogSize(tmpSlicerShowDialog);
             GuiUtils.centerDialogOnScreen(tmpSlicerShowDialog);
             MouseCursorManagement.getInstance().setDefaultCursor();
-
             // Show dialog - Wait
             tmpSlicerShowDialog.setVisible(true);
-
             // </editor-fold>
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="Treatment of dialog result">

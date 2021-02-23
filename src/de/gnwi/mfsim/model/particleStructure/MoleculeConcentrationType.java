@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -51,10 +51,7 @@ public enum MoleculeConcentrationType {
     UNDEFINED;
     // </editor-fold>
     //
-    // <editor-fold defaultstate="collapsed" desc="Public methods">// </editor-fold>
-    //
     // <editor-fold defaultstate="collapsed" desc="Public methods">
-
     /**
      * Returns MoleculeConcentrationType representation
      *

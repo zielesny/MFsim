@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -240,7 +240,7 @@ public class JobUtilityMethods {
         for (int i = 0; i < aParticleTableValueItem.getMatrixRowCount(); i++) {
             String tmpParticle = aParticleTableValueItem.getValue(i, 0);
             double tmpVolume = aParticleTableValueItem.getValueAsDouble(i, 5);
-            tmpParticleToVolumeMap.put(tmpParticle, new Double(tmpVolume));
+            tmpParticleToVolumeMap.put(tmpParticle, Double.valueOf(tmpVolume));
             if (tmpVolume < tmpSmallestVolume) {
                 tmpSmallestVolume = tmpVolume;
             }
@@ -381,10 +381,10 @@ public class JobUtilityMethods {
             String tmpParticle = aParticleTableValueItem.getValue(i, 0);
             // NOTE: Molecular weight is in g/mol
             double tmpMolWeigth = aParticleTableValueItem.getValueAsDouble(i, 4);
-            tmpParticleToMolWeightMap.put(tmpParticle, new Double(tmpMolWeigth));
+            tmpParticleToMolWeightMap.put(tmpParticle, Double.valueOf(tmpMolWeigth));
             // NOTE: Volume is in A^3
             double tmpVolume = aParticleTableValueItem.getValueAsDouble(i, 5);
-            tmpParticleToVolumeMap.put(tmpParticle, new Double(tmpVolume));
+            tmpParticleToVolumeMap.put(tmpParticle, Double.valueOf(tmpVolume));
             if (tmpVolume < tmpSmallestVolume) {
                 tmpSmallestVolume = tmpVolume;
             }
@@ -552,10 +552,10 @@ public class JobUtilityMethods {
             String tmpParticle = aParticleTableValueItem.getValue(i, 0);
             // NOTE: Molecular weight is in g/mol
             double tmpMolWeigth = aParticleTableValueItem.getValueAsDouble(i, 4);
-            tmpParticleToMolWeightMap.put(tmpParticle, new Double(tmpMolWeigth));
+            tmpParticleToMolWeightMap.put(tmpParticle, Double.valueOf(tmpMolWeigth));
             // NOTE: Volume is in A^3
             double tmpVolume = aParticleTableValueItem.getValueAsDouble(i, 5);
-            tmpParticleToVolumeMap.put(tmpParticle, new Double(tmpVolume));
+            tmpParticleToVolumeMap.put(tmpParticle, Double.valueOf(tmpVolume));
             if (tmpVolume < tmpSmallestVolume) {
                 tmpSmallestVolume = tmpVolume;
             }
@@ -1586,8 +1586,8 @@ public class JobUtilityMethods {
                 // <editor-fold defaultstate="collapsed" desc="Temperature: Convert value to kt unit">
                 if (tmpSingleValueItem.getName().equals("Temperature")) {
                     tmpSingleValueItem = tmpSingleValueItem.getClone();
-                    // Divide temperature by 298.0 and round to 6 decimals
-                    tmpSingleValueItem.setValue(this.stringUtilityMethods.formatDoubleValue(tmpSingleValueItem.getValueAsDouble() / 298.0, 6));
+                    // Divide temperature by 300.0 and round to 6 decimals
+                    tmpSingleValueItem.setValue(this.stringUtilityMethods.formatDoubleValue(tmpSingleValueItem.getValueAsDouble() / 300.0, 6));
                 }
                 // </editor-fold>
                 // <editor-fold defaultstate="collapsed" desc="InteractionTable: Split particle pair">
@@ -3116,7 +3116,6 @@ public class JobUtilityMethods {
             if (tmpParticleToPositionsMap == null) {
                 return;
             }
-
             // NOTE: For RDF calculation PBC in all directions are necessary
             DistanceDistributionUtils tmpDistanceDistributionUtils = new DistanceDistributionUtils(
                     ModelDefinitions.RDF_BASIC_SEGMENT_LENGTH,
@@ -3217,7 +3216,6 @@ public class JobUtilityMethods {
                     tmpParticlePairRdfFilePathnameToStringArrayMap.get(tmpParticlePairRdfFilePathname),
                     tmpParticlePairRdfFilePathname);
         }
-
         // </editor-fold>
     }
 
@@ -3493,6 +3491,9 @@ public class JobUtilityMethods {
                 tmpDefinedParticlePairAverageDistanceList = this.readParticlePairAverageDistances(tmpParticlePairAverageDistancesForStepFilePathname);
             } else {
                 tmpDefinedParticlePairAverageDistanceList = this.getDefinedParticlePairAverageDistances(tmpJobResultParticlePositionsStepFilePathname, aJobInputValueItemContainer);
+                if (tmpDefinedParticlePairAverageDistanceList == null) {
+                    return;
+                }
                 if (!this.writeParticlePairAverageDistances(tmpParticlePairAverageDistancesForStepFilePathname, tmpDefinedParticlePairAverageDistanceList)) {
                     return;
                 }
@@ -3609,6 +3610,9 @@ public class JobUtilityMethods {
                 tmpDefinedFragmenInMoleculePairAverageDistanceList = this.readParticlePairAverageDistances(tmpMoleculeParticlePairAverageDistancesForStepFilePathname);
             } else {
                 tmpDefinedFragmenInMoleculePairAverageDistanceList = this.getDefinedMoleculeParticlePairAverageDistances(tmpJobResultParticlePositionsStepFilePathname, aJobInputValueItemContainer);
+                if (tmpDefinedFragmenInMoleculePairAverageDistanceList == null) {
+                    return;
+                }
                 if (!this.writeParticlePairAverageDistances(tmpMoleculeParticlePairAverageDistancesForStepFilePathname, tmpDefinedFragmenInMoleculePairAverageDistanceList)) {
                     return;
                 }
@@ -3619,7 +3623,6 @@ public class JobUtilityMethods {
 
             for (ParticlePairAverageDistance tmpMoleculeParticlePairAverageDistance : tmpDefinedFragmenInMoleculePairAverageDistanceList) {
                 if (!tmpMoleculeParticlePairToDistancesMap.containsKey(tmpMoleculeParticlePairAverageDistance.getUnderscoreConcatenatedParticlePair())) {
-
                     // <editor-fold defaultstate="collapsed" desc="Initialize particle pair">
                     LinkedList<String> tmpNewDistancesList = new LinkedList<String>();
                     tmpNewDistancesList.add(tmpVersion);
@@ -3633,7 +3636,6 @@ public class JobUtilityMethods {
 
                     // </editor-fold>
                 } else {
-
                     // <editor-fold defaultstate="collapsed" desc="Append to particle pair">
                     LinkedList<String> tmpDistancesList = tmpMoleculeParticlePairToDistancesMap.get(tmpMoleculeParticlePairAverageDistance.getUnderscoreConcatenatedParticlePair());
 
@@ -3647,7 +3649,6 @@ public class JobUtilityMethods {
         if (tmpMoleculeParticlePairToDistancesMap.isEmpty()) {
             return;
         }
-
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Write particle-pair distance files">
         for (String tmpMoleculeParticlePair : tmpMoleculeParticlePairToDistancesMap.keySet()) {
@@ -4549,7 +4550,6 @@ public class JobUtilityMethods {
         if (aJobInputValueItemContainer == null) {
             return null;
         }
-
         // </editor-fold>
         try {
             // <editor-fold defaultstate="collapsed" desc="Local variables">
@@ -4589,6 +4589,8 @@ public class JobUtilityMethods {
                 tmpLine = tmpBufferedReader.readLine();
                 if (tmpLine.equals("Version 1.0.0")) {
                     // <editor-fold defaultstate="collapsed" desc="Version 1.0.0">
+                    // Ignore total number of particles in simulation
+                    tmpBufferedReader.readLine();
                     while (true) {
                         // <editor-fold defaultstate="collapsed" desc="Molecule">
                         String tmpMoleculeName = tmpBufferedReader.readLine();
@@ -4638,6 +4640,11 @@ public class JobUtilityMethods {
                             tmpZ = tmpZinDpd * tmpLengthConversionFactor;                            
 
                             tmpPositionsList.add(new PointInSpace(tmpX, tmpY, tmpZ));
+                            
+                            // Ignore particle index
+                            tmpBufferedReader.readLine();
+                            // Ignore molecule index
+                            tmpBufferedReader.readLine();
                         }
                         // </editor-fold>
                     }
@@ -4695,7 +4702,6 @@ public class JobUtilityMethods {
         if (aJobInputValueItemContainer == null) {
             return null;
         }
-
         // </editor-fold>
         try {
             // <editor-fold defaultstate="collapsed" desc="Local variables">
@@ -4735,13 +4741,14 @@ public class JobUtilityMethods {
                 tmpLine = tmpBufferedReader.readLine();
                 if (tmpLine.equals("Version 1.0.0")) {
                     // <editor-fold defaultstate="collapsed" desc="Version 1.0.0">
+                    // Ignore total number of particles in simulation
+                    tmpBufferedReader.readLine();
                     while (true) {
                         // <editor-fold defaultstate="collapsed" desc="Molecule">
                         String tmpMoleculeName = tmpBufferedReader.readLine();
                         if (tmpMoleculeName == null) {
                             break;
                         }
-
                         // </editor-fold>
                         // <editor-fold defaultstate="collapsed" desc="Particle">
                         tmpParticle = tmpBufferedReader.readLine();
@@ -4752,11 +4759,9 @@ public class JobUtilityMethods {
                             tmpPositionsList = new LinkedList<PointInSpace>();
                             tmpMoleculeParticleToPositionsMap.put(tmpMoleculeParticle, tmpPositionsList);
                         }
-
                         // </editor-fold>
                         // <editor-fold defaultstate="collapsed" desc="Number of positions">
                         tmpNumberOfParticlePositions = Integer.valueOf(tmpBufferedReader.readLine());
-
                         // </editor-fold>
                         // <editor-fold defaultstate="collapsed" desc="Read particle positions">
                         for (int k = 0; k < tmpNumberOfParticlePositions; k++) {
@@ -4788,6 +4793,11 @@ public class JobUtilityMethods {
                             tmpZ = tmpZinDpd * tmpLengthConversionFactor;                            
 
                             tmpPositionsList.add(new PointInSpace(tmpX, tmpY, tmpZ));
+                            
+                            // Ignore particle index
+                            tmpBufferedReader.readLine();
+                            // Ignore molecule index
+                            tmpBufferedReader.readLine();
                         }
                         // </editor-fold>
                     }
@@ -4795,7 +4805,6 @@ public class JobUtilityMethods {
                 } else {
                     // <editor-fold defaultstate="collapsed" desc="Unknown version">
                     return null;
-
                     // </editor-fold>
                 }
             } catch (Exception anException) {
@@ -4811,7 +4820,6 @@ public class JobUtilityMethods {
                     }
                 }
             }
-
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="Return particle positions">
             return tmpMoleculeParticleToPositionsMap;
@@ -4846,39 +4854,30 @@ public class JobUtilityMethods {
         }
 
         // </editor-fold>
-        // <editor-fold defaultstate="collapsed" desc="Set deterministic random seed to default value">
-        Preferences.getInstance().setDefaultDeterministicRandomSeed();
+        // <editor-fold defaultstate="collapsed" desc="1. Setup converted molecules value item">
+        // Clone aMoleculeTableValueItem
+        ValueItem tmpConvertedMoleculeTableValueItem = aMoleculeTableValueItem.getClone();
+        // IMPORTANT in xy-layer and sphere: Sort so that rows with protein data come first
+        tmpConvertedMoleculeTableValueItem.sortMatrixRowsWithProteinDataRowsFirst();
+        // IMPORTANT: Suppress all possible notifications of cloned value item
+        tmpConvertedMoleculeTableValueItem.setUpdateNotifier(false);
+        tmpConvertedMoleculeTableValueItem.removeAllChangeReceivers();
         // </editor-fold>
-        try {
-            // <editor-fold defaultstate="collapsed" desc="1. Setup converted molecules value item">
-            // Clone aMoleculeTableValueItem
-            ValueItem tmpConvertedMoleculeTableValueItem = aMoleculeTableValueItem.getClone();
-            // IMPORTANT in xy-layer and sphere: Sort so that rows with protein data come first
-            tmpConvertedMoleculeTableValueItem.sortMatrixRowsWithProteinDataRowsFirst();
-            // IMPORTANT: Suppress all possible notifications of cloned value item
-            tmpConvertedMoleculeTableValueItem.setUpdateNotifier(false);
-            tmpConvertedMoleculeTableValueItem.removeAllChangeReceivers();
-            // </editor-fold>
-            // <editor-fold defaultstate="collapsed" desc="2. Write molecular start-geometry files">
-            for (int i = 0; i < tmpConvertedMoleculeTableValueItem.getMatrixRowCount(); i++) {
-                String tmpFileName = ModelDefinitions.JDPD_POSITIONS_BONDS_FILE_PREFIX + String.valueOf(i).trim() + FileOutputStrings.TEXT_FILE_ENDING;
-                if (aDestinationPath != null && !aDestinationPath.isEmpty() && (new File(aDestinationPath)).isDirectory()) {
-                    String tmpFilePathname = aDestinationPath + File.separatorChar + tmpFileName;
-                    String tmpMoleculeName = tmpConvertedMoleculeTableValueItem.getValue(i, 0);
-                    if (!this.writeJdpdPositionsBondsFile(aJobInputValueItemContainer, tmpMoleculeName, tmpFilePathname)) {
-                        ModelUtils.appendToLogfile(true, "UtilityJobMethods.convertMolecularStructureForJdpdInputFile(): this.writeJdpdPositionsBondsFile(aJobInputValueItemContainer, tmpMoleculeName, tmpFilePathname) fails.");
-                        return null;
-                    }
+        // <editor-fold defaultstate="collapsed" desc="2. Write molecular start-geometry files">
+        for (int i = 0; i < tmpConvertedMoleculeTableValueItem.getMatrixRowCount(); i++) {
+            String tmpFileName = ModelDefinitions.JDPD_POSITIONS_BONDS_FILE_PREFIX + String.valueOf(i).trim() + FileOutputStrings.TEXT_FILE_ENDING;
+            if (aDestinationPath != null && !aDestinationPath.isEmpty() && (new File(aDestinationPath)).isDirectory()) {
+                String tmpFilePathname = aDestinationPath + File.separatorChar + tmpFileName;
+                String tmpMoleculeName = tmpConvertedMoleculeTableValueItem.getValue(i, 0);
+                if (!this.writeJdpdPositionsBondsFile(aJobInputValueItemContainer, tmpMoleculeName, tmpFilePathname)) {
+                    ModelUtils.appendToLogfile(true, "UtilityJobMethods.convertMolecularStructureForJdpdInputFile(): this.writeJdpdPositionsBondsFile(aJobInputValueItemContainer, tmpMoleculeName, tmpFilePathname) fails.");
+                    return null;
                 }
-                tmpConvertedMoleculeTableValueItem.setValue(tmpFileName, i, 1);
             }
-            // </editor-fold>
-            return tmpConvertedMoleculeTableValueItem;
-        } finally {
-            // <editor-fold defaultstate="collapsed" desc="Set deterministic random seed to default value">
-            Preferences.getInstance().setDefaultDeterministicRandomSeed();
-            // </editor-fold>
+            tmpConvertedMoleculeTableValueItem.setValue(tmpFileName, i, 1);
         }
+        // </editor-fold>
+        return tmpConvertedMoleculeTableValueItem;
     }
 
     /**
@@ -4924,6 +4923,10 @@ public class JobUtilityMethods {
             ModelUtils.appendToLogfile(true, anException);
             return false;
         }
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Set random number generator and seed">
+        long tmpRandomSeed = tmpCompartmentContainer.getGeometryRandomSeed();
+        Random tmpRandomNumberGenerator = this.miscUtilityMethods.getRandomNumberGenerator(tmpRandomSeed);
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Delete aJdpdPositionsBondsFilePathname if necessary">
         if (!this.fileUtilityMethods.deleteSingleFile(aJdpdPositionsBondsFilePathname)) {
@@ -4998,9 +5001,6 @@ public class JobUtilityMethods {
                             for (int i = 0; i < tmpChemicalCompositionValueItem.getMatrixRowCount(); i++) {
                                 // tmpChemicalCompositionValueItem column 0 : Molecule name
                                 if (tmpChemicalCompositionValueItem.getValue(i, 0).equals(aMoleculeName)) {
-                                    // <editor-fold defaultstate="collapsed" desc="Increment deterministic random seed value">
-                                    Preferences.getInstance().incrementDeterministicRandomSeed();
-                                    // </editor-fold>
                                     // <editor-fold defaultstate="collapsed" desc="Set molecule information">
                                     // Molecule name
                                     String tmpMoleculeName = tmpChemicalCompositionValueItem.getValue(i, 0);
@@ -5042,9 +5042,8 @@ public class JobUtilityMethods {
                                             boolean tmpIsProteinRandom3DOrientation = false;
                                             if (this.graphicsUtilityMethods.isRandom3dStructureGeometryInSphere(tmpChemicalCompositionValueItem, i)) {
                                                 tmpIsProteinRandom3DOrientation = true;
-                                                if (Preferences.getInstance().isDeterministicRandom()) {
-                                                    tmpPdbToDpd.setSeed(Preferences.getInstance().getDeterministicRandomSeed());
-                                                }
+                                                tmpPdbToDpd.setSeed(tmpRandomSeed);
+                                                tmpPdbToDpd.setRandomNumberGenerator(tmpRandomNumberGenerator);
                                             } else {
                                                 tmpPdbToDpd.setDefaultRotation();
                                             }
@@ -5077,7 +5076,8 @@ public class JobUtilityMethods {
                                                     tmpSphere.getNonOverlappingRandomSpheres(
                                                         tmpQuantityInVolume, 
                                                         tmpRadiusOfProtein,
-                                                        Preferences.getInstance().getNumberOfTrialsForCompartment()
+                                                        Preferences.getInstance().getNumberOfTrialsForCompartment(),
+                                                        tmpRandomNumberGenerator
                                                     );
                                                 int tmpFirstCalphaIndex = 1;
                                                 for (BodySphere tmpSingleSphere : tmpSphereList) {
@@ -5122,7 +5122,8 @@ public class JobUtilityMethods {
                                                         tmpFirstParticleCoordinates, 
                                                         0, 
                                                         tmpQuantityInVolume,
-                                                        Preferences.getInstance().getNumberOfTrialsForCompartment()
+                                                        Preferences.getInstance().getNumberOfTrialsForCompartment(),
+                                                        tmpRandomNumberGenerator
                                                     );
                                                     tmpLastParticleCoordinates = tmpFirstParticleCoordinates;
                                                 } else {
@@ -5132,17 +5133,18 @@ public class JobUtilityMethods {
                                                         0, 
                                                         tmpQuantityInVolume,
                                                         tmpBondLength, 
-                                                        Preferences.getInstance().getNumberOfTrialsForCompartment()
+                                                        Preferences.getInstance().getNumberOfTrialsForCompartment(),
+                                                        tmpRandomNumberGenerator
                                                     );
                                                 }
                                             }
                                             if (tmpQuantityOnSurface > 0) {
                                                 if (this.graphicsUtilityMethods.isUpperSurfaceGeometryInSphere(tmpChemicalCompositionValueItem, i)) {
-                                                    tmpSphere.fillUpperRandomPointsOnSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface);
+                                                    tmpSphere.fillUpperRandomPointsOnSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpRandomNumberGenerator);
                                                 } else if (this.graphicsUtilityMethods.isMiddleSurfaceGeometryInSphere(tmpChemicalCompositionValueItem, i)) {
-                                                    tmpSphere.fillMiddleRandomPointsOnSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface);
+                                                    tmpSphere.fillMiddleRandomPointsOnSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpRandomNumberGenerator);
                                                 } else {
-                                                    tmpSphere.fillRandomPointsOnSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface);
+                                                    tmpSphere.fillRandomPointsOnSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpRandomNumberGenerator);
                                                 }
                                                 // Center of sphere
                                                 PointInSpace tmpCenterOfSphere = tmpSphere.getBodyCenter();
@@ -5297,10 +5299,6 @@ public class JobUtilityMethods {
 
                                         // </editor-fold>
                                     } else {
-                                        // <editor-fold defaultstate="collapsed" desc="Increment deterministic random seed value">
-                                        Preferences.getInstance().incrementDeterministicRandomSeed();
-
-                                        // </editor-fold>
                                         // <editor-fold defaultstate="collapsed" desc="Random positions in xy-layer">
                                         if (tmpQuantityInVolume > 0 || tmpQuantityOnSurface > 0) {
                                             if (this.graphicsUtilityMethods.is3dStructureGeometryInXyLayer(tmpChemicalCompositionValueItem, i)) {
@@ -5331,9 +5329,8 @@ public class JobUtilityMethods {
                                                 boolean tmpIsProteinRandom3DOrientation = false;
                                                 if (this.graphicsUtilityMethods.isRandom3dStructureGeometryInXyLayer(tmpChemicalCompositionValueItem, i)) {
                                                     tmpIsProteinRandom3DOrientation = true;
-                                                    if (Preferences.getInstance().isDeterministicRandom()) {
-                                                        tmpPdbToDpd.setSeed(Preferences.getInstance().getDeterministicRandomSeed());
-                                                    }
+                                                    tmpPdbToDpd.setSeed(tmpRandomSeed);
+                                                    tmpPdbToDpd.setRandomNumberGenerator(tmpRandomNumberGenerator);
                                                 } else {
                                                     tmpPdbToDpd.setDefaultRotation();
                                                 }
@@ -5347,7 +5344,8 @@ public class JobUtilityMethods {
                                                     tmpXyLayer.getNonOverlappingRandomSpheres(
                                                         tmpQuantityInVolume, 
                                                         tmpRadiusOfProtein,
-                                                        Preferences.getInstance().getNumberOfTrialsForCompartment()
+                                                        Preferences.getInstance().getNumberOfTrialsForCompartment(),
+                                                        tmpRandomNumberGenerator
                                                     );
                                                 int tmpFirstCalphaIndex = 1;
                                                 for (BodySphere tmpSingleSphere : tmpSphereList) {
@@ -5401,7 +5399,8 @@ public class JobUtilityMethods {
                                                             tmpFirstParticleCoordinates, 
                                                             0, 
                                                             tmpQuantityInVolume,
-                                                            Preferences.getInstance().getNumberOfTrialsForCompartment()
+                                                            Preferences.getInstance().getNumberOfTrialsForCompartment(),
+                                                            tmpRandomNumberGenerator
                                                         );
                                                         tmpLastParticleCoordinates = tmpFirstParticleCoordinates;
                                                     } else {
@@ -5411,13 +5410,14 @@ public class JobUtilityMethods {
                                                             0, 
                                                             tmpQuantityInVolume,
                                                             tmpBondLength, 
-                                                            Preferences.getInstance().getNumberOfTrialsForCompartment()
+                                                            Preferences.getInstance().getNumberOfTrialsForCompartment(),
+                                                            tmpRandomNumberGenerator
                                                         );
                                                     }
                                                 }
                                                 if (tmpQuantityOnSurface > 0) {
                                                     if (this.graphicsUtilityMethods.isAllSurfacesGeometryInXyLayer(tmpChemicalCompositionValueItem, i)) {
-                                                        tmpXyLayer.fillRandomPointsOnAllSurfaces(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface);
+                                                        tmpXyLayer.fillRandomPointsOnAllSurfaces(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpRandomNumberGenerator);
                                                         GraphicalParticlePosition tmpCenterOfXyLayer = new GraphicalParticlePosition(
                                                                 tmpXyLayer.getBodyCenter().getX(), tmpXyLayer.getBodyCenter().getY(), tmpXyLayer.getBodyCenter().getZ());
                                                         Arrays.fill(tmpLastParticleCoordinates, tmpQuantityInVolume, tmpQuantityInVolume + tmpQuantityOnSurface, tmpCenterOfXyLayer);
@@ -5426,42 +5426,42 @@ public class JobUtilityMethods {
                                                         if (this.graphicsUtilityMethods.isSingleSurfaceXyTopGeometryInXyLayer(tmpChemicalCompositionValueItem, i)) {
                                                             BodyXyLayerSingleSurfaceEnum tmpSingleSurface = BodyXyLayerSingleSurfaceEnum.XY_TOP;
                                                             tmpOffsetZ = tmpXyLayerCenterZCoordinate - tmpHalfZLength;
-                                                            tmpXyLayer.fillRandomPointsOnSingleSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpSingleSurface);
+                                                            tmpXyLayer.fillRandomPointsOnSingleSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpSingleSurface, tmpRandomNumberGenerator);
                                                             for (int j = tmpQuantityInVolume; j < tmpQuantityOnSurface; j++) {
                                                                 tmpLastParticleCoordinates[j] = new PointInSpace(tmpFirstParticleCoordinates[j].getX(), tmpFirstParticleCoordinates[j].getY(), tmpOffsetZ);
                                                             }
                                                         } else if (this.graphicsUtilityMethods.isSingleSurfaceXyBottomGeometryInXyLayer(tmpChemicalCompositionValueItem, i)) {
                                                             BodyXyLayerSingleSurfaceEnum tmpSingleSurface = BodyXyLayerSingleSurfaceEnum.XY_BOTTOM;
                                                             tmpOffsetZ = tmpXyLayerCenterZCoordinate + tmpHalfZLength;
-                                                            tmpXyLayer.fillRandomPointsOnSingleSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpSingleSurface);
+                                                            tmpXyLayer.fillRandomPointsOnSingleSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpSingleSurface, tmpRandomNumberGenerator);
                                                             for (int j = tmpQuantityInVolume; j < tmpQuantityOnSurface; j++) {
                                                                 tmpLastParticleCoordinates[j] = new PointInSpace(tmpFirstParticleCoordinates[j].getX(), tmpFirstParticleCoordinates[j].getY(), tmpOffsetZ);
                                                             }
                                                         } else if (this.graphicsUtilityMethods.isSingleSurfaceYzLeftGeometryInXyLayer(tmpChemicalCompositionValueItem, i)) {
                                                             BodyXyLayerSingleSurfaceEnum tmpSingleSurface = BodyXyLayerSingleSurfaceEnum.YZ_LEFT;
                                                             tmpOffsetX = tmpXyLayerCenterXCoordinate + tmpHalfXLength;
-                                                            tmpXyLayer.fillRandomPointsOnSingleSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpSingleSurface);
+                                                            tmpXyLayer.fillRandomPointsOnSingleSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpSingleSurface, tmpRandomNumberGenerator);
                                                             for (int j = tmpQuantityInVolume; j < tmpQuantityOnSurface; j++) {
                                                                 tmpLastParticleCoordinates[j] = new PointInSpace(tmpOffsetX, tmpFirstParticleCoordinates[j].getY(), tmpFirstParticleCoordinates[j].getZ());
                                                             }
                                                         } else if (this.graphicsUtilityMethods.isSingleSurfaceYzRightGeometryInXyLayer(tmpChemicalCompositionValueItem, i)) {
                                                             BodyXyLayerSingleSurfaceEnum tmpSingleSurface = BodyXyLayerSingleSurfaceEnum.YZ_RIGHT;
                                                             tmpOffsetX = tmpXyLayerCenterXCoordinate - tmpHalfXLength;
-                                                            tmpXyLayer.fillRandomPointsOnSingleSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpSingleSurface);
+                                                            tmpXyLayer.fillRandomPointsOnSingleSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpSingleSurface, tmpRandomNumberGenerator);
                                                             for (int j = tmpQuantityInVolume; j < tmpQuantityOnSurface; j++) {
                                                                 tmpLastParticleCoordinates[j] = new PointInSpace(tmpOffsetX, tmpFirstParticleCoordinates[j].getY(), tmpFirstParticleCoordinates[j].getZ());
                                                             }
                                                         } else if (this.graphicsUtilityMethods.isSingleSurfaceXzFrontGeometryInXyLayer(tmpChemicalCompositionValueItem, i)) {
                                                             BodyXyLayerSingleSurfaceEnum tmpSingleSurface = BodyXyLayerSingleSurfaceEnum.XZ_FRONT;
                                                             tmpOffsetY = tmpXyLayerCenterYCoordinate + tmpHalfYLength;
-                                                            tmpXyLayer.fillRandomPointsOnSingleSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpSingleSurface);
+                                                            tmpXyLayer.fillRandomPointsOnSingleSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpSingleSurface, tmpRandomNumberGenerator);
                                                             for (int j = tmpQuantityInVolume; j < tmpQuantityOnSurface; j++) {
                                                                 tmpLastParticleCoordinates[j] = new PointInSpace(tmpFirstParticleCoordinates[j].getX(), tmpOffsetY, tmpFirstParticleCoordinates[j].getZ());
                                                             }
                                                         } else if (this.graphicsUtilityMethods.isSingleSurfaceXzBackGeometryInXyLayer(tmpChemicalCompositionValueItem, i)) {
                                                             BodyXyLayerSingleSurfaceEnum tmpSingleSurface = BodyXyLayerSingleSurfaceEnum.XZ_BACK;
                                                             tmpOffsetY = tmpXyLayerCenterYCoordinate - tmpHalfYLength;
-                                                            tmpXyLayer.fillRandomPointsOnSingleSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpSingleSurface);
+                                                            tmpXyLayer.fillRandomPointsOnSingleSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpSingleSurface, tmpRandomNumberGenerator);
                                                             for (int j = tmpQuantityInVolume; j < tmpQuantityOnSurface; j++) {
                                                                 tmpLastParticleCoordinates[j] = new PointInSpace(tmpFirstParticleCoordinates[j].getX(), tmpOffsetY, tmpFirstParticleCoordinates[j].getZ());
                                                             }
@@ -5470,17 +5470,17 @@ public class JobUtilityMethods {
                                                     } else {
                                                         // <editor-fold defaultstate="collapsed" desc="xy top and bottom surface geometry">
                                                         if (this.graphicsUtilityMethods.isXyTopBottomGeometryInXyLayer(tmpChemicalCompositionValueItem, i)) {
-                                                            tmpXyLayer.fillRandomPointsOnTopBottomSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface);
+                                                            tmpXyLayer.fillRandomPointsOnTopBottomSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpRandomNumberGenerator);
                                                             for (int j = tmpQuantityInVolume; j < tmpQuantityOnSurface; j++) {
                                                                 tmpLastParticleCoordinates[j] = new PointInSpace(tmpFirstParticleCoordinates[j].getX(), tmpFirstParticleCoordinates[j].getY(), tmpOffsetZ);
                                                             }
                                                         } else if (this.graphicsUtilityMethods.isYzLeftRightGeometryInXyLayer(tmpChemicalCompositionValueItem, i)) {
-                                                            tmpXyLayer.fillRandomPointsOnLeftRightSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface);
+                                                            tmpXyLayer.fillRandomPointsOnLeftRightSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpRandomNumberGenerator);
                                                             for (int j = tmpQuantityInVolume; j < tmpQuantityOnSurface; j++) {
                                                                 tmpLastParticleCoordinates[j] = new PointInSpace(tmpOffsetX, tmpFirstParticleCoordinates[j].getY(), tmpFirstParticleCoordinates[j].getZ());
                                                             }
                                                         } else if (this.graphicsUtilityMethods.isXzFrontBackGeometryInXyLayer(tmpChemicalCompositionValueItem, i)) {
-                                                            tmpXyLayer.fillRandomPointsOnFrontBackSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface);
+                                                            tmpXyLayer.fillRandomPointsOnFrontBackSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpRandomNumberGenerator);
                                                             for (int j = tmpQuantityInVolume; j < tmpQuantityOnSurface; j++) {
                                                                 tmpLastParticleCoordinates[j] = new PointInSpace(tmpFirstParticleCoordinates[j].getX(), tmpOffsetY, tmpFirstParticleCoordinates[j].getZ());
                                                             }
@@ -5556,11 +5556,6 @@ public class JobUtilityMethods {
             for (int i = 0; i < tmpBulkInfoValueItem.getMatrixRowCount(); i++) {
                 // tmpBulkInfoValueItem column 0 : Molecule name
                 if (tmpBulkInfoValueItem.getValue(i, 0).equals(aMoleculeName)) {
-                    // <editor-fold defaultstate="collapsed" desc="Increment deterministic random seed value">
-                    Preferences.getInstance().incrementDeterministicRandomSeed();
-                    // IMPORTANT: After change of seed value re-initialize random value generation in compartment box
-                    tmpCompartmentContainer.getCompartmentBox().initializeRandomValueGeneration();
-                    // </editor-fold>
                     // <editor-fold defaultstate="collapsed" desc="Set molecule information">
                     // Molecule name
                     String tmpMoleculeName = tmpBulkInfoValueItem.getValue(i, 0);
@@ -5603,9 +5598,8 @@ public class JobUtilityMethods {
                             boolean tmpIsProteinRandom3DOrientation = false;
                             if (this.graphicsUtilityMethods.isRandom3dStructureGeometryInBulk(tmpBulkInfoValueItem, i)) {
                                 tmpIsProteinRandom3DOrientation = true;
-                                if (Preferences.getInstance().isDeterministicRandom()) {
-                                    tmpPdbToDpd.setSeed(Preferences.getInstance().getDeterministicRandomSeed());
-                                }
+                                tmpPdbToDpd.setSeed(tmpRandomSeed);
+                                tmpPdbToDpd.setRandomNumberGenerator(tmpRandomNumberGenerator);
                             } else {
                                 tmpPdbToDpd.setDefaultRotation();
                             }
@@ -5619,7 +5613,8 @@ public class JobUtilityMethods {
                                 tmpCompartmentContainer.getCompartmentBox().getNonOverlappingRandomSpheres(
                                     tmpQuantity, 
                                     tmpRadiusOfProtein,
-                                    Preferences.getInstance().getNumberOfTrialsForCompartment()
+                                    Preferences.getInstance().getNumberOfTrialsForCompartment(),
+                                    tmpRandomNumberGenerator
                                 );
                             int tmpFirstCalphaIndex = 1;
                             for (BodySphere tmpSingleSphere : tmpNonOverlappingSphereList) {
@@ -5653,14 +5648,14 @@ public class JobUtilityMethods {
                             tmpOutputLineList.add("# Quantity in Bulk          = " + String.valueOf(tmpQuantity));
                             tmpOutputLineList.add("# Orientation               = " + tmpBulkInfoValueItem.getValue(i, 4));
                             tmpOutputLineList.add(tmpLineVisualizerSmall);
-
                             // </editor-fold>
                             PointInSpace[] tmpFirstParticleCoordinates = new PointInSpace[tmpQuantity];
                             tmpCompartmentContainer.getCompartmentBox().fillFreeVolumeRandomPoints(
                                 tmpFirstParticleCoordinates, 
                                 0, 
                                 tmpQuantity, 
-                                Preferences.getInstance().getNumberOfTrialsForCompartment()
+                                Preferences.getInstance().getNumberOfTrialsForCompartment(),
+                                tmpRandomNumberGenerator
                             );
                             PointInSpace[] tmpLastParticleCoordinates;
                             if (tmpIsSingleParticleMolecule) {
@@ -5671,7 +5666,8 @@ public class JobUtilityMethods {
                                     tmpLastParticleCoordinates, 
                                     0, 
                                     tmpQuantity, 
-                                    Preferences.getInstance().getNumberOfTrialsForCompartment()
+                                    Preferences.getInstance().getNumberOfTrialsForCompartment(),
+                                    tmpRandomNumberGenerator
                                 );
                             }
                             SpicesGraphics tmpSpices = SpicesPool.getInstance().getSpices(tmpMolecularStructureString);
@@ -5724,7 +5720,7 @@ public class JobUtilityMethods {
                                                 // </editor-fold>
                                             } else {
                                                 // <editor-fold defaultstate="collapsed" desc="Get other orientation">
-                                                PointInSpace tmpNewLastParticleCoordinate = tmpCompartmentContainer.getCompartmentBox().getRandomPointInFreeVolume();
+                                                PointInSpace tmpNewLastParticleCoordinate = tmpCompartmentContainer.getCompartmentBox().getRandomPointInFreeVolume(tmpRandomNumberGenerator);
                                                 // NOTE: tmpCorrectCoordinates[0] MUST be correct since it is deduced from tmpFirstParticleCoordinates which are all in free volume by definition
                                                 PointInSpace[][] tmpNewCoordinates = tmpSpices.getParticleCoordinates(tmpCorrectCoordinates[0], tmpNewLastParticleCoordinate, tmpBondLength);
                                                 tmpCorrectCoordinates = tmpNewCoordinates[0];
@@ -5876,19 +5872,36 @@ public class JobUtilityMethods {
                     // Index 3 = Backbone distance in Angstrom
                     // Index 4 = Backbone distance in DPD unit
                     // Index 5 = Backbone force constant
+                    // Index 6 = Backbone behaviour
                     for (int i = 0; i < tmpProteinBackboneForcesValueItem.getMatrixRowCount(); i++) {
                         if (tmpProteinBackboneForcesValueItem.getValue(i, 0).equals(aMoleculeName)
                                 && tmpProteinBackboneForcesValueItem.getValueAsDouble(i, 4) > 0.0
                                 && tmpProteinBackboneForcesValueItem.getValueAsDouble(i, 5) > 0.0) {
-                            tmpOutputLineList.add(
-                                this.stringUtilityMethods.getFirstToken(tmpProteinBackboneForcesValueItem.getValue(i, 1)) + 
-                                tmpOneSpace +
-                                this.stringUtilityMethods.getFirstToken(tmpProteinBackboneForcesValueItem.getValue(i, 2)) + 
-                                tmpOneSpace +
-                                tmpProteinBackboneForcesValueItem.getValue(i, 4) + 
-                                tmpOneSpace +
-                                tmpProteinBackboneForcesValueItem.getValue(i, 5)
-                            );
+                            if (tmpProteinBackboneForcesValueItem.getMatrixColumnCount() == 6) {
+                                // <editor-fold defaultstate="collapsed" desc="Legacy code for old job inputs without definition of backbone behaviour">
+                                tmpOutputLineList.add(
+                                    this.stringUtilityMethods.getFirstToken(tmpProteinBackboneForcesValueItem.getValue(i, 1)) + 
+                                    tmpOneSpace +
+                                    this.stringUtilityMethods.getFirstToken(tmpProteinBackboneForcesValueItem.getValue(i, 2)) + 
+                                    tmpOneSpace +
+                                    tmpProteinBackboneForcesValueItem.getValue(i, 4) + 
+                                    tmpOneSpace +
+                                    tmpProteinBackboneForcesValueItem.getValue(i, 5)
+                                );
+                                // </editor-fold>
+                            } else {
+                                tmpOutputLineList.add(
+                                    this.stringUtilityMethods.getFirstToken(tmpProteinBackboneForcesValueItem.getValue(i, 1)) + 
+                                    tmpOneSpace +
+                                    this.stringUtilityMethods.getFirstToken(tmpProteinBackboneForcesValueItem.getValue(i, 2)) + 
+                                    tmpOneSpace +
+                                    tmpProteinBackboneForcesValueItem.getValue(i, 4) + 
+                                    tmpOneSpace +
+                                    tmpProteinBackboneForcesValueItem.getValue(i, 5) + 
+                                    tmpOneSpace +
+                                    tmpProteinBackboneForcesValueItem.getValue(i, 6)
+                                );
+                            }
                         }
                     }
                 }
@@ -5913,19 +5926,36 @@ public class JobUtilityMethods {
                     // Index 3 = Backbone distance in Angstrom
                     // Index 4 = Backbone distance in DPD unit
                     // Index 5 = Backbone force constant
+                    // Index 6 = Backbone behaviour
                     for (int i = 0; i < tmpMoleculeBackboneForcesValueItem.getMatrixRowCount(); i++) {
                         if (tmpMoleculeBackboneForcesValueItem.getValue(i, 0).equals(aMoleculeName)
                                 && tmpMoleculeBackboneForcesValueItem.getValueAsDouble(i, 4) > 0.0
                                 && tmpMoleculeBackboneForcesValueItem.getValueAsDouble(i, 5) > 0.0) {
-                            tmpOutputLineList.add(
-                                tmpMoleculeBackboneForcesValueItem.getValue(i, 1) + 
-                                tmpOneSpace +
-                                tmpMoleculeBackboneForcesValueItem.getValue(i, 2) + 
-                                tmpOneSpace +
-                                tmpMoleculeBackboneForcesValueItem.getValue(i, 4) + 
-                                tmpOneSpace +
-                                tmpMoleculeBackboneForcesValueItem.getValue(i, 5)
-                            );
+                            if (tmpMoleculeBackboneForcesValueItem.getMatrixColumnCount() == 6) {
+                                // <editor-fold defaultstate="collapsed" desc="Legacy code for old job inputs without definition of backbone behaviour">
+                                tmpOutputLineList.add(
+                                    tmpMoleculeBackboneForcesValueItem.getValue(i, 1) + 
+                                    tmpOneSpace +
+                                    tmpMoleculeBackboneForcesValueItem.getValue(i, 2) + 
+                                    tmpOneSpace +
+                                    tmpMoleculeBackboneForcesValueItem.getValue(i, 4) + 
+                                    tmpOneSpace +
+                                    tmpMoleculeBackboneForcesValueItem.getValue(i, 5)
+                                );
+                                // </editor-fold>
+                            } else {
+                                tmpOutputLineList.add(
+                                    tmpMoleculeBackboneForcesValueItem.getValue(i, 1) + 
+                                    tmpOneSpace +
+                                    tmpMoleculeBackboneForcesValueItem.getValue(i, 2) + 
+                                    tmpOneSpace +
+                                    tmpMoleculeBackboneForcesValueItem.getValue(i, 4) + 
+                                    tmpOneSpace +
+                                    tmpMoleculeBackboneForcesValueItem.getValue(i, 5) + 
+                                    tmpOneSpace +
+                                    tmpMoleculeBackboneForcesValueItem.getValue(i, 6)
+                                );
+                            }
                         }
                     }
                 }

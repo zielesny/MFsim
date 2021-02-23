@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -356,7 +356,6 @@ public class ValueItem extends ChangeNotifier implements Comparable<ValueItem>, 
         if (aValueItem == null) {
             throw new IllegalArgumentException("Value item is null.");
         }
-
         // </editor-fold>
         if (this.verticalPosition < aValueItem.getVerticalPosition()) {
             return -1;
@@ -414,7 +413,6 @@ public class ValueItem extends ChangeNotifier implements Comparable<ValueItem>, 
             return this.valueItemContainer.getValueItem(this.nameOfDisplayValueItem);
         }
     }
-
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- Diagram data related methods">
     /**
@@ -1477,7 +1475,6 @@ public class ValueItem extends ChangeNotifier implements Comparable<ValueItem>, 
             // </editor-fold>
         }
     }
-
     // </editor-fold>
     // </editor-fold>
     //
@@ -1855,7 +1852,6 @@ public class ValueItem extends ChangeNotifier implements Comparable<ValueItem>, 
             this.notifyChangeReceiver(ChangeTypeEnum.VALUE_ITEM_HINT_CHANGE);
         }
     }
-
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- FileTypeEnding">
     /**
@@ -2799,7 +2795,6 @@ public class ValueItem extends ChangeNotifier implements Comparable<ValueItem>, 
         if (aCompartmentContainer == null) {
             return;
         }
-
         // </editor-fold>
         // Remove old compartment container first (necessary to remove this value item as a change receiver)
         if (this.hasCompartments()) {
@@ -2974,7 +2969,13 @@ public class ValueItem extends ChangeNotifier implements Comparable<ValueItem>, 
     public void setVerticalPosition(int aVerticalPosition) {
         this.verticalPosition = aVerticalPosition;
     }
-
+    
+    /**
+     * Increments vertical position
+     */
+    public void incrementVerticalPosition() {
+        this.verticalPosition++;
+    }
     // </editor-fold>
     // </editor-fold>
     //
@@ -3213,7 +3214,6 @@ public class ValueItem extends ChangeNotifier implements Comparable<ValueItem>, 
      * @param anElement XML element to add the compartment container to
      */
     private void addCompartmentContainer(Element anElement) {
-
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (this.compartmentContainer == null || anElement == null) {
             return;
@@ -3236,7 +3236,6 @@ public class ValueItem extends ChangeNotifier implements Comparable<ValueItem>, 
      * compartment container
      */
     private CompartmentContainer getCompartmentContainerFromXML(Element anElement) {
-
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (anElement == null) {
             return null;

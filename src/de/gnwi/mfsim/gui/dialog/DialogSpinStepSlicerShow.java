@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -207,7 +207,7 @@ public class DialogSpinStepSlicerShow extends CustomDialogApplyCancelSize implem
             // <editor-fold defaultstate="collapsed" desc="- Add listeners">
             tmpSpinStepSlicerShowDialog.addWindowListener(new WindowAdapter() {
                 public void windowOpened(final WindowEvent e) {
-                    // Do nothing!
+                    tmpCustomPanelSpinStepSlicerController.startSlicers();
                 }
 
                 public void windowClosing(final WindowEvent e) {

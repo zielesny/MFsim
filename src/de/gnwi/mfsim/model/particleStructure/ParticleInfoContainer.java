@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -22,6 +22,7 @@ package de.gnwi.mfsim.model.particleStructure;
 import de.gnwi.spices.SpicesConstants;
 import de.gnwi.spices.ParticleFrequency;
 import de.gnwi.mfsim.model.graphics.SpicesGraphics;
+import de.gnwi.mfsim.model.preference.Preferences;
 import java.util.HashMap;
 
 /**
@@ -57,7 +58,6 @@ public class ParticleInfoContainer {
      * @return True: Container changed due to add-operation, false: Otherwise
      */
     public boolean addParticleInfo(ParticleInfo aParticleInfo) {
-
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aParticleInfo == null || this.particleNameToInfoMap.containsKey(aParticleInfo.getParticle())) {
             return false;
@@ -173,37 +173,41 @@ public class ParticleInfoContainer {
 
     /**
      * Sets scaling factor of each particle information of container
+     * NOTE: Scaling factors are set to 1.
      *
      * @return True: Scaling factors could successfully be set, false: Otherwise
      */
     public boolean setScalingFactors() {
         // <editor-fold defaultstate="collapsed" desc="Checks">
-        if (this.particleNameToInfoMap.size() == 0) {
+        if (this.particleNameToInfoMap.isEmpty()) {
             return false;
         }
-
         // </editor-fold>
-        // <editor-fold defaultstate="collapsed" desc="Determine minimum volume">
-        double tmpMinimum = Double.MAX_VALUE;
-        for (ParticleInfo tmpSingleParticleInfo : this.particleNameToInfoMap.values()) {
-            if (tmpMinimum > tmpSingleParticleInfo.getVolume()) {
-                tmpMinimum = tmpSingleParticleInfo.getVolume();
+        if (Preferences.getInstance().isVolumeScalingForConcentrationCalculation()) {
+            // <editor-fold defaultstate="collapsed" desc="Determine minimum volume">
+            double tmpMinimum = Double.MAX_VALUE;
+            for (ParticleInfo tmpSingleParticleInfo : this.particleNameToInfoMap.values()) {
+                if (tmpMinimum > tmpSingleParticleInfo.getVolume()) {
+                    tmpMinimum = tmpSingleParticleInfo.getVolume();
+                }
+            }
+            if (tmpMinimum <= 0) {
+                return false;
+            }
+            // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="Set scaling factors">
+            for (ParticleInfo tmpSingleParticleInfo : this.particleNameToInfoMap.values()) {
+                tmpSingleParticleInfo.setScalingFactor(tmpSingleParticleInfo.getVolume() / tmpMinimum);
+            }
+            // </editor-fold>
+        } else {
+            // No volume scaling, set scaling factors to 1.0
+            for (ParticleInfo tmpSingleParticleInfo : this.particleNameToInfoMap.values()) {
+                tmpSingleParticleInfo.setScalingFactor(1.0);
             }
         }
-        if (tmpMinimum <= 0) {
-            return false;
-        }
-
-        // </editor-fold>
-        // <editor-fold defaultstate="collapsed" desc="Set scaling factors">
-        for (ParticleInfo tmpSingleParticleInfo : this.particleNameToInfoMap.values()) {
-            tmpSingleParticleInfo.setScalingFactor(tmpSingleParticleInfo.getVolume() / tmpMinimum);
-        }
-
-        // </editor-fold>
         return true;
     }
-
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public properties">
@@ -215,6 +219,5 @@ public class ParticleInfoContainer {
     public int getSize() {
         return this.particleNameToInfoMap.size();
     }
-
-	// </editor-fold>
+    // </editor-fold>
 }

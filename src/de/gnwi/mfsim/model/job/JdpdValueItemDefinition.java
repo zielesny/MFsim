@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -266,7 +266,7 @@ public class JdpdValueItemDefinition {
             }
             // Select water (H2O) particle as default if possible
             String tmpDefaultMoleculeName;
-            String tmpDefaultParticle = StandardParticleInteractionData.getInstance().getDefaultParticle();
+            String tmpDefaultParticle = StandardParticleInteractionData.getInstance().getDefaultWaterParticle();
             if (tmpDefaultParticle.toUpperCase(Locale.ENGLISH).equals("H2O")) {
                 tmpDefaultMoleculeName = ModelMessage.get("JdpdInputFile.parameter.defaultMoleculeWater");
             } else {
@@ -285,7 +285,7 @@ public class JdpdValueItemDefinition {
             String tmpDefaultDensity = tmpDensities[0];
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="-- Temperature">
-            String tmpDefaultTemperature = StandardParticleInteractionData.getInstance().getTemperatures()[0];
+            String tmpDefaultTemperature = StandardParticleInteractionData.getInstance().getTemperatureStrings()[0];
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="-- Interactions">
             // Set to numeric null value
@@ -676,13 +676,28 @@ public class JdpdValueItemDefinition {
             if (tmpVerticalPosition < 0) {
                 // <editor-fold defaultstate="collapsed" desc="Fatal error message">
                 JOptionPane.showMessageDialog(null, ModelMessage.get("Error.NoMoleculeDisplaySettings"), ModelMessage.get("Error.ErrorNotificationTitle"), JOptionPane.ERROR_MESSAGE);
-
                 // </editor-fold>
                 // <editor-fold defaultstate="collapsed" desc="Exit with error: -1">
                 ModelUtils.exitApplication(-1);
-
                 // </editor-fold>
             }
+            // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="- GeometryRandomSeed (NOTE: No Jdpd input)">
+            tmpValueItem = new ValueItem();
+            tmpValueItem.setNodeNames(tmpNodeNames);
+            tmpValueItem.setName("GeometryRandomSeed");
+            tmpValueItem.setDisplayName(ModelMessage.get("JdpdInputFile.valueItem.displayName.GeometryRandomSeed"));
+            tmpValueItem.setDefaultTypeFormat(new ValueItemDataTypeFormat(String.valueOf(ModelDefinitions.DETERMINISTIC_RANDOM_SEED_DEFAULT), 0, 1, Double.POSITIVE_INFINITY));
+            // Note: A change of the geometry random seed must be transferred
+            // to a corresponding change of the geometry random seed of the 
+            // compartment container, so update notification must be activated
+            tmpValueItem.setUpdateNotifier(true);
+            tmpValueItem.setBlockName(ModelDefinitions.JDPD_INPUT_BLOCK_2);
+            // NOTE: No Jdpd input
+            tmpValueItem.setVerticalPosition(tmpVerticalPosition++);
+            tmpValueItem.setDescription(ModelMessage.get("JdpdInputFile.valueItem.description.GeometryRandomSeed"));
+            this.nameToValueItemMap.put(tmpValueItem.getName(), tmpValueItem);
+            this.jobInputValueItemContainer.addValueItem(tmpValueItem);
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="- Compartments (NOTE: No Jdpd input)">
             tmpValueItem = new ValueItem();
@@ -1295,7 +1310,7 @@ public class JdpdValueItemDefinition {
             this.valueItemNameMapForJobRestartEdit.put(tmpValueItem.getName(), tmpValueItem.getName());
             tmpValueItem.setDisplayName(ModelMessage.get("JdpdInputFile.valueItem.displayName.Temperature"));
             tmpValueItem.setUpdateNotifier(true);
-            tmpValueItem.setDefaultTypeFormat(new ValueItemDataTypeFormat(StandardParticleInteractionData.getInstance().getTemperatures()));
+            tmpValueItem.setDefaultTypeFormat(new ValueItemDataTypeFormat(StandardParticleInteractionData.getInstance().getTemperatureStrings()));
             tmpValueItem.setBlockName(ModelDefinitions.JDPD_INPUT_BLOCK_3);
             tmpValueItem.setJdpdInput(true);
             tmpValueItem.setVerticalPosition(tmpVerticalPosition++);
@@ -1377,7 +1392,8 @@ public class JdpdValueItemDefinition {
                     ModelMessage.get("JdpdInputFile.parameter.backboneAttribute2"),
                     ModelMessage.get("JdpdInputFile.parameter.backboneDistanceAngstrom"),
                     ModelMessage.get("JdpdInputFile.parameter.backboneDistanceDpd"),
-                    ModelMessage.get("JdpdInputFile.parameter.backboneForceConstant")
+                    ModelMessage.get("JdpdInputFile.parameter.backboneForceConstant"),
+                    ModelMessage.get("JdpdInputFile.parameter.backboneBehaviour")
                 }
             );
             tmpValueItem.setMatrixColumnWidths(new String[]{
@@ -1386,7 +1402,8 @@ public class JdpdValueItemDefinition {
                     ModelDefinitions.CELL_WIDTH_TEXT_100, // backboneAttribute2
                     ModelDefinitions.CELL_WIDTH_TEXT_100, // backboneDistanceAngstrom
                     ModelDefinitions.CELL_WIDTH_TEXT_100, // backboneDistanceDpd
-                    ModelDefinitions.CELL_WIDTH_TEXT_100  // backboneForceConstant
+                    ModelDefinitions.CELL_WIDTH_TEXT_100, // backboneForceConstant
+                    ModelDefinitions.CELL_WIDTH_TEXT_150  // backboneBehaviour
                 }
             );
             tmpValueItem.setBlockName(ModelDefinitions.JDPD_INPUT_BLOCK_3);
@@ -1412,7 +1429,8 @@ public class JdpdValueItemDefinition {
                     ModelMessage.get("JdpdInputFile.parameter.aminoAcidBackboneParticle2"),
                     ModelMessage.get("JdpdInputFile.parameter.backboneDistanceAngstrom"),
                     ModelMessage.get("JdpdInputFile.parameter.backboneDistanceDpd"),
-                    ModelMessage.get("JdpdInputFile.parameter.backboneForceConstant")
+                    ModelMessage.get("JdpdInputFile.parameter.backboneForceConstant"),
+                    ModelMessage.get("JdpdInputFile.parameter.backboneBehaviour")
                 }
             );
             tmpValueItem.setMatrixColumnWidths(new String[]{
@@ -1421,7 +1439,8 @@ public class JdpdValueItemDefinition {
                     ModelDefinitions.CELL_WIDTH_TEXT_150, // aminoAcidBackboneParticle2
                     ModelDefinitions.CELL_WIDTH_TEXT_100, // backboneDistanceAngstrom
                     ModelDefinitions.CELL_WIDTH_TEXT_100, // backboneDistanceDpd
-                    ModelDefinitions.CELL_WIDTH_TEXT_100  // backboneForceConstant
+                    ModelDefinitions.CELL_WIDTH_TEXT_100, // backboneForceConstant
+                    ModelDefinitions.CELL_WIDTH_TEXT_150  // backboneBehaviour
                 }
             );
             tmpValueItem.setBlockName(ModelDefinitions.JDPD_INPUT_BLOCK_3);
@@ -1836,7 +1855,7 @@ public class JdpdValueItemDefinition {
                 }
             );
             tmpValueItem.setMatrixColumnWidths(new String[]{
-                ModelDefinitions.CELL_WIDTH_TEXT_200, // Type
+                ModelDefinitions.CELL_WIDTH_TEXT_250, // Type
                 ModelDefinitions.CELL_WIDTH_TEXT_100, // Seed
                 ModelDefinitions.CELL_WIDTH_TEXT_100  // Warm-up
             });
@@ -1853,7 +1872,15 @@ public class JdpdValueItemDefinition {
             tmpValueItem.setBlockName(ModelDefinitions.JDPD_INPUT_BLOCK_4);
             tmpValueItem.setJdpdInput(true);
             tmpValueItem.setVerticalPosition(tmpVerticalPosition++);
-            tmpValueItem.setDescription(ModelMessage.get("JdpdInputFile.valueItem.description.RandomNumberGenerator"));
+            String[] tmpJumpableRngInfo = Factory.RandomType.getJumpableRandomNumberGeneratorInfo();
+            tmpValueItem.setDescription(
+                String.format(
+                    ModelMessage.get("JdpdInputFile.valueItem.description.RandomNumberGenerator"), 
+                    tmpJumpableRngInfo[0], 
+                    tmpJumpableRngInfo[1], 
+                    tmpJumpableRngInfo[2]
+                )
+            );
             this.nameToValueItemMap.put(tmpValueItem.getName(), tmpValueItem);
             this.jobInputValueItemContainer.addValueItem(tmpValueItem);
             // </editor-fold>

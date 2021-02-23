@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -199,7 +199,6 @@ public class ValueItemContainer extends ChangeNotifier implements ChangeReceiver
             tmpSingleValueItem.setName(tmpSingleValueItem.getName() + "_" + tmpIndexValue);
         }
     }
-
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- Value item related methods">
     // <editor-fold defaultstate="collapsed" desc="-- Change receiver related methods">
@@ -520,7 +519,6 @@ public class ValueItemContainer extends ChangeNotifier implements ChangeReceiver
             tmpSingleValueItem.setDisplay(anIsDisplayed);
         }
     }
-
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="-- Display related methods">
     /**
@@ -568,7 +566,6 @@ public class ValueItemContainer extends ChangeNotifier implements ChangeReceiver
     }
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="-- Add">
-
     /**
      * Adds value item to container. NOTE: NO change in number of value items is
      * notified to change receivers.
@@ -584,7 +581,6 @@ public class ValueItemContainer extends ChangeNotifier implements ChangeReceiver
         if (this.nameToValueItemMap.containsKey(aValueItem.getName())) {
             return false;
         }
-
         // </editor-fold>
         aValueItem.setValueItemContainer(this);
         aValueItem.addChangeReceiver(this);
@@ -966,7 +962,6 @@ public class ValueItemContainer extends ChangeNotifier implements ChangeReceiver
         Arrays.sort(tmpValueItemDisplayNames);
         return tmpValueItemDisplayNames;
     }
-
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="-- Has">
     /**
@@ -1069,12 +1064,10 @@ public class ValueItemContainer extends ChangeNotifier implements ChangeReceiver
      * @return Returns next non-used vertical position
      */
     public int setSuccessiveVerticalPositions(int aStartPosition) {
-
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (this.nameToValueItemMap.isEmpty()) {
             return aStartPosition;
         }
-
         // </editor-fold>
         ValueItem[] tmpValueItems = this.getSortedValueItemsOfContainer();
         for (int i = 0; i < tmpValueItems.length; i++) {
@@ -1082,9 +1075,8 @@ public class ValueItemContainer extends ChangeNotifier implements ChangeReceiver
         }
         return aStartPosition + tmpValueItems.length;
     }
-
     // </editor-fold>
-    // <editor-fold defaultstate="collapsed" desc="-- Replace/Remove">
+    // <editor-fold defaultstate="collapsed" desc="-- Replace/Remove/Insert">
     /**
      * Removes value item with specified name from container. NOTE: NO change in
      * number of value items is notified to change receivers.
@@ -1123,7 +1115,6 @@ public class ValueItemContainer extends ChangeNotifier implements ChangeReceiver
         if (!this.nameToValueItemMap.containsKey(aValueItem.getName())) {
             return false;
         }
-
         // </editor-fold>
         this.removeValueItem(aValueItem.getName());
         return this.addValueItem(aValueItem);
@@ -1151,6 +1142,39 @@ public class ValueItemContainer extends ChangeNotifier implements ChangeReceiver
         aValueItem.setNodeNames(tmpValueItemToBeReplaced.getNodeNames());
         this.removeValueItem(aValueItem.getName());
         return this.addValueItem(aValueItem);
+    }
+
+    /**
+     * Inserts value item with vertical position before value item with 
+     * specified name
+     *
+     * @param aValueItemToBeInserted Value item to be inserted
+     * @param aValueItemName Name of value item
+     * @return True: Value item is inserted, false: Otherwise
+     */    
+    public boolean insertValueItemBefore(ValueItem aValueItemToBeInserted, String aValueItemName) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aValueItemToBeInserted == null) {
+            return false;
+        }
+        if (!this.nameToValueItemMap.containsKey(aValueItemName)) {
+            return false;
+        }
+        // </editor-fold>
+        // Existing value items sorted ascending according to their vertical
+        // position
+        ValueItem[] tmpValueItems = this.getSortedValueItemsOfContainer();
+        boolean tmpIsIncrement = false;
+        for(ValueItem tmpValueItem : tmpValueItems) {
+            if (tmpValueItem.getName().equals(aValueItemName)) {
+                tmpIsIncrement = true;
+                aValueItemToBeInserted.setVerticalPosition(tmpValueItem.getVerticalPosition());
+            }
+            if (tmpIsIncrement) {
+                tmpValueItem.incrementVerticalPosition();
+            }
+        }
+        return this.addValueItem(aValueItemToBeInserted);
     }
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="-- Node names related methods">

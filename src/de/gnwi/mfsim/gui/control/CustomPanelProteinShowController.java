@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -98,10 +98,6 @@ public class CustomPanelProteinShowController extends ChangeNotifier {
         if (aCustomPanelProteinShow == null) {
             throw new IllegalArgumentException("aCustomPanelProteinShow is null.");
         }
-        if (!StandardParticleInteractionData.getInstance().hasAminoAcidDefinitions()) {
-            throw new IllegalArgumentException("Amino acids are not defined.");
-        }
-
         // </editor-fold>
         try {
             // Amino acids MUST already be initialized
@@ -471,7 +467,7 @@ public class CustomPanelProteinShowController extends ChangeNotifier {
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="Set mutant value item">
             String[] tmpNodeNames = new String[]{GuiMessage.get("proteinMutant.Nodename")};
-            ValueItem tmpMutantValueItem = GuiUtils.getMutantValueItem(this.pdbToDPD);
+            ValueItem tmpMutantValueItem = GuiUtils.getMutantValueItemForShow(this.pdbToDPD);
             if (tmpMutantValueItem == null) {
                 // <editor-fold defaultstate="collapsed" desc="Message that method failed">
                 JOptionPane.showMessageDialog(null, String.format(GuiMessage.get("Error.CommandExecutionFailed"), "showMutant()", "CustomPanelProteinShowController"),
@@ -494,6 +490,6 @@ public class CustomPanelProteinShowController extends ChangeNotifier {
             // </editor-fold>
         }
     }
-
     // </editor-fold>
+
 }

@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -21,9 +21,8 @@ package de.gnwi.mfsim.model.util;
 
 /**
  * Configurations for charts
- * NOTE: Is not implemented
  * 
- * @author Jan-Mathis Hein
+ * @author Jan-Mathis Hein, Achim Zielesny
  */
 public class ChartConfiguration {
     
@@ -68,7 +67,7 @@ public class ChartConfiguration {
     /**
      * True: There are zoom values for the chart, false: There are not
      */
-    private boolean isZoom;
+    private boolean hasZoom;
     
     /**
      * The zoom values for the chart {xMin, xMax, yMin, yMax}
@@ -107,10 +106,9 @@ public class ChartConfiguration {
         this.isOutlinePaintWhite = true;
         this.isShapePaint = true;
         this.isThickLines = false;
-        this.isZoom = false;
         this.numberOfDiscardedInitialPoints = 0;
         this.numberToAverage = 1;
-        this.zoomValues = new double[] {-Double.MAX_VALUE, Double.MAX_VALUE, -Double.MAX_VALUE, Double.MAX_VALUE};
+        this.removeZoomValues();
     }
     // </editor-fold>
     //
@@ -304,18 +302,8 @@ public class ChartConfiguration {
      * 
      * @return True: There are zoom values for the chart, false: There are not
      */
-    public boolean getIsZoom() {
-        return isZoom;
-    }
-    
-    /**
-     * True: There are zoom values for the chart, false: There are not
-     * 
-     * @param anIsZoom True: There are zoom values for the chart, 
-     * false: There are not
-     */
-    public void setIsZoom(boolean anIsZoom) {
-        this.isZoom = anIsZoom;
+    public boolean hasZoom() {
+        return this.hasZoom;
     }
 
     /**
@@ -324,7 +312,7 @@ public class ChartConfiguration {
      * @return The zoom values for the chart {xMin, xMax, yMin, yMax}
      */
     public double[] getZoomValues() {
-        return zoomValues;
+        return this.zoomValues;
     }
 
     /**
@@ -334,6 +322,15 @@ public class ChartConfiguration {
      */
     public void setZoomValues(double[] aZoomValues) {
         this.zoomValues = aZoomValues;
+        this.hasZoom = true;
+    }
+    
+    /**
+     * Removes zoom values;
+     */
+    public void removeZoomValues() {
+        this.zoomValues = new double[] {-Double.MAX_VALUE, Double.MAX_VALUE, -Double.MAX_VALUE, Double.MAX_VALUE};
+        this.hasZoom = false;
     }
     // </editor-fold>
     // </editor-fold>

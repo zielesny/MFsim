@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -35,6 +35,7 @@ import de.gnwi.mfsim.model.valueItem.ValueItem;
 import java.util.LinkedList;
 import de.gnwi.spices.IPointInSpace;
 import de.gnwi.mfsim.model.preference.ModelDefinitions;
+import java.util.Random;
 
 /**
  * This class represents a xy-layer. The xy-layer is defined by center and and
@@ -402,22 +403,24 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
     /**
      * Returns a random point inside the body.
      *
+     * @param aRandomNumberGenerator Random number generator
      * @return Point in space inside of the body
      */
     @Override
-    public PointInSpace getRandomPointInVolume() {
-        return this.getRandomPointsInVolume(1)[0];
+    public PointInSpace getRandomPointInVolume(Random aRandomNumberGenerator) {
+        return this.getRandomPointsInVolume(1, aRandomNumberGenerator)[0];
     }
 
     /**
      * Returns aNumber random points inside the body.
      *
      * @param aNumber Number of random points (not allowed to be less than 1)
+     * @param aRandomNumberGenerator Random number generator
      * @return Points inside the body volume
      * @throws IllegalArgumentException Thrown if aNumber is less than 1
      */
     @Override
-    public PointInSpace[] getRandomPointsInVolume(int aNumber) throws IllegalArgumentException {
+    public PointInSpace[] getRandomPointsInVolume(int aNumber, Random aRandomNumberGenerator) throws IllegalArgumentException {
 
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -426,7 +429,7 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
 
         // </editor-fold>
         PointInSpace tmpPointsInVolume[] = new PointInSpace[aNumber];
-        this.fillRandomPointsInVolume(tmpPointsInVolume, 0, aNumber);
+        this.fillRandomPointsInVolume(tmpPointsInVolume, 0, aNumber, aRandomNumberGenerator);
         return tmpPointsInVolume;
     }
 
@@ -436,10 +439,11 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
      * @param aBuffer Buffer
      * @param aFirstIndex First index in buffer
      * @param aNumber Number of random points (not allowed to be less than 1)
+     * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
     @Override
-    public void fillRandomPointsInVolume(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber) throws IllegalArgumentException {
+    public void fillRandomPointsInVolume(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, Random aRandomNumberGenerator) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
             throw new IllegalArgumentException("aNumber is less than 1.");
@@ -455,7 +459,7 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
         }
 
         // </editor-fold>
-        this.graphicsUtilityMethods.fillRandomPointsInXyLayer(aBuffer, aFirstIndex, aNumber, this.bodyCenter, this.xLength, this.yLength, this.zLength);
+        this.graphicsUtilityMethods.fillRandomPointsInXyLayer(aBuffer, aFirstIndex, aNumber, this.bodyCenter, this.xLength, this.yLength, this.zLength, aRandomNumberGenerator);
     }
 
     /**
@@ -465,11 +469,12 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
      * @param aBuffer2 Buffer 2
      * @param aFirstIndex First index in buffer
      * @param aNumber Number of random points for both buffers (not allowed to
+     * @param aRandomNumberGenerator Random number generator
      * be less than 1)
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
     @Override
-    public void fillRandomPointsInVolume(IPointInSpace[] aBuffer1, IPointInSpace[] aBuffer2, int aFirstIndex, int aNumber) throws IllegalArgumentException {
+    public void fillRandomPointsInVolume(IPointInSpace[] aBuffer1, IPointInSpace[] aBuffer2, int aFirstIndex, int aNumber, Random aRandomNumberGenerator) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
             throw new IllegalArgumentException("aNumber is less than 1.");
@@ -497,7 +502,7 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
         }
 
         // </editor-fold>
-        this.graphicsUtilityMethods.fillRandomPointsInXyLayer(aBuffer1, aBuffer2, aFirstIndex, aNumber, this.bodyCenter, this.xLength, this.yLength, this.zLength);
+        this.graphicsUtilityMethods.fillRandomPointsInXyLayer(aBuffer1, aBuffer2, aFirstIndex, aNumber, this.bodyCenter, this.xLength, this.yLength, this.zLength, aRandomNumberGenerator);
     }
 
     /**
@@ -511,6 +516,7 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
      * @param aNumber Number of random points for both buffers (not allowed to
      * be less than 1)
      * @param aNumberOfTrials Number of trials for random point generation
+     * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
     @Override
@@ -518,7 +524,8 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
         IPointInSpace[] aBuffer, 
         int aFirstIndex, 
         int aNumber, 
-        int aNumberOfTrials
+        int aNumberOfTrials,
+        Random aRandomNumberGenerator
     ) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -546,7 +553,8 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
             this.yLength, 
             this.zLength, 
             this.excludedSphereList, 
-            aNumberOfTrials
+            aNumberOfTrials,
+            aRandomNumberGenerator
         );
     }
 
@@ -566,6 +574,7 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
      * @param aStepDistance Step distance for points along the straight lines
      * between aBuffer1[i] and aBuffer2[i]
      * @param aNumberOfTrials Number of trials for random point generation
+     * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
     @Override
@@ -575,7 +584,8 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
         int aFirstIndex, 
         int aNumber, 
         double aStepDistance, 
-        int aNumberOfTrials
+        int aNumberOfTrials,
+        Random aRandomNumberGenerator
     ) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -620,7 +630,8 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
             this.zLength, 
             this.excludedSphereList,
             aStepDistance, 
-            aNumberOfTrials
+            aNumberOfTrials,
+            aRandomNumberGenerator
         );
     }
 
@@ -645,11 +656,12 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
     /**
      * Returns a random point on the surface of body
      *
+     * @param aRandomNumberGenerator Random number generator
      * @return Point on surface of body
      */
     @Override
-    public PointInSpace getRandomPointOnSurface() {
-        return this.getRandomPointsOnSurface(1)[0];
+    public PointInSpace getRandomPointOnSurface(Random aRandomNumberGenerator) {
+        return this.getRandomPointsOnSurface(1, aRandomNumberGenerator)[0];
     }
 
     /**
@@ -657,11 +669,12 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
      *
      * @param aNumber Number of random points which have to be created, not
      * allowed to be less than 1
+     * @param aRandomNumberGenerator Random number generator
      * @return Points on surface of the body as array, array.length() = aNumber
      * @throws IllegalArgumentException if aNumber is less than 1
      */
     @Override
-    public PointInSpace[] getRandomPointsOnSurface(int aNumber) throws IllegalArgumentException {
+    public PointInSpace[] getRandomPointsOnSurface(int aNumber, Random aRandomNumberGenerator) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
             throw new IllegalArgumentException("aNumber was less than 1.");
@@ -669,7 +682,7 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
 
         // </editor-fold>
         PointInSpace tmpPointsOnSurface[] = new PointInSpace[aNumber];
-        this.fillRandomPointsOnSurface(tmpPointsOnSurface, 0, aNumber);
+        this.fillRandomPointsOnSurface(tmpPointsOnSurface, 0, aNumber, aRandomNumberGenerator);
         return tmpPointsOnSurface;
     }
 
@@ -679,10 +692,11 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
      * @param aBuffer Buffer
      * @param aFirstIndex First index in buffer
      * @param aNumber Number of random points (not allowed to be less than 1)
+     * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
     @Override
-    public void fillRandomPointsOnSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber) throws IllegalArgumentException {
+    public void fillRandomPointsOnSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, Random aRandomNumberGenerator) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
             throw new IllegalArgumentException("aNumber is less than 1.");
@@ -698,7 +712,7 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
         }
 
         // </editor-fold>
-        this.graphicsUtilityMethods.fillRandomPointsOnXyLayerTopBottomSurface(aBuffer, aFirstIndex, aNumber, this.bodyCenter, this.xLength, this.yLength, this.zLength);
+        this.graphicsUtilityMethods.fillRandomPointsOnXyLayerTopBottomSurface(aBuffer, aFirstIndex, aNumber, this.bodyCenter, this.xLength, this.yLength, this.zLength, aRandomNumberGenerator);
     }
 
     /**
@@ -707,9 +721,10 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
      * @param aBuffer Buffer
      * @param aFirstIndex First index in buffer
      * @param aNumber Number of random points (not allowed to be less than 1)
+     * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
-    public void fillRandomPointsOnTopBottomSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber) throws IllegalArgumentException {
+    public void fillRandomPointsOnTopBottomSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, Random aRandomNumberGenerator) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
             throw new IllegalArgumentException("aNumber is less than 1.");
@@ -724,7 +739,7 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
             throw new IllegalArgumentException("aBuffer is too small.");
         }
         // </editor-fold>
-        this.graphicsUtilityMethods.fillRandomPointsOnXyLayerTopBottomSurface(aBuffer, aFirstIndex, aNumber, this.bodyCenter, this.xLength, this.yLength, this.zLength);
+        this.graphicsUtilityMethods.fillRandomPointsOnXyLayerTopBottomSurface(aBuffer, aFirstIndex, aNumber, this.bodyCenter, this.xLength, this.yLength, this.zLength, aRandomNumberGenerator);
     }
 
     /**
@@ -733,9 +748,10 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
      * @param aBuffer Buffer
      * @param aFirstIndex First index in buffer
      * @param aNumber Number of random points (not allowed to be less than 1)
+     * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
-    public void fillRandomPointsOnLeftRightSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber) throws IllegalArgumentException {
+    public void fillRandomPointsOnLeftRightSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, Random aRandomNumberGenerator) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
             throw new IllegalArgumentException("aNumber is less than 1.");
@@ -750,7 +766,7 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
             throw new IllegalArgumentException("aBuffer is too small.");
         }
         // </editor-fold>
-        this.graphicsUtilityMethods.fillRandomPointsOnXyLayerLeftRightSurface(aBuffer, aFirstIndex, aNumber, this.bodyCenter, this.xLength, this.yLength, this.zLength);
+        this.graphicsUtilityMethods.fillRandomPointsOnXyLayerLeftRightSurface(aBuffer, aFirstIndex, aNumber, this.bodyCenter, this.xLength, this.yLength, this.zLength, aRandomNumberGenerator);
     }
 
     /**
@@ -759,9 +775,10 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
      * @param aBuffer Buffer
      * @param aFirstIndex First index in buffer
      * @param aNumber Number of random points (not allowed to be less than 1)
+     * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
-    public void fillRandomPointsOnFrontBackSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber) throws IllegalArgumentException {
+    public void fillRandomPointsOnFrontBackSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, Random aRandomNumberGenerator) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
             throw new IllegalArgumentException("aNumber is less than 1.");
@@ -776,7 +793,7 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
             throw new IllegalArgumentException("aBuffer is too small.");
         }
         // </editor-fold>
-        this.graphicsUtilityMethods.fillRandomPointsOnXyLayerFrontBackSurface(aBuffer, aFirstIndex, aNumber, this.bodyCenter, this.xLength, this.yLength, this.zLength);
+        this.graphicsUtilityMethods.fillRandomPointsOnXyLayerFrontBackSurface(aBuffer, aFirstIndex, aNumber, this.bodyCenter, this.xLength, this.yLength, this.zLength, aRandomNumberGenerator);
     }
 
     /**
@@ -786,9 +803,10 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
      * @param aFirstIndex First index in buffer
      * @param aNumber Number of random points (not allowed to be less than 1)
      * @param aSingleSurface Single surface of xy-layer
+     * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
-    public void fillRandomPointsOnSingleSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, BodyXyLayerSingleSurfaceEnum aSingleSurface) throws IllegalArgumentException {
+    public void fillRandomPointsOnSingleSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, BodyXyLayerSingleSurfaceEnum aSingleSurface, Random aRandomNumberGenerator) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
             throw new IllegalArgumentException("aNumber is less than 1.");
@@ -804,7 +822,7 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
         }
 
         // </editor-fold>
-        this.graphicsUtilityMethods.fillRandomPointsOnSingleXyLayerSurface(aBuffer, aFirstIndex, aNumber, this.bodyCenter, this.xLength, this.yLength, this.zLength, aSingleSurface);
+        this.graphicsUtilityMethods.fillRandomPointsOnSingleXyLayerSurface(aBuffer, aFirstIndex, aNumber, this.bodyCenter, this.xLength, this.yLength, this.zLength, aSingleSurface, aRandomNumberGenerator);
     }
 
     /**
@@ -813,9 +831,10 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
      * @param aBuffer Buffer
      * @param aFirstIndex First index in buffer
      * @param aNumber Number of random points (not allowed to be less than 1)
+     * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
-    public void fillRandomPointsOnAllSurfaces(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber) throws IllegalArgumentException {
+    public void fillRandomPointsOnAllSurfaces(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, Random aRandomNumberGenerator) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
             throw new IllegalArgumentException("aNumber is less than 1.");
@@ -831,7 +850,7 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
         }
 
         // </editor-fold>
-        this.graphicsUtilityMethods.fillRandomPointsOnAllXyLayerSurfaces(aBuffer, aFirstIndex, aNumber, this.bodyCenter, this.xLength, this.yLength, this.zLength);
+        this.graphicsUtilityMethods.fillRandomPointsOnAllXyLayerSurfaces(aBuffer, aFirstIndex, aNumber, this.bodyCenter, this.xLength, this.yLength, this.zLength, aRandomNumberGenerator);
     }
 
     // </editor-fold>
@@ -847,13 +866,15 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
      * @param aNumberOfSpheres Number of spheres
      * @param aRadius Radius of spheres
      * @param aNumberOfTrials Number of trials for sphere generation
+     * @param aRandomNumberGenerator Random number generator
      * @return Linked list with non-overlapping spheres or null if none could be 
      * created
      */
     public LinkedList<BodySphere> getNonOverlappingRandomSpheres(
         int aNumberOfSpheres, 
         double aRadius, 
-        int aNumberOfTrials
+        int aNumberOfTrials,
+        Random aRandomNumberGenerator
     ) {
         LinkedList<BodySphere> tmpSphereList = 
             this.graphicsUtilityMethods.getNonOverlappingRandomSpheresInXyLayer(
@@ -864,7 +885,8 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
                 this.zLength, 
                 aNumberOfSpheres, 
                 aRadius, 
-                aNumberOfTrials
+                aNumberOfTrials,
+                aRandomNumberGenerator
             );
         if (tmpSphereList != null && !tmpSphereList.isEmpty()) {
             for (BodySphere tmpSphere : tmpSphereList) {

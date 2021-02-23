@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -21,6 +21,7 @@ package de.gnwi.mfsim.model.graphics.body.test;
 
 import de.gnwi.mfsim.model.graphics.body.BodyXyLayer;
 import de.gnwi.spices.PointInSpace;
+import java.util.Random;
 import junit.framework.TestCase;
 
 /**
@@ -30,64 +31,66 @@ import junit.framework.TestCase;
  */
 public class TestBodyXyLayer extends TestCase {
 
-	/**
-	 * Test method for 'de.gnwi.utility.BodyXyLayer.getRandomValueInVolume()'
-	 */
-	public void testGetRandomValueInVolume() {
-		PointInSpace testPoint = new PointInSpace(0, 0, 0);
-		BodyXyLayer testXyLayer = new BodyXyLayer(10, 15, 20, 20, 30, 40);
-		for (int loop = 0; loop < 100; ++loop) {
-			testPoint = testXyLayer.getRandomPointInVolume();
-			assertTrue(testXyLayer.isInVolume(testPoint));
-		}
-		PointInSpace tmpPoint[] = testXyLayer.getRandomPointsInVolume(100);
-		for (int loop = 0; loop < 100; ++loop) {
-			assertTrue(testXyLayer.isInVolume(tmpPoint[loop]));
-		}
-	}
-
-	/**
-	 * Test method for 'de.gnwi.utility.BodyXyLayer.getRandomPointOnSurface()'
-	 */
-	public void testgetRandomPointOnSurface() {
-            PointInSpace testPoint;
-            BodyXyLayer testXyLayer = new BodyXyLayer(10, 15, 20, 20, 30, 40);
-            for (int loop = 0; loop < 100; ++loop) {
-                testPoint = testXyLayer.getRandomPointOnSurface();
+    /**
+     * Test method for 'de.gnwi.utility.BodyXyLayer.getRandomValueInVolume()'
+     */
+    public void testGetRandomValueInVolume() {
+        PointInSpace testPoint = new PointInSpace(0, 0, 0);
+        BodyXyLayer testXyLayer = new BodyXyLayer(10, 15, 20, 20, 30, 40);
+        Random tmpRandom = new Random();
+        for (int loop = 0; loop < 100; ++loop) {
+                testPoint = testXyLayer.getRandomPointInVolume(tmpRandom);
                 assertTrue(testXyLayer.isInVolume(testPoint));
-            }
-            PointInSpace tmpPoint[] = testXyLayer.getRandomPointsOnSurface(100);
-            for (int loop = 0; loop < 100; ++loop) {
+        }
+        PointInSpace tmpPoint[] = testXyLayer.getRandomPointsInVolume(100, tmpRandom);
+        for (int loop = 0; loop < 100; ++loop) {
                 assertTrue(testXyLayer.isInVolume(tmpPoint[loop]));
-            }
-	}
+        }
+    }
 
-	/**
-	 * Test method for 'de.gnwi.utility.BodyXyLayer.isInVolume()'
-	 */
-	public void testIsInVolume() {
-		PointInSpace tmpCenterOfTestXyLayer = new PointInSpace(0, 0, 0);
-		BodyXyLayer testXyLayer = new BodyXyLayer(10, 15, 20, tmpCenterOfTestXyLayer);
-		PointInSpace tmpPointInsideXyLayer = new PointInSpace(3, 2, 1);
-		PointInSpace tmpPointOutsideXyLayer = new PointInSpace(20, 4, 5);
-		PointInSpace tmpPointOnSurfaceOfXyLayer = new PointInSpace(5, 0, 10);
-		assertTrue(testXyLayer.isInVolume(tmpPointInsideXyLayer));
-		assertFalse(testXyLayer.isInVolume(tmpPointOutsideXyLayer));
-		assertTrue(testXyLayer.isInVolume(tmpPointOnSurfaceOfXyLayer));
-	}
+    /**
+     * Test method for 'de.gnwi.utility.BodyXyLayer.getRandomPointOnSurface()'
+     */
+    public void testgetRandomPointOnSurface() {
+        PointInSpace testPoint;
+        BodyXyLayer testXyLayer = new BodyXyLayer(10, 15, 20, 20, 30, 40);
+        Random tmpRandom = new Random();
+        for (int loop = 0; loop < 100; ++loop) {
+            testPoint = testXyLayer.getRandomPointOnSurface(tmpRandom);
+            assertTrue(testXyLayer.isInVolume(testPoint));
+        }
+        PointInSpace tmpPoint[] = testXyLayer.getRandomPointsOnSurface(100, tmpRandom);
+        for (int loop = 0; loop < 100; ++loop) {
+            assertTrue(testXyLayer.isInVolume(tmpPoint[loop]));
+        }
+    }
 
-	/**
-	 * Test method for 'de.gnwi.utility.BodyXyLayer.isOutsideVolume()'
-	 */
-	public void testIsOutsideVolume() {
-		PointInSpace tmpCenterOfTestXyLayer = new PointInSpace(0, 0, 0);
-		BodyXyLayer testXyLayer = new BodyXyLayer(10, 15, 20, tmpCenterOfTestXyLayer);
-		PointInSpace tmpPointInsideXyLayer = new PointInSpace(3, 2, 1);
-		PointInSpace tmpPointOutsideXyLayer = new PointInSpace(20, 4, 5);
-		PointInSpace tmpPointOnSurfaceOfXyLayer = new PointInSpace(5, 0, 10);
-		assertTrue(!testXyLayer.isInVolume(tmpPointOutsideXyLayer));
-		assertFalse(!testXyLayer.isInVolume(tmpPointInsideXyLayer));
-		assertFalse(!testXyLayer.isInVolume(tmpPointOnSurfaceOfXyLayer));
-	}
+    /**
+     * Test method for 'de.gnwi.utility.BodyXyLayer.isInVolume()'
+     */
+    public void testIsInVolume() {
+        PointInSpace tmpCenterOfTestXyLayer = new PointInSpace(0, 0, 0);
+        BodyXyLayer testXyLayer = new BodyXyLayer(10, 15, 20, tmpCenterOfTestXyLayer);
+        PointInSpace tmpPointInsideXyLayer = new PointInSpace(3, 2, 1);
+        PointInSpace tmpPointOutsideXyLayer = new PointInSpace(20, 4, 5);
+        PointInSpace tmpPointOnSurfaceOfXyLayer = new PointInSpace(5, 0, 10);
+        assertTrue(testXyLayer.isInVolume(tmpPointInsideXyLayer));
+        assertFalse(testXyLayer.isInVolume(tmpPointOutsideXyLayer));
+        assertTrue(testXyLayer.isInVolume(tmpPointOnSurfaceOfXyLayer));
+    }
+
+    /**
+     * Test method for 'de.gnwi.utility.BodyXyLayer.isOutsideVolume()'
+     */
+    public void testIsOutsideVolume() {
+        PointInSpace tmpCenterOfTestXyLayer = new PointInSpace(0, 0, 0);
+        BodyXyLayer testXyLayer = new BodyXyLayer(10, 15, 20, tmpCenterOfTestXyLayer);
+        PointInSpace tmpPointInsideXyLayer = new PointInSpace(3, 2, 1);
+        PointInSpace tmpPointOutsideXyLayer = new PointInSpace(20, 4, 5);
+        PointInSpace tmpPointOnSurfaceOfXyLayer = new PointInSpace(5, 0, 10);
+        assertTrue(!testXyLayer.isInVolume(tmpPointOutsideXyLayer));
+        assertFalse(!testXyLayer.isInVolume(tmpPointInsideXyLayer));
+        assertFalse(!testXyLayer.isInVolume(tmpPointOnSurfaceOfXyLayer));
+    }
 
 }

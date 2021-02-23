@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -254,9 +254,9 @@ public class GraphicalParticleInfo {
             String tmpMoleculeParticleString = tmpMoleculeParticleStringIterator.next();
             this.moleculeParticleStringToCurrentColorMap.put(tmpMoleculeParticleString, this.moleculeParticleStringToInitialColorMap.get(tmpMoleculeParticleString));
             // Initialize this.moleculeParticleToCurrentRadiusScale to 100%
-            this.moleculeParticleStringToCurrentRadiusScale.put(tmpMoleculeParticleString, new Double(100.0));
+            this.moleculeParticleStringToCurrentRadiusScale.put(tmpMoleculeParticleString, Double.valueOf(100.0));
             // Initialize this.moleculeParticleToCurrentTransparency to 0% (NO transparency, i.e. opaque display)
-            this.moleculeParticleStringToCurrentTransparency.put(tmpMoleculeParticleString, new Float(0f));
+            this.moleculeParticleStringToCurrentTransparency.put(tmpMoleculeParticleString, Float.valueOf(0f));
         }
 
         // </editor-fold>
@@ -468,7 +468,7 @@ public class GraphicalParticleInfo {
             // IMPORTANT: Get tmpMoleculeParticleStrings as supplementary data. NOTE: tmpMoleculeParticleStrings[i] corresponds to row i of value item matrix.
             String[] tmpMoleculeParticleStrings = tmpValueItem.getSupplementaryData();
             for (int i = 0; i < tmpValueItem.getMatrixRowCount(); i++) {
-                this.moleculeParticleStringToCurrentRadiusScale.put(tmpMoleculeParticleStrings[i], new Double(tmpValueItem.getValueAsDouble(i, 5)));
+                this.moleculeParticleStringToCurrentRadiusScale.put(tmpMoleculeParticleStrings[i], Double.valueOf(tmpValueItem.getValueAsDouble(i, 5)));
             }
         }
 
@@ -482,9 +482,9 @@ public class GraphicalParticleInfo {
             for (int i = 0; i < tmpValueItem.getMatrixRowCount(); i++) {
                 // Safeguard:
                 if (tmpValueItem.getMatrixColumnCount() < 7) {
-                    this.moleculeParticleStringToCurrentTransparency.put(tmpMoleculeParticleStrings[i], new Float(0f));
+                    this.moleculeParticleStringToCurrentTransparency.put(tmpMoleculeParticleStrings[i], Float.valueOf(0f));
                 } else {
-                    this.moleculeParticleStringToCurrentTransparency.put(tmpMoleculeParticleStrings[i], new Float(tmpValueItem.getValueAsFloat(i, 6)));
+                    this.moleculeParticleStringToCurrentTransparency.put(tmpMoleculeParticleStrings[i], Float.valueOf(tmpValueItem.getValueAsFloat(i, 6)));
                 }
             }
         }

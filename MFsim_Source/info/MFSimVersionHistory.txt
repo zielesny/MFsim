@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>  
  * 
@@ -17,6 +17,124 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+--------------------------------------------------------------------------------
+MFsim 2.3.0.0 (MFsim.jar)
+--------------------------------------------------------------------------------
+Java JRE:
+  - AdoptOpenJDK JRE 11.0.8.10 with Hotspot JVM
+
+Minimum compatible MFsim Job Input version : 1.7.5.1
+Minimum compatible MFsim Job Result version: 1.1.0.4
+
+Dependencies:
+  - commons-lang3-3.4.jar
+      Apache Commons Lang (https://commons.apache.org/proper/commons-lang/):
+      Version 3.4
+  - commons-rng-client-api-1.3.jar
+    commons-rng-core-1.3.jar
+    commons-rng-sampling-1.3.jar
+    commons-rng-simple-1.3.jar
+      Apache Commons RNG 1.3 (http://commons.apache.org/proper/commons-rng/)
+      Version 1.3
+  - biojava3-core-3.0.8.jar
+    biojava3-structure-3.0.8.jar
+      BioJava (http://biojava.org/)
+      Version 3.0.8
+  - gs-algo-1.3.jar
+    gs-core-1.3.jar
+    gs-ui-1.3.jar
+      GraphStream (http://graphstream-project.org/)
+      Version 1.3
+  - Jama-1.0.3.jar
+      Java Matrix Package (http://math.nist.gov/javanumerics/jama/)
+      Version 1.0.3
+  - jcommon-1.0.9.jar
+      JCommon (http://www.jfree.org/jcommon/):
+      Version 1.0.9
+  - Jdpd.jar
+      Version 1.4.0.0 (https://github.com/zielesny/Jdpd)
+  - jdom-2.0.6.jar
+      JDOM (http://www.jdom.org/)
+      Version 2.0.6
+  - jfreechart-1.0.5.jar
+      JFreeChart (http://www.jfree.org/jfreechart/):
+      Version 1.0.5
+  - Jmol.jar
+      Jmol (http://jmol.sourceforge.net/)
+      Version 14.2.7_2014.10.13
+  - Spices.jar
+      Version 1.0.0.0 (https://github.com/zielesny/SPICES)
+  - SpicesToGraphStream.jar
+      Version 1.0.0.0 (https://github.com/zielesny/SPICES)
+  - vecmath-1.5.2.jar
+      3D Vector Math Package
+      (https://mvnrepository.com/artifact/javax.vecmath/vecmath)
+      Version 1.5.2
+
+External Windows OS executables:    
+  - ffmpeg.exe
+      FFmpeg (Static) Version 3.2.4 (https://ffmpeg.org)
+
+--------------------------------------------------------------------------------
+- Removed problems:
+  - A severe error in methods readParticlePositions() and 
+    readMoleculeParticlePositions() of class JobUtilityMethods is removed which
+    affected particle distance or radial distribution calculations.
+  - Radius of gyration values are now correctly reported in Angstrom (and not in
+    DPD units).
+  - A rare but severe error concerning molecular concentration settings during 
+    job design is removed.
+  - An internal error in class GraphicsUtilityMethods is removed which could 
+    prevent the proper construction of a simulation box start geometry.
+  - An internal error that could disable the job execution tab during job
+    execution is removed.
+  - Zoom for distribution movies is removed due to an too intricate logic. Zoom
+    values of corresponding frequency distribution diagrams are still obeyed for 
+    distribution movie generation.
+  - Job execution tab is now correctly switched to job design tab if there is no
+    job for execution.
+  - A Job Input / Job Result with proteins/peptides may now be viewed without any
+    dependence on the current particle set (before, the current particle set had
+    to contain amino acid definitions for a proper view without exceptions).
+
+- Improvements:
+  - Integration of Jdpd 1.4.0.0 with extended random number generators (Apache
+    Commons RNG version 1.3 where jumpable random number generators are 
+    especially exploited for successive random number generator creation) and 
+    extended harmonic bond behaviour (DEFAULT, ATTRACTIVE, REPULSIVE) for 
+    molecule and protein backbone forces.
+  - The reference temperature is changed from 298 K to 300 K for consistency.
+  - The "Particles" menu is reorganized and improved. A new method for rescale
+    of the repulsions a(ij) of a particle set is added. The duplication method 
+    for particles is enhanced to allow for a proper change of charge for the 
+    duplicated particle (note, that use of this method may require a full 
+    repulsions a(ij) rescale to avoid ill-defined settings if duplication is
+    performed with a charge-change).
+  - New rescaled and corrected particle set "ParticleSet_AA_V03.txt" is 
+    included (the diagonal a(ij) values for charged particles are not correct 
+    in "ParticleSet_AA_V02.txt" and "ParticleSet_AA_V01.txt").
+  - Minor improvements concerning descriptions and minor corrections are 
+    implemented.
+  - Tool tip text for job result filter is corrected.
+  - Volume scaling for concentration calculations becomes a preference 
+    (Preferences/Edit/Miscellaneous/Volume scaling). The default is "Volume 
+    scaling for concentration calculations".
+  - Particle set creation with a morphed particle is implemented where the 
+    repulsion parameters a(ij) of a source particle are changed towards a target
+    particle according to a specified percentage between 0 and 100%.
+  - Scaling of repulsion parameters a(ij) may now be performed with an individual
+    scaling factor for each temperature (already implemented in previous version)
+    or with a global scaling factor for all temperatures (new in this version).
+  - Each Job Input now contains an individual random seed value definition for 
+    geometry calculations which affects the particle positions in the simulation 
+    box. (Old) Job inputs are automatically updated for compatibility with the 
+    default random seed value of 1L if necessary.
+
+- Internal improvements:
+  - Deprecated finalize methods, deprecated Double constructor and deprecated
+    ShouldYieldFocus method are removed.
+
 
 --------------------------------------------------------------------------------
 MFsim 2.2.4.0 (MFsim.jar)
@@ -82,7 +200,6 @@ Dependencies:
 External Windows OS executables:    
   - ffmpeg.exe
       FFmpeg (Static) Version 3.2.4 (https://ffmpeg.org)
-
 
 --------------------------------------------------------------------------------
 Initial open version

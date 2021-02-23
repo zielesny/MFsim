@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -384,7 +384,7 @@ public final class Preferences {
      * Full path for chart movie images
      */
     private String chartMovieImagePath;
-
+    
     /**
      * Particle update for job input. True: Complete particle information is
      * always updated on edit of job input, false: Otherwise.
@@ -396,6 +396,13 @@ public final class Preferences {
      * false: Position step files are omitted in Job Result archive files
      */
     private boolean isJobResultArchiveStepFileInclusion;
+
+    /**
+     * Volume scaling for concentration calculation. True: Molecule numbers
+     * are calculated with volume scaling, false: Molecule numbers are 
+     * calculated without volume scaling (i.e. scale factors are all 1.0)
+     */
+    private boolean isVolumeScalingForConcentrationCalculation;
 
     /**
      * True: Job inputs included in Job Result display,
@@ -433,11 +440,6 @@ public final class Preferences {
      * file is compressed)
      */
     private boolean isJobResultArchiveFileUncompressed;
-
-    /**
-     * Deterministic random seed value
-     */
-    private long deterministicRandomSeed;
 
     /**
      * True: Random number generator with defined seed is used, false: Otherwise
@@ -1006,6 +1008,29 @@ public final class Preferences {
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Miscellaneous">
         tmpNodeNames = new String[]{ModelMessage.get("Preferences.Root"), ModelMessage.get("Preferences.Miscellaneous")};
+        // <editor-fold defaultstate="collapsed" desc="- Volume scaling for concentration calculation">
+        tmpValueItem = new ValueItem();
+        tmpValueItem.setNodeNames(tmpNodeNames);
+        tmpValueItem.setDefaultTypeFormat(new ValueItemDataTypeFormat(
+                ModelMessage.get("Preferences.Miscellaneous.IsVolumeScalingForConcentrationCalculation.True"), 
+                new String[]
+                {
+                    ModelMessage.get("Preferences.Miscellaneous.IsVolumeScalingForConcentrationCalculation.True"),
+                    ModelMessage.get("Preferences.Miscellaneous.IsVolumeScalingForConcentrationCalculation.False")
+                }
+            )
+        );
+        tmpValueItem.setName(PreferenceEditableEnum.IS_VOLUME_SCALING_FOR_CONCENTRATION_CALCULATION.name());
+        tmpValueItem.setDescription(ModelMessage.get("Preferences.Miscellaneous.IsVolumeScalingForConcentrationCalculation.Description"));
+        tmpValueItem.setDisplayName(ModelMessage.get("Preferences.Miscellaneous.IsVolumeScalingForConcentrationCalculation"));
+        if (this.isVolumeScalingForConcentrationCalculation) {
+            tmpValueItem.setValue(ModelMessage.get("Preferences.Miscellaneous.IsVolumeScalingForConcentrationCalculation.True"));
+        } else {
+            tmpValueItem.setValue(ModelMessage.get("Preferences.Miscellaneous.IsVolumeScalingForConcentrationCalculation.False"));
+        }
+        tmpValueItem.setVerticalPosition(tmpVerticalPosition++);
+        tmpValueItemContainer.addValueItem(tmpValueItem);
+        // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="- Minimum bond length in DPD units">
         tmpValueItem = new ValueItem();
         tmpValueItem.setNodeNames(tmpNodeNames);
@@ -1647,6 +1672,11 @@ public final class Preferences {
                         tmpHasChanged = true;
                     }
                     break;
+                case IS_VOLUME_SCALING_FOR_CONCENTRATION_CALCULATION:
+                    if (this.setVolumeScalingForConcentrationCalculation(tmpSingleValueItem.getValue().equals(ModelMessage.get("Preferences.Miscellaneous.IsVolumeScalingForConcentrationCalculation.True")))) {
+                        tmpHasChanged = true;
+                    }
+                    break;
                 case IS_JOB_INPUT_INCLUSION:
                     if (this.setJobInputInclusion(tmpSingleValueItem.getValue().equals(ModelMessage.get("Preferences.JobResultDisplay.IsJobInputInclusion.True")))) {
                         tmpHasChanged = true;
@@ -2285,6 +2315,8 @@ public final class Preferences {
             tmpRoot.addContent(new Element(PreferenceXmlName.IS_PARTICLE_UPDATE_FOR_JOB_INPUT).addContent(Boolean.toString(this.isParticleUpdateForJobInput)));
             // this.isJobResultArchiveStepFileInclusion
             tmpRoot.addContent(new Element(PreferenceXmlName.IS_JOB_RESULT_ARCHIVE_STEP_FILE_INCLUSION).addContent(Boolean.toString(this.isJobResultArchiveStepFileInclusion)));
+            // this.isVolumeScalingForConcentrationCalculation
+            tmpRoot.addContent(new Element(PreferenceXmlName.IS_VOLUME_SCALING_FOR_CONCENTRATION_CALCULATION).addContent(Boolean.toString(this.isVolumeScalingForConcentrationCalculation)));
             // this.isJobInputInclusion
             tmpRoot.addContent(new Element(PreferenceXmlName.IS_JOB_INPUT_INCLUSION).addContent(Boolean.toString(this.isJobInputInclusion)));
             // this.isParticleDistributionInclusion
@@ -2544,16 +2576,19 @@ public final class Preferences {
      */
     public String getCurrentParticleSetFilePathname() {
         if (this.currentParticleSetFilename == null || this.currentParticleSetFilename.isEmpty()) {
+            // Get first particle set from source particle set directory
             String[] tmpAvailableParticleSetFilenamesInDpdSourceParticles = this.fileUtilityMethods.getFilenamesWithPrefix(this.getDpdSourceParticlesPath(), ModelDefinitions.PARTICLE_SET_FILE_PREFIX);
             this.currentParticleSetFilename = tmpAvailableParticleSetFilenamesInDpdSourceParticles[0];
             return this.getDpdSourceParticlesPath() + File.separatorChar + this.currentParticleSetFilename;
         } else {
+            // Get from source particle set directory
             String[] tmpAvailableParticleSetFilenamesInDpdSourceParticles = this.fileUtilityMethods.getFilenamesWithPrefix(this.getDpdSourceParticlesPath(), ModelDefinitions.PARTICLE_SET_FILE_PREFIX);
             for (String tmpParticleSetFilename : tmpAvailableParticleSetFilenamesInDpdSourceParticles) {
                 if (this.currentParticleSetFilename.toLowerCase(Locale.ENGLISH).equals(tmpParticleSetFilename.toLowerCase(Locale.ENGLISH))) {
                     return this.getDpdSourceParticlesPath() + File.separatorChar + this.currentParticleSetFilename;
                 }
             }
+            // Get from custom particle set directory
             String[] tmpAvailableParticleSetFilenamesInCustomParticles = this.fileUtilityMethods.getFilenamesWithPrefix(this.getCustomParticlesPath(), ModelDefinitions.PARTICLE_SET_FILE_PREFIX);
             if (tmpAvailableParticleSetFilenamesInCustomParticles != null) {
                 for (String tmpParticleSetFilename : tmpAvailableParticleSetFilenamesInCustomParticles) {
@@ -2562,10 +2597,11 @@ public final class Preferences {
                     }
                 }
             }
+            // Get first particle set from source particle set directory
+            this.currentParticleSetFilename = tmpAvailableParticleSetFilenamesInDpdSourceParticles[0];
+            return this.getDpdSourceParticlesPath() + File.separatorChar + this.currentParticleSetFilename;
         }
-        return null;
     }
-
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- TempPath (get only)">
     /**
@@ -3757,6 +3793,46 @@ public final class Preferences {
         }
     }
     // </editor-fold>
+    // <editor-fold defaultstate="collapsed" desc="- VolumeScalingForConcentrationCalculation">
+    /**
+     * Volume scaling for concentration calculation. True: Molecule numbers
+     * are calculated with volume scaling, false: Molecule numbers are 
+     * calculated without volume scaling (i.e. scale factors are all 1.0)
+     *
+     * @return True: Molecule numbers are calculated with volume scaling, 
+     * false: Molecule numbers are calculated without volume scaling (i.e. 
+     * scale factors are all 1.0)
+     */
+    public boolean isVolumeScalingForConcentrationCalculation() {
+        return this.isVolumeScalingForConcentrationCalculation;
+    }
+
+    /**
+     * Default volume scaling for concentration calculation flag
+     *
+     * @return Default volume scaling for concentration calculation flag
+     */
+    public boolean getDefaultVolumeScalingForConcentrationCalculation() {
+        return ModelDefinitions.IS_VOLUME_SCALING_FOR_CONCENTRATION_CALCULATION_DEFAULT;
+    }
+
+    /**
+     * Volume scaling for concentration calculation. True: Molecule numbers
+     * are calculated with volume scaling, false: Molecule numbers are 
+     * calculated without volume scaling (i.e. scale factors are all 1.0)
+     *
+     * @param aValue Value
+     * @return True: Value changed, false: Otherwise
+     */
+    public boolean setVolumeScalingForConcentrationCalculation(boolean aValue) {
+        if (this.isVolumeScalingForConcentrationCalculation != aValue) {
+            this.isVolumeScalingForConcentrationCalculation = aValue;
+            return true;
+        } else {
+            return false;
+        }
+    }
+    // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- JobInputInclusion">
     /**
      * True: Job inputs included in Job Result display,
@@ -3985,39 +4061,6 @@ public final class Preferences {
         }
     }
 
-    // </editor-fold>
-    // <editor-fold defaultstate="collapsed" desc="- DeterministicRandomSeed">
-    /**
-     * Deterministic random seed value
-     *
-     * @return Deterministic random seed value
-     */
-    public long getDeterministicRandomSeed() {
-        return this.deterministicRandomSeed;
-    }
-
-    /**
-     * Increments deterministic random seed value
-     */
-    public void incrementDeterministicRandomSeed() {
-        this.deterministicRandomSeed += 1L;
-    }
-
-    /**
-     * Sets deterministic random seed value
-     */
-    public void setDefaultDeterministicRandomSeed() {
-        this.deterministicRandomSeed = ModelDefinitions.DETERMINISTIC_RANDOM_SEED_DEFAULT;
-    }
-
-    /**
-     * Default deterministic random seed value
-     *
-     * @return Default deterministic random seed value
-     */
-    public long getDefaultDeterministicRandomSeed() {
-        return ModelDefinitions.DETERMINISTIC_RANDOM_SEED_DEFAULT;
-    }
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- DeterministicRandom">
     /**
@@ -10911,6 +10954,9 @@ public final class Preferences {
         // <editor-fold defaultstate="collapsed" desc="isJobResultArchiveStepFileInclusion">
         this.isJobResultArchiveStepFileInclusion = this.getDefaultJobResultArchiveStepFileInclusion();
         // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="this.isVolumeScalingForConcentrationCalculation">
+        this.isVolumeScalingForConcentrationCalculation = this.getDefaultVolumeScalingForConcentrationCalculation();
+        // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="this.isJobInputInclusion">
         this.isJobInputInclusion = this.getDefaultJobInputInclusion();
         // </editor-fold>
@@ -10928,9 +10974,6 @@ public final class Preferences {
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="isJobResultArchiveFileUncompressed">
         this.isJobResultArchiveFileUncompressed = this.getDefaultJobResultArchiveFileUncompressed();
-        // </editor-fold>
-        // <editor-fold defaultstate="collapsed" desc="this.deterministicRandomSeed">
-        this.deterministicRandomSeed = this.getDefaultDeterministicRandomSeed();
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="this.isDeterministicRandom">
         this.isDeterministicRandom = this.getDefaultDeterministicRandom();
@@ -11630,6 +11673,12 @@ public final class Preferences {
             tmpCurrentElement = anElement.getChild(PreferenceXmlName.IS_JOB_RESULT_ARCHIVE_STEP_FILE_INCLUSION);
             if (tmpCurrentElement != null) {
                 this.isJobResultArchiveStepFileInclusion = Boolean.parseBoolean(tmpCurrentElement.getText());
+            }
+            // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="this.isVolumeScalingForConcentrationCalculation">
+            tmpCurrentElement = anElement.getChild(PreferenceXmlName.IS_VOLUME_SCALING_FOR_CONCENTRATION_CALCULATION);
+            if (tmpCurrentElement != null) {
+                this.isVolumeScalingForConcentrationCalculation = Boolean.parseBoolean(tmpCurrentElement.getText());
             }
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="this.isJobInputInclusion">

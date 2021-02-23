@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -212,7 +212,6 @@ public final class GraphicsUtils {
      * Writes an image to file without checks and possible file delete. NOTE:
      * ImageIO class is NOT thread safe! (thus synchronized)
      *
-     * @param aFile File
      * @param anImage Image
      * @param anImageFileType Image file type
      * @param aFile File

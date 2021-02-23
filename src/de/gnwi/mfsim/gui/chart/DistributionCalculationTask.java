@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -216,18 +216,6 @@ public class DistributionCalculationTask implements Callable {
     }
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- Task related methods">
-    /**
-     * Finalize method to end all memory claims and running threads. The method
-     * will be called when the object is destroyed.
-     */
-    @Override
-    public void finalize() throws Throwable {
-        super.finalize(); //Object.finalize();
-        if (!this.isFinished) {
-            this.stop();
-        }
-    }
-    
     /**
      * True: Task has successfully finished operations, false: Otherwise
      *

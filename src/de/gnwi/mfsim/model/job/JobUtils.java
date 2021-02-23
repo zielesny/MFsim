@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -113,10 +113,10 @@ public final class JobUtils {
             // <editor-fold defaultstate="collapsed" desc="Equal Particles a(i,i)">
             if (aDpdDensity == "3") {
                 // DPD density is 3
-                tmpA_AB = 75.0 / (3.0 * 298.0) * tmpTemperature;
+                tmpA_AB = 75.0 / (3.0 * 300.0) * tmpTemperature;
             } else {
                 // DPD density is 5
-                tmpA_AB = 75.0 / (5.0 * 298.0) * tmpTemperature;
+                tmpA_AB = 75.0 / (5.0 * 300.0) * tmpTemperature;
             }
 
             // </editor-fold>
@@ -177,14 +177,14 @@ public final class JobUtils {
 
             // </editor-fold>
             double tmpTerm = tmpE_AB * tmpCoordinationNumber_Mean_AB - 0.5 * (tmpE_AA * tmpCoordinationNumber_AA + tmpE_BB * tmpCoordinationNumber_BB);
-            double tmpChi_AB = tmpM_Smallest * tmpTerm / (tmpR * 298.0);
+            double tmpChi_AB = tmpM_Smallest * tmpTerm / (tmpR * 300.0);
 
             if (aDpdDensity == "3") {
                 // DPD density is 3
-                tmpA_AB = 75.0 / (3.0 * 298.0) * tmpTemperature + 3.497 * tmpChi_AB;
+                tmpA_AB = 75.0 / (3.0 * 300.0) * tmpTemperature + 3.497 * tmpChi_AB;
             } else {
                 // DPD density is 5
-                tmpA_AB = 75.0 / (5.0 * 298.0) * tmpTemperature + 1.451 * tmpChi_AB;
+                tmpA_AB = 75.0 / (5.0 * 300.0) * tmpTemperature + 1.451 * tmpChi_AB;
             }
 
             // </editor-fold>
@@ -239,10 +239,10 @@ public final class JobUtils {
             // <editor-fold defaultstate="collapsed" desc="Equal Particles a(i,i)">
             if (aDpdDensity == "3") {
                 // DPD density is 3
-                tmpA_AB = 75.0 / (3.0 * 298.0) * tmpTemperature;
+                tmpA_AB = 75.0 / (3.0 * 300.0) * tmpTemperature;
             } else {
                 // DPD density is 5
-                tmpA_AB = 75.0 / (5.0 * 298.0) * tmpTemperature;
+                tmpA_AB = 75.0 / (5.0 * 300.0) * tmpTemperature;
             }
             // </editor-fold>
         } else {
@@ -295,13 +295,13 @@ public final class JobUtils {
                     * Math.pow(tmpVolumeRatioAB, 4) + 5.81289E-4 * Math.pow(tmpVolumeRatioAB, 5);
             // </editor-fold>
             double tmpTerm = tmpE_AB * tmpCoordinationNumber_Mean_AB - 0.5 * (tmpE_AA * tmpCoordinationNumber_AA + tmpE_BB * tmpCoordinationNumber_BB);
-            double tmpChi_AB = tmpTerm / (tmpR * 298.0);
+            double tmpChi_AB = tmpTerm / (tmpR * 300.0);
             if (aDpdDensity == "3") {
                 // DPD density is 3
-                tmpA_AB = 75.0 / (3.0 * 298.0) * tmpTemperature + 3.497 * tmpChi_AB;
+                tmpA_AB = 75.0 / (3.0 * 300.0) * tmpTemperature + 3.497 * tmpChi_AB;
             } else {
                 // DPD density is 5
-                tmpA_AB = 75.0 / (5.0 * 298.0) * tmpTemperature + 1.451 * tmpChi_AB;
+                tmpA_AB = 75.0 / (5.0 * 300.0) * tmpTemperature + 1.451 * tmpChi_AB;
             }
             // </editor-fold>
         }

@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -243,7 +243,12 @@ public class CustomPanelDistributionMovieController extends ChangeNotifier imple
         try {
             // <editor-fold defaultstate="collapsed" desc="Initialize class variables">
             this.customPanelDistributionMovie = aCustomPanelDistributionMovie;
+            
+            // Deactivate Zoom button and Restore button:
+            // Action listeners and corresponding private methods are still available for possible re-use
+            this.customPanelDistributionMovie.getZoomButton().setVisible(false);
             this.customPanelDistributionMovie.getRestoreButton().setVisible(false);
+            
             this.customPanelDistributionMovie.showMainPanel(false);
             this.executorService = anExecutorService;
             this.imageFileType = anImageFileType;
@@ -261,9 +266,6 @@ public class CustomPanelDistributionMovieController extends ChangeNotifier imple
                 Preferences.getInstance().getSimulationMovieSlicerConfiguration().setChartConfiguration(new ChartConfiguration());
             }
             this.chartConfiguration = Preferences.getInstance().getSimulationMovieSlicerConfiguration().getChartConfiguration();
-            // </editor-fold>
-            // <editor-fold defaultstate="collapsed" desc="Start tasks">
-            this.startDistributionCalculationTasks();
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="Set up slider">
             this.virtualSliderIndex = 0;
@@ -330,48 +332,6 @@ public class CustomPanelDistributionMovieController extends ChangeNotifier imple
                         ModelUtils.appendToLogfile(true, anException);
                         // <editor-fold defaultstate="collapsed" desc="Message that method failed">
                         JOptionPane.showMessageDialog(null, 
-                            String.format(GuiMessage.get("Error.CommandExecutionFailed"), "actionPerformed()", "CustomPanelDistributionMovieController"),
-                            GuiMessage.get("Error.ErrorNotificationTitle"), 
-                            JOptionPane.ERROR_MESSAGE
-                        );
-                        // </editor-fold>
-                    }
-                    
-                }
-                
-            });
-            this.customPanelDistributionMovie.getZoomButton().addActionListener(new ActionListener() {
-                
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    try {
-                        CustomPanelDistributionMovieController.this.setChartRange();
-                    } catch (Exception anException) {
-                        ModelUtils.appendToLogfile(true, anException);
-                        // <editor-fold defaultstate="collapsed" desc="Message that method failed">
-                        JOptionPane.showMessageDialog(
-                            null, 
-                            String.format(GuiMessage.get("Error.CommandExecutionFailed"), "actionPerformed()", "CustomPanelDistributionMovieController"),
-                            GuiMessage.get("Error.ErrorNotificationTitle"), 
-                            JOptionPane.ERROR_MESSAGE
-                        );
-                        // </editor-fold>
-                    }
-                    
-                }
-                
-            });
-            this.customPanelDistributionMovie.getRestoreButton().addActionListener(new ActionListener() {
-                
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    try {
-                        CustomPanelDistributionMovieController.this.restoreOptimumChartRange();
-                    } catch (Exception anException) {
-                        ModelUtils.appendToLogfile(true, anException);
-                        // <editor-fold defaultstate="collapsed" desc="Message that method failed">
-                        JOptionPane.showMessageDialog(
-                            null, 
                             String.format(GuiMessage.get("Error.CommandExecutionFailed"), "actionPerformed()", "CustomPanelDistributionMovieController"),
                             GuiMessage.get("Error.ErrorNotificationTitle"), 
                             JOptionPane.ERROR_MESSAGE
@@ -596,6 +556,53 @@ public class CustomPanelDistributionMovieController extends ChangeNotifier imple
                 
             });
             // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="Add listeners (not used)">
+            this.customPanelDistributionMovie.getZoomButton().addActionListener(new ActionListener() {
+                
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    try {
+                        CustomPanelDistributionMovieController.this.setChartRange();
+                    } catch (Exception anException) {
+                        ModelUtils.appendToLogfile(true, anException);
+                        // <editor-fold defaultstate="collapsed" desc="Message that method failed">
+                        JOptionPane.showMessageDialog(
+                            null, 
+                            String.format(GuiMessage.get("Error.CommandExecutionFailed"), "actionPerformed()", "CustomPanelDistributionMovieController"),
+                            GuiMessage.get("Error.ErrorNotificationTitle"), 
+                            JOptionPane.ERROR_MESSAGE
+                        );
+                        // </editor-fold>
+                    }
+                    
+                }
+                
+            });
+            this.customPanelDistributionMovie.getRestoreButton().addActionListener(new ActionListener() {
+                
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    try {
+                        CustomPanelDistributionMovieController.this.restoreOptimumChartRange();
+                    } catch (Exception anException) {
+                        ModelUtils.appendToLogfile(true, anException);
+                        // <editor-fold defaultstate="collapsed" desc="Message that method failed">
+                        JOptionPane.showMessageDialog(
+                            null, 
+                            String.format(GuiMessage.get("Error.CommandExecutionFailed"), "actionPerformed()", "CustomPanelDistributionMovieController"),
+                            GuiMessage.get("Error.ErrorNotificationTitle"), 
+                            JOptionPane.ERROR_MESSAGE
+                        );
+                        // </editor-fold>
+                    }
+                    
+                }
+                
+            });
+            // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="Start tasks">
+            this.startDistributionCalculationTasks();
+            // </editor-fold>
         } catch (Exception anException) {
             ModelUtils.appendToLogfile(true, anException);
             // <editor-fold defaultstate="collapsed" desc="Message that method failed">
@@ -739,28 +746,12 @@ public class CustomPanelDistributionMovieController extends ChangeNotifier imple
     }
     // </editor-fold>
     //
-    // <editor-fold defaultstate="collapsed" desc="Protected finalize method">
-    /**
-     * Finalize method for clean up: Stop all running tasks
-     */
-    @Override
-    protected void finalize() throws Throwable {
-        try {
-            this.kill();
-        } catch (Exception anException) {
-            ModelUtils.appendToLogfile(true, anException);
-        } finally {
-            super.finalize();
-        }
-    }
-    // </editor-fold>
-    //
     // <editor-fold defaultstate="collapsed" desc="Private methods">
     // <editor-fold defaultstate="collapsed" desc="- Distribution calculation task related methods">
     /**
      * Creates and starts distribution calculation tasks
      */
-    public void startDistributionCalculationTasks() {
+    private void startDistributionCalculationTasks() {
         try {
             MouseCursorManagement.getInstance().setWaitCursor();
             this.isStartingTasks = true;
@@ -898,7 +889,7 @@ public class CustomPanelDistributionMovieController extends ChangeNotifier imple
             if (this.areTasksFinished()) {
                 for (XyChartDataManipulator tmpXyChartDataManipulator : this.xyChartDataArray) {
                     tmpXyChartDataManipulator.setNumberOfDiscardedInitialPoints(this.chartConfiguration.getNumberOfDiscardedInitialPoints());
-                    if (this.chartConfiguration.getIsZoom()) {
+                    if (this.chartConfiguration.hasZoom()) {
                         tmpXyChartDataManipulator.setZoomValues(this.chartConfiguration.getZoomValues());
                     }
                 }
@@ -1117,7 +1108,10 @@ public class CustomPanelDistributionMovieController extends ChangeNotifier imple
         }
     }
     // </editor-fold>
-    // <editor-fold defaultstate="collapsed" desc="- Zoom related methods">
+    // </editor-fold>
+    //
+    // <editor-fold defaultstate="collapsed" desc="Private methods (not used)">
+    // <editor-fold defaultstate="collapsed" desc="- Zoom related methods (not used)">
     /**
      * Sets chart range
      */

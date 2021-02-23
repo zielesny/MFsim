@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -53,7 +53,7 @@ public final class ModelUtils {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public static synchronized methods">
-    // <editor-fold defaultstate="collapsed" desc="Log file related methods">
+    // <editor-fold defaultstate="collapsed" desc="- Log file related methods">
     /**
      * Deletes log file. NOTE: Log file related methods need to be synchronized.
      */
@@ -107,7 +107,7 @@ public final class ModelUtils {
         }
     }
     // </editor-fold>
-    // <editor-fold defaultstate="collapsed" desc="Timestamp related methods">
+    // <editor-fold defaultstate="collapsed" desc="- Timestamp related methods">
     /**
      * Returns "unique" current timestamp in standard format (see code)
      * NOTE: Method MUST be synchronised!
@@ -160,7 +160,7 @@ public final class ModelUtils {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public static methods">
-    // <editor-fold defaultstate="collapsed" desc="Encryption related methods">
+    // <editor-fold defaultstate="collapsed" desc="- Encryption related methods">
     /**
      * Converts string to byte array.
      *
@@ -195,8 +195,8 @@ public final class ModelUtils {
         return new String(aByteArray);
     }
     // </editor-fold>
-    // <editor-fold defaultstate="collapsed" desc="File/Directory related methods">
-    // <editor-fold defaultstate="collapsed" desc="- Create methods">
+    // <editor-fold defaultstate="collapsed" desc="- File/Directory related methods">
+    // <editor-fold defaultstate="collapsed" desc="-- Create methods">
     /**
      * Creates directory and all non-existent ancestor directories if necessary
      *
@@ -289,7 +289,7 @@ public final class ModelUtils {
         }
     }
     // </editor-fold>
-    // <editor-fold defaultstate="collapsed" desc="- Miscellaneous methods">
+    // <editor-fold defaultstate="collapsed" desc="-- Miscellaneous methods">
     /**
      * Deletes single file
      *
@@ -746,7 +746,7 @@ public final class ModelUtils {
     }
     // </editor-fold>
     // </editor-fold>
-    // <editor-fold defaultstate="collapsed" desc="String related methods">
+    // <editor-fold defaultstate="collapsed" desc="- String related methods">
     /**
      * Returns a string representation of an array of double values. Each double
      * value is separated by aSeparator.
@@ -780,29 +780,28 @@ public final class ModelUtils {
     }
 
     /**
-     * Concatenates strings of string array with GENERAL_SEPARATOR
+     * Concatenates strings of string array
      *
      * @param aStringArray Contains strings to be concatenated
      * @param aSeparator Separator for concatenation
-     * @return Result string with concatenated strings separated by
-     * GENERAL_SEPARATOR or null if strings could not be concatenated
+     * @return Result string with concatenated strings or null if strings could 
+     * not be concatenated
      */
     public static String concatenateStrings(String[] aStringArray, String aSeparator) {
         return ModelUtils.concatenateStrings(aStringArray, aSeparator, 0);
     }
 
     /**
-     * Concatenates strings of string array with GENERAL_SEPARATOR
+     * Concatenates strings of string array
      *
      * @param aStringArray Contains strings to be concatenated
      * @param aSeparator Separator for concatenation
      * @param aStartIndex The start index for aStringArray for start of
      * concatenation
-     * @return Result string with concatenated strings separated by
-     * GENERAL_SEPARATOR or null if strings could not be concatenated
+     * @return Result string with concatenated strings or null if strings could 
+     * not be concatenated
      */
     public static String concatenateStrings(String[] aStringArray, String aSeparator, int aStartIndex) {
-
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aStringArray == null || aStringArray.length == 0 || aStartIndex < 0 || aStartIndex >= aStringArray.length) {
             return null;
@@ -1063,7 +1062,7 @@ public final class ModelUtils {
         return aString.substring(aStartString.length()).trim();
     }
     // </editor-fold>
-    // <editor-fold defaultstate="collapsed" desc="Filter related methods">
+    // <editor-fold defaultstate="collapsed" desc="- Filter related methods">
     /**
      * Filters job inputs according to defined filter criteria
      *
@@ -1221,7 +1220,7 @@ public final class ModelUtils {
         }
     }
     // </editor-fold>
-    // <editor-fold defaultstate="collapsed" desc="XML related methods">
+    // <editor-fold defaultstate="collapsed" desc="- XML related methods">
     /**
      * Adds string list to XML element
      *
@@ -1353,7 +1352,7 @@ public final class ModelUtils {
         return tmpStringArray;
     }
     // </editor-fold>
-    // <editor-fold defaultstate="collapsed" desc="Miscellaneous methods">
+    // <editor-fold defaultstate="collapsed" desc="- Miscellaneous methods">
     /**
      * Checks if another instance of this application is already running. NOTE:
      * If ServerSocket(1111) is already used by another program within the OS
@@ -1660,7 +1659,7 @@ public final class ModelUtils {
         return Math.floor(aValue * tmpFactor + 0.5) / tmpFactor;
     }
     // </editor-fold>
-    // <editor-fold defaultstate="collapsed" desc="Filename related methods">
+    // <editor-fold defaultstate="collapsed" desc="- Filename related methods">
     /**
      * Returns pathname of basic preferences file
      *
@@ -1681,7 +1680,7 @@ public final class ModelUtils {
         return aPath + File.separatorChar + ModelDefinitions.BASIC_PREFERENCES_FILENAME;
     }
     // </editor-fold>
-    // <editor-fold defaultstate="collapsed" desc="Particle set related methods">
+    // <editor-fold defaultstate="collapsed" desc="- Particle set related methods">
     /**
      * Adds particle set file of job input to custom particle sets if necessary 
      * and makes this particle set the current one.
@@ -1712,7 +1711,7 @@ public final class ModelUtils {
         }
     }
     // </editor-fold>
-    // <editor-fold defaultstate="collapsed" desc="Generic sorting">
+    // <editor-fold defaultstate="collapsed" desc="- Generic sorting">
     /**
      * Sorts array in ascending or descending order. Implements "Heapsort"
      * algorithm based on W.H. Press et al., Numerical recipes in FORTRAN 77,
@@ -2007,7 +2006,7 @@ public final class ModelUtils {
         } while (true);
     }
     // </editor-fold>
-    // <editor-fold defaultstate="collapsed" desc="OS related methods">
+    // <editor-fold defaultstate="collapsed" desc="- OS related methods">
     /**
      * Checks if current operating system is Linux
      *

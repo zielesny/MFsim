@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -516,8 +516,8 @@ public class JobResult implements Comparable<JobResult> {
                         ModelMessage.get("JobResults.SimulationResult.Progress.Temperature")});
                     tmpValueItem.setMatrixColumnWidths(new String[]{ModelDefinitions.CELL_WIDTH_NUMERIC_80, // Step
                         ModelDefinitions.CELL_WIDTH_NUMERIC_100}); // Temperature_in_K
-                    // In JobUtilityMethods.getJdpdInputText() the temperature was divided by 298.0 to achieve kT units thus multiply with 298.0 now
-                    double tmpFactor = 298.0;
+                    // In JobUtilityMethods.getJdpdInputText() the temperature was divided by 300.0 to achieve kT units thus multiply with 300.0 now
+                    double tmpFactor = 300.0;
                     tmpValueItem.setMatrix(this.getMultipliedValueItemMatrix(tmpInfoArray, tmpDataTypeFormatText, tmpFactor, 1, Double.POSITIVE_INFINITY));
                     // IMPORTANT: Set diagram columns
                     tmpValueItem.setMatrixDiagramColumns(0, 1);
@@ -1080,6 +1080,7 @@ public class JobResult implements Comparable<JobResult> {
             // <editor-fold defaultstate="collapsed" desc="- Radius of gyration">
             String[] tmpJobResultRadiusOfGyrationFilePathnames = this.jobUtilityMethods.getJobResultRadiusOfGyrationFilePathnames(this.jobResultPath);
             if (tmpJobResultRadiusOfGyrationFilePathnames != null && tmpJobResultRadiusOfGyrationFilePathnames.length > 0) {
+                double tmpLengthConversionFactorFromDpdToPhysicalLength = this.jobUtilityMethods.getLengthConversionFactorFromDpdToPhysicalLength(this.getJobInput().getValueItemContainer());
                 for (String tmpJobResultRadiusOfGyrationFilePathname : tmpJobResultRadiusOfGyrationFilePathnames) {
                     String[] tmpInfoArray = this.fileUtilityMethods.readDefinedStringArrayFromFile(tmpJobResultRadiusOfGyrationFilePathname);
                     if (tmpInfoArray[0].equals("Version 1.0.0")) {
@@ -1101,6 +1102,10 @@ public class JobResult implements Comparable<JobResult> {
                         tmpValueItem.setMatrixColumnWidths(new String[]{ModelDefinitions.CELL_WIDTH_NUMERIC_80, // Step
                             ModelDefinitions.CELL_WIDTH_NUMERIC_80}); // RadiusOfGyration
                         tmpValueItem.setMatrix(this.getValueItemMatrix(tmpInfoArray, tmpDataTypeFormatText, tmpOffset, Double.POSITIVE_INFINITY));
+                        // Rg values are in DPD units thus convert to Angstrom
+                        for (int i = 0; i < tmpValueItem.getMatrixRowCount(); i++) {
+                            tmpValueItem.setValue(String.valueOf(tmpValueItem.getValueAsDouble(i, 1) * tmpLengthConversionFactorFromDpdToPhysicalLength), i, 1);
+                        }
                         // IMPORTANT: Set diagram columns
                         tmpValueItem.setMatrixDiagramColumns(0, 1);
                         tmpValueItemContainer.addValueItem(tmpValueItem);

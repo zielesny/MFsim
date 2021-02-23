@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -76,7 +76,6 @@ public class Molecule {
         this.moleculeName = aMoleculeName;
         this.molarWeight = -1.0;
     }
-
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public methods">
@@ -105,7 +104,6 @@ public class Molecule {
             return false;
         }
     }
-
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public properties (get only)">
@@ -124,7 +122,6 @@ public class Molecule {
             return this.molarWeight;
         }
     }
-
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="MolecularStructureString (get)">

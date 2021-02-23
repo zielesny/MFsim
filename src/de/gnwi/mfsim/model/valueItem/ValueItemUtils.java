@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -468,11 +468,9 @@ public final class ValueItemUtils {
      */
     public static ValueItem[] sortValueItems(ValueItem[] aUnsortedValueItems) {
         // <editor-fold defaultstate="collapsed" desc="Checks">
-
         if (aUnsortedValueItems == null || aUnsortedValueItems.length == 0) {
             return aUnsortedValueItems;
         }
-
         // </editor-fold>
         Arrays.sort(aUnsortedValueItems);
         return aUnsortedValueItems;

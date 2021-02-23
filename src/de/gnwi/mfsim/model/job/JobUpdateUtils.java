@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -19,6 +19,7 @@
  */
 package de.gnwi.mfsim.model.job;
 
+import de.gnwi.jdpd.samples.harmonicBonds.HarmonicBond;
 import de.gnwi.jdpd.utilities.Constants;
 import de.gnwi.jdpd.utilities.Factory;
 import de.gnwi.mfsim.model.valueItem.ValueItemDataTypeFormat;
@@ -333,7 +334,6 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
         if (anUpdateNotifierValueItem.getName().equals("Concentration")) {
             // <editor-fold defaultstate="collapsed" desc="Check itself">
             this.checkConcentration(anUpdateNotifierValueItem);
-
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="Update receiver Quantity">
             ValueItem tmpQuantityValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("Quantity");
@@ -371,12 +371,18 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
             // <editor-fold defaultstate="collapsed" desc="Update itself and BoxSize">
             // IMPORTANT: FIRST update itself and BoxSize
             tmpBoxSizeValueItem.initializeChangeDetection();
-            this.updateQuantityItself(tmpConcentrationValueItem, anUpdateNotifierValueItem, tmpParticleTableValueItem, tmpMonomerTableValueItem, tmpMoleculeTableValueItem, tmpDensityValueItem,
-                    tmpBoxSizeValueItem);
+            this.updateQuantityItself(
+                tmpConcentrationValueItem, 
+                anUpdateNotifierValueItem, 
+                tmpParticleTableValueItem, 
+                tmpMonomerTableValueItem, 
+                tmpMoleculeTableValueItem, 
+                tmpDensityValueItem,
+                tmpBoxSizeValueItem
+            );
             if (tmpBoxSizeValueItem.hasChangeDetected()) {
                 tmpBoxSizeValueItem.notifyDependentValueItemsForUpdate();
             }
-
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="Update receiver Bonds12Table">
             this.updateVolumeBasedBondLengthsInBonds12(tmpBonds12TableValueItem);
@@ -439,6 +445,13 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
             this.updateBoundary(tmpBoundaryValueItem, tmpMoleculeTableValueItem, anUpdateNotifierValueItem);
             // </editor-fold>
             return;
+        }
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Update notifier GeometryRandomSeed">
+        if (anUpdateNotifierValueItem.getName().equals("GeometryRandomSeed")) {
+            // Update compartment container with changed geometry random seed value
+            ValueItem tmpCompartmentsValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("Compartments");
+            this.updateCompartmentContainerWithGeometryRandomSeed(tmpCompartmentsValueItem, anUpdateNotifierValueItem.getValueAsLong());
         }
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Update notifier MoleculeBoundary">
@@ -740,6 +753,141 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
         tmpInitialVelocityScalingStepsValueItem.setNodeNames(tmpOldVelocityScalingValueItem.getNodeNames());
         aJobInput.getValueItemContainer().removeValueItem(tmpOldVelocityScalingValueItem.getName());
         aJobInput.getValueItemContainer().addValueItem(tmpInitialVelocityScalingStepsValueItem);
+    }
+
+    /**
+     * Updates value item "RandomNumberGenerator" in specified job input
+     * 
+     * @param aJobInput Job input to be updated
+     */
+    public void updateRandomNumberGenerator(JobInput aJobInput) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aJobInput == null) {
+            return;
+        }
+        // </editor-fold>
+        ValueItem tmpOldRandomNumberGeneratorValueItem = aJobInput.getValueItemContainer().getValueItem("RandomNumberGenerator");
+        ValueItem tmpUpdatedRandomNumberGeneratorValueItem = JdpdValueItemDefinition.getInstance().getClonedJdpdInputFileValueItem("RandomNumberGenerator");
+        // Update
+        String tmpRandomNumberGeneratorRepresentation = tmpOldRandomNumberGeneratorValueItem.getValue(0, 0);
+        if (tmpUpdatedRandomNumberGeneratorValueItem.getMatrix()[0][0].getTypeFormat().hasSelectionText(tmpRandomNumberGeneratorRepresentation)) {
+            tmpUpdatedRandomNumberGeneratorValueItem.setValue(tmpRandomNumberGeneratorRepresentation, 0, 0);
+        } else {
+            tmpUpdatedRandomNumberGeneratorValueItem.setValue(tmpUpdatedRandomNumberGeneratorValueItem.getMatrix()[0][0].getTypeFormat().getDefaultValue(), 0, 0);
+        }
+        tmpUpdatedRandomNumberGeneratorValueItem.setValue(tmpOldRandomNumberGeneratorValueItem.getValue(0, 1), 0, 1);
+        tmpUpdatedRandomNumberGeneratorValueItem.setValue(tmpOldRandomNumberGeneratorValueItem.getValue(0, 2), 0, 2);
+        aJobInput.getValueItemContainer().replaceValueItemWithKeptVerticalPositionAndNodeNames(tmpUpdatedRandomNumberGeneratorValueItem);
+    }
+    
+    /**
+     * Updates value item "MoleculeBackboneForces" with behaviour in specified job input
+     * 
+     * @param aJobInput Job input to be updated
+     */
+    public void updateMoleculeBackboneForcesWithBehaviour(JobInput aJobInput) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aJobInput == null) {
+            return;
+        }
+        // </editor-fold>
+        ValueItem tmpMoleculeBackboneForcesValueItem = aJobInput.getValueItemContainer().getValueItem("MoleculeBackboneForces");
+        if (tmpMoleculeBackboneForcesValueItem == null) {
+            return;
+        }
+        if (tmpMoleculeBackboneForcesValueItem.isLocked()) {
+            return;
+        }
+        // Behaviour is defined at row with index 6 (i.e. the 7th position)
+        if (tmpMoleculeBackboneForcesValueItem.getMatrixColumnCount() > 6) {
+            return;
+        }
+        ValueItem tmpUpdatedMoleculeBackboneForcesValueItem = JdpdValueItemDefinition.getInstance().getClonedJdpdInputFileValueItem("MoleculeBackboneForces");
+        ValueItemMatrixElement[][] tmpMatrix = tmpMoleculeBackboneForcesValueItem.getMatrix();
+        ValueItemMatrixElement[][] tmpUpdatedMatrix = new ValueItemMatrixElement[tmpMatrix.length][];
+        ValueItemDataTypeFormat tmpBehaviourTypeFormat = 
+            new ValueItemDataTypeFormat(
+                HarmonicBond.HarmonicBondBehaviour.getDefaultHarmonicBondBehaviourRepresentation(), 
+                HarmonicBond.HarmonicBondBehaviour.getHarmonicBondBehaviourRepresentations());
+        for (int i = 0; i < tmpMatrix.length; i++) {
+            tmpUpdatedMatrix[i] = new ValueItemMatrixElement[tmpMatrix[0].length + 1];
+            for (int k = 0; k < tmpMatrix[0].length; k++) {
+                tmpUpdatedMatrix[i][k] = tmpMatrix[i][k];
+            }
+            tmpUpdatedMatrix[i][tmpMatrix[0].length] = 
+                new ValueItemMatrixElement(
+                    HarmonicBond.HarmonicBondBehaviour.getDefaultHarmonicBondBehaviourRepresentation(), 
+                    tmpBehaviourTypeFormat
+                );
+        }
+        tmpUpdatedMoleculeBackboneForcesValueItem.setMatrix(tmpUpdatedMatrix);
+        tmpUpdatedMoleculeBackboneForcesValueItem.setLocked(false);
+        tmpUpdatedMoleculeBackboneForcesValueItem.setActivity(true);
+        aJobInput.getValueItemContainer().replaceValueItemWithKeptVerticalPositionAndNodeNames(tmpUpdatedMoleculeBackboneForcesValueItem);
+    }
+    
+    /**
+     * Updates value item "ProteinBackboneForces" with behaviour in specified job input
+     * 
+     * @param aJobInput Job input to be updated
+     */
+    public void updateProteinBackboneForcesWithBehaviour(JobInput aJobInput) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aJobInput == null) {
+            return;
+        }
+        // </editor-fold>
+        ValueItem tmpProteinBackboneForcesValueItem = aJobInput.getValueItemContainer().getValueItem("ProteinBackboneForces");
+        if (tmpProteinBackboneForcesValueItem == null) {
+            return;
+        }
+        if (tmpProteinBackboneForcesValueItem.isLocked()) {
+            return;
+        }
+        // Behaviour is defined at row with index 6 (i.e. the 7th position)
+        if (tmpProteinBackboneForcesValueItem.getMatrixColumnCount() > 6) {
+            return;
+        }
+        ValueItem tmpUpdatedProteinBackboneForcesValueItem = JdpdValueItemDefinition.getInstance().getClonedJdpdInputFileValueItem("ProteinBackboneForces");
+        ValueItemMatrixElement[][] tmpMatrix = tmpProteinBackboneForcesValueItem.getMatrix();
+        ValueItemMatrixElement[][] tmpUpdatedMatrix = new ValueItemMatrixElement[tmpMatrix.length][];
+        ValueItemDataTypeFormat tmpBehaviourTypeFormat = 
+            new ValueItemDataTypeFormat(
+                HarmonicBond.HarmonicBondBehaviour.getDefaultHarmonicBondBehaviourRepresentation(), 
+                HarmonicBond.HarmonicBondBehaviour.getHarmonicBondBehaviourRepresentations());
+        for (int i = 0; i < tmpMatrix.length; i++) {
+            tmpUpdatedMatrix[i] = new ValueItemMatrixElement[tmpMatrix[0].length + 1];
+            for (int k = 0; k < tmpMatrix[0].length; k++) {
+                tmpUpdatedMatrix[i][k] = tmpMatrix[i][k];
+            }
+            tmpUpdatedMatrix[i][tmpMatrix[0].length] = 
+                new ValueItemMatrixElement(
+                    HarmonicBond.HarmonicBondBehaviour.getDefaultHarmonicBondBehaviourRepresentation(), 
+                    tmpBehaviourTypeFormat
+                );
+        }
+        tmpUpdatedProteinBackboneForcesValueItem.setMatrix(tmpUpdatedMatrix);
+        tmpUpdatedProteinBackboneForcesValueItem.setLocked(false);
+        tmpUpdatedProteinBackboneForcesValueItem.setActivity(true);
+        aJobInput.getValueItemContainer().replaceValueItemWithKeptVerticalPositionAndNodeNames(tmpUpdatedProteinBackboneForcesValueItem);
+    }
+    
+    /**
+     * Inserts value item "GeometryRandomSeed" in specified job input if necessary
+     * 
+     * @param aJobInput Job input to be updated
+     */
+    public void insertGeometryRandomSeedValueItem(JobInput aJobInput) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aJobInput == null) {
+            return;
+        }
+        // </editor-fold>
+        if (!aJobInput.getValueItemContainer().hasValueItem("GeometryRandomSeed")) {
+            ValueItem tmpGeometryRandomSeedValueItem = JdpdValueItemDefinition.getInstance().getClonedJdpdInputFileValueItem("GeometryRandomSeed");
+            aJobInput.getValueItemContainer().insertValueItemBefore(tmpGeometryRandomSeedValueItem, "Compartments");
+            this.updateCompartmentContainerWithGeometryRandomSeed(aJobInput.getValueItemContainer().getValueItem("Compartments"), tmpGeometryRandomSeedValueItem.getValueAsLong());
+        }
     }
     // </editor-fold>
     //
@@ -1694,7 +1842,6 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
         if (aLengthConversionFactor < 0.0) {
             return;
         }
-
         // </editor-fold>
         double tmpX = aBoxSizeValueItem.getValueAsDouble(0, 0);
         double tmpY = aBoxSizeValueItem.getValueAsDouble(0, 1);
@@ -1742,11 +1889,14 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
         if (aParticleTableValueItem == null || !aParticleTableValueItem.getName().equals("ParticleTable")) {
             return;
         }
-        if (aDensityValueItem.hasError() || aMonomerTableValueItem.hasError() || aMoleculeTableValueItem.hasError() || aQuantityValueItem.hasError()) {
+        if (aDensityValueItem.hasError() || 
+            aMonomerTableValueItem.hasError() || 
+            aMoleculeTableValueItem.hasError() || 
+            aQuantityValueItem.hasError()
+        ) {
             aBoxSizeValueItem.setError(ModelMessage.get("ValueItem.Error.NoCalculation"));
             return;
         }
-
         // </editor-fold>
         // First remove error if necessary
         if (aBoxSizeValueItem.hasError()) {
@@ -1786,9 +1936,13 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
             return;
         }
         // </editor-fold>
+        // First remove error if necessary
+        if (aBoxSizeValueItem.hasError()) {
+            aBoxSizeValueItem.removeError();
+        }
         // Three box sides can NOT be fixed
-        if (aBoxSizeValueItem.getValue(0, 3).equals(ModelMessage.get("JdpdInputFile.parameter.fixed")) 
-            && aBoxSizeValueItem.getValue(0, 5).equals(ModelMessage.get("JdpdInputFile.parameter.fixed"))
+        if (aBoxSizeValueItem.getValue(0, 3).equals(ModelMessage.get("JdpdInputFile.parameter.fixed")) && 
+            aBoxSizeValueItem.getValue(0, 5).equals(ModelMessage.get("JdpdInputFile.parameter.fixed"))
         ) {
             aBoxSizeValueItem.setValue(ModelMessage.get("JdpdInputFile.parameter.flexible"), 0, 7);
         }
@@ -1889,8 +2043,8 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
             return;
         }
         // </editor-fold>
-        if (aConcentrationValueItem.getValue(0, 1).equals(ModelMessage.get("JdpdInputFile.parameter.weightPercent"))
-            || aConcentrationValueItem.getValue(0, 1).equals(ModelMessage.get("JdpdInputFile.parameter.molarPercent"))
+        if (aConcentrationValueItem.getValue(0, 1).equals(ModelMessage.get("JdpdInputFile.parameter.weightPercent")) || 
+            aConcentrationValueItem.getValue(0, 1).equals(ModelMessage.get("JdpdInputFile.parameter.molarPercent"))
         ) {
             // <editor-fold defaultstate="collapsed" desc="Sum of values must be 100%">
             double tmpSum = 0;
@@ -1931,19 +2085,33 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
         if (aQuantityValueItem == null || !aQuantityValueItem.getName().equals("Quantity")) {
             return;
         }
-        if (aConcentrationValueItem == null || !aConcentrationValueItem.getName().equals("Concentration") || aParticleTableValueItem == null
-                || !aParticleTableValueItem.getName().equals("ParticleTable") || aMonomerTableValueItem == null || !aMonomerTableValueItem.getName().equals("MonomerTable") || aMoleculeTableValueItem == null
-                || !aMoleculeTableValueItem.getName().equals("MoleculeTable") || aDensityValueItem == null || !aDensityValueItem.getName().equals("Density") || aBoxSizeValueItem == null
-                || !aBoxSizeValueItem.getName().equals("BoxSize")) {
+        if (aConcentrationValueItem == null || 
+            !aConcentrationValueItem.getName().equals("Concentration") || 
+            aParticleTableValueItem == null || 
+            !aParticleTableValueItem.getName().equals("ParticleTable") || 
+            aMonomerTableValueItem == null || 
+            !aMonomerTableValueItem.getName().equals("MonomerTable") || 
+            aMoleculeTableValueItem == null || 
+            !aMoleculeTableValueItem.getName().equals("MoleculeTable") || 
+            aDensityValueItem == null || 
+            !aDensityValueItem.getName().equals("Density") || 
+            aBoxSizeValueItem == null || 
+            !aBoxSizeValueItem.getName().equals("BoxSize")
+        ) {
             aQuantityValueItem.setError(ModelMessage.get("ValueItem.Error.NoCalculation"));
             return;
         }
-        if (aConcentrationValueItem.hasError() || aParticleTableValueItem.hasError() || aMonomerTableValueItem.hasError() || aMoleculeTableValueItem.hasError() || aDensityValueItem.hasError()
-                || aBoxSizeValueItem.hasError()) {
+        // NOTE: Do not evaluate "|| aBoxSizeValueItem.hasError()" since box size
+        // is "below" quantitiy
+        if (aConcentrationValueItem.hasError() || 
+            aParticleTableValueItem.hasError() || 
+            aMonomerTableValueItem.hasError() || 
+            aMoleculeTableValueItem.hasError() || 
+            aDensityValueItem.hasError()
+        ) {
             aQuantityValueItem.setError(ModelMessage.get("ValueItem.Error.NoCalculation"));
             return;
         }
-
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Check if last cloned matrix differs from current matrix">
         int tmpIndexOfRowChanged = -1;
@@ -1990,11 +2158,10 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
             if (aConcentrationValueItem.isActive()) {
                 this.calculateQuantity(aConcentrationValueItem, aQuantityValueItem, aParticleTableValueItem, aMonomerTableValueItem, aMoleculeTableValueItem, aDensityValueItem, aBoxSizeValueItem);
             } else {
-                // <editor-fold defaultstate="collapsed" desc="Remove possible error of quantity value item">
+                // <editor-fold defaultstate="collapsed" desc="Remove possible error of quantity and box size value item">
                 if (aQuantityValueItem.hasError()) {
                     aQuantityValueItem.removeError();
                 }
-
                 // </editor-fold>
             }
         }
@@ -2020,19 +2187,33 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
         if (aQuantityValueItem == null || !aQuantityValueItem.getName().equals("Quantity")) {
             return;
         }
-        if (aConcentrationValueItem == null || !aConcentrationValueItem.getName().equals("Concentration") || aParticleTableValueItem == null
-                || !aParticleTableValueItem.getName().equals("ParticleTable") || aMonomerTableValueItem == null || !aMonomerTableValueItem.getName().equals("MonomerTable") || aMoleculeTableValueItem == null
-                || !aMoleculeTableValueItem.getName().equals("MoleculeTable") || aDensityValueItem == null || !aDensityValueItem.getName().equals("Density") || aBoxSizeValueItem == null
-                || !aBoxSizeValueItem.getName().equals("BoxSize")) {
+        if (aConcentrationValueItem == null || 
+            !aConcentrationValueItem.getName().equals("Concentration") || 
+            aParticleTableValueItem == null || 
+            !aParticleTableValueItem.getName().equals("ParticleTable") || 
+            aMonomerTableValueItem == null || 
+            !aMonomerTableValueItem.getName().equals("MonomerTable") || 
+            aMoleculeTableValueItem == null || 
+            !aMoleculeTableValueItem.getName().equals("MoleculeTable") || 
+            aDensityValueItem == null || 
+            !aDensityValueItem.getName().equals("Density") || 
+            aBoxSizeValueItem == null || 
+            !aBoxSizeValueItem.getName().equals("BoxSize")
+        ) {
             aQuantityValueItem.setError(ModelMessage.get("ValueItem.Error.NoCalculation"));
             return;
         }
-        if (aConcentrationValueItem.hasError() || aParticleTableValueItem.hasError() || aMonomerTableValueItem.hasError() || aMoleculeTableValueItem.hasError() || aDensityValueItem.hasError()
-                || aBoxSizeValueItem.hasError()) {
+        // NOTE: Do not evaluate "|| aBoxSizeValueItem.hasError()" since box size
+        // is "below" quantitiy
+        if (aConcentrationValueItem.hasError() || 
+            aParticleTableValueItem.hasError() || 
+            aMonomerTableValueItem.hasError() || 
+            aMoleculeTableValueItem.hasError() || 
+            aDensityValueItem.hasError()
+        ) {
             aQuantityValueItem.setError(ModelMessage.get("ValueItem.Error.NoCalculation"));
             return;
         }
-
         // </editor-fold>
         try {
             // <editor-fold defaultstate="collapsed" desc="1. Get density">
@@ -2053,11 +2234,9 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
                 // Second replace in cloned molecules value item
                 this.jobUtilityMethods.replaceMonomerShortcutsInMolecularStructure(tmpMoleculesWithoutMonomerShortcutsValueItem, aMonomerTableValueItem);
             }
-
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="5. Get concentration type">
             MoleculeConcentrationType tmpConcentrationType = MoleculeConcentrationType.toMoleculeConcentrationType(aConcentrationValueItem.getValue(0, 1));
-
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="6. Set molecule container">
             MoleculeContainer tmpMoleculeContainer = new MoleculeContainer(tmpParticleInfoContainer, tmpBoxVolume, tmpDpdDensity, tmpConcentrationType);
@@ -2066,14 +2245,14 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
                         tmpMoleculesWithoutMonomerShortcutsValueItem.getValue(i, 0) // Molecule_Name
                 );
                 // NOTE: A Row in tmpMoleculesWithoutMonomerShortcutsValueItem corresponds to row in aConcentrationValueItem
-                if (!tmpMoleculeContainer.addMolecule(tmpMolecule, // Molecule
+                if (!tmpMoleculeContainer.addMolecule(
+                        tmpMolecule, // Molecule
                         aConcentrationValueItem.getValueAsDouble(i, 2) // Concentration
                 )) {
                     aQuantityValueItem.setError(ModelMessage.get("ValueItem.Error.NoCalculation"));
                     return;
                 }
             }
-
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="7. Calculate quantities">
             if (!tmpMoleculeContainer.calculateConcentrationProperties()) {
@@ -2095,7 +2274,6 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
             if (aQuantityValueItem.hasError()) {
                 aQuantityValueItem.removeError();
             }
-
             // </editor-fold>
         } catch (Exception anException) {
             ModelUtils.appendToLogfile(true, anException);
@@ -2105,7 +2283,9 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="-- Compartments as update receiver">
     /**
-     * Updates Compartments value item in specific way
+     * Updates compartments value item in specific way
+     * 
+     * @param aCompartmentsValueItem Compartments value item
      */
     private void updateCompartments(ValueItem aCompartmentsValueItem) {
         // <editor-fold defaultstate="collapsed" desc="Checks">
@@ -2134,6 +2314,24 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
         aCompartmentsValueItem.setActivity(!tmpHasError);
         aCompartmentsValueItem.setLocked(tmpHasError);
         // </editor-fold>
+    }
+    
+    /**
+     * Updates compartment container with new geometry random seed value
+     * 
+     * @param aCompartmentsValueItem Compartments value item
+     * @param aGeometryRandomSeed Geometry random seed value
+     */
+    private void updateCompartmentContainerWithGeometryRandomSeed(ValueItem aCompartmentsValueItem, long aGeometryRandomSeed) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aCompartmentsValueItem == null || !aCompartmentsValueItem.getName().equals("Compartments")) {
+            return;
+        }
+        // </editor-fold>
+        CompartmentContainer tmpCompartmentContainer = aCompartmentsValueItem.getCompartmentContainer();
+        if (tmpCompartmentContainer != null) {
+            tmpCompartmentContainer.setGeometryRandomSeed(aGeometryRandomSeed);
+        }
     }
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="-- Boundary as update receiver">
@@ -2501,7 +2699,10 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
                     new ValueItemDataTypeFormat(tmpBackboneAttributes2[0], tmpBackboneAttributes2), // backboneAttribute2
                     new ValueItemDataTypeFormat("0", 6, 0.0, Double.MAX_VALUE),                     // backboneDistanceAngstrom
                     new ValueItemDataTypeFormat("0", 6, 0.0, Double.MAX_VALUE, false, false),       // backboneDistanceDpd
-                    new ValueItemDataTypeFormat("0", 6, 0.0, Double.MAX_VALUE)                      // backboneForceConstant
+                    new ValueItemDataTypeFormat("0", 6, 0.0, Double.MAX_VALUE),                     // backboneForceConstant
+                    new ValueItemDataTypeFormat(
+                        HarmonicBond.HarmonicBondBehaviour.getDefaultHarmonicBondBehaviourRepresentation(), 
+                        HarmonicBond.HarmonicBondBehaviour.getHarmonicBondBehaviourRepresentations()) // backboneBehaviour
                 };
             tmpMoleculeBackboneForcesValueItem.setDefaultTypeFormats(tmpDefaultTypeFormats);
             // Recalculate DPD-length (since Spices may be re-used):
@@ -2626,6 +2827,7 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
         // Index 3 = Backbone distance in Angstrom
         // Index 4 = Backbone distance in DPD unit
         // Index 5 = Backbone force constant
+        // Index 6 = Backbone behaviour
         for (int i = 0; i < aMoleculeBackboneForcesValueItem.getMatrixRowCount(); i++) {
             double tmpLengthInAngstrom = aMoleculeBackboneForcesValueItem.getValueAsDouble(i, 3);
             double tmpLengthInDpd = tmpLengthInAngstrom/aLengthConversionFactor;
@@ -2702,7 +2904,10 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
                     new ValueItemDataTypeFormat(tmpAminoAcidBackboneParticleArray2[0], tmpAminoAcidBackboneParticleArray2), // aminoAcidBackboneParticle2
                     new ValueItemDataTypeFormat("0", 6, 0.0, Double.MAX_VALUE),                                             // backboneDistanceAngstrom
                     new ValueItemDataTypeFormat("0", 6, 0.0, Double.MAX_VALUE, false, false),                               // backboneDistanceDpd
-                    new ValueItemDataTypeFormat("0", 6, 0.0, Double.MAX_VALUE)                                              // backboneForceConstant
+                    new ValueItemDataTypeFormat("0", 6, 0.0, Double.MAX_VALUE),                                             // backboneForceConstant
+                    new ValueItemDataTypeFormat(
+                        HarmonicBond.HarmonicBondBehaviour.getDefaultHarmonicBondBehaviourRepresentation(), 
+                        HarmonicBond.HarmonicBondBehaviour.getHarmonicBondBehaviourRepresentations()) // backboneBehaviour
                 };
             tmpProteinBackboneForcesValueItem.setDefaultTypeFormats(tmpDefaultTypeFormats);
             // Recalculate DPD-length
@@ -2829,6 +3034,7 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
         // Index 3 = Backbone distance in Angstrom
         // Index 4 = Backbone distance in DPD unit
         // Index 5 = Backbone force constant
+        // Index 6 = Backbone behaviour
         for (int i = 0; i < aProteinBackboneForcesValueItem.getMatrixRowCount(); i++) {
             double tmpLengthInAngstrom = aProteinBackboneForcesValueItem.getValueAsDouble(i, 3);
             double tmpLengthInDpd = tmpLengthInAngstrom/aLengthConversionFactor;

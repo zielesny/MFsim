@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2020  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -35,6 +35,7 @@ import de.gnwi.mfsim.model.valueItem.ValueItem;
 import de.gnwi.spices.IPointInSpace;
 import java.util.LinkedList;
 import de.gnwi.mfsim.model.preference.ModelDefinitions;
+import java.util.Random;
 
 /**
  * This class represents a sphere. The sphere is defined by center and radius.
@@ -296,8 +297,8 @@ public class BodySphere extends ChangeNotifier implements BodyInterface, ChangeR
     // <editor-fold defaultstate="collapsed" desc="- Geometry related methods">
     /**
      * Returns if a point in space is inside a body.
-     * NOTE: ModelDefinitions.OFFSET_FOR_COMPARISON_OF_NUMBERS is used in corrected
- quantities to avoid errors due to roundoff problems.
+     * NOTE: ModelDefinitions.OFFSET_FOR_COMPARISON_OF_NUMBERS is used in 
+     * corrected quantities to avoid errors due to roundoff problems.
      *
      * @param aPoint Point which is tested
      * @return True if point is inside body, false if point is on surface or outside of body
@@ -343,22 +344,24 @@ public class BodySphere extends ChangeNotifier implements BodyInterface, ChangeR
     /**
      * Returns a random point inside the body.
      *
+     * @param aRandomNumberGenerator Random number generator
      * @return Point in space inside of the body
      */
     @Override
-    public PointInSpace getRandomPointInVolume() {
-        return this.getRandomPointsInVolume(1)[0];
+    public PointInSpace getRandomPointInVolume(Random aRandomNumberGenerator) {
+        return this.getRandomPointsInVolume(1, aRandomNumberGenerator)[0];
     }
 
     /**
      * Returns aNumber random points inside the body.
      *
      * @param aNumber Number of random points (not allowed to be less than 1)
+     * @param aRandomNumberGenerator Random number generator
      * @return Points inside the body volume
      * @throws IllegalArgumentException Thrown if aNumber is less than 1
      */
     @Override
-    public PointInSpace[] getRandomPointsInVolume(int aNumber) throws IllegalArgumentException {
+    public PointInSpace[] getRandomPointsInVolume(int aNumber, Random aRandomNumberGenerator) throws IllegalArgumentException {
 
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -367,7 +370,7 @@ public class BodySphere extends ChangeNotifier implements BodyInterface, ChangeR
 
         // </editor-fold>
         PointInSpace tmpPointsInVolume[] = new PointInSpace[aNumber];
-        this.fillRandomPointsInVolume(tmpPointsInVolume, 0, aNumber);
+        this.fillRandomPointsInVolume(tmpPointsInVolume, 0, aNumber, aRandomNumberGenerator);
         return tmpPointsInVolume;
     }
 
@@ -377,10 +380,11 @@ public class BodySphere extends ChangeNotifier implements BodyInterface, ChangeR
      * @param aBuffer Buffer
      * @param aFirstIndex First index in buffer
      * @param aNumber Number of random points (not allowed to be less than 1)
+     * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
     @Override
-    public void fillRandomPointsInVolume(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber) throws IllegalArgumentException {
+    public void fillRandomPointsInVolume(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, Random aRandomNumberGenerator) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
             throw new IllegalArgumentException("aNumber is less than 1.");
@@ -396,7 +400,7 @@ public class BodySphere extends ChangeNotifier implements BodyInterface, ChangeR
         }
 
         // </editor-fold>
-        this.graphicsUtilityMethods.fillRandomPointsInSphere(aBuffer, aFirstIndex, aNumber, this.bodyCenter, this.radius);
+        this.graphicsUtilityMethods.fillRandomPointsInSphere(aBuffer, aFirstIndex, aNumber, this.bodyCenter, this.radius, aRandomNumberGenerator);
     }
 
     /**
@@ -406,10 +410,11 @@ public class BodySphere extends ChangeNotifier implements BodyInterface, ChangeR
      * @param aBuffer2 Buffer 2
      * @param aFirstIndex First index in buffer
      * @param aNumber Number of random points (not allowed to be less than 1)
+     * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
     @Override
-    public void fillRandomPointsInVolume(IPointInSpace[] aBuffer1, IPointInSpace[] aBuffer2, int aFirstIndex, int aNumber) throws IllegalArgumentException {
+    public void fillRandomPointsInVolume(IPointInSpace[] aBuffer1, IPointInSpace[] aBuffer2, int aFirstIndex, int aNumber, Random aRandomNumberGenerator) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
             throw new IllegalArgumentException("aNumber is less than 1.");
@@ -431,7 +436,7 @@ public class BodySphere extends ChangeNotifier implements BodyInterface, ChangeR
         }
 
         // </editor-fold>
-        this.graphicsUtilityMethods.fillRandomPointsInSphere(aBuffer1, aBuffer2, aFirstIndex, aNumber, this.bodyCenter, this.radius);
+        this.graphicsUtilityMethods.fillRandomPointsInSphere(aBuffer1, aBuffer2, aFirstIndex, aNumber, this.bodyCenter, this.radius, aRandomNumberGenerator);
     }
 
     /**
@@ -445,6 +450,7 @@ public class BodySphere extends ChangeNotifier implements BodyInterface, ChangeR
      * @param aNumber Number of random points for both buffers (not allowed to
      * be less than 1)
      * @param aNumberOfTrials Number of trials for random point generation
+     * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
     @Override
@@ -452,7 +458,8 @@ public class BodySphere extends ChangeNotifier implements BodyInterface, ChangeR
         IPointInSpace[] aBuffer, 
         int aFirstIndex, 
         int aNumber, 
-        int aNumberOfTrials
+        int aNumberOfTrials,
+        Random aRandomNumberGenerator
     ) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -478,7 +485,8 @@ public class BodySphere extends ChangeNotifier implements BodyInterface, ChangeR
             this.bodyCenter, 
             this.radius, 
             this.excludedSphereList, 
-            aNumberOfTrials
+            aNumberOfTrials,
+            aRandomNumberGenerator
         );
     }
 
@@ -498,6 +506,7 @@ public class BodySphere extends ChangeNotifier implements BodyInterface, ChangeR
      * @param aStepDistance Step distance for points along the straight lines
      * between aBuffer1[i] and aBuffer2[i]
      * @param aNumberOfTrials Number of trials for random point generation
+     * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
     @Override
@@ -507,7 +516,8 @@ public class BodySphere extends ChangeNotifier implements BodyInterface, ChangeR
         int aFirstIndex, 
         int aNumber, 
         double aStepDistance, 
-        int aNumberOfTrials
+        int aNumberOfTrials,
+        Random aRandomNumberGenerator
     ) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -550,29 +560,32 @@ public class BodySphere extends ChangeNotifier implements BodyInterface, ChangeR
             this.radius, 
             this.excludedSphereList,
             aStepDistance, 
-            aNumberOfTrials
+            aNumberOfTrials,
+            aRandomNumberGenerator
         );
     }
 
     /**
      * Returns a random point on the surface of body
      *
+     * @param aRandomNumberGenerator Random number generator
      * @return Point on surface of body
      */
     @Override
-    public PointInSpace getRandomPointOnSurface() {
-        return this.getRandomPointsOnSurface(1)[0];
+    public PointInSpace getRandomPointOnSurface(Random aRandomNumberGenerator) {
+        return this.getRandomPointsOnSurface(1, aRandomNumberGenerator)[0];
     }
 
     /**
      * Returns aNumber random points on surface of the body
      *
      * @param aNumber Number of random points which have to be created, not allowed to be less than 1
+     * @param aRandomNumberGenerator Random number generator
      * @return Points on surface of the body as array, array.length() = aNumber
      * @throws IllegalArgumentException if aNumber is less than 1
      */
     @Override
-    public PointInSpace[] getRandomPointsOnSurface(int aNumber) throws IllegalArgumentException {
+    public PointInSpace[] getRandomPointsOnSurface(int aNumber, Random aRandomNumberGenerator) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
             throw new IllegalArgumentException("aNumber was less than 1.");
@@ -580,7 +593,7 @@ public class BodySphere extends ChangeNotifier implements BodyInterface, ChangeR
 
         // </editor-fold>
         PointInSpace tmpPointsOnSurface[] = new PointInSpace[aNumber];
-        this.fillRandomPointsOnSurface(tmpPointsOnSurface, 0, aNumber);
+        this.fillRandomPointsOnSurface(tmpPointsOnSurface, 0, aNumber, aRandomNumberGenerator);
         return tmpPointsOnSurface;
     }
 
@@ -590,10 +603,11 @@ public class BodySphere extends ChangeNotifier implements BodyInterface, ChangeR
      * @param aBuffer Buffer
      * @param aFirstIndex First index in buffer
      * @param aNumber Number of random points (not allowed to be less than 1)
+     * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
     @Override
-    public void fillRandomPointsOnSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber) throws IllegalArgumentException {
+    public void fillRandomPointsOnSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, Random aRandomNumberGenerator) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
             throw new IllegalArgumentException("aNumber is less than 1.");
@@ -608,7 +622,7 @@ public class BodySphere extends ChangeNotifier implements BodyInterface, ChangeR
             throw new IllegalArgumentException("aBuffer is too small.");
         }
         // </editor-fold>
-        this.graphicsUtilityMethods.fillRandomPointsOnSphereSurface(aBuffer, aFirstIndex, aNumber, this.bodyCenter, this.radius);
+        this.graphicsUtilityMethods.fillRandomPointsOnSphereSurface(aBuffer, aFirstIndex, aNumber, this.bodyCenter, this.radius, aRandomNumberGenerator);
     }
 
     /**
@@ -617,9 +631,10 @@ public class BodySphere extends ChangeNotifier implements BodyInterface, ChangeR
      * @param aBuffer Buffer
      * @param aFirstIndex First index in buffer
      * @param aNumber Number of random points (not allowed to be less than 1)
+     * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
-    public void fillUpperRandomPointsOnSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber) throws IllegalArgumentException {
+    public void fillUpperRandomPointsOnSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, Random aRandomNumberGenerator) throws IllegalArgumentException {
 
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -636,7 +651,7 @@ public class BodySphere extends ChangeNotifier implements BodyInterface, ChangeR
         }
 
         // </editor-fold>
-        this.graphicsUtilityMethods.fillUpperRandomPointsOnSphereSurface(aBuffer, aFirstIndex, aNumber, this.bodyCenter, this.radius);
+        this.graphicsUtilityMethods.fillUpperRandomPointsOnSphereSurface(aBuffer, aFirstIndex, aNumber, this.bodyCenter, this.radius, aRandomNumberGenerator);
     }
 
     /**
@@ -645,9 +660,10 @@ public class BodySphere extends ChangeNotifier implements BodyInterface, ChangeR
      * @param aBuffer Buffer
      * @param aFirstIndex First index in buffer
      * @param aNumber Number of random points (not allowed to be less than 1)
+     * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
-    public void fillMiddleRandomPointsOnSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber) throws IllegalArgumentException {
+    public void fillMiddleRandomPointsOnSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, Random aRandomNumberGenerator) throws IllegalArgumentException {
 
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -664,7 +680,7 @@ public class BodySphere extends ChangeNotifier implements BodyInterface, ChangeR
         }
 
         // </editor-fold>
-        this.graphicsUtilityMethods.fillMiddleRandomPointsOnSphereSurface(aBuffer, aFirstIndex, aNumber, this.bodyCenter, this.radius);
+        this.graphicsUtilityMethods.fillMiddleRandomPointsOnSphereSurface(aBuffer, aFirstIndex, aNumber, this.bodyCenter, this.radius, aRandomNumberGenerator);
     }
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- Random spheres related methods">
@@ -679,13 +695,15 @@ public class BodySphere extends ChangeNotifier implements BodyInterface, ChangeR
      * @param aNumberOfSpheres Number of spheres
      * @param aRadius Radius of spheres
      * @param aNumberOfTrials Number of trials for sphere generation
+     * @param aRandomNumberGenerator Random number generator
      * @return Linked list with non-overlapping spheres or null if none could be 
      * created
      */
     public LinkedList<BodySphere> getNonOverlappingRandomSpheres(
         int aNumberOfSpheres, 
         double aRadius, 
-        int aNumberOfTrials
+        int aNumberOfTrials,
+        Random aRandomNumberGenerator
     ) {
         LinkedList<BodySphere> tmpSphereList = 
             this.graphicsUtilityMethods.getNonOverlappingRandomSpheresInSphere(
@@ -694,7 +712,8 @@ public class BodySphere extends ChangeNotifier implements BodyInterface, ChangeR
                 this.radius, 
                 aNumberOfSpheres, 
                 aRadius, 
-                aNumberOfTrials
+                aNumberOfTrials,
+                aRandomNumberGenerator
             );
         if (tmpSphereList != null && !tmpSphereList.isEmpty()) {
             for (BodySphere tmpSphere : tmpSphereList) {
