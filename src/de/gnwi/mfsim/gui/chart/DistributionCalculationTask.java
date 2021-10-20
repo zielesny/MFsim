@@ -203,14 +203,29 @@ public class DistributionCalculationTask implements Callable {
     }
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- Public properties">
+    /**
+     * Frequencies
+     * 
+     * @return Frequencies
+     */
     public double[][] getFrequencies() {
         return this.frequencies;
     }
     
+    /**
+     * XyChartDataManipulator
+     * 
+     * @return XyChartDataManipulator
+     */
     public XyChartDataManipulator getXyChartDataManipulator() {
         return this.xyChartDataManipulator;
     }
     
+    /**
+     * Index
+     * 
+     * @return Index
+     */
     public int getIndex() {
         return this.index;
     }

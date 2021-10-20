@@ -273,7 +273,8 @@ public final class AminoAcid {
     }
 
     /**
-     *
+     * Returns the name of the amino acid.
+     * 
      * @return Gets the name of the amino acid.
      */
     public String getName() {

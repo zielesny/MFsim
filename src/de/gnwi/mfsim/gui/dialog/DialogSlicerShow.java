@@ -115,6 +115,11 @@ public class DialogSlicerShow extends CustomDialogApplyCancelSize implements Cha
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * CustomSlicerPanel
+     * 
+     * @return CustomSlicerPanel
+     */
     public CustomPanelSlicer getCustomSlicerPanel() {
         return customSlicerPanel;
     }

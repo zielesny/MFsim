@@ -421,7 +421,6 @@ public class ValueItem extends ChangeNotifier implements Comparable<ValueItem>, 
      * @return Tab separated diagram data or null if none are available
      */
     public String getTabSeparatedDiagramData() {
-
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (!this.hasMatrixDiagram()) {
             return null;
@@ -458,6 +457,86 @@ public class ValueItem extends ChangeNotifier implements Comparable<ValueItem>, 
         return tmpStringBuilder.toString();
     }
 
+    /**
+     * Returns tab separated matrix data
+     *
+     * @return Tab separated matrix data or null if none are available
+     */
+    public String getTabSeparatedMatrixData() {
+        StringBuilder tmpStringBuilder = new StringBuilder(ModelDefinitions.BUFFER_SIZE_SMALL);
+        boolean tmpTabFlag = false;
+        for (int i = 0; i < this.getMatrixColumnCount(); i++) {
+            switch (this.getTypeFormat(i).getDataType()) {
+                case NUMERIC:
+                case NUMERIC_NULL:
+                case TEXT:
+                case SELECTION_TEXT:
+                case TEXT_EMPTY:
+                    if (tmpTabFlag) {
+                        tmpStringBuilder.append("\t");
+                    } else {
+                        tmpTabFlag = true;
+                    }
+                    tmpStringBuilder.append(this.getMatrixColumnName(i));
+                    break;
+            }
+        }
+        tmpStringBuilder.append("\n");
+
+        for (int i = 0; i < this.getMatrixRowCount(); i++) {
+            tmpTabFlag = false;
+            for (int k = 0; k < this.getMatrixColumnCount(); k++) {
+                switch (this.getTypeFormat(k).getDataType()) {
+                    case NUMERIC:
+                        if (tmpTabFlag) {
+                            tmpStringBuilder.append("\t");
+                        } else {
+                            tmpTabFlag = true;
+                        }
+                        // Use correct decimal separator on local system
+                        tmpStringBuilder.append(NumberFormat.getNumberInstance().format(this.getValueAsDouble(i, k)));
+                        break;
+                    case NUMERIC_NULL:
+                        if (tmpTabFlag) {
+                            tmpStringBuilder.append("\t");
+                        } else {
+                            tmpTabFlag = true;
+                        }
+                        if (this.getValue(i, k).equals(ModelMessage.get("ValueItemDataTypeFormat.NumericNullValueString"))) {
+                            tmpStringBuilder.append("NULL");
+                        } else {
+                            // Use correct decimal separator on local system
+                            tmpStringBuilder.append(NumberFormat.getNumberInstance().format(this.getValueAsDouble(i, k)));
+                        }
+                        break;
+                    case TEXT:
+                    case SELECTION_TEXT:
+                        if (tmpTabFlag) {
+                            tmpStringBuilder.append("\t");
+                        } else {
+                            tmpTabFlag = true;
+                        }
+                        tmpStringBuilder.append(this.getValue(i, k));
+                        break;
+                    case TEXT_EMPTY:
+                        if (tmpTabFlag) {
+                            tmpStringBuilder.append("\t");
+                        } else {
+                            tmpTabFlag = true;
+                        }
+                        if (this.getValue(i, k).isEmpty()) {
+                            tmpStringBuilder.append("EMPTY");
+                        } else {
+                            tmpStringBuilder.append(this.getValue(i, k));
+                        }
+                        break;
+                }
+            }
+            tmpStringBuilder.append("\n");
+        }
+
+        return tmpStringBuilder.toString();
+    }
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- Column default value set">
     /**
@@ -1304,7 +1383,6 @@ public class ValueItem extends ChangeNotifier implements Comparable<ValueItem>, 
         this.matrix = tmpNewMatrix;
         this.restoreArrayForMatrixRowSorting = null;
     }
-
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- Miscellaneous methods">
     /**
@@ -1473,6 +1551,28 @@ public class ValueItem extends ChangeNotifier implements Comparable<ValueItem>, 
             return String.format(ModelMessage.get("ValueItem.toString.Inactive"), this.displayName);
 
             // </editor-fold>
+        }
+    }
+    
+    /**
+     * Returns if data in matrix are numeric only (i.e. ValueItemEnumDataType.NUMERIC 
+     * or ValueItemEnumDataType.NUMERIC_NULL)
+     * 
+     * @return True: data in matrix are numeric only, false: Otherwise
+     */
+    public boolean isNumericOnly() {
+        boolean tmpIsNumericOnly = true;
+        if (this.matrix != null) {
+            for (int k = 0; k < this.matrix[0].length; k++) {
+                if (!(this.matrix[0][k].getTypeFormat().getDataType() == ValueItemEnumDataType.NUMERIC 
+                    || this.matrix[0][k].getTypeFormat().getDataType() == ValueItemEnumDataType.NUMERIC_NULL)) {
+                    tmpIsNumericOnly = false;
+                    break;
+                }
+            }
+            return tmpIsNumericOnly;
+        } else {
+            return false;
         }
     }
     // </editor-fold>
@@ -1660,7 +1760,6 @@ public class ValueItem extends ChangeNotifier implements Comparable<ValueItem>, 
     public boolean hasEditableColumn() {
         return this.getFirstEditableColumn() != -1;
     }
-
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- Error related properties">
     /**
@@ -1924,7 +2023,6 @@ public class ValueItem extends ChangeNotifier implements Comparable<ValueItem>, 
             }
         }
     }
-
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- JdpdInput (get/set)">
     /**
@@ -2327,7 +2425,7 @@ public class ValueItem extends ChangeNotifier implements Comparable<ValueItem>, 
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="-- Get int, long, double">
     /**
-     * Value is returned as a double value. NOTE: No checks are performed.
+     * Value is returned as a double value. (No checks are performed)
      *
      * @return Double value
      */
@@ -2350,7 +2448,7 @@ public class ValueItem extends ChangeNotifier implements Comparable<ValueItem>, 
     }
 
     /**
-     * Value is returned as a float value. NOTE: No checks are performed.
+     * Value is returned as a float value. (No checks are performed)
      *
      * @return Float value
      */
@@ -2371,7 +2469,7 @@ public class ValueItem extends ChangeNotifier implements Comparable<ValueItem>, 
     }
 
     /**
-     * Value is returned as a int value. NOTE: No checks are performed.
+     * Value is returned as a int value. (No checks are performed)
      *
      * @return Int value
      */
@@ -2392,7 +2490,7 @@ public class ValueItem extends ChangeNotifier implements Comparable<ValueItem>, 
     }
 
     /**
-     * Value is returned as a long value. NOTE: No checks are performed.
+     * Value is returned as a long value. (No checks are performed)
      *
      * @return Long value
      */
@@ -2402,7 +2500,7 @@ public class ValueItem extends ChangeNotifier implements Comparable<ValueItem>, 
 
     /**
      * Value at specified matrix position is returned as a boolean value. 
-     * NOTE: No checks are performed.
+     * (No checks are performed)
      *
      * @param aRow Row
      * @param aColumn Column
@@ -2495,7 +2593,7 @@ public class ValueItem extends ChangeNotifier implements Comparable<ValueItem>, 
     // <editor-fold defaultstate="collapsed" desc="-- Is/Has">
     /**
      * Returns if value at specified matrix position has numeric null value.
-     * NOTE: No checks are performed.
+     * (No checks are performed)
      *
      * @param aRow Row
      * @param aColumn Column

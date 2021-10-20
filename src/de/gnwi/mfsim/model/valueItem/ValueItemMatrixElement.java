@@ -460,7 +460,6 @@ public class ValueItemMatrixElement {
         this.typeFormat = aTypeFormat;
         this.value = this.formatValue(aValue);
     }
-
     // </editor-fold>
     // </editor-fold>
     //

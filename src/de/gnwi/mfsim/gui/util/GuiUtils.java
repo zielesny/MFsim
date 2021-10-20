@@ -82,6 +82,8 @@ import org.jfree.data.xy.XYSeriesCollection;
 import de.gnwi.mfsim.gui.preference.GuiDefinitions;
 import de.gnwi.mfsim.model.preference.ModelDefinitions;
 import de.gnwi.mfsim.model.graphics.IImageProvider;
+import java.nio.file.Paths;
+import java.util.regex.Pattern;
 
 /**
  * Utility class with static utitlity methods for GUI
@@ -691,7 +693,6 @@ public final class GuiUtils {
             Preferences.getInstance().setSimulationBoxSlicer(false);
         }
     }
-
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="Tree related methods">
     /**
@@ -1204,6 +1205,7 @@ public final class GuiUtils {
      */
     public static String selectDirectory(String aStartDirectory, String aTitleLabel) {
         JFileChooser tmpFileChooser = new JFileChooser(aStartDirectory);
+        tmpFileChooser.setPreferredSize(ModelDefinitions.FILE_CHOOSER_DIMENSION);
         tmpFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         int tmpStatus = tmpFileChooser.showDialog(null, aTitleLabel);
         if (tmpStatus == JFileChooser.APPROVE_OPTION) {
@@ -1228,6 +1230,7 @@ public final class GuiUtils {
         ExtensionFileFilter anExtensionFileFilter
     ) {
         JFileChooser tmpFileChooser = new JFileChooser(aStartDirectory);
+        tmpFileChooser.setPreferredSize(ModelDefinitions.FILE_CHOOSER_DIMENSION);
         tmpFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         tmpFileChooser.setMultiSelectionEnabled(true);
         if (anExtensionFileFilter != null) {
@@ -1262,11 +1265,28 @@ public final class GuiUtils {
     ) {
         JFileChooser tmpFileChooser = new JFileChooser(aStartDirectory);
         tmpFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        tmpFileChooser.setPreferredSize(ModelDefinitions.FILE_CHOOSER_DIMENSION);
         tmpFileChooser.setMultiSelectionEnabled(false);
         if (anExtensionFileFilter != null) {
             tmpFileChooser.setFileFilter(anExtensionFileFilter);
         }
         int tmpStatus = tmpFileChooser.showDialog(null, aTitleLabel);
+
+        // Ensure valid directory (may suppress invalid file specifications 
+        // with "/" or "\" characters)
+        while (tmpStatus == JFileChooser.APPROVE_OPTION && 
+            !(new File ((new File(tmpFileChooser.getSelectedFile().getAbsolutePath())).getParent()).exists())
+        ) {
+            JOptionPane.showMessageDialog(
+                null, 
+                GuiMessage.get("Error.InvalidFilename"), 
+                GuiMessage.get("Error.ErrorNotificationTitle"),
+                JOptionPane.ERROR_MESSAGE
+            );
+            tmpFileChooser.setSelectedFile(new File(""));
+            tmpStatus = tmpFileChooser.showDialog(null, aTitleLabel);
+        }
+
         if (tmpStatus == JFileChooser.APPROVE_OPTION) {
             Preferences.getInstance().setLastSelectedPath((new File(tmpFileChooser.getSelectedFile().getAbsolutePath())).getParent());
             return tmpFileChooser.getSelectedFile().getAbsolutePath();
@@ -1296,7 +1316,6 @@ public final class GuiUtils {
             ModelUtils.appendToLogfile(true, anException);
             return null;
         }
-
         // </editor-fold>
         String tmpFilePathName = GuiUtils.selectSingleFile(Preferences.getInstance().getLastSelectedPath(), aTitleLabel, tmpFileFilter);
         if (tmpFilePathName != null && tmpFilePathName.length() > 0) {
@@ -1310,16 +1329,13 @@ public final class GuiUtils {
                                 JOptionPane.ERROR_MESSAGE);
                         return null;
                     }
-
                     // </editor-fold>
                 } else {
                     // <editor-fold defaultstate="collapsed" desc="Return null (do not overwrite)">
                     return null;
-
                     // </editor-fold>
                 }
             }
-
             // </editor-fold>
             return tmpFilePathName;
         } else {
@@ -2365,10 +2381,15 @@ public final class GuiUtils {
                         // Set original amino acid. Parameter false: Not editable
                         tmpMatrix[tmpIndex][2] = new ValueItemMatrixElement(new ValueItemDataTypeFormat(tmpOriginalAminoAcids[i].getName(), ValueItemEnumDataType.TEXT, false));
                         // Set replacement
-                        tmpMatrix[tmpIndex++][3] = new ValueItemMatrixElement(new ValueItemDataTypeFormat(tmpCurrentAminoAcids[i].getName(), tmpReplacementSelectionTexts));
+                        tmpMatrix[tmpIndex][3] = new ValueItemMatrixElement(new ValueItemDataTypeFormat(tmpCurrentAminoAcids[i].getName(), tmpReplacementSelectionTexts));
+                        // Highlight replacement if different to original amino acid
+                        tmpMatrix[tmpIndex][3].getTypeFormat().setHightlight(!tmpOriginalAminoAcids[i].getName().equals(tmpCurrentAminoAcids[i].getName()));
+                        tmpIndex++;
                     }
                 }
             }
+            // IMPORTANT: Notify update to highlight amino acid replacements
+            tmpMutantValueItem.setUpdateNotifier(true);
             tmpMutantValueItem.setMatrix(tmpMatrix);
             return tmpMutantValueItem;
         } catch (Exception anException) {
@@ -2433,7 +2454,10 @@ public final class GuiUtils {
                         // Set original amino acid. Parameter false: Not editable
                         tmpMatrix[tmpIndex][2] = new ValueItemMatrixElement(new ValueItemDataTypeFormat(tmpOriginalAminoAcids[i].getName(), ValueItemEnumDataType.TEXT, false));
                         // Set replacement
-                        tmpMatrix[tmpIndex++][3] = new ValueItemMatrixElement(new ValueItemDataTypeFormat(tmpCurrentAminoAcids[i].getName(), ValueItemEnumDataType.TEXT, false));
+                        tmpMatrix[tmpIndex][3] = new ValueItemMatrixElement(new ValueItemDataTypeFormat(tmpCurrentAminoAcids[i].getName(), ValueItemEnumDataType.TEXT, false));
+                        // Highlight replacement if different to original amino acid
+                        tmpMatrix[tmpIndex][3].getTypeFormat().setHightlight(!tmpOriginalAminoAcids[i].getName().equals(tmpCurrentAminoAcids[i].getName()));
+                        tmpIndex++;
                     }
                 }
             }

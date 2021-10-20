@@ -19,6 +19,174 @@
  */
 
 --------------------------------------------------------------------------------
+MFsim 2.4.0.0 (MFsim.jar)
+--------------------------------------------------------------------------------
+Java runtime environment derived from JDK 17.0.0.35 with Hotspot JVM
+
+Minimum compatible MFsim Job Input version : 1.7.5.1
+Minimum compatible MFsim Job Result version: 1.1.0.4
+
+Dependencies:
+  - commons-lang3-3.4.jar
+      Apache Commons Lang (https://commons.apache.org/proper/commons-lang/):
+      Version 3.4
+  - commons-math3-3.6.1.jar
+      Apache Commons Math 3.6.1 (https://commons.apache.org/proper/commons-math/)
+      Version 3.6.1
+  - commons-rng-client-api-1.3.jar
+    commons-rng-core-1.3.jar
+    commons-rng-sampling-1.3.jar
+    commons-rng-simple-1.3.jar
+      Apache Commons RNG 1.3 (http://commons.apache.org/proper/commons-rng/)
+      Version 1.3
+  - biojava3-core-3.0.8.jar
+    biojava3-structure-3.0.8.jar
+      BioJava (http://biojava.org/)
+      Version 3.0.8
+  - gs-algo-1.3.jar
+    gs-core-1.3.jar
+    gs-ui-1.3.jar
+      GraphStream (http://graphstream-project.org/)
+      Version 1.3
+  - Jama-1.0.3.jar
+      Java Matrix Package (http://math.nist.gov/javanumerics/jama/)
+      Version 1.0.3
+  - jcommon-1.0.9.jar
+      JCommon (http://www.jfree.org/jcommon/):
+      Version 1.0.9
+  - Jdpd.jar
+      Version 1.5.0.0 (https://github.com/zielesny/Jdpd)
+  - jdom-2.0.6.jar
+      JDOM (http://www.jdom.org/)
+      Version 2.0.6
+  - jfreechart-1.0.5.jar
+      JFreeChart (http://www.jfree.org/jfreechart/):
+      Version 1.0.5
+  - Jmol.jar
+      Jmol (http://jmol.sourceforge.net/)
+      Version 14.2.7_2014.10.13
+  - Spices.jar
+      Version 1.0.0.0 (https://github.com/zielesny/SPICES)
+  - SpicesToGraphStream.jar
+      Version 1.0.0.0 (https://github.com/zielesny/SPICES)
+  - vecmath-1.5.2.jar
+      3D Vector Math Package
+      (https://mvnrepository.com/artifact/javax.vecmath/vecmath)
+      Version 1.5.2
+
+External Windows OS executables:    
+  - ffmpeg.exe
+      FFmpeg (Static) Version 3.2.4 (https://ffmpeg.org)
+
+--------------------------------------------------------------------------------
+- Removed problems:
+  - An error is removed in the duplicate particles operation which repeated the
+    interaction line with the water (H2O) particle. Note that this repetition
+    did not cause any problems, it was simply not necessary.
+  - A severe Jdpd error was removed from the radius of gyration calculation 
+    which could affect the position of particles in the simulation box and lead 
+    to wrong and unphysical "particle jumps".
+  - New corrected "ParticleSet_AA_V04.txt" is included which is derived from 
+    "ParticleSet_AA_V03.txt" but additionally contains particle "MeNH2PBB"
+    which is erroneously missing in "ParticleSet_AA_V03.txt". In addition 
+    SMILES strings for all particle "fragment molecules" are provided in a 
+    new section.
+    Note that this missing particle "MeNH2PBB" in "ParticleSet_AA_V03.txt" 
+    does not affect cyclotides (cyclic peptides) with a closed loop amino 
+    acid sequence but could affect non-loop amino acid sequences for specific 
+    pH values (i.e. those with a charged N-terminus).
+  - A very rare "this-should-never-happen" bug concerning the sort process of 
+    job results (a NullPointerException in Arrays.sort() in 
+    JobResultManager.getSortedJobsOfResultPath()) may be removed by 
+    synchronization and safeguards.
+  - Preference "Compartment calculation/Number of trials" is now also obeyed 
+    for job design simulation box generation (before, the number of trials was 
+    chosen to be 1 which could lead to desastrously overlapping compartments). 
+    Note the description of this important preference for job design and job 
+    execution.
+  - An error concerning the order of the molecules in a compartment container 
+    is now secured: All composition information is now guaranteed to be 
+    consistent (a molecule is now always found in the same row). The source of 
+    this error in the calculation of particle position within the simulation box 
+    is also removed (it could happen before if the calculation was cancelled by 
+    the user).
+  - If an error occurs during an automated update of a compartment container 
+    then all compartments will be removed so that a possible illegal compartment 
+    container is prevented. This safeguard does not remove the underlying error.
+  - Schemata for solely numeric table-data are now applied in a correct manner.
+  - A mutated amino acid could not be restored to its original amino acid. This
+    problem is removed: Now an amino acid can be mutated and correctly restored
+    after a mutation. Note that this bug did not affect mutation definitions 
+    but only affected a possible restoration of mutated amino acids to their 
+    original amino acids.
+  - Invalid possible "\" or "/" characters in file specifications are now 
+    checked.
+
+- Improvements:
+  - Simulation box spinning is improved: A horizontal and vertical spinning is
+    now implemented for every box view. In addition a simulation box "fly through"
+    function is implemented which may also used for movie image generation. A 
+    negative number of spin/fly steps defines clockwise spinning / flying 
+    backwards.
+  - New "ParticleSet_AA_V05.txt" with positively and negatively charged water 
+    particles (H2OP and H2ON respectively) is included. In addition, particle 
+    MeSHSS is correctly dublicated from particle MeSH (previous versions 
+    contained slightly different incorrect a(ij) values for MeSHSS: Due to 
+    peptide/protein 3D structure fixation these small errors are expected to 
+    be negligible).
+  - Duplication of uncharged particles with a new defined charge now contains 
+    a repulsion correction factor between 0 and 1 (the old implementation had
+    a fixed value of 1). A value of 0 means unchanged a(ij) repulsions.
+  - The extended electrostics capabilities of Jdpd Version 1.5.0.0 are supported: 
+    The electrostatics coupling constant and the decay length for a charge 
+    distribution are automatically calculated, the available charge distribution 
+    type and the splitting function type may be selected. Job definitions of older 
+    versions are still compatible with the old settings being transferred to the 
+    new electrostatics definitions (the old effective charge factors are 
+    specifically transferred to the new electrostatics coupling constant, i.e. 
+    electrostatics coupling constant = (effective charge factor)^2). Additional 
+    information is provided for the (positive, negative, net) charges of each 
+    molecule and the net charge of the simulation box.
+  - New corrected "ParticleSet_AA_V04.txt" is included which is derived from 
+    "ParticleSet_AA_V03.txt" but additionally contains particle "MeNH2PBB"
+    which is erroneously missing in "ParticleSet_AA_V03.txt". In addition 
+    SMILES strings for all particle "fragment molecules" are provided in a 
+    new section.
+    Note that this missing particle "MeNH2PBB" in "ParticleSet_AA_V03.txt" 
+    does not affect cyclotides (cyclic peptides) with a closed loop amino 
+    acid sequence but could affect non-loop amino acid sequences for specific 
+    pH values (i.e. those with a charged N-terminus).
+  - Geometry data of compartments are provided in Angstrom (old) and 
+    corresponding DPD units (new).
+  - Jdpd 1.5.0.0 is supported: The setting for initial potential energy 
+    minimization now contains an additional flag that defines if all (DPD, 
+    bond, electrostatic) forces (parameter "true") or DPD forces only (parameter 
+    "false") are to be used. Job definitions of older versions are still 
+    compatible: The flag is added and automatically set to "true". In addition,
+    the initial step length for initial potential energy minimization is 
+    decreased to allow for a "smoother" minimization start.
+  - Test classes are reorganized.
+  - Zoom operations in the simulation box can now include particles within a 
+    box volume shape (old) or alternatively within an ellipsoid volume shape 
+    (new). The "Set" operation for the zoom volume no longer automatically
+    zooms in so that the buttons "In (B)" (for box volume shape) or "In (E)" 
+    (for ellipsoid volume shape) must be clicked after setting.
+  - Minor improvement of error messages.
+  - The copy-to-clipboard function is available for all tables: The "Copy" 
+    button for tables now always copies the complete table data and is no 
+    longer restricted to xy diagram tables.
+  - Default file chooser dimension is increased (more convenient).
+  - Replaced amino acids in protein mutants are now highlighted for simpler 
+    detection.
+  
+- Internal improvements:
+  - Method isInVolume() in classes BodySphere und BodyXyLayer is optimized for 
+    speed.
+  - Geometry related random number generation now uses the default Jdpd RNG 
+    (new) which is faster (and better) compared with the standard JDK RNG (old).
+
+
+--------------------------------------------------------------------------------
 MFsim 2.3.0.0 (MFsim.jar)
 --------------------------------------------------------------------------------
 Java JRE:

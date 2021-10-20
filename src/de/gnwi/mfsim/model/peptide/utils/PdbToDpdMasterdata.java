@@ -531,11 +531,11 @@ public class PdbToDpdMasterdata extends AbstractMasterdata {
      *
      * @return Pseudorandom generator seed.
      */
-    public long getSeed() {
+    public int getSeed() {
         if (!this.containsKey(PdbToDpdMasterdata.SEED)) {
-            return 1L;
+            return 1;
         } else {
-            return Long.valueOf(this.get(PdbToDpdMasterdata.SEED));
+            return Integer.valueOf(this.get(PdbToDpdMasterdata.SEED));
         }
     }
 
@@ -544,7 +544,7 @@ public class PdbToDpdMasterdata extends AbstractMasterdata {
      *
      * @param aSeed Pseudorandom generator seed.
      */
-    public void setSeed(long aSeed) {
+    public void setSeed(int aSeed) {
         this.put(PdbToDpdMasterdata.SEED, String.valueOf(aSeed));
     }
 

@@ -131,6 +131,11 @@ public class DialogTextEdit extends CustomDialogApplyCancelSize {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * TextArea
+     * 
+     * @return TextArea
+     */
     public JTextArea getTextArea() {
         return textArea;
     }

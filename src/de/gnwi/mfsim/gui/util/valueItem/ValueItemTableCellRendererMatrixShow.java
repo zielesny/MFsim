@@ -95,9 +95,8 @@ public class ValueItemTableCellRendererMatrixShow extends DefaultTableCellRender
      * @param aColumn Column
      * @return Renderer component
      */
-    public Component getTableCellRendererComponent(JTable aTable, Object aColor, boolean anIsSelected,
-            boolean aHasFocus, int aRow, int aColumn) {
-
+    @Override
+    public Component getTableCellRendererComponent(JTable aTable, Object aColor, boolean anIsSelected, boolean aHasFocus, int aRow, int aColumn) {
         // <editor-fold defaultstate="collapsed" desc="Set cell colors">
         // Matrix in show table is NOT editable
         ValueItemEnumDataType tmpDataType = this.valueItem.getTypeFormat(aRow, aColumn).getDataType();
@@ -107,7 +106,11 @@ public class ValueItemTableCellRendererMatrixShow extends DefaultTableCellRender
             this.setBackground(GuiDefinitions.TABLE_CELL_NON_EDITABLE_BACKGROUND_COLOR);
         }
         this.setForeground(GuiDefinitions.TABLE_CELL_NON_EDITABLE_FOREGROUND_COLOR);
-
+        // If cell is editable and highlighted set highlight background color
+        if (this.valueItem.getTypeFormat(aRow, aColumn).isHighlighted()) {
+            this.setForeground(GuiDefinitions.TABLE_CELL_HIGHLIGHT_FOREGROUND_COLOR);
+            this.setBackground(GuiDefinitions.TABLE_CELL_HIGHLIGHT_BACKGROUND_COLOR);
+        }
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Set text alignment">
         if (this.valueItem.getTypeFormat(aRow, aColumn).getDataType() == ValueItemEnumDataType.NUMERIC) {
@@ -115,7 +118,6 @@ public class ValueItemTableCellRendererMatrixShow extends DefaultTableCellRender
         } else {
             this.setHorizontalAlignment(SwingConstants.CENTER);
         }
-
         // </editor-fold>
         return super.getTableCellRendererComponent(aTable, aColor, anIsSelected, aHasFocus, aRow, aColumn);
     }

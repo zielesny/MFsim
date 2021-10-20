@@ -59,7 +59,7 @@ public class ParticlePositionCompareItem implements Comparable<ParticlePositionC
     //
     // <editor-fold defaultstate="collapsed" desc="Constructor">
     /**
-     * Constructor. NOTE: NO checks are performed.
+     * Constructor. (No checks are performed)
      *
      * @param aXPosition x-Position
      * @param aYPosition y-Position

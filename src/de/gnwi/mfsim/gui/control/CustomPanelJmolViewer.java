@@ -275,66 +275,146 @@ public class CustomPanelJmolViewer extends JPanel {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * XzFrontButton
+     * 
+     * @return XzFrontButton
+     */
     public JButton getXzFrontButton() {
         return xzFrontButton;
     }
 
+    /**
+     * XzBackButton
+     * 
+     * @return XzBackButton
+     */
     public JButton getXzBackButton() {
         return xzBackButton;
     }
 
+    /**
+     * YzLeftButton
+     * 
+     * @return YzLeftButton
+     */
     public JButton getYzLeftButton() {
         return yzLeftButton;
     }
 
+    /**
+     * YzRightButton
+     * 
+     * @return YzRightButton
+     */
     public JButton getYzRightButton() {
         return yzRightButton;
     }
 
+    /**
+     * XyTopButton
+     * 
+     * @return XyTopButton
+     */
     public JButton getXyTopButton() {
         return xyTopButton;
     }
 
+    /**
+     * XyBottomButton
+     * 
+     * @return XyBottomButton
+     */
     public JButton getXyBottomButton() {
         return xyBottomButton;
     }
 
+    /**
+     * BoxViewImagePanel
+     * 
+     * @return BoxViewImagePanel
+     */
     public CustomPanelImage getBoxViewImagePanel() {
         return boxViewImagePanel;
     }
 
+    /**
+     * MoleculesRadioButton
+     * 
+     * @return MoleculesRadioButton
+     */
     public JRadioButton getMoleculesRadioButton() {
         return moleculesRadioButton;
     }
 
+    /**
+     * GraphicsRadioButton
+     * 
+     * @return GraphicsRadioButton
+     */
     public JRadioButton getGraphicsRadioButton() {
         return graphicsRadioButton;
     }
 
+    /**
+     * AnimationRadioButton
+     * 
+     * @return AnimationRadioButton
+     */
     public JRadioButton getAnimationRadioButton() {
         return animationRadioButton;
     }
 
+    /**
+     * MovieRadioButton
+     * 
+     * @return MovieRadioButton
+     */
     public JRadioButton getMovieRadioButton() {
         return movieRadioButton;
     }
 
+    /**
+     * FirstSettingsButton
+     * 
+     * @return FirstSettingsButton
+     */
     public JButton getFirstSettingsButton() {
         return firstSettingsButton;
     }
 
+    /**
+     * SecondSettingsButton
+     * 
+     * @return SecondSettingsButton
+     */
     public JButton getSecondSettingsButton() {
         return secondSettingsButton;
     }
 
+    /**
+     * BoxViewPanel
+     * 
+     * @return BoxViewPanel
+     */
     public JPanel getBoxViewPanel() {
         return boxViewPanel;
     }
 
+    /**
+     * SettingsPanel
+     * 
+     * @return SettingsPanel
+     */
     public JPanel getSettingsPanel() {
         return settingsPanel;
     }
 
+    /**
+     * JmolSimulationBoxPanel
+     * 
+     * @return JmolSimulationBoxPanel
+     */
     public CustomPanelJmolSimulationBox getJmolSimulationBoxPanel() {
         return jmolSimulationBoxPanel;
     }

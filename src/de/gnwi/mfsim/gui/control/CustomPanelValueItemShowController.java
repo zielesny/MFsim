@@ -182,11 +182,11 @@ public class CustomPanelValueItemShowController {
                 }
 
             });
-            this.customValueItemShowPanel.getCopyMatrixDiagramButton().addActionListener(new ActionListener() {
+            this.customValueItemShowPanel.getCopyMatrixDataButton().addActionListener(new ActionListener() {
 
                 public void actionPerformed(ActionEvent e) {
                     try {
-                        CustomPanelValueItemShowController.this.copyMatrixDiagram();
+                        CustomPanelValueItemShowController.this.copyMatrixData();
                     } catch (Exception anException) {
                         ModelUtils.appendToLogfile(true, anException);
                         // <editor-fold defaultstate="collapsed" desc="Message CommandExecutionFailed">
@@ -809,18 +809,20 @@ public class CustomPanelValueItemShowController {
     }
 
     /**
-     * Copies matrix diagram data to clipboard
+     * Copies matrix data to clipboard
      */
-    private void copyMatrixDiagram() {
+    private void copyMatrixData() {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (this.currentValueItem == null || !this.currentValueItem.hasValue()) {
-            JOptionPane.showMessageDialog(null, GuiMessage.get("Information.NoDataForDiagram"), GuiMessage.get("Information.NotificationTitle"),
-                    JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(
+                null, 
+                GuiMessage.get("Information.NoDataForDiagram"), 
+                GuiMessage.get("Information.NotificationTitle"),
+                JOptionPane.INFORMATION_MESSAGE);
             return;
         }
-
         // </editor-fold>
-        GuiUtils.copyTextToClipboard(this.currentValueItem.getTabSeparatedDiagramData());
+        GuiUtils.copyTextToClipboard(this.currentValueItem.getTabSeparatedMatrixData());
     }
 
     /**
@@ -904,7 +906,6 @@ public class CustomPanelValueItemShowController {
                     case FLEXIBLE_MATRIX:
                         this.customValueItemShowPanel.getMatrixNameLabel().setText(this.currentValueItem.getDisplayName());
                         this.customValueItemShowPanel.getMatrixDiagramButton().setVisible(this.currentValueItem.hasMatrixDiagram());
-                        this.customValueItemShowPanel.getCopyMatrixDiagramButton().setVisible(this.currentValueItem.hasMatrixDiagram());
                         if (this.valueItemMatrixShowPanelController == null) {
                             this.valueItemMatrixShowPanelController = new CustomPanelValueItemMatrixShowController(this.customValueItemShowPanel.getSelectedFeatureMatrixShowPanel(), this.currentValueItem);
                         } else {

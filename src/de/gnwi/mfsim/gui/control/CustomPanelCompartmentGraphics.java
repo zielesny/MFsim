@@ -387,78 +387,173 @@ public class CustomPanelCompartmentGraphics extends JPanel {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * CoordinatesLabel
+     * 
+     * @return CoordinatesLabel
+     */
     public JLabel getCoordinatesLabel() {
         return coordinatesLabel;
     }
 
+    /**
+     * ThirdDimensionSlider
+     * 
+     * @return ThirdDimensionSlider
+     */
     public JSlider getThirdDimensionSlider() {
         return thirdDimensionSlider;
     }
 
+    /**
+     * SimulationBoxDrawPanel
+     * 
+     * @return SimulationBoxDrawPanel
+     */
     public CustomPanelSimulationBoxDraw getSimulationBoxDrawPanel() {
         return this.simulationBoxDrawPanel;
     }
 
+    /**
+     * XzFrontRadioButton
+     * 
+     * @return XzFrontRadioButton
+     */
     public JRadioButton getXzFrontRadioButton() {
         return xzFrontRadioButton;
     }
 
+    /**
+     * XzBackRadioButton
+     * 
+     * @return XzBackRadioButton
+     */
     public JRadioButton getXzBackRadioButton() {
         return xzBackRadioButton;
     }
 
+    /**
+     * YzLeftRadioButton
+     * 
+     * @return YzLeftRadioButton
+     */
     public JRadioButton getYzLeftRadioButton() {
         return yzLeftRadioButton;
     }
 
+    /**
+     * YzRightRadioButton
+     * 
+     * @return YzRightRadioButton
+     */
     public JRadioButton getYzRightRadioButton() {
         return yzRightRadioButton;
     }
 
+    /**
+     * XyTopRadioButton
+     * 
+     * @return XyTopRadioButton
+     */
     public JRadioButton getXyTopRadioButton() {
         return xyTopRadioButton;
     }
 
+    /**
+     * XyBottomRadioButton
+     * 
+     * @return XyBottomRadioButton
+     */
     public JRadioButton getXyBottomRadioButton() {
         return xyBottomRadioButton;
     }
 
+    /**
+     * BoxViewImagePanel
+     * 
+     * @return BoxViewImagePanel
+     */
     public CustomPanelImage getBoxViewImagePanel() {
         return boxViewImagePanel;
     }
 
+    /**
+     * InfoLabel
+     * 
+     * @return InfoLabel
+     */
     public JLabel getInfoLabel() {
         return infoLabel;
     }
 
+    /**
+     * ConfigureSettingsButton
+     * 
+     * @return ConfigureSettingsButton
+     */
     public JButton getConfigureSettingsButton() {
         return this.configureSettingsButton;
     }
 
+    /**
+     * ValueSlider
+     * 
+     * @return ValueSlider
+     */
     public JSlider getValueSlider() {
         return valueSlider;
     }
 
+    /**
+     * TransparencyRadioButton
+     * 
+     * @return TransparencyRadioButton
+     */
     public JRadioButton getTransparencyRadioButton() {
         return transparencyRadioButton;
     }
 
+    /**
+     * FogRadioButton
+     * 
+     * @return FogRadioButton
+     */
     public JRadioButton getFogRadioButton() {
         return fogRadioButton;
     }
 
+    /**
+     * BodyAttenuationRadioButton
+     * 
+     * @return BodyAttenuationRadioButton
+     */
     public JRadioButton getBodyAttenuationRadioButton() {
         return bodyAttenuationRadioButton;
     }
 
+    /**
+     * DefaultSettingsButton
+     * 
+     * @return DefaultSettingsButton
+     */
     public JButton getDefaultSettingsButton() {
         return this.defaultGraphicsButton;
     }
 
+    /**
+     * SettingsPanel
+     * 
+     * @return SettingsPanel
+     */
     public JPanel getSettingsPanel() {
         return settingsPanel;
     }
 
+    /**
+     * GeometryInfoLabel
+     * 
+     * @return GeometryInfoLabel
+     */
     public JLabel getGeometryInfoLabel() {
         return geometryInfoLabel;
     }

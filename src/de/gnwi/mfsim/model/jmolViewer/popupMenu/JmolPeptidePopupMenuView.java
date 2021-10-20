@@ -101,6 +101,5 @@ public class JmolPeptidePopupMenuView extends JPopupMenu {
     public JCheckBoxMenuItem getHydrogensMenuItem() {
         return hydrogensMenuItem;
     }
-    
-    
+   
 }

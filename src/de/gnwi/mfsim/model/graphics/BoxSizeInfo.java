@@ -94,6 +94,21 @@ public class BoxSizeInfo {
     private double zLength;
 
     /**
+     * Half x-length of simulation box
+     */
+    private double halfXLength;
+
+    /**
+     * Half y-length of simulation box
+     */
+    private double halfYLength;
+
+    /**
+     * Half z-length of simulation box
+     */
+    private double halfZLength;
+
+    /**
      * Volume of box
      */
     private double volume;
@@ -311,12 +326,21 @@ public class BoxSizeInfo {
             return false;
         }
         // </editor-fold>
-        return aPoint.getX() >= this.xMin
-            && aPoint.getX() <= this.xMax
-            && aPoint.getY() >= this.yMin
-            && aPoint.getY() <= this.yMax
-            && aPoint.getZ() >= this.zMin
-            && aPoint.getZ() <= this.zMax;
+        if (Preferences.getInstance().isBoxVolumeShapeForZoom()) {
+            // Box volume shape
+            return aPoint.getX() >= this.xMin
+                && aPoint.getX() <= this.xMax
+                && aPoint.getY() >= this.yMin
+                && aPoint.getY() <= this.yMax
+                && aPoint.getZ() >= this.zMin
+                && aPoint.getZ() <= this.zMax;
+        } else {
+            // Ellipsoid volume shape
+            double tmpTermX = (aPoint.getX() - this.boxMidPoint.getX()) / this.halfXLength;
+            double tmpTermY = (aPoint.getY() - this.boxMidPoint.getY()) / this.halfYLength;
+            double tmpTermZ = (aPoint.getZ() - this.boxMidPoint.getZ()) / this.halfZLength;
+            return tmpTermX * tmpTermX + tmpTermY * tmpTermY + tmpTermZ * tmpTermZ <= 1.0;
+        }
     }
 
     /**
@@ -751,7 +775,6 @@ public class BoxSizeInfo {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Private methods">
-
     /**
      * Calculates properties: Volume, space diagonal and mid point
      */
@@ -759,6 +782,10 @@ public class BoxSizeInfo {
         this.xLength = this.xMax - this.xMin;
         this.yLength = this.yMax - this.yMin;
         this.zLength = this.zMax - this.zMin;
+
+        this.halfXLength = 0.5 * this.xLength;
+        this.halfYLength = 0.5 * this.yLength;
+        this.halfZLength = 0.5 * this.zLength;
 
         this.volume = this.xLength * this.yLength * this.zLength;
         this.spaceDiagonal = Math.sqrt(this.xLength * this.xLength + this.yLength * this.yLength + this.zLength * this.zLength);

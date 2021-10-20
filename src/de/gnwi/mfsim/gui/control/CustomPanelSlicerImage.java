@@ -111,6 +111,11 @@ public class CustomPanelSlicerImage extends JPanel {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * DrawPanel
+     * 
+     * @return DrawPanel
+     */
     public CustomPanelImage getDrawPanel() {
         return drawPanel;
     }

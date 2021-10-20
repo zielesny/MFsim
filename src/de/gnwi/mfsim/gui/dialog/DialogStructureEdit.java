@@ -143,18 +143,38 @@ public class DialogStructureEdit extends CustomDialogApplyCancelSize implements 
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * CustomPanelStructureEdit
+     * 
+     * @return CustomPanelStructureEdit
+     */
     public CustomPanelStructureEdit getCustomPanelStructureEdit() {
         return customPanelStructureEdit;
     }
 
+    /**
+     * CustomPanelProteinEdit
+     * 
+     * @return CustomPanelProteinEdit
+     */
     public CustomPanelProteinEdit getCustomPanelProteinEdit() {
         return customPanelProteinEdit;
     }
 
+    /**
+     * SelectStructureTypeTabbedPanel
+     * 
+     * @return SelectStructureTypeTabbedPanel
+     */
     public JTabbedPane getSelectStructureTypeTabbedPanel() {
         return selectStructureTypeTabbedPanel;
     }
 
+    /**
+     * ProteinEditPanel
+     * 
+     * @return ProteinEditPanel
+     */
     public JPanel getProteinEditPanel() {
         return customPanelProteinEdit;
     }

@@ -135,7 +135,11 @@ public class ValueItemDataTypeFormat {
      * Single type
      */
     private ValueItemEnumDataType dataType;
-
+    
+    /**
+     * True: Highlighted, false: Otherwise
+     */
+    private boolean isHighlighted;
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Constructors">
@@ -375,6 +379,38 @@ public class ValueItemDataTypeFormat {
         this.maximumValue = ModelUtils.roundDoubleValue(aMaximumValue, aNumberOfDecimals);
         // NOTE: Formatting of default value NEEDS this.numberOfDecimals: Define after this.numberOfDecimals
         this.defaultValue = this.formatValue(aDefaultValue);
+    }
+
+    /**
+     * Constructor
+     *
+     * @param aDefaultValue Default value
+     * @param aNumberOfDecimals Number of decimals
+     * @param aMinimumValue Minimum value
+     * @param aMaximumValue Maximum value
+     * @param anIsEditable True: Editable type format, false: Otherwise
+     * @throws IllegalArgumentException Thrown if an argument is illegal
+     */
+    public ValueItemDataTypeFormat(String aDefaultValue, int aNumberOfDecimals, double aMinimumValue, double aMaximumValue, boolean anIsEditable) throws IllegalArgumentException {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aNumberOfDecimals < 0) {
+            throw new IllegalArgumentException("Number of decimals must be greater or equal to zero.");
+        }
+        if (aMaximumValue < aMinimumValue) {
+            throw new IllegalArgumentException("aMaximumValue must be greater or equal to aMinimumValue.");
+        }
+        if (aDefaultValue == null) {
+            throw new IllegalArgumentException("aDefaultValue is not allowed to be null.");
+        }
+        // </editor-fold>
+        this.initalize();
+        // NOTE: Define FIRST (since this.numberOfDecimals is used for formatting purposes of other variables)
+        this.numberOfDecimals = aNumberOfDecimals;
+        this.minimumValue = ModelUtils.roundDoubleValue(aMinimumValue, aNumberOfDecimals);
+        this.maximumValue = ModelUtils.roundDoubleValue(aMaximumValue, aNumberOfDecimals);
+        // NOTE: Formatting of default value NEEDS this.numberOfDecimals: Define after this.numberOfDecimals
+        this.defaultValue = this.formatValue(aDefaultValue);
+        this.isEditable = anIsEditable;
     }
 
     /**
@@ -917,12 +953,10 @@ public class ValueItemDataTypeFormat {
      * @throws IllegalArgumentException Thrown if an argument is illegal
      */
     public ValueItemDataTypeFormat(String aDefaultValue, ValueItemEnumDataType aType, boolean anIsEditable) throws IllegalArgumentException {
-
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aDefaultValue == null) {
             throw new IllegalArgumentException("aDefaultValue is not allowed to be null.");
         }
-
         // </editor-fold>
         this.initalize();
         this.dataType = aType;
@@ -1039,6 +1073,7 @@ public class ValueItemDataTypeFormat {
      * cells of column in other rows are not editable. False: Otherwise
      * @param anIsUniqueDefault True: New default must be unique (unequal
      * compared to passed default values), false: Otherwise
+     * @param anIsHighlighted True: Highlighted, false: Otherwise
      * @param anAllowedCharacters String with regex expression for allowed
      * characters (not allowed to be null)
      * @param anAllowedMatch String with regex expression for allowed match (not
@@ -1056,7 +1091,8 @@ public class ValueItemDataTypeFormat {
         boolean aHasExclusiveSelectionTexts, 
         boolean anIsEditable, 
         boolean anIsFirstRowEditableOnly, 
-        boolean anIsUniqueDefault, 
+        boolean anIsUniqueDefault,
+        boolean anIsHighlighted,
         String anAllowedCharacters,
         String anAllowedMatch
     ) throws IllegalArgumentException {
@@ -1090,6 +1126,7 @@ public class ValueItemDataTypeFormat {
         this.isEditable = anIsEditable;
         this.isFirstRowEditableOnly = anIsFirstRowEditableOnly;
         this.isUniqueDefault = anIsUniqueDefault;
+        this.isHighlighted = anIsHighlighted;
         // <editor-fold defaultstate="collapsed" desc="Allowed characters">
         if (anAllowedCharacters.length() > 0) {
             this.allowedCharactersPattern = Pattern.compile(anAllowedCharacters);
@@ -1287,7 +1324,6 @@ public class ValueItemDataTypeFormat {
      * forbidden texts, false: Otherwise
      */
     public boolean isMatchTextEmpty(String aText) {
-
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aText == null) {
             return false;
@@ -1298,7 +1334,6 @@ public class ValueItemDataTypeFormat {
         if (this.allowedMatch.isEmpty() && this.forbiddenTexts == null) {
             return true;
         }
-
         // </editor-fold>
         if (this.isInForbiddenTexts(aText)) {
             return false;
@@ -1358,7 +1393,8 @@ public class ValueItemDataTypeFormat {
                 this.hasExclusiveSelectionTexts, 
                 this.isEditable, 
                 this.isFirstRowEditableOnly, 
-                this.isUniqueDefault, 
+                this.isUniqueDefault,
+                this.isHighlighted,
                 this.allowedCharacters, 
                 this.allowedMatch
             );
@@ -1690,7 +1726,6 @@ public class ValueItemDataTypeFormat {
     public void setEditable(boolean aValue) {
         this.isEditable = aValue;
     }
-
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="ExclusiveSelectionTexts (get)">
     /**
@@ -1765,6 +1800,25 @@ public class ValueItemDataTypeFormat {
     }
 
     // </editor-fold>
+    // <editor-fold defaultstate="collapsed" desc="Highlight (get/set)">
+    /**
+     * Returns highlight
+     *
+     * @return True: Highlight, false: Otherwise
+     */
+    public boolean isHighlighted() {
+        return this.isHighlighted;
+    }
+
+    /**
+     * Sets highlight
+     * 
+     * @param aValue Value for highlight
+     */
+    public void setHightlight(boolean aValue) {
+        this.isHighlighted = aValue;
+    }
+    // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="Integer (get)">
     /**
      * Returns if value item type represents an integer number
@@ -1775,7 +1829,6 @@ public class ValueItemDataTypeFormat {
     public boolean isIntegerNumber() {
         return (this.dataType == ValueItemEnumDataType.NUMERIC || this.dataType == ValueItemEnumDataType.NUMERIC_NULL) && this.numberOfDecimals == 0;
     }
-
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="MaximumValue (get/set)">
     /**
@@ -2079,6 +2132,7 @@ public class ValueItemDataTypeFormat {
         this.allowedCharacters = "";
         // NOTE: this.allowedMatch is NOT allowed to be null
         this.allowedMatch = "";
+        this.isHighlighted = false;
     }
 
     /**

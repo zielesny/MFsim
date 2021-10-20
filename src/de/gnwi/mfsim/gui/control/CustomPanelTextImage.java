@@ -114,6 +114,11 @@ public class CustomPanelTextImage extends JPanel {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * TextLabel
+     * 
+     * @return TextLabel
+     */
     public JLabel getTextLabel() {
         return textLabel;
     }

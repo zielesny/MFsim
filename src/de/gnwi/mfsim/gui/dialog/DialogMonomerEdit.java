@@ -122,6 +122,11 @@ public class DialogMonomerEdit extends CustomDialogApplyCancelSize implements Ch
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * CustomPanelStructureEdit_GS
+     * 
+     * @return CustomPanelStructureEdit_GS
+     */
     public CustomPanelStructureEdit getCustomPanelStructureEdit_GS() {
         return customPanelStructureEdit;
     }

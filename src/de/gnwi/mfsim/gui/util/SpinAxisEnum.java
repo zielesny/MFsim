@@ -26,15 +26,15 @@ package de.gnwi.mfsim.gui.util;
 public enum SpinAxisEnum {
 
     /**
-     * Spin around x axis
+     * Spin around x-axis
      */
     SPIN_AROUND_X,
     /**
-     * Spin around y axis
+     * Spin around y-axis
      */
     SPIN_AROUND_Y,
     /**
-     * Spin around z axis
+     * Spin around z-axis
      */
     SPIN_AROUND_Z
     

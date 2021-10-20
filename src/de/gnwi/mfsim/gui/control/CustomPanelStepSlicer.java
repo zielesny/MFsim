@@ -280,62 +280,137 @@ public class CustomPanelStepSlicer extends JPanel {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * XzFrontRadioButton
+     * 
+     * @return XzFrontRadioButton
+     */
     public JRadioButton getXzFrontRadioButton() {
         return xzFrontRadioButton;
     }
 
+    /**
+     * XzBackRadioButton
+     * 
+     * @return XzBackRadioButton
+     */
     public JRadioButton getXzBackRadioButton() {
         return xzBackRadioButton;
     }
 
+    /**
+     * YzLeftRadioButton
+     * 
+     * @return YzLeftRadioButton
+     */
     public JRadioButton getYzLeftRadioButton() {
         return yzLeftRadioButton;
     }
 
+    /**
+     * YzRightRadioButton
+     * 
+     * @return YzRightRadioButton
+     */
     public JRadioButton getYzRightRadioButton() {
         return yzRightRadioButton;
     }
 
+    /**
+     * XyTopRadioButton
+     * 
+     * @return XyTopRadioButton
+     */
     public JRadioButton getXyTopRadioButton() {
         return xyTopRadioButton;
     }
 
+    /**
+     * XyBottomRadioButton
+     * 
+     * @return XyBottomRadioButton
+     */
     public JRadioButton getXyBottomRadioButton() {
         return xyBottomRadioButton;
     }
 
+    /**
+     * BoxViewImagePanel
+     * 
+     * @return BoxViewImagePanel
+     */
     public CustomPanelImage getBoxViewImagePanel() {
         return boxViewImagePanel;
     }
 
+    /**
+     * AnimationRadioButton
+     * 
+     * @return AnimationRadioButton
+     */
     public JRadioButton getAnimationRadioButton() {
         return animationRadioButton;
     }
 
+    /**
+     * MovieRadioButton
+     * 
+     * @return MovieRadioButton
+     */
     public JRadioButton getMovieRadioButton() {
         return movieRadioButton;
     }
 
+    /**
+     * FirstSettingsButton
+     * 
+     * @return FirstSettingsButton
+     */
     public JButton getFirstSettingsButton() {
         return firstSettingsButton;
     }
 
+    /**
+     * SecondSettingsButton
+     * 
+     * @return SecondSettingsButton
+     */
     public JButton getSecondSettingsButton() {
         return secondSettingsButton;
     }
 
+    /**
+     * BoxViewPanel
+     * 
+     * @return BoxViewPanel
+     */
     public JPanel getBoxViewPanel() {
         return boxViewPanel;
     }
 
+    /**
+     * SettingsPanel
+     * 
+     * @return SettingsPanel
+     */
     public JPanel getSettingsPanel() {
         return settingsPanel;
     }
 
+    /**
+     * SimulationBoxPanel
+     * 
+     * @return SimulationBoxPanel
+     */
     public CustomPanelSimulationBoxSlicer getSimulationBoxPanel() {
         return simulationBoxPanel;
     }
 
+    /**
+     * GeneralInfoLabel
+     * 
+     * @return GeneralInfoLabel
+     */
     public JLabel getGeneralInfoLabel() {
         return generalInfoLabel;
     }

@@ -774,13 +774,13 @@ public class CustomPanelSlicerController extends ChangeNotifier implements IImag
                 }
 
             });
-            this.slicerPanel.getSimulationBoxPanel().getSpinAroundXButton().addActionListener(new ActionListener() {
+            this.slicerPanel.getSimulationBoxPanel().getFlyButton().addActionListener(new ActionListener() {
 
                 public void actionPerformed(ActionEvent e) {
                     try {
                         // Stop animation if necessary
                         CustomPanelSlicerController.this.stopAnimation();
-                        CustomPanelSlicerController.this.startSpinAroundXDialog();
+                        CustomPanelSlicerController.this.startFlyDialog();
                     } catch (Exception anException) {
                         ModelUtils.appendToLogfile(true, anException);
                         // <editor-fold defaultstate="collapsed" desc="Message that method failed">
@@ -792,13 +792,13 @@ public class CustomPanelSlicerController extends ChangeNotifier implements IImag
                 }
 
             });
-            this.slicerPanel.getSimulationBoxPanel().getSpinAroundYButton().addActionListener(new ActionListener() {
+            this.slicerPanel.getSimulationBoxPanel().getSpinHorizontalButton().addActionListener(new ActionListener() {
 
                 public void actionPerformed(ActionEvent e) {
                     try {
                         // Stop animation if necessary
                         CustomPanelSlicerController.this.stopAnimation();
-                        CustomPanelSlicerController.this.startSpinAroundYDialog();
+                        CustomPanelSlicerController.this.startSpinAroundHorizontalAxisDialog();
                     } catch (Exception anException) {
                         ModelUtils.appendToLogfile(true, anException);
                         // <editor-fold defaultstate="collapsed" desc="Message that method failed">
@@ -810,13 +810,13 @@ public class CustomPanelSlicerController extends ChangeNotifier implements IImag
                 }
 
             });
-            this.slicerPanel.getSimulationBoxPanel().getSpinAroundZButton().addActionListener(new ActionListener() {
+            this.slicerPanel.getSimulationBoxPanel().getSpinVerticalButton().addActionListener(new ActionListener() {
 
                 public void actionPerformed(ActionEvent e) {
                     try {
                         // Stop animation if necessary
                         CustomPanelSlicerController.this.stopAnimation();
-                        CustomPanelSlicerController.this.startSpinAroundZDialog();
+                        CustomPanelSlicerController.this.startSpinAroundVerticalAxisDialog();
                     } catch (Exception anException) {
                         ModelUtils.appendToLogfile(true, anException);
                         // <editor-fold defaultstate="collapsed" desc="Message that method failed">
@@ -1245,13 +1245,31 @@ public class CustomPanelSlicerController extends ChangeNotifier implements IImag
                 }
 
             });
-            this.slicerPanel.getZoomInButton().addActionListener(new ActionListener() {
+            this.slicerPanel.getZoomInBoxVolumeShapeButton().addActionListener(new ActionListener() {
 
                 public void actionPerformed(ActionEvent e) {
                     try {
                         // Stop animation if necessary
                         CustomPanelSlicerController.this.stopAnimation();
-                        CustomPanelSlicerController.this.zoomIn();
+                        CustomPanelSlicerController.this.zoomIn(true);
+                    } catch (Exception anException) {
+                        ModelUtils.appendToLogfile(true, anException);
+                        // <editor-fold defaultstate="collapsed" desc="Message CommandExecutionFailed">
+                        JOptionPane.showMessageDialog(null, String.format(GuiMessage.get("Error.CommandExecutionFailed"), "actionPerformed()", "CustomPanelSlicerController"),
+                                GuiMessage.get("Error.ErrorNotificationTitle"), JOptionPane.ERROR_MESSAGE);
+
+                        // </editor-fold>
+                    }
+                }
+
+            });
+            this.slicerPanel.getZoomInEllipsoidVolumeShapeButton().addActionListener(new ActionListener() {
+
+                public void actionPerformed(ActionEvent e) {
+                    try {
+                        // Stop animation if necessary
+                        CustomPanelSlicerController.this.stopAnimation();
+                        CustomPanelSlicerController.this.zoomIn(false);
                     } catch (Exception anException) {
                         ModelUtils.appendToLogfile(true, anException);
                         // <editor-fold defaultstate="collapsed" desc="Message CommandExecutionFailed">
@@ -2290,7 +2308,8 @@ public class CustomPanelSlicerController extends ChangeNotifier implements IImag
      * Set zoom panel
      */
     private void setZoomPanel() {
-        this.slicerPanel.getZoomInButton().setVisible(this.isZoomInPossibleWithoutMeasurement() || this.isZoomInPossible());
+        this.slicerPanel.getZoomInBoxVolumeShapeButton().setVisible(this.isZoomInPossibleWithoutMeasurement() || this.isZoomInPossible());
+        this.slicerPanel.getZoomInEllipsoidVolumeShapeButton().setVisible(this.isZoomInPossibleWithoutMeasurement() || this.isZoomInPossible());
         this.slicerPanel.getZoomOutButton().setVisible(this.graphicalParticlePositionInfo.hasExclusionBoxSizeInfo());
         this.slicerPanel.getVolumeBinsSettingsButton().setVisible(this.graphicalParticlePositionInfo.hasZoomStatisticsValueItemContainer());
         this.slicerPanel.getZoomFrequencyDistributionsButton().setVisible(this.graphicalParticlePositionInfo.hasZoomStatisticsValueItemContainer());
@@ -2481,115 +2500,130 @@ public class CustomPanelSlicerController extends ChangeNotifier implements IImag
     // <editor-fold defaultstate="collapsed" desc="- Zoom in/out and zoom-volume statistics">
     /**
      * Zoom in
+     * 
+     * @param anIsBoxVolumeShapeForZoom Flag for shape of zoom volume: True: Box volume shape, false: Ellipsoid volume shape.
      */
-    private void zoomIn() {
+    private void zoomIn(boolean anIsBoxVolumeShapeForZoom) {
         // <editor-fold defaultstate="collapsed" desc="Stop animation if necessary">
         CustomPanelSlicerController.this.stopAnimation();
         // </editor-fold>
-        PointInSpace tmpCorrectedFirstPointForMeasurement = null;
-        if (this.isZoomInPossibleWithoutMeasurement()) {
-            // <editor-fold defaultstate="collapsed" desc="Zoom-in WITHOUT measurement">
-            switch(this.currentBoxView) {
-                case XZ_FRONT:
-                    tmpCorrectedFirstPointForMeasurement = 
-                        new PointInSpace(
-                            0.0,
-                            this.simulationBoxViewSlicer.getSliceStartValue(Preferences.getInstance().getFirstSliceIndex()),
-                            0.0
-                        );
-                    this.secondPointForMeasurement = 
-                        new PointInSpace(
-                            this.graphicalParticlePositionInfo.getInitialBoxSizeInfo().getXLength(),
-                            this.graphicalParticlePositionInfo.getInitialBoxSizeInfo().getYLength(),
-                            this.graphicalParticlePositionInfo.getInitialBoxSizeInfo().getZLength()
-                        );
-                    break;
-                case YZ_LEFT:
-                    tmpCorrectedFirstPointForMeasurement = 
-                        new PointInSpace(
-                            this.simulationBoxViewSlicer.getSliceStartValue(Preferences.getInstance().getFirstSliceIndex()),
-                            0.0,
-                            0.0
-                        );
-                    this.secondPointForMeasurement = 
-                        new PointInSpace(
-                            this.graphicalParticlePositionInfo.getInitialBoxSizeInfo().getXLength(),
-                            this.graphicalParticlePositionInfo.getInitialBoxSizeInfo().getYLength(),
-                            this.graphicalParticlePositionInfo.getInitialBoxSizeInfo().getZLength()
-                        );
-                    break;
-                case XY_BOTTOM:
-                    tmpCorrectedFirstPointForMeasurement = 
-                        new PointInSpace(
-                            0.0,
-                            0.0,
-                            this.simulationBoxViewSlicer.getSliceStartValue(Preferences.getInstance().getFirstSliceIndex())
-                        );
-                    this.secondPointForMeasurement = 
-                        new PointInSpace(
-                            this.graphicalParticlePositionInfo.getInitialBoxSizeInfo().getXLength(),
-                            this.graphicalParticlePositionInfo.getInitialBoxSizeInfo().getYLength(),
-                            this.graphicalParticlePositionInfo.getInitialBoxSizeInfo().getZLength()
-                        );
-                    break;
-                case XZ_BACK:
-                    tmpCorrectedFirstPointForMeasurement = 
-                        new PointInSpace(
-                            this.graphicalParticlePositionInfo.getInitialBoxSizeInfo().getXLength(),
-                            this.simulationBoxViewSlicer.getSliceStartValue(Preferences.getInstance().getFirstSliceIndex()),
-                            this.graphicalParticlePositionInfo.getInitialBoxSizeInfo().getZLength()
-                        );
-                    this.secondPointForMeasurement = 
-                        new PointInSpace(
-                            0.0,
-                            0.0,
-                            0.0
-                        );
-                    break;
-                case YZ_RIGHT:
-                    tmpCorrectedFirstPointForMeasurement = 
-                        new PointInSpace(
-                            this.simulationBoxViewSlicer.getSliceStartValue(Preferences.getInstance().getFirstSliceIndex()),
-                            this.graphicalParticlePositionInfo.getInitialBoxSizeInfo().getYLength(),
-                            this.graphicalParticlePositionInfo.getInitialBoxSizeInfo().getZLength()
-                        );
-                    this.secondPointForMeasurement = 
-                        new PointInSpace(
-                            0.0,
-                            0.0,
-                            0.0
-                        );
-                    break;
-                case XY_TOP:
-                    tmpCorrectedFirstPointForMeasurement = 
-                        new PointInSpace(
-                            this.graphicalParticlePositionInfo.getInitialBoxSizeInfo().getXLength(),
-                            this.graphicalParticlePositionInfo.getInitialBoxSizeInfo().getYLength(),
-                            this.simulationBoxViewSlicer.getSliceStartValue(Preferences.getInstance().getFirstSliceIndex())
-                        );
-                    this.secondPointForMeasurement = 
-                        new PointInSpace(
-                            0.0,
-                            0.0,
-                            0.0
-                        );
-                    break;
+        if (this.firstZoomPoint != null && this.secondZoomPoint != null) {
+            Preferences.getInstance().setBoxVolumeShapeForZoom(anIsBoxVolumeShapeForZoom);
+            BoxSizeInfo tmpExclusionBoxSizeInfo = new BoxSizeInfo(this.firstZoomPoint, this.secondZoomPoint);
+            this.graphicalParticlePositionInfo.setExclusionBoxSizeInfo(tmpExclusionBoxSizeInfo);
+            Preferences.getInstance().getSimulationMovieSlicerConfiguration().setExclusionBoxSizeInfo(tmpExclusionBoxSizeInfo);
+            if (this.graphicalParticlePositionInfo.hasExclusionBoxSizeInfo()) {
+                // Set first slice (0)
+                Preferences.getInstance().setFirstSliceIndex(Preferences.getInstance().getDefaultFirstSliceIndex());
+                this.createSlices();
             }
-            // </editor-fold>
         } else {
-            // <editor-fold defaultstate="collapsed" desc="Zoom-in WITH measurement">
-            // Zoom points for measurement are in correct order
-            // IMPORTANT: Use corrected first point for measurement for zoom
-            tmpCorrectedFirstPointForMeasurement = this.getCorrectedFirstPointForMeasurementForZoom();
-            // </editor-fold>
+            PointInSpace tmpCorrectedFirstPointForMeasurement = null;
+            if (this.isZoomInPossibleWithoutMeasurement()) {
+                // <editor-fold defaultstate="collapsed" desc="Zoom-in WITHOUT measurement">
+                switch(this.currentBoxView) {
+                    case XZ_FRONT:
+                        tmpCorrectedFirstPointForMeasurement = 
+                            new PointInSpace(
+                                0.0,
+                                this.simulationBoxViewSlicer.getSliceStartValue(Preferences.getInstance().getFirstSliceIndex()),
+                                0.0
+                            );
+                        this.secondPointForMeasurement = 
+                            new PointInSpace(
+                                this.graphicalParticlePositionInfo.getInitialBoxSizeInfo().getXLength(),
+                                this.graphicalParticlePositionInfo.getInitialBoxSizeInfo().getYLength(),
+                                this.graphicalParticlePositionInfo.getInitialBoxSizeInfo().getZLength()
+                            );
+                        break;
+                    case YZ_LEFT:
+                        tmpCorrectedFirstPointForMeasurement = 
+                            new PointInSpace(
+                                this.simulationBoxViewSlicer.getSliceStartValue(Preferences.getInstance().getFirstSliceIndex()),
+                                0.0,
+                                0.0
+                            );
+                        this.secondPointForMeasurement = 
+                            new PointInSpace(
+                                this.graphicalParticlePositionInfo.getInitialBoxSizeInfo().getXLength(),
+                                this.graphicalParticlePositionInfo.getInitialBoxSizeInfo().getYLength(),
+                                this.graphicalParticlePositionInfo.getInitialBoxSizeInfo().getZLength()
+                            );
+                        break;
+                    case XY_BOTTOM:
+                        tmpCorrectedFirstPointForMeasurement = 
+                            new PointInSpace(
+                                0.0,
+                                0.0,
+                                this.simulationBoxViewSlicer.getSliceStartValue(Preferences.getInstance().getFirstSliceIndex())
+                            );
+                        this.secondPointForMeasurement = 
+                            new PointInSpace(
+                                this.graphicalParticlePositionInfo.getInitialBoxSizeInfo().getXLength(),
+                                this.graphicalParticlePositionInfo.getInitialBoxSizeInfo().getYLength(),
+                                this.graphicalParticlePositionInfo.getInitialBoxSizeInfo().getZLength()
+                            );
+                        break;
+                    case XZ_BACK:
+                        tmpCorrectedFirstPointForMeasurement = 
+                            new PointInSpace(
+                                this.graphicalParticlePositionInfo.getInitialBoxSizeInfo().getXLength(),
+                                this.simulationBoxViewSlicer.getSliceStartValue(Preferences.getInstance().getFirstSliceIndex()),
+                                this.graphicalParticlePositionInfo.getInitialBoxSizeInfo().getZLength()
+                            );
+                        this.secondPointForMeasurement = 
+                            new PointInSpace(
+                                0.0,
+                                0.0,
+                                0.0
+                            );
+                        break;
+                    case YZ_RIGHT:
+                        tmpCorrectedFirstPointForMeasurement = 
+                            new PointInSpace(
+                                this.simulationBoxViewSlicer.getSliceStartValue(Preferences.getInstance().getFirstSliceIndex()),
+                                this.graphicalParticlePositionInfo.getInitialBoxSizeInfo().getYLength(),
+                                this.graphicalParticlePositionInfo.getInitialBoxSizeInfo().getZLength()
+                            );
+                        this.secondPointForMeasurement = 
+                            new PointInSpace(
+                                0.0,
+                                0.0,
+                                0.0
+                            );
+                        break;
+                    case XY_TOP:
+                        tmpCorrectedFirstPointForMeasurement = 
+                            new PointInSpace(
+                                this.graphicalParticlePositionInfo.getInitialBoxSizeInfo().getXLength(),
+                                this.graphicalParticlePositionInfo.getInitialBoxSizeInfo().getYLength(),
+                                this.simulationBoxViewSlicer.getSliceStartValue(Preferences.getInstance().getFirstSliceIndex())
+                            );
+                        this.secondPointForMeasurement = 
+                            new PointInSpace(
+                                0.0,
+                                0.0,
+                                0.0
+                            );
+                        break;
+                }
+                // </editor-fold>
+            } else {
+                // <editor-fold defaultstate="collapsed" desc="Zoom-in WITH measurement">
+                // Zoom points for measurement are in correct order
+                // IMPORTANT: Use corrected first point for measurement for zoom
+                tmpCorrectedFirstPointForMeasurement = this.getCorrectedFirstPointForMeasurementForZoom();
+                // </editor-fold>
+            }
+            Preferences.getInstance().setBoxVolumeShapeForZoom(anIsBoxVolumeShapeForZoom);
+            BoxSizeInfo tmpExclusionBoxSizeInfo = new BoxSizeInfo(tmpCorrectedFirstPointForMeasurement, this.secondPointForMeasurement);
+            this.graphicalParticlePositionInfo.setExclusionBoxSizeInfo(tmpExclusionBoxSizeInfo);
+            Preferences.getInstance().getSimulationMovieSlicerConfiguration().setExclusionBoxSizeInfo(tmpExclusionBoxSizeInfo);
+            this.enlargedBoxSizeInfo = this.graphicalParticlePositionInfo.getCurrentBoxSizeInfo().getEnlargedBoxSizeInfo(-Preferences.getInstance().getSimulationBoxMagnificationPercentage());
+            this.firstZoomPoint = tmpCorrectedFirstPointForMeasurement;
+            this.secondZoomPoint = this.secondPointForMeasurement.getClone();
+            this.setOriginalDisplayOfSimulationBox();
         }
-        BoxSizeInfo tmpExclusionBoxSizeInfo = new BoxSizeInfo(tmpCorrectedFirstPointForMeasurement, this.secondPointForMeasurement);
-        this.graphicalParticlePositionInfo.setExclusionBoxSizeInfo(tmpExclusionBoxSizeInfo);
-        Preferences.getInstance().getSimulationMovieSlicerConfiguration().setExclusionBoxSizeInfo(tmpExclusionBoxSizeInfo);
-        this.enlargedBoxSizeInfo = this.graphicalParticlePositionInfo.getCurrentBoxSizeInfo().getEnlargedBoxSizeInfo(-Preferences.getInstance().getSimulationBoxMagnificationPercentage());
-        this.firstZoomPoint = tmpCorrectedFirstPointForMeasurement;
-        this.secondZoomPoint = this.secondPointForMeasurement.getClone();
-        this.setOriginalDisplayOfSimulationBox();
     }
 
     /**
@@ -2615,8 +2649,7 @@ public class CustomPanelSlicerController extends ChangeNotifier implements IImag
      * @return True: Zoom in is possible, false: Otherwise
      */
     private boolean isZoomInPossible() {
-        return 
-            this.firstPointForMeasurement != null
+        return this.firstPointForMeasurement != null
             && this.secondPointForMeasurement != null
             && !GraphicsUtils.isInPlane(this.firstPointForMeasurement, this.secondPointForMeasurement)
             && this.isDefaultRotationAndShift();
@@ -2782,16 +2815,11 @@ public class CustomPanelSlicerController extends ChangeNotifier implements IImag
                     GuiMessage.get("ZoomPointsNotAllowedToBeInPlane.Title"),
                     JOptionPane.INFORMATION_MESSAGE
                 );
-                return;
+                this.firstZoomPoint = null;
+                this.secondZoomPoint = null;
             } else {
-                BoxSizeInfo tmpExclusionBoxSizeInfo = new BoxSizeInfo(this.firstZoomPoint, this.secondZoomPoint);
-                this.graphicalParticlePositionInfo.setExclusionBoxSizeInfo(tmpExclusionBoxSizeInfo);
-                Preferences.getInstance().getSimulationMovieSlicerConfiguration().setExclusionBoxSizeInfo(tmpExclusionBoxSizeInfo);
-                if (this.graphicalParticlePositionInfo.hasExclusionBoxSizeInfo()) {
-                    // Set first slice (0)
-                    Preferences.getInstance().setFirstSliceIndex(Preferences.getInstance().getDefaultFirstSliceIndex());
-                    this.createSlices();
-                }
+                this.slicerPanel.getZoomInBoxVolumeShapeButton().setVisible(true);
+                this.slicerPanel.getZoomInEllipsoidVolumeShapeButton().setVisible(true);
             }
             // </editor-fold>
         }
@@ -2834,7 +2862,6 @@ public class CustomPanelSlicerController extends ChangeNotifier implements IImag
      * Sets default animation settings
      */
     private void setDefaultAnimationSettings() {
-
         // <editor-fold defaultstate="collapsed" desc="Stop animation if necessary">
         CustomPanelSlicerController.this.stopAnimation();
 
@@ -2844,7 +2871,6 @@ public class CustomPanelSlicerController extends ChangeNotifier implements IImag
             // Do NOT call this.createSlices() since changed animation settings work with current slices
         }
     }
-
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- Movie related methods">
     /**
@@ -3517,56 +3543,149 @@ public class CustomPanelSlicerController extends ChangeNotifier implements IImag
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- Spin and box wait/move dialogs related methods">
     /**
-     * Start dialog for spinning around x axis
+     * Start dialog for flying through simulation box
      */
-    private void startSpinAroundXDialog() {
+    private void startFlyDialog() {
+        switch (this.currentBoxView) {
+            case XZ_FRONT:
+                this.numberOfBoxMoveSteps = Math.abs(Preferences.getInstance().getNumberOfSpinSteps());
+                if (Preferences.getInstance().getNumberOfSpinSteps() > 0) {
+                    this.boxMoveChangeInfo.setParticleShiftChangeY(-100);
+                } else {
+                    this.boxMoveChangeInfo.setParticleShiftChangeY(100);
+                }
+                break;
+            case XZ_BACK:
+                this.numberOfBoxMoveSteps = Math.abs(Preferences.getInstance().getNumberOfSpinSteps());
+                if (Preferences.getInstance().getNumberOfSpinSteps() > 0) {
+                    this.boxMoveChangeInfo.setParticleShiftChangeY(100);
+                } else {
+                    this.boxMoveChangeInfo.setParticleShiftChangeY(-100);
+                }
+                break;
+            case YZ_LEFT:
+                this.numberOfBoxMoveSteps = Math.abs(Preferences.getInstance().getNumberOfSpinSteps());
+                if (Preferences.getInstance().getNumberOfSpinSteps() > 0) {
+                    this.boxMoveChangeInfo.setParticleShiftChangeX(-100);
+                } else {
+                    this.boxMoveChangeInfo.setParticleShiftChangeX(100);
+                }
+                break;
+            case YZ_RIGHT:
+                this.numberOfBoxMoveSteps = Math.abs(Preferences.getInstance().getNumberOfSpinSteps());
+                if (Preferences.getInstance().getNumberOfSpinSteps() > 0) {
+                    this.boxMoveChangeInfo.setParticleShiftChangeX(100);
+                } else {
+                    this.boxMoveChangeInfo.setParticleShiftChangeX(-100);
+                }
+                Preferences.getInstance().setNumberOfSpinSteps(-Preferences.getInstance().getNumberOfSpinSteps());
+                break;
+            case XY_TOP:
+                this.numberOfBoxMoveSteps = Math.abs(Preferences.getInstance().getNumberOfSpinSteps());
+                if (Preferences.getInstance().getNumberOfSpinSteps() > 0) {
+                    this.boxMoveChangeInfo.setParticleShiftChangeZ(100);
+                } else {
+                    this.boxMoveChangeInfo.setParticleShiftChangeZ(-100);
+                }
+                break;
+            case XY_BOTTOM:
+                this.numberOfBoxMoveSteps = Math.abs(Preferences.getInstance().getNumberOfSpinSteps());
+                if (Preferences.getInstance().getNumberOfSpinSteps() > 0) {
+                    this.boxMoveChangeInfo.setParticleShiftChangeZ(-100);
+                } else {
+                    this.boxMoveChangeInfo.setParticleShiftChangeZ(100);
+                }
+                break;
+        }
+        this.startBoxMoveDialog();
+    }
+
+    /**
+     * Start dialog for spinning around horizontal axis
+     */
+    private void startSpinAroundHorizontalAxisDialog() {
+        SpinAxisEnum tmpSpinAxes = null;
+        switch (this.currentBoxView) {
+            case XZ_FRONT:
+                tmpSpinAxes = SpinAxisEnum.SPIN_AROUND_X;
+                break;
+            case XZ_BACK:
+                tmpSpinAxes = SpinAxisEnum.SPIN_AROUND_X;
+                Preferences.getInstance().setNumberOfSpinSteps(-Preferences.getInstance().getNumberOfSpinSteps());
+                break;
+            case YZ_LEFT:
+                tmpSpinAxes = SpinAxisEnum.SPIN_AROUND_Y;
+                break;
+            case YZ_RIGHT:
+                tmpSpinAxes = SpinAxisEnum.SPIN_AROUND_Y;
+                Preferences.getInstance().setNumberOfSpinSteps(-Preferences.getInstance().getNumberOfSpinSteps());
+                break;
+            case XY_TOP:
+                tmpSpinAxes = SpinAxisEnum.SPIN_AROUND_X;
+                break;
+            case XY_BOTTOM:
+                tmpSpinAxes = SpinAxisEnum.SPIN_AROUND_X;
+                break;
+        }
         ExecutorService tmpExecutorService = Executors.newFixedThreadPool(Preferences.getInstance().getNumberOfParallelSlicers());
         DialogSpinStepSlicerShow.show(tmpExecutorService,
-            GuiMessage.get("DialogSpinStepSlicerAroundX.title"), 
+            GuiMessage.get("DialogSpinStepSlicerHorizontal.title"), 
             this.graphicalParticlePositionInfo, 
-            SpinAxisEnum.SPIN_AROUND_X, 
+            tmpSpinAxes, 
             this.enlargedBoxSizeInfo
         );
         try {
             tmpExecutorService.shutdown();
         } catch (Exception anException) {
             ModelUtils.appendToLogfile(true, anException);
+        } finally {
+            if (this.currentBoxView == SimulationBoxViewEnum.XZ_BACK || this.currentBoxView == SimulationBoxViewEnum.YZ_RIGHT) {
+                Preferences.getInstance().setNumberOfSpinSteps(-Preferences.getInstance().getNumberOfSpinSteps());
+            }
         }
     }
 
     /**
-     * Start dialog for spinning around y axis
+     * Start dialog for spinning around vertical axis
      */
-    private void startSpinAroundYDialog() {
-        ExecutorService tmpExecutorService = Executors.newFixedThreadPool(Preferences.getInstance().getNumberOfParallelSlicers());
-        DialogSpinStepSlicerShow.show(tmpExecutorService,
-            GuiMessage.get("DialogSpinStepSlicerAroundY.title"), 
-            this.graphicalParticlePositionInfo, 
-            SpinAxisEnum.SPIN_AROUND_Y, 
-            this.enlargedBoxSizeInfo
-        );
-        try {
-            tmpExecutorService.shutdown();
-        } catch (Exception anException) {
-            ModelUtils.appendToLogfile(true, anException);
+    private void startSpinAroundVerticalAxisDialog() {
+        SpinAxisEnum tmpSpinAxes = null;
+        switch (this.currentBoxView) {
+            case XZ_FRONT:
+                tmpSpinAxes = SpinAxisEnum.SPIN_AROUND_Z;
+                break;
+            case XZ_BACK:
+                tmpSpinAxes = SpinAxisEnum.SPIN_AROUND_Z;
+                break;
+            case YZ_LEFT:
+                tmpSpinAxes = SpinAxisEnum.SPIN_AROUND_Z;
+                break;
+            case YZ_RIGHT:
+                tmpSpinAxes = SpinAxisEnum.SPIN_AROUND_Z;
+                break;
+            case XY_TOP:
+                tmpSpinAxes = SpinAxisEnum.SPIN_AROUND_Y;
+                Preferences.getInstance().setNumberOfSpinSteps(-Preferences.getInstance().getNumberOfSpinSteps());
+                break;
+            case XY_BOTTOM:
+                tmpSpinAxes = SpinAxisEnum.SPIN_AROUND_Y;
+                break;
         }
-    }
-
-    /**
-     * Start dialog for spinning around z axis
-     */
-    private void startSpinAroundZDialog() {
         ExecutorService tmpExecutorService = Executors.newFixedThreadPool(Preferences.getInstance().getNumberOfParallelSlicers());
         DialogSpinStepSlicerShow.show(tmpExecutorService,
-            GuiMessage.get("DialogSpinStepSlicerAroundZ.title"), 
+            GuiMessage.get("DialogSpinStepSlicerVertical.title"), 
             this.graphicalParticlePositionInfo, 
-            SpinAxisEnum.SPIN_AROUND_Z, 
+            tmpSpinAxes, 
             this.enlargedBoxSizeInfo
         );
         try {
             tmpExecutorService.shutdown();
         } catch (Exception anException) {
             ModelUtils.appendToLogfile(true, anException);
+        } finally {
+            if (this.currentBoxView == SimulationBoxViewEnum.XY_TOP) {
+                Preferences.getInstance().setNumberOfSpinSteps(-Preferences.getInstance().getNumberOfSpinSteps());
+            }
         }
     }
 
@@ -3607,10 +3726,13 @@ public class CustomPanelSlicerController extends ChangeNotifier implements IImag
     private void startBoxMoveDialog() {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (this.numberOfBoxMoveSteps == 0) {
-            JOptionPane.showMessageDialog(null, GuiMessage.get("NoBoxMoveStepsDefined.Message"), GuiMessage.get("NoBoxMoveStepsDefined.Title"),
-                    JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(
+                null, 
+                GuiMessage.get("NoBoxMoveStepsDefined.Message"), 
+                GuiMessage.get("NoBoxMoveStepsDefined.Title"),
+                JOptionPane.INFORMATION_MESSAGE
+            );
             return;
-
         }
         // </editor-fold>
         ExecutorService tmpExecutorService = Executors.newFixedThreadPool(Preferences.getInstance().getNumberOfParallelSlicers());

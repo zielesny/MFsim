@@ -25,6 +25,7 @@ import de.gnwi.mfsim.model.util.ImageStorageEnum;
 import de.gnwi.mfsim.model.util.ParticleColorDisplayEnum;
 import de.gnwi.mfsim.model.util.StandardColorEnum;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.image.ColorModel;
 import java.awt.image.DirectColorModel;
@@ -43,7 +44,7 @@ public interface ModelDefinitions {
     /**
      * Version of application. NOTE: MUST match version pattern below!
      */
-    String APPLICATION_VERSION = "2.3.0.0";
+    String APPLICATION_VERSION = "2.4.0.0";
 
     /**
      * Minimum job input application version. NOTE: MUST match version pattern below!
@@ -1155,6 +1156,11 @@ public interface ModelDefinitions {
     /**
      * Cell width for texts
      */
+    String CELL_WIDTH_TEXT_120 = "120";
+
+    /**
+     * Cell width for texts
+     */
     String CELL_WIDTH_TEXT_150 = "150";
 
     /**
@@ -1198,19 +1204,6 @@ public interface ModelDefinitions {
      * kByte = 524288, 1 MByte = 1048576 Byte)
      */
     int BUFFER_SIZE_TINY = 256;
-    // </editor-fold>
-    //
-    // <editor-fold defaultstate="collapsed" desc="- License">
-    /**
-     * Client license
-     */
-    String LICENSE_CLIENT = "Client";
-
-    /**
-     * Full license
-     */
-    String LICENSE_FULL = "Full";
-
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="- File related definitions">
@@ -1350,6 +1343,11 @@ public interface ModelDefinitions {
      * MFsim GitHub URL
      */
     String MFSIM_GITHUB_URL = "https://github.com/zielesny/MFsim";
+    
+    /**
+     * Dimension for file chooser
+     */
+    Dimension FILE_CHOOSER_DIMENSION = new Dimension(600, 600); 
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="- Miscellaneous regex pattern definitions">
@@ -1574,12 +1572,12 @@ public interface ModelDefinitions {
     /**
      * Compartments: Prefix for sphere chemical composition value item name
      */
-    String COMPARTMENT_SPHERE_CHEMICAL_COMPOSITION_PREFIX_NAME = ModelDefinitions.CHEMICAL_COMPOSITION_PREFIX_NAME + "COMPARTMENT_SPHERE_";
+    String CHEMICAL_COMPOSITION_PREFIX_NAME_COMPARTMENT_SPHERE = ModelDefinitions.CHEMICAL_COMPOSITION_PREFIX_NAME + "COMPARTMENT_SPHERE_";
 
     /**
      * Compartments: Prefix for yx-layer chemical composition value item name
      */
-    String COMPARTMENT_XY_LAYER_CHEMICAL_COMPOSITION_PREFIX_NAME = ModelDefinitions.CHEMICAL_COMPOSITION_PREFIX_NAME + "COMPARTMENT_XY_LAYER_";
+    String CHEMICAL_COMPOSITION_PREFIX_NAME_COMPARTMENT_XY_LAYER = ModelDefinitions.CHEMICAL_COMPOSITION_PREFIX_NAME + "COMPARTMENT_XY_LAYER_";
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="-- Geometry related value item names">

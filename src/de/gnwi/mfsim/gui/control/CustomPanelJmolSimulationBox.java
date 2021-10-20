@@ -180,30 +180,65 @@ public class CustomPanelJmolSimulationBox extends JPanel {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * ThirdDimensionSlider
+     * 
+     * @return ThirdDimensionSlider
+     */
     public JSlider getThirdDimensionSlider() {
         return thirdDimensionSlider;
     }
 
+    /**
+     * Jmol3dPanel
+     * 
+     * @return Jmol3dPanel
+     */
     public Jmol3dPanel getJmol3dPanel() {
         return this.jmol3dPanel;
     }
 
+    /**
+     * PlayAnimationButton
+     * 
+     * @return PlayAnimationButton
+     */
     public JButton getPlayAnimationButton() {
         return playAnimationButton;
     }
 
+    /**
+     * SaveGraphicsButton
+     * 
+     * @return SaveGraphicsButton
+     */
     public JButton getSaveGraphicsButton() {
         return saveGraphicsButton;
     }
 
+    /**
+     * CopyGraphicsButton
+     * 
+     * @return CopyGraphicsButton
+     */
     public JButton getCopyGraphicsButton() {
         return copyGraphicsButton;
     }
 
+    /**
+     * FrameCheckBox
+     * 
+     * @return FrameCheckBox
+     */
     public JCheckBox getFrameCheckBox() {
         return frameCheckBox;
     }
 
+    /**
+     * SpinCheckBox
+     * 
+     * @return SpinCheckBox
+     */
     public JCheckBox getSpinCheckBox() {
         return spinCheckBox;
     }

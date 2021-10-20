@@ -241,9 +241,9 @@ public class CustomPanelSpinStepSlicerController extends ChangeNotifier implemen
             this.stepSlicerPanel.getSimulationBoxPanel().getEditMoveAndSpinSettingsButton().setVisible(false);
             this.stepSlicerPanel.getSimulationBoxPanel().getBoxWaitButton().setVisible(false);
             this.stepSlicerPanel.getSimulationBoxPanel().getBoxMoveButton().setVisible(false);
-            this.stepSlicerPanel.getSimulationBoxPanel().getSpinAroundXButton().setVisible(false);
-            this.stepSlicerPanel.getSimulationBoxPanel().getSpinAroundYButton().setVisible(false);
-            this.stepSlicerPanel.getSimulationBoxPanel().getSpinAroundZButton().setVisible(false);
+            this.stepSlicerPanel.getSimulationBoxPanel().getFlyButton().setVisible(false);
+            this.stepSlicerPanel.getSimulationBoxPanel().getSpinHorizontalButton().setVisible(false);
+            this.stepSlicerPanel.getSimulationBoxPanel().getSpinVerticalButton().setVisible(false);
             this.stepSlicerPanel.getSimulationBoxPanel().getViewFullBoxButton().setVisible(false);
             this.graphicalParticlePositionInfo = aGraphicalParticlePositionInfo;
             this.imageFileType = anImageFileType;
@@ -534,7 +534,6 @@ public class CustomPanelSpinStepSlicerController extends ChangeNotifier implemen
             this.stepSlicerPanel.getSimulationBoxPanel().getRedrawButton().setVisible(aValue);
         }
     }
-
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- getImage">
     /**

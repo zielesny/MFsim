@@ -101,10 +101,20 @@ public class CustomPanelDescription extends JPanel {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * TextArea
+     * 
+     * @return TextArea
+     */
     public JTextArea getTextArea() {
         return textArea;
     }
 
+    /**
+     * NameLabel
+     * 
+     * @return NameLabel
+     */
     public JLabel getNameLabel() {
         return nameLabel;
     }

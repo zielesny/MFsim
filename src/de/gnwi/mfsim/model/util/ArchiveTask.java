@@ -133,7 +133,12 @@ public class ArchiveTask implements ProgressTaskInterface {
      * Otherwise (archive file is compressed)
      * @throws IllegalArgumentException Thrown if an argument is illegal
      */
-    public ArchiveTask(String aDirectoryPath, String aZipFilePathname, String aFileExclusionRegexPatternString, boolean anIsUncompressed) throws IllegalArgumentException {
+    public ArchiveTask(
+        String aDirectoryPath, 
+        String aZipFilePathname, 
+        String aFileExclusionRegexPatternString, 
+        boolean anIsUncompressed
+    ) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aDirectoryPath == null || aDirectoryPath.isEmpty() || !(new File(aDirectoryPath)).isDirectory()) {
             throw new IllegalArgumentException("Argument is illegal.");
@@ -141,7 +146,6 @@ public class ArchiveTask implements ProgressTaskInterface {
         if (aZipFilePathname == null || aZipFilePathname.isEmpty() || (new File(aZipFilePathname)).isFile()) {
             throw new IllegalArgumentException("Argument is illegal.");
         }
-
         // </editor-fold>
         this.isStarted = false;
         this.isStopped = false;

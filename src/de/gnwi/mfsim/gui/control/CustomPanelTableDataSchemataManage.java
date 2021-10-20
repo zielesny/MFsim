@@ -157,34 +157,74 @@ public class CustomPanelTableDataSchemataManage extends JPanel {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * TableDataSchemataList
+     * 
+     * @return TableDataSchemataList
+     */
     public JList getTableDataSchemataList() {
         return tableDataSchemataList;
     }
 
+    /**
+     * ViewSchemaButton
+     * 
+     * @return ViewSchemaButton
+     */
     public JButton getViewSchemaButton() {
         return viewSchemaButton;
     }
 
+    /**
+     * EditSchemaButton
+     * 
+     * @return EditSchemaButton
+     */
     public JButton getEditSchemaButton() {
         return editSchemaButton;
     }
 
+    /**
+     * LoadSchemataButton
+     * 
+     * @return LoadSchemataButton
+     */
     public JButton getLoadSchemataButton() {
         return loadSchemataButton;
     }
 
+    /**
+     * SaveSchemataButton
+     * 
+     * @return SaveSchemataButton
+     */
     public JButton getSaveSchemataButton() {
         return saveSchemataButton;
     }
 
+    /**
+     * MergeSchemataButton
+     * 
+     * @return MergeSchemataButton
+     */
     public JButton getMergeSchemataButton() {
         return mergeSchemataButton;
     }
 
+    /**
+     * ClearSchemataButton
+     * 
+     * @return ClearSchemataButton
+     */
     public JButton getClearSchemataButton() {
         return clearSchemataButton;
     }
 
+    /**
+     * RemoveSchemataButton
+     * 
+     * @return RemoveSchemataButton
+     */
     public JButton getRemoveSchemataButton() {
         return removeSchemataButton;
     }

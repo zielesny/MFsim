@@ -142,10 +142,14 @@ public class DialogValueItemEdit extends CustomDialogApplyCancelSize implements 
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * CustomValueItemEditPanel
+     * 
+     * @return CustomValueItemEditPanel
+     */
     public CustomPanelValueItemEdit getCustomValueItemEditPanel() {
         return customValueItemEditPanel;
     }
-
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="ChangeReceiverInterface notifyChange method">

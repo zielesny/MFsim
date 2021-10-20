@@ -93,6 +93,11 @@ public class DialogProteinShow extends CustomDialogApplyCancelSize {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * CustomPanelProteinShow
+     * 
+     * @return CustomPanelProteinShow
+     */
     public CustomPanelProteinShow getCustomPanelProteinShow() {
         return customPanelProteinShow;
     }

@@ -121,8 +121,10 @@ public class ValueItemCellEditorEdit extends AbstractCellEditor implements Table
         this.editorStartLabel.setHorizontalAlignment(SwingConstants.CENTER);
         this.editorStartLabel.addFocusListener(this);
         this.editorStartLabel.addMouseListener(this);
-        // Do NOT set this.editorStartLabel.setText(...) since this is performed in method getTableCellEditorComponent() in dependence of edit/view of monomer/molecular structure
-
+        // NOTE:
+        // Do NOT set this.editorStartLabel.setText(...) since this is performed 
+        // in method getTableCellEditorComponent() in dependence of edit/view of 
+        // monomer/molecular structure
         // </editor-fold>
     }
 
@@ -134,24 +136,22 @@ public class ValueItemCellEditorEdit extends AbstractCellEditor implements Table
      *
      * @return Value of cell editor
      */
+    @Override
     public Object getCellEditorValue() {
         switch (this.valueItemType) {
             case SELECTION_TEXT:
                 // <editor-fold defaultstate="collapsed" desc="Selection text (this.comboBox.getSelectedItem())">
                 return this.comboBox.getSelectedItem();
-
-            // </editor-fold>
+                // </editor-fold>
             case MOLECULAR_STRUCTURE:
             case MONOMER_STRUCTURE:
                 // <editor-fold defaultstate="collapsed" desc="Molecular structure">
                 return this.valueItem.getValue();
-
-            // </editor-fold>
+                // </editor-fold>
             default:
                 // <editor-fold defaultstate="collapsed" desc="Default (this.textField.getText())">
                 return this.textField.getText();
-
-            // </editor-fold>
+                // </editor-fold>
         }
     }
 
@@ -165,6 +165,7 @@ public class ValueItemCellEditorEdit extends AbstractCellEditor implements Table
      * @param aColumnIndex Column index
      * @return Cell editor component or null if not possible
      */
+    @Override
     public Component getTableCellEditorComponent(JTable aTable, Object aValue, boolean anIsSelected, int aRowIndex, int aColumnIndex) {
         // <editor-fold defaultstate="collapsed" desc="Get value item and column type format of matrix">
         this.valueItem = null;
@@ -181,10 +182,8 @@ public class ValueItemCellEditorEdit extends AbstractCellEditor implements Table
         } else {
             this.valueItemType = tmpTypeFormat.getDataType();
         }
-
         // </editor-fold>
         switch (this.valueItemType) {
-            // <editor-fold defaultstate="collapsed" desc="Selection text (return this.comboBox)">
             case SELECTION_TEXT:
                 // <editor-fold defaultstate="collapsed" desc="Set this.valueItemSelectionItemListener">
                 if (this.valueItemSelectionItemListener == null) {
@@ -193,17 +192,12 @@ public class ValueItemCellEditorEdit extends AbstractCellEditor implements Table
                 } else {
                     this.valueItemSelectionItemListener.setComboBoxAndValueItem(this.comboBox, this.valueItem);
                 }
-
                 // </editor-fold>
                 // <editor-fold defaultstate="collapsed" desc="Set this.comboBox">
                 this.comboBox.setModel(new DefaultComboBoxModel(tmpTypeFormat.getSelectionTexts()));
                 this.comboBox.setSelectedItem(aValue.toString());
-
                 // </editor-fold>
                 return this.comboBox;
-
-            // </editor-fold>
-            // <editor-fold defaultstate="collapsed" desc="Structure (return this.editorStartLabel)">
             case MOLECULAR_STRUCTURE:
             case MONOMER_STRUCTURE:
                 // NOTE: Value item has already aValue
@@ -214,11 +208,7 @@ public class ValueItemCellEditorEdit extends AbstractCellEditor implements Table
                     this.editorStartLabel.setText(GuiMessage.get("Information.ShowStructure"));
                 }
                 return this.editorStartLabel;
-
-            // </editor-fold>
-            // <editor-fold defaultstate="collapsed" desc="Default (return this.textField)">
             default:
-
                 // <editor-fold defaultstate="collapsed" desc="Set this.valueItemKeyListener">
                 if (this.valueItemKeyListener == null) {
                     this.valueItemKeyListener = new ValueItemKeyListener(this.textField, tmpTypeFormat);
@@ -255,12 +245,8 @@ public class ValueItemCellEditorEdit extends AbstractCellEditor implements Table
 
                 // </editor-fold>
                 return this.textField;
-
-            // </editor-fold>
-            // </editor-fold>
         }
     }
-
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public events for this.editorStartLabel">
@@ -283,7 +269,6 @@ public class ValueItemCellEditorEdit extends AbstractCellEditor implements Table
     public void focusLost(FocusEvent aFocusEvent) {
         // Do nothing
     }
-
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="MouseListener events for this.editorStartLabel">

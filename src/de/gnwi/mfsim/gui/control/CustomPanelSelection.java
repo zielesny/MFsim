@@ -87,10 +87,20 @@ public class CustomPanelSelection extends JPanel {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * FilterPanel
+     * 
+     * @return FilterPanel
+     */
     public CustomPanelFilter getFilterPanel() {
         return filterPanel;
     }
 
+    /**
+     * List
+     * 
+     * @return List
+     */
     public JList getList() {
         return list;
     }

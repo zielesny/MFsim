@@ -124,6 +124,11 @@ public class DialogSingleSlicerShow extends CustomDialogApplyCancelSize implemen
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * CustomSingleSlicerPanel
+     * 
+     * @return CustomSingleSlicerPanel
+     */
     public CustomPanelSingleSlicer getCustomSingleSlicerPanel() {
         return customSingleSlicerPanel;
     }

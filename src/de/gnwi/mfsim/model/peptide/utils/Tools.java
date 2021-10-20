@@ -30,7 +30,7 @@ import java.io.IOException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
-import java.util.Random;
+import de.gnwi.jdpd.interfaces.IRandom;
 import java.util.regex.Pattern;
 import javax.vecmath.Matrix3d;
 import javax.vecmath.Matrix4d;
@@ -90,7 +90,7 @@ public class Tools {
      * @param aRandom Pseudorandom generator.
      * @return Random quaternion.
      */
-    public static Quat4d randomQuaternion(Random aRandom) {
+    public static Quat4d randomQuaternion(IRandom aRandom) {
         double u1 = aRandom.nextDouble();
         double u2 = aRandom.nextDouble();
         double u3 = aRandom.nextDouble();

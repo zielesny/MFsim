@@ -343,26 +343,27 @@ public class GraphicalParticleInfo {
      */
     public int addMoleculeDisplaySettingsValueItems(ValueItemContainer aValueItemContainer, int aVerticalPosition, String[] aRootNodeNames) {
         return this.graphicsUtilityMethods.addMoleculeDisplaySettingsValueItems(
-                aValueItemContainer,
-                aVerticalPosition,
-                aRootNodeNames,
-                this.particleList,
-                this.particleToParticleNameMap,
-                this.excludedParticlesTable,
-                this.particleToCurrentColorMap,
-                this.particleToInitialColorMap,
-                this.moleculeList,
-                this.excludedMoleculesTable,
-                this.moleculeToCurrentColorMap,
-                this.moleculeToInitialColorMap,
-                this.moleculeParticleStringList,
-                this.moleculeParticleStringToGraphicalParticleMap,
-                this.excludedMoleculeParticleStringTable,
-                this.moleculeParticleStringToCurrentColorMap,
-                this.moleculeParticleStringToInitialColorMap,
-                this.moleculeParticleStringToCurrentRadiusScale,
-                this.moleculeParticleStringToCurrentTransparency,
-                this.hasCompartments);
+            aValueItemContainer,
+            aVerticalPosition,
+            aRootNodeNames,
+            this.particleList,
+            this.particleToParticleNameMap,
+            this.excludedParticlesTable,
+            this.particleToCurrentColorMap,
+            this.particleToInitialColorMap,
+            this.moleculeList,
+            this.excludedMoleculesTable,
+            this.moleculeToCurrentColorMap,
+            this.moleculeToInitialColorMap,
+            this.moleculeParticleStringList,
+            this.moleculeParticleStringToGraphicalParticleMap,
+            this.excludedMoleculeParticleStringTable,
+            this.moleculeParticleStringToCurrentColorMap,
+            this.moleculeParticleStringToInitialColorMap,
+            this.moleculeParticleStringToCurrentRadiusScale,
+            this.moleculeParticleStringToCurrentTransparency,
+            this.hasCompartments
+        );
     }
 
     /**

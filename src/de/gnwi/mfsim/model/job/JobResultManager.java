@@ -23,7 +23,6 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.LinkedList;
 
-import de.gnwi.mfsim.model.job.JobResult;
 import de.gnwi.mfsim.model.util.FileDeletionTask;
 import de.gnwi.mfsim.model.preference.Preferences;
 import de.gnwi.mfsim.model.util.ModelUtils;
@@ -160,9 +159,15 @@ public class JobResultManager {
     public JobResult[] getSortedJobsOfResultPath() {
         LinkedList<JobResult> tmpJobList = this.getJobListOfResultPath();
         if (tmpJobList.size() > 0) {
-            JobResult[] jobArray = tmpJobList.toArray(new JobResult[0]);
-            Arrays.sort(jobArray);
-            return jobArray;
+            // Safeguard: this.removeNullObjects() is necessary since tmpJobList
+            // may be changed during toArray operation
+            JobResult[] tmpJobArray = this.removeNullObjects(tmpJobList.toArray(new JobResult[0]));
+            if (tmpJobArray == null) {
+                return null;
+            } else {
+                Arrays.sort(tmpJobArray);
+                return tmpJobArray;
+            }
         } else {
             return null;
         }
@@ -197,7 +202,6 @@ public class JobResultManager {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Private methods">
-    // <editor-fold defaultstate="collapsed" desc="Initialisation methods">
     /**
      * Resets JobResultManager to initial state
      */
@@ -207,17 +211,56 @@ public class JobResultManager {
         // Clean possible removed jobs results in background
         this.cleanJobResultPathInBackground();
     }
+    
+    /**
+     * Removes null objects from array
+     * 
+     * @param aJobResultArray Job result array (is NOT changed)
+     * @return Job result array without null objects or null if there are no 
+     * job results
+     */
+    private JobResult[] removeNullObjects(JobResult[] aJobResultArray) {
+        if (aJobResultArray == null) {
+            return null;
+        }
+        if (aJobResultArray.length == 0) {
+            return null;
+        }
+        int tmpNullObjectCounter = 0;
+        for (JobResult tmpJobResult : aJobResultArray) {
+            if (tmpJobResult == null) {
+                tmpNullObjectCounter++;
+            }
+        }
+        if (tmpNullObjectCounter == 0) {
+            return aJobResultArray;
+        } else {
+            if (tmpNullObjectCounter == aJobResultArray.length) {
+                return null;
+            } else {
+                JobResult[] tmpNewJobResultArray = new JobResult[aJobResultArray.length - tmpNullObjectCounter];
+                int tmpIndex = 0;
+                for (JobResult tmpJobResult : aJobResultArray) {
+                    if (tmpJobResult != null) {
+                        tmpNewJobResultArray[tmpIndex++] = tmpJobResult;
+                    }
+                }
+                return tmpNewJobResultArray;
+            }
+        }
+    }
     // </editor-fold>
-    // <editor-fold defaultstate="collapsed" desc="Miscellaneous methods">
+    //
+    // <editor-fold defaultstate="collapsed" desc="Private synchronized methods">
     /**
      * Updates cache for all jobs of result path (this.allJobsOfResultPathList)
      */
-    private void updateAllJobsOfResultPathList() {
+    private synchronized void updateAllJobsOfResultPathList() {
         this.allJobResultsOfResultPathList.clear();
         String[] tmpJobPaths = this.fileUtilityMethods.getDirectoryPathsWithPrefix(Preferences.getInstance().getJobResultPath(), ModelDefinitions.PREFIX_OF_JOB_RESULT_DIRECTORY);
         if (tmpJobPaths != null) {
             for (String tmpJobPath : tmpJobPaths) {
-                JobResult tmpSingleJob;
+                JobResult tmpSingleJob = null;
                 try {
                     tmpSingleJob = new JobResult(tmpJobPath);
                 } catch (Exception anException) {
@@ -234,7 +277,6 @@ public class JobResultManager {
             }
         }
     }
-    // </editor-fold>
     // </editor-fold>
 
 }

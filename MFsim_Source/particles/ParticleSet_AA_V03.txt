@@ -68,7 +68,7 @@
 #    - a(ij) scaled  min = 5.833333333333332
 #    - a(ij) scaled  max = 53.59265304477492
 #
-# 4. Add charged particles
+# 4. Add charged particles with an Electrostatics repulsion correction factor (alpha) = 1.0
 #               Original          Charge    Color 
 #    AzolidP    Azolid            1         red
 #    GuanidineP Guanidine         1         red

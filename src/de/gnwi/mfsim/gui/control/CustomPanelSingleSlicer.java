@@ -84,6 +84,11 @@ public class CustomPanelSingleSlicer extends JPanel {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * SimulationBoxPanel
+     * 
+     * @return SimulationBoxPanel
+     */
     public CustomPanelSimulationBoxSlicer getSimulationBoxPanel() {
         return simulationBoxPanel;
     }

@@ -139,14 +139,29 @@ public class CustomPanelFilter extends JPanel {
 
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * FilterInformationLabel
+     * 
+     * @return FilterInformationLabel
+     */
     public JLabel getFilterInformationLabel() {
         return this.filterInformationLabel;
     }
 
+    /**
+     * EditButton
+     * 
+     * @return EditButton
+     */
     public JButton getEditButton() {
         return this.editButton;
     }
 
+    /**
+     * ClearButton
+     * 
+     * @return ClearButton
+     */
     public JButton getClearButton() {
         return this.clearButton;
     }

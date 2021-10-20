@@ -133,22 +133,47 @@ public class CustomPanelCompartmentEdit extends JPanel {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * EditCompartmentNameButton
+     * 
+     * @return EditCompartmentNameButton
+     */
     public JButton getEditCompartmentNameButton() {
         return editCompartmentNameButton;
     }
 
+    /**
+     * AddCompartmentSphereButton
+     * 
+     * @return AddCompartmentSphereButton
+     */
     public JButton getAddCompartmentSphereButton() {
         return addCompartmentSphereButton;
     }
 
+    /**
+     * AddCompartmentXyLayerButton
+     * 
+     * @return AddCompartmentXyLayerButton
+     */
     public JButton getAddCompartmentXyLayerButton() {
         return addCompartmentXyLayerButton;
     }
 
+    /**
+     * RemoveCompartmentButton
+     * 
+     * @return RemoveCompartmentButton
+     */
     public JButton getRemoveCompartmentButton() {
         return removeCompartmentButton;
     }
 
+    /**
+     * CustomValueItemEditPanel
+     * 
+     * @return CustomValueItemEditPanel
+     */
     public CustomPanelValueItemEdit getCustomValueItemEditPanel() {
         return this.customValueItemEditPanel;
     }

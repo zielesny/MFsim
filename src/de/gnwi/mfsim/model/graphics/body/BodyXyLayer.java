@@ -35,7 +35,7 @@ import de.gnwi.mfsim.model.valueItem.ValueItem;
 import java.util.LinkedList;
 import de.gnwi.spices.IPointInSpace;
 import de.gnwi.mfsim.model.preference.ModelDefinitions;
-import java.util.Random;
+import de.gnwi.jdpd.interfaces.IRandom;
 
 /**
  * This class represents a xy-layer. The xy-layer is defined by center and and
@@ -45,6 +45,13 @@ import java.util.Random;
  */
 public class BodyXyLayer extends ChangeNotifier implements BodyInterface, ChangeReceiverInterface {
 
+    // <editor-fold defaultstate="collapsed" desc="Private final class variables">
+    /**
+     * Center of the body
+     */
+    private final PointInSpace bodyCenter;
+    // </editor-fold>
+    //
     // <editor-fold defaultstate="collapsed" desc="Private class variables">
     /**
      * Utility graphics methods
@@ -85,11 +92,6 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
      * Geometric form of the body
      */
     private BodyTypeEnum bodyType;
-
-    /**
-     * Center of the body
-     */
-    private PointInSpace bodyCenter;
 
     /**
      * True: Body is selected, false: Otherwise
@@ -168,6 +170,16 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
      * List with excluded spheres
      */
     private LinkedList<BodySphere> excludedSphereList;
+    
+    /**
+     * Auxiliary class variables
+     */
+    private double bodyCenterX_Minus_halfXLengthCorrected;
+    private double bodyCenterX_Plus_halfXLengthCorrected;
+    private double bodyCenterY_Minus_halfYLengthCorrected;
+    private double bodyCenterY_Plus_halfYLengthCorrected;
+    private double bodyCenterZ_Minus_halfZLengthCorrected;
+    private double bodyCenterZ_Plus_halfZLengthCorrected;
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Constructors">
@@ -199,8 +211,9 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
         this.xLength = aXLength;
         this.yLength = aYLength;
         this.zLength = aZLength;
-        this.calculateSizeRelatedQuantities();
         this.bodyCenter = aBodyCenter;
+        // calculateSizeRelatedQuantities() MUST be called after body center is set
+        this.calculateSizeRelatedQuantities();
         // </editor-fold>
         this.initialize();
     }
@@ -242,6 +255,7 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
         this.xLength = aXyLayerGeometryDataValueItem.getValueAsDouble(0, 3);
         this.yLength = aXyLayerGeometryDataValueItem.getValueAsDouble(0, 4);
         this.zLength = aXyLayerGeometryDataValueItem.getValueAsDouble(0, 5);
+        // calculateSizeRelatedQuantities() MUST be called after body center is set
         this.calculateSizeRelatedQuantities();
         // </editor-fold>
         this.initialize();
@@ -297,6 +311,7 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
                     super.notifyChangeReceiver(this, this.positionChangeInformation);
                 }
                 if (tmpIsSizeChange) {
+                    // calculateSizeRelatedQuantities() MUST be called after body center is set
                     this.calculateSizeRelatedQuantities();
                     super.notifyChangeReceiver(this, this.sizeChangeInformation);
                 }
@@ -367,12 +382,19 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
             return false;
         }
         // </editor-fold>
-        return this.bodyCenter.getX() - this.halfXLengthCorrected <= aPoint.getX()
-                && this.bodyCenter.getX() + this.halfXLengthCorrected >= aPoint.getX()
-                && this.bodyCenter.getY() - this.halfYLengthCorrected <= aPoint.getY()
-                && this.bodyCenter.getY() + this.halfYLengthCorrected >= aPoint.getY()
-                && this.bodyCenter.getZ() - this.halfZLengthCorrected <= aPoint.getZ()
-                && this.bodyCenter.getZ() + this.halfZLengthCorrected >= aPoint.getZ();
+        return this.bodyCenterX_Minus_halfXLengthCorrected <= aPoint.getX()
+            && this.bodyCenterX_Plus_halfXLengthCorrected >= aPoint.getX()
+            && this.bodyCenterY_Minus_halfYLengthCorrected <= aPoint.getY()
+            && this.bodyCenterY_Plus_halfYLengthCorrected >= aPoint.getY()
+            && this.bodyCenterZ_Minus_halfZLengthCorrected <= aPoint.getZ()
+            && this.bodyCenterZ_Plus_halfZLengthCorrected >= aPoint.getZ();
+        // Old code:
+        // return this.bodyCenter.getX() - this.halfXLengthCorrected <= aPoint.getX()
+        //         && this.bodyCenter.getX() + this.halfXLengthCorrected >= aPoint.getX()
+        //         && this.bodyCenter.getY() - this.halfYLengthCorrected <= aPoint.getY()
+        //         && this.bodyCenter.getY() + this.halfYLengthCorrected >= aPoint.getY()
+        //         && this.bodyCenter.getZ() - this.halfZLengthCorrected <= aPoint.getZ()
+        //         && this.bodyCenter.getZ() + this.halfZLengthCorrected >= aPoint.getZ();
     }
 
     /**
@@ -407,7 +429,7 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
      * @return Point in space inside of the body
      */
     @Override
-    public PointInSpace getRandomPointInVolume(Random aRandomNumberGenerator) {
+    public PointInSpace getRandomPointInVolume(IRandom aRandomNumberGenerator) {
         return this.getRandomPointsInVolume(1, aRandomNumberGenerator)[0];
     }
 
@@ -420,7 +442,7 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
      * @throws IllegalArgumentException Thrown if aNumber is less than 1
      */
     @Override
-    public PointInSpace[] getRandomPointsInVolume(int aNumber, Random aRandomNumberGenerator) throws IllegalArgumentException {
+    public PointInSpace[] getRandomPointsInVolume(int aNumber, IRandom aRandomNumberGenerator) throws IllegalArgumentException {
 
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -443,7 +465,7 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
     @Override
-    public void fillRandomPointsInVolume(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, Random aRandomNumberGenerator) throws IllegalArgumentException {
+    public void fillRandomPointsInVolume(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, IRandom aRandomNumberGenerator) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
             throw new IllegalArgumentException("aNumber is less than 1.");
@@ -474,7 +496,7 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
     @Override
-    public void fillRandomPointsInVolume(IPointInSpace[] aBuffer1, IPointInSpace[] aBuffer2, int aFirstIndex, int aNumber, Random aRandomNumberGenerator) throws IllegalArgumentException {
+    public void fillRandomPointsInVolume(IPointInSpace[] aBuffer1, IPointInSpace[] aBuffer2, int aFirstIndex, int aNumber, IRandom aRandomNumberGenerator) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
             throw new IllegalArgumentException("aNumber is less than 1.");
@@ -525,7 +547,7 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
         int aFirstIndex, 
         int aNumber, 
         int aNumberOfTrials,
-        Random aRandomNumberGenerator
+        IRandom aRandomNumberGenerator
     ) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -585,7 +607,7 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
         int aNumber, 
         double aStepDistance, 
         int aNumberOfTrials,
-        Random aRandomNumberGenerator
+        IRandom aRandomNumberGenerator
     ) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -660,7 +682,7 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
      * @return Point on surface of body
      */
     @Override
-    public PointInSpace getRandomPointOnSurface(Random aRandomNumberGenerator) {
+    public PointInSpace getRandomPointOnSurface(IRandom aRandomNumberGenerator) {
         return this.getRandomPointsOnSurface(1, aRandomNumberGenerator)[0];
     }
 
@@ -674,7 +696,7 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
      * @throws IllegalArgumentException if aNumber is less than 1
      */
     @Override
-    public PointInSpace[] getRandomPointsOnSurface(int aNumber, Random aRandomNumberGenerator) throws IllegalArgumentException {
+    public PointInSpace[] getRandomPointsOnSurface(int aNumber, IRandom aRandomNumberGenerator) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
             throw new IllegalArgumentException("aNumber was less than 1.");
@@ -696,7 +718,7 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
     @Override
-    public void fillRandomPointsOnSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, Random aRandomNumberGenerator) throws IllegalArgumentException {
+    public void fillRandomPointsOnSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, IRandom aRandomNumberGenerator) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
             throw new IllegalArgumentException("aNumber is less than 1.");
@@ -724,7 +746,7 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
      * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
-    public void fillRandomPointsOnTopBottomSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, Random aRandomNumberGenerator) throws IllegalArgumentException {
+    public void fillRandomPointsOnTopBottomSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, IRandom aRandomNumberGenerator) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
             throw new IllegalArgumentException("aNumber is less than 1.");
@@ -751,7 +773,7 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
      * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
-    public void fillRandomPointsOnLeftRightSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, Random aRandomNumberGenerator) throws IllegalArgumentException {
+    public void fillRandomPointsOnLeftRightSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, IRandom aRandomNumberGenerator) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
             throw new IllegalArgumentException("aNumber is less than 1.");
@@ -778,7 +800,7 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
      * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
-    public void fillRandomPointsOnFrontBackSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, Random aRandomNumberGenerator) throws IllegalArgumentException {
+    public void fillRandomPointsOnFrontBackSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, IRandom aRandomNumberGenerator) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
             throw new IllegalArgumentException("aNumber is less than 1.");
@@ -806,7 +828,7 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
      * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
-    public void fillRandomPointsOnSingleSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, BodyXyLayerSingleSurfaceEnum aSingleSurface, Random aRandomNumberGenerator) throws IllegalArgumentException {
+    public void fillRandomPointsOnSingleSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, BodyXyLayerSingleSurfaceEnum aSingleSurface, IRandom aRandomNumberGenerator) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
             throw new IllegalArgumentException("aNumber is less than 1.");
@@ -834,7 +856,7 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
      * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
-    public void fillRandomPointsOnAllSurfaces(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, Random aRandomNumberGenerator) throws IllegalArgumentException {
+    public void fillRandomPointsOnAllSurfaces(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, IRandom aRandomNumberGenerator) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
             throw new IllegalArgumentException("aNumber is less than 1.");
@@ -874,7 +896,7 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
         int aNumberOfSpheres, 
         double aRadius, 
         int aNumberOfTrials,
-        Random aRandomNumberGenerator
+        IRandom aRandomNumberGenerator
     ) {
         LinkedList<BodySphere> tmpSphereList = 
             this.graphicsUtilityMethods.getNonOverlappingRandomSpheresInXyLayer(
@@ -1050,7 +1072,6 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
     public SimulationBoxViewEnum getBoxView() {
         return this.boxView;
     }
-
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="Selected">
     /**
@@ -1078,7 +1099,6 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
             this.valueItem.setSelected(this.isSelected);
         }
     }
-
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="CompartmentBox">
     /**
@@ -1099,7 +1119,6 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
     public CompartmentBox getCompartmentBox() {
         return this.compartmentBox;
     }
-
     // </editor-fold>
     // </editor-fold>
     //
@@ -1241,6 +1260,13 @@ public class BodyXyLayer extends ChangeNotifier implements BodyInterface, Change
         this.halfXLengthCorrected = this.halfXLength * ModelDefinitions.FACTOR_FOR_GRAPHICS_NUMBER_CORRECTION;
         this.halfYLengthCorrected = this.halfYLength * ModelDefinitions.FACTOR_FOR_GRAPHICS_NUMBER_CORRECTION;
         this.halfZLengthCorrected = this.halfZLength * ModelDefinitions.FACTOR_FOR_GRAPHICS_NUMBER_CORRECTION;
+        
+        this.bodyCenterX_Minus_halfXLengthCorrected = this.bodyCenter.getX() - this.halfXLengthCorrected;
+        this.bodyCenterX_Plus_halfXLengthCorrected = this.bodyCenter.getX() + this.halfXLengthCorrected;
+        this.bodyCenterY_Minus_halfYLengthCorrected = this.bodyCenter.getY() - this.halfYLengthCorrected;
+        this.bodyCenterY_Plus_halfYLengthCorrected = this.bodyCenter.getY() + this.halfYLengthCorrected;
+        this.bodyCenterZ_Minus_halfZLengthCorrected = this.bodyCenter.getZ() - this.halfZLengthCorrected;
+        this.bodyCenterZ_Plus_halfZLengthCorrected = this.bodyCenter.getZ() + this.halfZLengthCorrected;
     }
     // </editor-fold>
 

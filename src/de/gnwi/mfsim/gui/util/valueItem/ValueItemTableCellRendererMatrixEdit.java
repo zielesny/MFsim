@@ -126,7 +126,6 @@ public class ValueItemTableCellRendererMatrixEdit extends DefaultTableCellRender
                 this.infoLabel.setText(GuiMessage.get("Information.MatrixCellNonEditable"));
             }
         }
-
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Set cell colors">
         ValueItemEnumDataType tmpDataType = this.valueItem.getTypeFormat(aRow, aColumn).getDataType();
@@ -150,7 +149,11 @@ public class ValueItemTableCellRendererMatrixEdit extends DefaultTableCellRender
             }
             this.setForeground(GuiDefinitions.TABLE_CELL_NON_EDITABLE_FOREGROUND_COLOR);
         }
-
+        // If cell is editable and highlighted set highlight background color
+        if (this.valueItem.getTypeFormat(aRow, aColumn).isHighlighted()) {
+            this.setForeground(GuiDefinitions.TABLE_CELL_HIGHLIGHT_FOREGROUND_COLOR);
+            this.setBackground(GuiDefinitions.TABLE_CELL_HIGHLIGHT_BACKGROUND_COLOR);
+        }
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Set text alignment">
         if (this.valueItem.getTypeFormat(aRow, aColumn).getDataType() == ValueItemEnumDataType.NUMERIC) {

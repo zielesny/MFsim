@@ -111,6 +111,11 @@ public class CustomPanelSimulationBoxDraw extends JPanel {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * GraphicsPanel
+     * 
+     * @return GraphicsPanel
+     */
     public CustomPanelSimulationBoxGraphics getGraphicsPanel() {
         return drawPanel;
     }

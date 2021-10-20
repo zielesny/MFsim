@@ -62,7 +62,9 @@ public class CustomPanelSlicer extends JPanel {
 
     private JButton zoomOutButton;
 
-    private JButton zoomInButton;
+    private JButton zoomInBoxVolumeShapeButton;
+
+    private JButton zoomInEllipsoidVolumeShapeButton;
 
     private JButton setZoomButton;
 
@@ -438,8 +440,16 @@ public class CustomPanelSlicer extends JPanel {
         {
             this.zoomPanel = new JPanel();
             this.zoomPanel.setToolTipText(GuiMessage.get("CustomPanelSlicer.zoomPanel.toolTipText")); 
-            this.zoomPanel.setBorder(new TitledBorder(new BevelBorder(BevelBorder.RAISED), GuiMessage.get("CustomPanelSlicer.zoomPanel.title"), TitledBorder.DEFAULT_JUSTIFICATION, 
-                    TitledBorder.DEFAULT_POSITION, null, GuiDefinitions.PANEL_TITLE_COLOR));
+            this.zoomPanel.setBorder(
+                new TitledBorder(
+                    new BevelBorder(BevelBorder.RAISED), 
+                    GuiMessage.get("CustomPanelSlicer.zoomPanel.title"), 
+                    TitledBorder.DEFAULT_JUSTIFICATION, 
+                    TitledBorder.DEFAULT_POSITION, 
+                    null, 
+                    GuiDefinitions.PANEL_TITLE_COLOR
+                )
+            );
             this.zoomPanelSpringLayout = new SpringLayout();
             this.zoomPanel.setLayout(this.zoomPanelSpringLayout);
             add(this.zoomPanel);
@@ -458,14 +468,24 @@ public class CustomPanelSlicer extends JPanel {
                 this.zoomPanelSpringLayout.putConstraint(SpringLayout.SOUTH, this.setZoomButton, 40, SpringLayout.NORTH, this.zoomPanel);
             }
             {
-                this.zoomInButton = new JButton();
-                this.zoomInButton.setToolTipText(GuiMessage.get("CustomPanelSlicer.zoomInButton.toolTipText")); 
-                this.zoomInButton.setText(GuiMessage.get("CustomPanelSlicer.zoomInButton.text")); 
-                this.zoomPanel.add(this.zoomInButton);
-                this.zoomPanelSpringLayout.putConstraint(SpringLayout.EAST, this.zoomInButton, -tmpOffset, SpringLayout.EAST, this.zoomPanel);
-                this.zoomPanelSpringLayout.putConstraint(SpringLayout.WEST, this.zoomInButton, tmpOffset, SpringLayout.WEST, this.zoomPanel);
-                this.zoomPanelSpringLayout.putConstraint(SpringLayout.NORTH, this.zoomInButton, 40, SpringLayout.NORTH, this.zoomPanel);
-                this.zoomPanelSpringLayout.putConstraint(SpringLayout.SOUTH, this.zoomInButton, 75, SpringLayout.NORTH, this.zoomPanel);
+                this.zoomInBoxVolumeShapeButton = new JButton();
+                this.zoomInBoxVolumeShapeButton.setToolTipText(GuiMessage.get("CustomPanelSlicer.zoomInBoxVolumeShapeButton.toolTipText")); 
+                this.zoomInBoxVolumeShapeButton.setText(GuiMessage.get("CustomPanelSlicer.zoomInBoxVolumeShapeButton.text")); 
+                this.zoomPanel.add(this.zoomInBoxVolumeShapeButton);
+                this.zoomPanelSpringLayout.putConstraint(SpringLayout.EAST, this.zoomInBoxVolumeShapeButton, -tmpOffset, SpringLayout.EAST, this.zoomPanel);
+                this.zoomPanelSpringLayout.putConstraint(SpringLayout.WEST, this.zoomInBoxVolumeShapeButton, tmpOffset, SpringLayout.WEST, this.zoomPanel);
+                this.zoomPanelSpringLayout.putConstraint(SpringLayout.NORTH, this.zoomInBoxVolumeShapeButton, 40, SpringLayout.NORTH, this.zoomPanel);
+                this.zoomPanelSpringLayout.putConstraint(SpringLayout.SOUTH, this.zoomInBoxVolumeShapeButton, 75, SpringLayout.NORTH, this.zoomPanel);
+            }
+            {
+                this.zoomInEllipsoidVolumeShapeButton = new JButton();
+                this.zoomInEllipsoidVolumeShapeButton.setToolTipText(GuiMessage.get("CustomPanelSlicer.zoomInEllipsoidVolumeShapeButton.toolTipText")); 
+                this.zoomInEllipsoidVolumeShapeButton.setText(GuiMessage.get("CustomPanelSlicer.zoomInEllipsoidVolumeShapeButton.text")); 
+                this.zoomPanel.add(this.zoomInEllipsoidVolumeShapeButton);
+                this.zoomPanelSpringLayout.putConstraint(SpringLayout.EAST, this.zoomInEllipsoidVolumeShapeButton, -tmpOffset, SpringLayout.EAST, this.zoomPanel);
+                this.zoomPanelSpringLayout.putConstraint(SpringLayout.WEST, this.zoomInEllipsoidVolumeShapeButton, tmpOffset, SpringLayout.WEST, this.zoomPanel);
+                this.zoomPanelSpringLayout.putConstraint(SpringLayout.NORTH, this.zoomInEllipsoidVolumeShapeButton, 75, SpringLayout.NORTH, this.zoomPanel);
+                this.zoomPanelSpringLayout.putConstraint(SpringLayout.SOUTH, this.zoomInEllipsoidVolumeShapeButton, 110, SpringLayout.NORTH, this.zoomPanel);
             }
             {
                 this.zoomOutButton = new JButton();
@@ -474,8 +494,8 @@ public class CustomPanelSlicer extends JPanel {
                 this.zoomPanel.add(this.zoomOutButton);
                 this.zoomPanelSpringLayout.putConstraint(SpringLayout.EAST, this.zoomOutButton, -tmpOffset, SpringLayout.EAST, this.zoomPanel);
                 this.zoomPanelSpringLayout.putConstraint(SpringLayout.WEST, this.zoomOutButton, tmpOffset, SpringLayout.WEST, this.zoomPanel);
-                this.zoomPanelSpringLayout.putConstraint(SpringLayout.NORTH, this.zoomOutButton, 75, SpringLayout.NORTH, this.zoomPanel);
-                this.zoomPanelSpringLayout.putConstraint(SpringLayout.SOUTH, this.zoomOutButton, 110, SpringLayout.NORTH, this.zoomPanel);
+                this.zoomPanelSpringLayout.putConstraint(SpringLayout.NORTH, this.zoomOutButton, 110, SpringLayout.NORTH, this.zoomPanel);
+                this.zoomPanelSpringLayout.putConstraint(SpringLayout.SOUTH, this.zoomOutButton, 145, SpringLayout.NORTH, this.zoomPanel);
             }
             {
                 this.volumeBinsSettingsButton = new JButton();
@@ -623,158 +643,362 @@ public class CustomPanelSlicer extends JPanel {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * XzFrontRadioButton
+     * 
+     * @return XzFrontRadioButton
+     */
     public JRadioButton getXzFrontRadioButton() {
         return xzFrontRadioButton;
     }
 
+    /**
+     * XzBackRadioButton
+     * 
+     * @return XzBackRadioButton
+     */
     public JRadioButton getXzBackRadioButton() {
         return xzBackRadioButton;
     }
 
+    /**
+     * YzLeftRadioButton
+     * 
+     * @return YzLeftRadioButton
+     */
     public JRadioButton getYzLeftRadioButton() {
         return yzLeftRadioButton;
     }
 
+    /**
+     * YzRightRadioButton
+     * 
+     * @return YzRightRadioButton
+     */
     public JRadioButton getYzRightRadioButton() {
         return yzRightRadioButton;
     }
 
+    /**
+     * XyTopRadioButton
+     * 
+     * @return XyTopRadioButton
+     */
     public JRadioButton getXyTopRadioButton() {
         return xyTopRadioButton;
     }
 
+    /**
+     * XyBottomRadioButton
+     * 
+     * @return XyBottomRadioButton
+     */
     public JRadioButton getXyBottomRadioButton() {
         return xyBottomRadioButton;
     }
 
+    /**
+     * BoxViewImagePanel
+     * 
+     * @return BoxViewImagePanel
+     */
     public CustomPanelImage getBoxViewImagePanel() {
         return boxViewImagePanel;
     }
 
+    /**
+     * RotationAndShiftRadioButton
+     * 
+     * @return RotationAndShiftRadioButton
+     */
     public JRadioButton getRotationAndShiftRadioButton() {
         return rotationAndShiftRadioButton;
     }
 
+    /**
+     * MoleculesRadioButton
+     * 
+     * @return MoleculesRadioButton
+     */
     public JRadioButton getMoleculesRadioButton() {
         return moleculesRadioButton;
     }
 
+    /**
+     * GraphicsRadioButton
+     * 
+     * @return GraphicsRadioButton
+     */
     public JRadioButton getGraphicsRadioButton() {
         return graphicsRadioButton;
     }
 
+    /**
+     * AnimationRadioButton
+     * 
+     * @return AnimationRadioButton
+     */
     public JRadioButton getAnimationRadioButton() {
         return animationRadioButton;
     }
 
+    /**
+     * MovieRadioButton
+     * 
+     * @return MovieRadioButton
+     */
     public JRadioButton getMovieRadioButton() {
         return movieRadioButton;
     }
 
+    /**
+     * SelectionRadioButton
+     * 
+     * @return SelectionRadioButton
+     */
     public JRadioButton getSelectionRadioButton() {
         return selectionRadioButton;
     }
 
+    /**
+     * FirstSettingsButton
+     * 
+     * @return FirstSettingsButton
+     */
     public JButton getFirstSettingsButton() {
         return firstSettingsButton;
     }
 
+    /**
+     * SecondSettingsButton
+     * 
+     * @return SecondSettingsButton
+     */
     public JButton getSecondSettingsButton() {
         return secondSettingsButton;
     }
 
+    /**
+     * BoxViewPanel
+     * 
+     * @return BoxViewPanel
+     */
     public JPanel getBoxViewPanel() {
         return boxViewPanel;
     }
 
+    /**
+     * SettingsPanel
+     * 
+     * @return SettingsPanel
+     */
     public JPanel getSettingsPanel() {
         return settingsPanel;
     }
 
+    /**
+     * SimulationBoxPanel
+     * 
+     * @return SimulationBoxPanel
+     */
     public CustomPanelSimulationBoxSlicer getSimulationBoxPanel() {
         return simulationBoxPanel;
     }
 
+    /**
+     * BoxSettingsPanel
+     * 
+     * @return BoxSettingsPanel
+     */
     public JPanel getBoxSettingsPanel() {
         return boxSettingsPanel;
     }
 
+    /**
+     * FogSettingsPanel
+     * 
+     * @return FogSettingsPanel
+     */
     public JPanel getFogSettingsPanel() {
         return fogSettingsPanel;
     }
 
+    /**
+     * NoRotationAndShiftButton
+     * 
+     * @return NoRotationAndShiftButton
+     */
     public JButton getNoRotationAndShiftButton() {
         return noRotationAndShiftButton;
     }
 
+    /**
+     * SetFirstSliceButton
+     * 
+     * @return SetFirstSliceButton
+     */
     public JButton getSetFirstSliceButton() {
         return setFirstSliceButton;
     }
 
+    /**
+     * NoMagnificationButton
+     * 
+     * @return NoMagnificationButton
+     */
     public JButton getNoMagnificationButton() {
         return noMagnificationButton;
     }
 
+    /**
+     * OriginalDisplayButton
+     * 
+     * @return OriginalDisplayButton
+     */
     public JButton getOriginalDisplayButton() {
         return originalDisplayButton;
     }
 
+    /**
+     * BoxFrameButton
+     * 
+     * @return BoxFrameButton
+     */
     public JButton getBoxFrameButton() {
         return boxFrameButton;
     }
 
+    /**
+     * ZoomPanel
+     * 
+     * @return ZoomPanel
+     */
     public JPanel getZoomPanel() {
         return zoomPanel;
     }
 
+    /**
+     * SetZoomButton
+     * 
+     * @return SetZoomButton
+     */
     public JButton getSetZoomButton() {
         return setZoomButton;
     }
 
-    public JButton getZoomInButton() {
-        return zoomInButton;
+    /**
+     * ZoomInBoxVolumeShapeButton
+     * 
+     * @return ZoomInBoxVolumeShapeButton
+     */
+    public JButton getZoomInBoxVolumeShapeButton() {
+        return zoomInBoxVolumeShapeButton;
     }
 
+    /**
+     * ZoomInEllipsoidVolumeShapeButton
+     * 
+     * @return ZoomInEllipsoidVolumeShapeButton
+     */
+    public JButton getZoomInEllipsoidVolumeShapeButton() {
+        return zoomInEllipsoidVolumeShapeButton;
+    }
+
+    /**
+     * ZoomOutButton
+     * 
+     * @return ZoomOutButton
+     */
     public JButton getZoomOutButton() {
         return zoomOutButton;
     }
 
+    /**
+     * VolumeBinsSettingsButton
+     * 
+     * @return VolumeBinsSettingsButton
+     */
     public JButton getVolumeBinsSettingsButton() {
         return volumeBinsSettingsButton;
     }
 
+    /**
+     * ZoomFrequencyDistributionsButton
+     * 
+     * @return ZoomFrequencyDistributionsButton
+     */
     public JButton getZoomFrequencyDistributionsButton() {
         return zoomFrequencyDistributionsButton;
     }
 
+    /**
+     * FitMagnificationButton
+     * 
+     * @return FitMagnificationButton
+     */
     public JButton getFitMagnificationButton() {
         return fitMagnificationButton;
     }
 
+    /**
+     * Fog0Button
+     * 
+     * @return Fog0Button
+     */
     public JButton getFog0Button() {
         return fog0Button;
     }
 
+    /**
+     * Fog1Button
+     * 
+     * @return Fog1Button
+     */
     public JButton getFog1Button() {
         return fog1Button;
     }
 
+    /**
+     * Fog2Button
+     * 
+     * @return Fog2Button
+     */
     public JButton getFog2Button() {
         return fog2Button;
     }
 
+    /**
+     * Fog3Button
+     * 
+     * @return Fog3Button
+     */
     public JButton getFog3Button() {
         return fog3Button;
     }
 
+    /**
+     * Fog4Button
+     * 
+     * @return Fog4Button
+     */
     public JButton getFog4Button() {
         return fog4Button;
     }
 
+    /**
+     * Fog5Button
+     * 
+     * @return Fog5Button
+     */
     public JButton getFog5Button() {
         return fog5Button;
     }
-    
+
+    /**
+     * ParticleShiftRemoveButton
+     * 
+     * @return ParticleShiftRemoveButton
+     */
     public JButton getParticleShiftRemoveButton() {
         return particleShiftRemoveButton;
     }

@@ -76,6 +76,9 @@ public class CustomPanelValueItemFlexibleMatrix extends JPanel {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Constructor">
+    /**
+     * Constructor
+     */
     public CustomPanelValueItemFlexibleMatrix() {
         super();
         this.springLayout = new SpringLayout();
@@ -229,41 +232,86 @@ public class CustomPanelValueItemFlexibleMatrix extends JPanel {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * InsertRowButton
+     * 
+     * @return InsertRowButton
+     */
     public JButton getInsertRowButton() {
         return insertRowButton;
     }
 
+    /**
+     * RemoveRowButton
+     * 
+     * @return RemoveRowButton
+     */
     public JButton getRemoveRowButton() {
         return removeRowButton;
     }
 
+    /**
+     * SetColumnsButton
+     * 
+     * @return SetColumnsButton
+     */
     public JButton getSetColumnsButton() {
         return setColumnsButton;
     }
 
+    /**
+     * InfoLabel
+     * 
+     * @return InfoLabel
+     */
     public JLabel getInfoLabel() {
         return infoLabel;
     }
 
+    /**
+     * MatrixTable
+     * 
+     * @return MatrixTable
+     */
     public JTable getMatrixTable() {
         return matrixTable;
     }
 
+    /**
+     * ActionsPanel
+     * 
+     * @return ActionsPanel
+     */
     public JPanel getActionsPanel() {
         return actionsPanel;
     }
 
+    /**
+     * SetColumnsPanel
+     * 
+     * @return SetColumnsPanel
+     */
     public JPanel getSetColumnsPanel() {
         return setColumnsPanel;
     }
 
+    /**
+     * MatrixTableScrollPanel
+     * 
+     * @return MatrixTableScrollPanel
+     */
     public JScrollPane getMatrixTableScrollPanel() {
         return matrixTableScrollPanel;
     }
-    
-	public JButton getCopyRowButton() {
-		return copyRowButton;
-	}
+
+    /**
+     * CopyRowButton
+     * 
+     * @return CopyRowButton
+     */    
+    public JButton getCopyRowButton() {
+        return copyRowButton;
+    }
     // </editor-fold>
 
 }

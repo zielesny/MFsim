@@ -402,9 +402,12 @@ public class JdpdValueItemDefinition {
             tmpValueItem.setActivity(false);
             tmpValueItem.setMatrixColumnNames(new String[]{ModelMessage.get("JdpdInputFile.parameter.monomerName"),
                 ModelMessage.get("JdpdInputFile.parameter.monomerStructure")});
-            tmpValueItem.setMatrixColumnWidths(new String[]{
-                ModelDefinitions.CELL_WIDTH_TEXT_100,   // Monomer_Name
-                ModelDefinitions.CELL_WIDTH_TEXT_150}); // Monomer_Structure
+            tmpValueItem.setMatrixColumnWidths(
+                new String[] {
+                    ModelDefinitions.CELL_WIDTH_TEXT_150,   // Monomer_Name
+                    ModelDefinitions.CELL_WIDTH_TEXT_150    // Monomer_Structure
+                }
+            );
             // NOTE: Monomer_Name must have unique default (Parameter true).
             // IMPORTANT: See code of method ValueItemDataTypeFormat.getUniqueDefaultValue() to define reasonable default value and constraints. Otherwise method might fail.
             tmpValueItem.setDefaultTypeFormats(new ValueItemDataTypeFormat[]{
@@ -431,15 +434,17 @@ public class JdpdValueItemDefinition {
                     ModelMessage.get("JdpdInputFile.parameter.standardColor")
                 }
             );
-            tmpValueItem.setMatrixColumnWidths(new String[]{
-                    ModelDefinitions.CELL_WIDTH_TEXT_100, // Molecule_Name
+            tmpValueItem.setMatrixColumnWidths(
+                new String[] {
+                    ModelDefinitions.CELL_WIDTH_TEXT_150, // Molecule_Name
                     ModelDefinitions.CELL_WIDTH_TEXT_150, // Molecular_Structure
                     ModelDefinitions.CELL_WIDTH_TEXT_100  // Standard_Color
                 }
             );
             // NOTE: Molecule_Name must have unique default (Parameter true). IMPORTANT: See code of method ValueItemDataTypeFormat.getUniqueDefaultValue() to define reasonable default value and
             // constraints. Otherwise method might fail. A molecule name is only allowed to contain 100 characters (this corresponds to the definition in the Jdpd).
-            tmpValueItem.setDefaultTypeFormats(new ValueItemDataTypeFormat[]{
+            tmpValueItem.setDefaultTypeFormats(
+                new ValueItemDataTypeFormat[] {
                     new ValueItemDataTypeFormat(tmpDefaultMoleculeName, true, "[A-Za-z0-9]", "^[A-Z][A-Za-z0-9]{0,99}"), // Molecule_Name
                     new ValueItemDataTypeFormat(tmpDefaultParticle, ValueItemEnumDataType.MOLECULAR_STRUCTURE), // Molecular_Structure
                     new ValueItemDataTypeFormat(ModelMessage.get("JdpdInputFile.parameter.defaultColor"), StandardColorEnum.getAllColorRepresentations()) // Graphics_Color
@@ -454,6 +459,44 @@ public class JdpdValueItemDefinition {
             tmpValueItem.setJdpdInput(true);
             tmpValueItem.setVerticalPosition(tmpVerticalPosition++);
             tmpValueItem.setDescription(ModelMessage.get("JdpdInputFile.valueItem.description.MoleculeTable"));
+            this.nameToValueItemMap.put(tmpValueItem.getName(), tmpValueItem);
+            this.jobInputValueItemContainer.addValueItem(tmpValueItem);
+            // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="- MoleculeCharge (NOTE: No Jdpd input)">
+            tmpValueItem = new ValueItem();
+            tmpValueItem.setNodeNames(tmpNodeNames);
+            tmpValueItem.setName("MoleculeCharge");
+            tmpValueItem.setDisplayName(ModelMessage.get("JdpdInputFile.valueItem.displayName.MoleculeCharge"));
+            tmpValueItem.setBasicType(ValueItemEnumBasicType.MATRIX);
+            tmpValueItem.setUpdateNotifier(false);
+            tmpValueItem.setMatrixColumnNames(
+                new String[] {
+                    ModelMessage.get("JdpdInputFile.parameter.moleculeName"), 
+                    ModelMessage.get("JdpdInputFile.parameter.positiveCharge"),
+                    ModelMessage.get("JdpdInputFile.parameter.negativeCharge"),
+                    ModelMessage.get("JdpdInputFile.parameter.netCharge")
+                }
+            );
+            tmpValueItem.setMatrixColumnWidths(
+                new String[] {
+                    ModelDefinitions.CELL_WIDTH_TEXT_150,   // moleculeName
+                    ModelDefinitions.CELL_WIDTH_NUMERIC_80, // positiveCharge
+                    ModelDefinitions.CELL_WIDTH_NUMERIC_80, // negativeCharge
+                    ModelDefinitions.CELL_WIDTH_NUMERIC_80, // netCharge
+                }
+            );
+            // NOTE: Molecule name is NOT editable
+            // NOTE: Quantity 24000 comes from box size (20) and density (3): 20*20*20 = 8000, 8000*3 = 24000
+            tmpValueItem.setDefaultTypeFormats(new ValueItemDataTypeFormat[]{
+                new ValueItemDataTypeFormat(tmpDefaultMoleculeName, ValueItemEnumDataType.TEXT, false), // Molecule_Name
+                new ValueItemDataTypeFormat("0", ValueItemEnumDataType.TEXT, false),                    // positiveCharge
+                new ValueItemDataTypeFormat("0", ValueItemEnumDataType.TEXT, false),                    // negativeCharge
+                new ValueItemDataTypeFormat("0", ValueItemEnumDataType.TEXT, false),                    // netCharge
+            });
+            tmpValueItem.setBlockName(ModelDefinitions.JDPD_INPUT_BLOCK_2);
+            // NOTE: No Jdpd input
+            tmpValueItem.setVerticalPosition(tmpVerticalPosition++);
+            tmpValueItem.setDescription(ModelMessage.get("JdpdInputFile.valueItem.description.MoleculeCharge"));
             this.nameToValueItemMap.put(tmpValueItem.getName(), tmpValueItem);
             this.jobInputValueItemContainer.addValueItem(tmpValueItem);
             // </editor-fold>
@@ -487,19 +530,38 @@ public class JdpdValueItemDefinition {
             tmpValueItem.setUpdateNotifier(true);
             tmpValueItem.setEssential(false);
             tmpValueItem.setActivity(false);
-            tmpValueItem.setMatrixColumnNames(new String[]{ModelMessage.get("JdpdInputFile.parameter.moleculeName"), ModelMessage.get("JdpdInputFile.parameter.dimension"),
-                ModelMessage.get("JdpdInputFile.parameter.value"), ModelMessage.get("JdpdInputFile.parameter.relevance")});
-            tmpValueItem.setMatrixColumnWidths(new String[]{ModelDefinitions.CELL_WIDTH_TEXT_100, // Molecule_Name
-                ModelDefinitions.CELL_WIDTH_NUMERIC_80, // Dimension
-                ModelDefinitions.CELL_WIDTH_NUMERIC_80});
+            tmpValueItem.setMatrixColumnNames(
+                new String[] {
+                    ModelMessage.get("JdpdInputFile.parameter.moleculeName"), 
+                    ModelMessage.get("JdpdInputFile.parameter.dimension"),
+                    ModelMessage.get("JdpdInputFile.parameter.value")
+                }
+            );
+            tmpValueItem.setMatrixColumnWidths(
+                new String[] {
+                    ModelDefinitions.CELL_WIDTH_TEXT_150,   // Molecule_Name
+                    ModelDefinitions.CELL_WIDTH_NUMERIC_80, // Dimension
+                    ModelDefinitions.CELL_WIDTH_NUMERIC_80  // Value
+                }
+            );
             // NOTE: Dimension has isFirstRowEditableOnly set to true (see corresponding constructor of ValueItemDataTypeFormat)
-            tmpValueItem.setDefaultTypeFormats(new ValueItemDataTypeFormat[]{
-                new ValueItemDataTypeFormat(tmpDefaultMoleculeName, ValueItemEnumDataType.TEXT, false), // Molecule_Name
-                new ValueItemDataTypeFormat(ModelMessage.get("JdpdInputFile.parameter.mol"), new String[]{
-                    ModelMessage.get("JdpdInputFile.parameter.weightPercent"), ModelMessage.get("JdpdInputFile.parameter.molarPercent"),
-                    ModelMessage.get("JdpdInputFile.parameter.gram"), ModelMessage.get("JdpdInputFile.parameter.mol")}, false, true), // Dimension
-                new ValueItemDataTypeFormat("1", 6, 1.0E-6, Double.MAX_VALUE) // Value
-            });
+            tmpValueItem.setDefaultTypeFormats(
+                new ValueItemDataTypeFormat[] {
+                    new ValueItemDataTypeFormat(tmpDefaultMoleculeName, ValueItemEnumDataType.TEXT, false), // Molecule_Name
+                    new ValueItemDataTypeFormat(
+                        ModelMessage.get("JdpdInputFile.parameter.mol"), new
+                        String[] {
+                            ModelMessage.get("JdpdInputFile.parameter.weightPercent"), 
+                            ModelMessage.get("JdpdInputFile.parameter.molarPercent"),
+                            ModelMessage.get("JdpdInputFile.parameter.gram"), 
+                            ModelMessage.get("JdpdInputFile.parameter.mol")
+                        }, 
+                        false, 
+                        true
+                    ), // Dimension
+                    new ValueItemDataTypeFormat("1", 6, 1.0E-6, Double.MAX_VALUE) // Value
+                }
+            );
             tmpValueItem.setMatrixDiagramColumns(0, 2);
             tmpValueItem.setBlockName(ModelDefinitions.JDPD_INPUT_BLOCK_2);
             // NOTE: No Jdpd input
@@ -515,11 +577,20 @@ public class JdpdValueItemDefinition {
             tmpValueItem.setDisplayName(ModelMessage.get("JdpdInputFile.valueItem.displayName.Quantity"));
             tmpValueItem.setBasicType(ValueItemEnumBasicType.MATRIX);
             tmpValueItem.setUpdateNotifier(true);
-            tmpValueItem.setMatrixColumnNames(new String[]{ModelMessage.get("JdpdInputFile.parameter.moleculeName"), ModelMessage.get("JdpdInputFile.parameter.value")});
-            tmpValueItem.setMatrixColumnWidths(new String[]{ModelDefinitions.CELL_WIDTH_TEXT_100, // Molecule_Name
-                ModelDefinitions.CELL_WIDTH_NUMERIC_80});
+            tmpValueItem.setMatrixColumnNames(
+                new String[] {
+                    ModelMessage.get("JdpdInputFile.parameter.moleculeName"), 
+                    ModelMessage.get("JdpdInputFile.parameter.value")
+                }
+            );
+            tmpValueItem.setMatrixColumnWidths(
+                new String[] {
+                    ModelDefinitions.CELL_WIDTH_TEXT_150,  // moleculeName
+                    ModelDefinitions.CELL_WIDTH_NUMERIC_80 // value
+                }
+            );
             // NOTE: Molecule name is NOT editable
-            // NOTE: Quantity 27000 comes from box size (20) and density (3): 20*20*20 = 8000, 8000*3 = 24000
+            // NOTE: Quantity 24000 comes from box size (20) and density (3): 20*20*20 = 8000, 8000*3 = 24000
             tmpValueItem.setDefaultTypeFormats(new ValueItemDataTypeFormat[]{
                 new ValueItemDataTypeFormat(tmpDefaultMoleculeName, ValueItemEnumDataType.TEXT, false), // Molecule_Name
                 new ValueItemDataTypeFormat("24000", 0, 1, 1000000000) // Value
@@ -739,7 +810,7 @@ public class JdpdValueItemDefinition {
             tmpValueItem.setMatrixColumnWidths(
                 new String[]
                     {
-                        ModelDefinitions.CELL_WIDTH_TEXT_100, // Molecule_Name
+                        ModelDefinitions.CELL_WIDTH_TEXT_150, // Molecule_Name
                         ModelDefinitions.CELL_WIDTH_NUMERIC_80, // x
                         ModelDefinitions.CELL_WIDTH_NUMERIC_80, // y
                         ModelDefinitions.CELL_WIDTH_NUMERIC_80, // z
@@ -822,7 +893,7 @@ public class JdpdValueItemDefinition {
                 }
             );
             tmpValueItem.setMatrixColumnWidths(new String[] { 
-                    ModelDefinitions.CELL_WIDTH_TEXT_100,   // moleculeName
+                    ModelDefinitions.CELL_WIDTH_TEXT_150,   // moleculeName
                     ModelDefinitions.CELL_WIDTH_NUMERIC_100, // ActiveState
                     ModelDefinitions.CELL_WIDTH_NUMERIC_100, // xMinAngstrom
                     ModelDefinitions.CELL_WIDTH_NUMERIC_100, // xMinDPD
@@ -1006,7 +1077,7 @@ public class JdpdValueItemDefinition {
                 }
             );
             tmpValueItem.setMatrixColumnWidths(new String[] { 
-                    ModelDefinitions.CELL_WIDTH_TEXT_100,    // Molecule_Name
+                    ModelDefinitions.CELL_WIDTH_TEXT_150,    // Molecule_Name
                     ModelDefinitions.CELL_WIDTH_NUMERIC_100, // isXvelocity
                     ModelDefinitions.CELL_WIDTH_NUMERIC_80,  // x-Velocity
                     ModelDefinitions.CELL_WIDTH_NUMERIC_100, // isYvelocity
@@ -1058,7 +1129,7 @@ public class JdpdValueItemDefinition {
                 }
             );
             tmpValueItem.setMatrixColumnWidths(new String[] { 
-                    ModelDefinitions.CELL_WIDTH_TEXT_100, // Molecule_Name
+                    ModelDefinitions.CELL_WIDTH_TEXT_150, // Molecule_Name
                     ModelDefinitions.CELL_WIDTH_NUMERIC_100, // x
                     ModelDefinitions.CELL_WIDTH_NUMERIC_100, // y
                     ModelDefinitions.CELL_WIDTH_NUMERIC_100, // z
@@ -1229,7 +1300,7 @@ public class JdpdValueItemDefinition {
                 }
             );
             tmpValueItem.setMatrixColumnWidths(new String[]{
-                    ModelDefinitions.CELL_WIDTH_TEXT_100, // Molecule_Name
+                    ModelDefinitions.CELL_WIDTH_TEXT_150, // Molecule_Name
                     ModelDefinitions.CELL_WIDTH_TEXT_100  // Activity
                 }
             );
@@ -1259,7 +1330,7 @@ public class JdpdValueItemDefinition {
                 }
             );
             tmpValueItem.setMatrixColumnWidths(new String[]{
-                    ModelDefinitions.CELL_WIDTH_TEXT_100, // Molecule_Name
+                    ModelDefinitions.CELL_WIDTH_TEXT_150, // Molecule_Name
                     ModelDefinitions.CELL_WIDTH_TEXT_100, // Particle
                     ModelDefinitions.CELL_WIDTH_TEXT_100  // Activity
                 }
@@ -1397,7 +1468,7 @@ public class JdpdValueItemDefinition {
                 }
             );
             tmpValueItem.setMatrixColumnWidths(new String[]{
-                    ModelDefinitions.CELL_WIDTH_TEXT_100, // moleculeName
+                    ModelDefinitions.CELL_WIDTH_TEXT_150, // moleculeName
                     ModelDefinitions.CELL_WIDTH_TEXT_100, // backboneAttribute1
                     ModelDefinitions.CELL_WIDTH_TEXT_100, // backboneAttribute2
                     ModelDefinitions.CELL_WIDTH_TEXT_100, // backboneDistanceAngstrom
@@ -1487,29 +1558,77 @@ public class JdpdValueItemDefinition {
             tmpValueItem.setEssential(false);
             tmpValueItem.setActivity(false);
             tmpValueItem.setMatrixColumnNames(new String[]{
-                ModelMessage.get("JdpdInputFile.parameter.electrostaticForceCutoff"),
-                ModelMessage.get("JdpdInputFile.parameter.electrostaticForceMaximumValue"),
-                ModelMessage.get("JdpdInputFile.parameter.electrostaticForceEffectiveChargeFactor"),
-                ModelMessage.get("JdpdInputFile.parameter.electrostaticForceEffectiveExponent"),
-                ModelMessage.get("JdpdInputFile.parameter.electrostaticForceDampingDistance"),
-                ModelMessage.get("JdpdInputFile.parameter.electrostaticForceDampingFactor")
+                ModelMessage.get("JdpdInputFile.parameter.electrostaticsForceCutoff"),
+                ModelMessage.get("JdpdInputFile.parameter.electrostaticsForceMaximumValue"),
+                ModelMessage.get("JdpdInputFile.parameter.electrostaticsForceEffectiveExponent"),
+                ModelMessage.get("JdpdInputFile.parameter.electrostaticsForceDampingDistance"),
+                ModelMessage.get("JdpdInputFile.parameter.electrostaticsForceDampingFactor"),
+                ModelMessage.get("JdpdInputFile.parameter.electrostaticsCouplingConstant"),
+                ModelMessage.get("JdpdInputFile.parameter.electrostaticsChargeDistributionType"),
+                ModelMessage.get("JdpdInputFile.parameter.electrostaticsDecayLength"),
+                ModelMessage.get("JdpdInputFile.parameter.electrostaticsSplittingType")
             });
-            tmpValueItem.setMatrixColumnWidths(new String[]{
-                ModelDefinitions.CELL_WIDTH_TEXT_150, // electrostaticForceCutoff
-                ModelDefinitions.CELL_WIDTH_TEXT_150, // electrostaticForceMaximumValue
-                ModelDefinitions.CELL_WIDTH_TEXT_150, // electrostaticForceEffectiveChargeFactor
-                ModelDefinitions.CELL_WIDTH_TEXT_150, // electrostaticForceEffectiveExponent
-                ModelDefinitions.CELL_WIDTH_TEXT_150, // electrostaticForceDampingDistance
-                ModelDefinitions.CELL_WIDTH_TEXT_150});
+            tmpValueItem.setMatrixColumnWidths(
+                new String[]{
+                    ModelDefinitions.CELL_WIDTH_TEXT_100, // electrostaticsForceCutoff
+                    ModelDefinitions.CELL_WIDTH_TEXT_100, // electrostaticsForceMaximumValue
+                    ModelDefinitions.CELL_WIDTH_TEXT_120, // electrostaticsForceEffectiveExponent
+                    ModelDefinitions.CELL_WIDTH_TEXT_120, // electrostaticsForceDampingDistance
+                    ModelDefinitions.CELL_WIDTH_TEXT_100, // electrostaticsForceDampingFactor
+                    ModelDefinitions.CELL_WIDTH_TEXT_120, // electrostaticsCouplingConstant
+                    ModelDefinitions.CELL_WIDTH_TEXT_150, // electrostaticsChargeDistributionType
+                    ModelDefinitions.CELL_WIDTH_TEXT_100, // electrostaticsDecayLength
+                    ModelDefinitions.CELL_WIDTH_TEXT_100  // electrostaticsSplittingType
+                }
+            );
+            ValueItem tmpTemperatureValueItem = this.nameToValueItemMap.get("Temperature");
+            double tmpElectrostaticsCouplingConstant = 
+                this.jobUtilityMethods.getElectrostaticsCouplingConstant(
+                    tmpParticleTableValueItem,
+                    tmpMonomerTableValueItem,
+                    tmpMoleculeTableValueItem,
+                    tmpQuantityValueItem,
+                    tmpDensityValueItem,
+                    tmpTemperatureValueItem
+                );
             tmpValueItem.setDefaultTypeFormats(
                 new ValueItemDataTypeFormat[]
                     {
-                        new ValueItemDataTypeFormat("5.00", 2, 0.0, Double.POSITIVE_INFINITY), // electrostaticForceCutoff
-                        new ValueItemDataTypeFormat("25.0", 2, 0.0, Double.POSITIVE_INFINITY), // electrostaticForceMaximumValue
-                        new ValueItemDataTypeFormat("1.00", 2, 0.0, Double.POSITIVE_INFINITY), // electrostaticForceEffectiveChargeFactor
-                        new ValueItemDataTypeFormat("2.00", 2, 2.0, 12.0), // electrostaticForceEffectiveExponent
-                        new ValueItemDataTypeFormat("5.00", 2, 0.0, Double.POSITIVE_INFINITY), // electrostaticForceDampingDistance
-                        new ValueItemDataTypeFormat("1.00", 2, 0.0, 1.0) // electrostaticForceDampingFactor
+                        new ValueItemDataTypeFormat("5.00", 2, 0.0, Double.POSITIVE_INFINITY),   // electrostaticsForceCutoff
+                        new ValueItemDataTypeFormat("1000.0", 2, 0.0, Double.POSITIVE_INFINITY), // electrostaticsForceMaximumValue
+                        new ValueItemDataTypeFormat("2.00", 2, 2.0, Double.POSITIVE_INFINITY),   // electrostaticsForceEffectiveExponent
+                        new ValueItemDataTypeFormat("5.00", 2, 0.0, Double.POSITIVE_INFINITY),   // electrostaticsForceDampingDistance
+                        new ValueItemDataTypeFormat("1.00", 2, 0.0, 1.0),                        // electrostaticsForceDampingFactor
+                        // electrostaticsCouplingConstant
+                        new ValueItemDataTypeFormat(
+                            String.valueOf(tmpElectrostaticsCouplingConstant), 
+                            6, 
+                            0.0, 
+                            Double.POSITIVE_INFINITY
+                        ),
+                        // electrostaticsChargeDistributionType
+                        new ValueItemDataTypeFormat(
+                            ModelMessage.get("JdpdInputFile.parameter.electrostaticsChargeDistributionType.Alejandre"),
+                            new String[] {
+                                ModelMessage.get("JdpdInputFile.parameter.electrostaticsChargeDistributionType.None"),
+                                ModelMessage.get("JdpdInputFile.parameter.electrostaticsChargeDistributionType.Alejandre")
+                            }
+                        ),
+                        // electrostaticsDecayLength
+                        new ValueItemDataTypeFormat(
+                            String.valueOf(tmpElectrostaticsCouplingConstant), 
+                            6, 
+                            0.0, 
+                            Double.POSITIVE_INFINITY
+                        ),
+                        // electrostaticsSplittingType
+                        new ValueItemDataTypeFormat(
+                            ModelMessage.get("JdpdInputFile.parameter.electrostaticsSplittingType.Fanourgakis"),
+                            new String[] {
+                                ModelMessage.get("JdpdInputFile.parameter.electrostaticsSplittingType.None"),
+                                ModelMessage.get("JdpdInputFile.parameter.electrostaticsSplittingType.Fanourgakis")
+                            }
+                        )
                     }
                 ); 
             tmpValueItem.setBlockName(ModelDefinitions.JDPD_INPUT_BLOCK_3);
@@ -1526,13 +1645,13 @@ public class JdpdValueItemDefinition {
             this.valueItemNameMapForJobRestartEdit.put(tmpValueItem.getName(), tmpValueItem.getName());
             tmpValueItem.setDisplayName(ModelMessage.get("JdpdInputFile.valueItem.displayName.Bonds12"));
             tmpValueItem.setBasicType(ValueItemEnumBasicType.MATRIX);
-            tmpValueItem.setMatrixColumnNames(new String[]
-                    {
-                        ModelMessage.get("JdpdInputFile.parameter.particlePair"),
-                        ModelMessage.get("JdpdInputFile.parameter.bondLength"), 
-                        ModelMessage.get("JdpdInputFile.parameter.forceConstant"),
-                        ModelMessage.get("JdpdInputFile.parameter.BondRepulsion")
-                    }
+            tmpValueItem.setMatrixColumnNames(
+                new String[] {
+                    ModelMessage.get("JdpdInputFile.parameter.particlePair"),
+                    ModelMessage.get("JdpdInputFile.parameter.bondLength"), 
+                    ModelMessage.get("JdpdInputFile.parameter.forceConstant"),
+                    ModelMessage.get("JdpdInputFile.parameter.BondRepulsion")
+                }
             );
             tmpValueItem.setMatrixColumnWidths(new String[]{
                 ModelDefinitions.CELL_WIDTH_TEXT_200, // Particle_Pair
@@ -1629,14 +1748,16 @@ public class JdpdValueItemDefinition {
                 ModelDefinitions.CELL_WIDTH_NUMERIC_120, // timeOfStep
                 ModelDefinitions.CELL_WIDTH_NUMERIC_120  // timeOfSimulation
             });
-            ValueItem tmpTemperatureValueItem = this.nameToValueItemMap.get("Temperature");
-            double tmpTimeConversionFactor = this.jobUtilityMethods.getTimeConversionFactorFromDpdToPhysicalTime(
+            tmpTemperatureValueItem = this.nameToValueItemMap.get("Temperature");
+            double tmpTimeConversionFactor = 
+                this.jobUtilityMethods.getTimeConversionFactorFromDpdToPhysicalTime(
                     tmpParticleTableValueItem,
                     tmpMonomerTableValueItem,
                     tmpMoleculeTableValueItem,
                     tmpQuantityValueItem,
                     tmpDensityValueItem,
-                    tmpTemperatureValueItem);
+                    tmpTemperatureValueItem
+                );
             tmpValueItem.setDefaultTypeFormats(new ValueItemDataTypeFormat[]{
                 new ValueItemDataTypeFormat(tmpDefaultTimeStepNumberRepresentation, 0, 1, Constants.MAXIMUM_NUMBER_OF_TIME_STEPS), // timeStepNumber
                 new ValueItemDataTypeFormat(String.valueOf(tmpDefaultTimeStepLength * tmpTimeConversionFactor), 3, 0, Double.MAX_VALUE, false, false), // timeOfStep
@@ -1742,7 +1863,32 @@ public class JdpdValueItemDefinition {
             tmpValueItem.setNodeNames(tmpNodeNames);
             tmpValueItem.setName("InitialPotentialEnergyMinimizationStepNumber");
             tmpValueItem.setDisplayName(ModelMessage.get("JdpdInputFile.valueItem.displayName.InitialPotentialEnergyMinimizationStepNumber"));
-            tmpValueItem.setDefaultTypeFormat(new ValueItemDataTypeFormat("100", 0, 0, Double.POSITIVE_INFINITY));
+            tmpValueItem.setBasicType(ValueItemEnumBasicType.VECTOR);
+            tmpValueItem.setMatrixColumnNames(new String[]{
+                    ModelMessage.get("JdpdInputFile.parameter.steps"), 
+                    ModelMessage.get("JdpdInputFile.parameter.allForces")
+                }
+            );
+            tmpValueItem.setMatrixColumnWidths(new String[]{
+                ModelDefinitions.CELL_WIDTH_TEXT_100, // steps
+                ModelDefinitions.CELL_WIDTH_TEXT_100  // all forces
+            });
+            tmpValueItem.setDefaultTypeFormats(new ValueItemDataTypeFormat[]{
+                    new ValueItemDataTypeFormat(
+                        "100", 
+                        0, 
+                        0, 
+                        Double.POSITIVE_INFINITY
+                    ), // steps
+                    new ValueItemDataTypeFormat(
+                        ModelMessage.get("JdpdInputFile.parameter.false"),
+                        new String[] {
+                            ModelMessage.get("JdpdInputFile.parameter.true"),
+                            ModelMessage.get("JdpdInputFile.parameter.false")
+                        }
+                    ) // all forces
+                }
+            );
             tmpValueItem.setBlockName(ModelDefinitions.JDPD_INPUT_BLOCK_4);
             tmpValueItem.setJdpdInput(true);
             tmpValueItem.setVerticalPosition(tmpVerticalPosition++);

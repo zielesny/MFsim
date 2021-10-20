@@ -946,52 +946,70 @@ public class CustomPanelValueItemEditController extends ChangeNotifier implement
             boolean tmpIsApplied = false;
             boolean tmpIsRowNumberChanged = false;
             if (tmpSelectedSchemaValueItem != null) {
-                if (this.currentValueItem.getBasicType() == ValueItemEnumBasicType.FLEXIBLE_MATRIX) {
-                    // <editor-fold defaultstate="collapsed" desc="Correct row number">
-                    if (this.currentValueItem.getMatrixRowCount() < tmpSelectedSchemaValueItem.getMatrixRowCount()) {
-                        // <editor-fold defaultstate="collapsed" desc="Insert rows">
-                        int tmpNumberOfRowsToBeInserted = tmpSelectedSchemaValueItem.getMatrixRowCount() - this.currentValueItem.getMatrixRowCount();
-                        for (int i = 0; i < tmpNumberOfRowsToBeInserted; i++) {
-                            this.valueItemFlexibleMatrixPanelController.insertRow();
-                        }
-                        tmpIsRowNumberChanged = true;
-                        // </editor-fold>
-                    } else if (this.currentValueItem.getMatrixRowCount() > tmpSelectedSchemaValueItem.getMatrixRowCount()) {
-                        // <editor-fold defaultstate="collapsed" desc="Remove rows">
-                        int tmpNumberOfRowsToBeRemoved = this.currentValueItem.getMatrixRowCount() - tmpSelectedSchemaValueItem.getMatrixRowCount();
-                        for (int i = 0; i < tmpNumberOfRowsToBeRemoved; i++) {
-                            this.valueItemFlexibleMatrixPanelController.removeRow();
-                        }
-                        tmpIsRowNumberChanged = true;
-                        // </editor-fold>
-                    }
-                    // </editor-fold>
-                }
-                // Try to apply ALL lines of tmpSelectedSchemaValueItem to
-                // ALL lines of this.currentValueItem AFTER last successful
-                // application
-                int tmpNextRow = 0;
-                for (int j = 0; j < tmpSelectedSchemaValueItem.getMatrixRowCount(); j++) {
-                    for (int i = tmpNextRow; i < this.currentValueItem.getMatrixRowCount(); i++) {
-                        for (int k = 0; k < tmpSelectedSchemaValueItem.getMatrixColumnCount(); k++) {
-                            if (!tmpSelectedSchemaValueItem.getValue(j, k).equals(ModelDefinitions.SCHEMA_WILDCARD_STRING)) {
-                                if (this.currentValueItem.getValueItemMatrixElement(i, k).getTypeFormat().isEditable()) {
-                                    if (this.currentValueItem.getValueItemMatrixElement(i, k).getTypeFormat().isValueAllowed(tmpSelectedSchemaValueItem.getValue(j, k))) {
-                                        if (this.currentValueItem.setValue(tmpSelectedSchemaValueItem.getValue(j, k), i, k)) {
-                                            this.currentValueItem.notifyDependentValueItemsForUpdate();
-                                            tmpIsApplied = true;
-                                            tmpNextRow = i + 1;
-                                        }
-                                    } else {
-                                        break;
+                if (this.currentValueItem.isNumericOnly() 
+                    && this.currentValueItem.getMatrixRowCount() == tmpSelectedSchemaValueItem.getMatrixRowCount()) {
+                    for (int i = 0; i < this.currentValueItem.getMatrixRowCount(); i++) {
+                        for (int k = 0; k < this.currentValueItem.getMatrixColumnCount(); k++) {
+                            if (this.currentValueItem.getValueItemMatrixElement(i, k).getTypeFormat().isEditable()) {
+                                if (this.currentValueItem.getValueItemMatrixElement(i, k).getTypeFormat().isValueAllowed(tmpSelectedSchemaValueItem.getValue(i, k))) {
+                                    if (this.currentValueItem.setValue(tmpSelectedSchemaValueItem.getValue(i, k), i, k)) {
+                                        this.currentValueItem.notifyDependentValueItemsForUpdate();
+                                        tmpIsApplied = true;
                                     }
-                                } else if (!this.currentValueItem.getValue(i, k).equals(tmpSelectedSchemaValueItem.getValue(j, k))) {
+                                } else {
                                     break;
                                 }
                             }
                         }
-                        if (tmpNextRow > i) {
-                            break;
+                    }
+                } else {
+                    if (this.currentValueItem.getBasicType() == ValueItemEnumBasicType.FLEXIBLE_MATRIX) {
+                        // <editor-fold defaultstate="collapsed" desc="Correct row number">
+                        if (this.currentValueItem.getMatrixRowCount() < tmpSelectedSchemaValueItem.getMatrixRowCount()) {
+                            // <editor-fold defaultstate="collapsed" desc="Insert rows">
+                            int tmpNumberOfRowsToBeInserted = tmpSelectedSchemaValueItem.getMatrixRowCount() - this.currentValueItem.getMatrixRowCount();
+                            for (int i = 0; i < tmpNumberOfRowsToBeInserted; i++) {
+                                this.valueItemFlexibleMatrixPanelController.insertRow();
+                            }
+                            tmpIsRowNumberChanged = true;
+                            // </editor-fold>
+                        } else if (this.currentValueItem.getMatrixRowCount() > tmpSelectedSchemaValueItem.getMatrixRowCount()) {
+                            // <editor-fold defaultstate="collapsed" desc="Remove rows">
+                            int tmpNumberOfRowsToBeRemoved = this.currentValueItem.getMatrixRowCount() - tmpSelectedSchemaValueItem.getMatrixRowCount();
+                            for (int i = 0; i < tmpNumberOfRowsToBeRemoved; i++) {
+                                this.valueItemFlexibleMatrixPanelController.removeRow();
+                            }
+                            tmpIsRowNumberChanged = true;
+                            // </editor-fold>
+                        }
+                        // </editor-fold>
+                    }
+                    // Try to apply ALL lines of tmpSelectedSchemaValueItem to
+                    // ALL lines of this.currentValueItem AFTER last successful
+                    // application
+                    int tmpNextRow = 0;
+                    for (int j = 0; j < tmpSelectedSchemaValueItem.getMatrixRowCount(); j++) {
+                        for (int i = tmpNextRow; i < this.currentValueItem.getMatrixRowCount(); i++) {
+                            for (int k = 0; k < tmpSelectedSchemaValueItem.getMatrixColumnCount(); k++) {
+                                if (!tmpSelectedSchemaValueItem.getValue(j, k).equals(ModelDefinitions.SCHEMA_WILDCARD_STRING)) {
+                                    if (this.currentValueItem.getValueItemMatrixElement(i, k).getTypeFormat().isEditable()) {
+                                        if (this.currentValueItem.getValueItemMatrixElement(i, k).getTypeFormat().isValueAllowed(tmpSelectedSchemaValueItem.getValue(j, k))) {
+                                            if (this.currentValueItem.setValue(tmpSelectedSchemaValueItem.getValue(j, k), i, k)) {
+                                                this.currentValueItem.notifyDependentValueItemsForUpdate();
+                                                tmpIsApplied = true;
+                                                tmpNextRow = i + 1;
+                                            }
+                                        } else {
+                                            break;
+                                        }
+                                    } else if (!this.currentValueItem.getValue(i, k).equals(tmpSelectedSchemaValueItem.getValue(j, k))) {
+                                        break;
+                                    }
+                                }
+                            }
+                            if (tmpNextRow > i) {
+                                break;
+                            }
                         }
                     }
                 }
@@ -1181,7 +1199,6 @@ public class CustomPanelValueItemEditController extends ChangeNotifier implement
                                     this.valueItemEditPanel.getSelectionTextComboBox().setModel(new DefaultComboBoxModel(this.currentValueItem.getTypeFormat().getSelectionTexts()));
                                     this.valueItemEditPanel.getSelectionTextComboBox().setRenderer(new ComboBoxColorCellRenderer());
                                     this.valueItemEditPanel.getSelectionTextComboBox().setSelectedItem(this.currentValueItem.getValue());
-
                                     // </editor-fold>
                                     // <editor-fold defaultstate="collapsed" desc="- Set name and info label">
                                     this.valueItemEditPanel.getSelectionTextNameLabel().setText(this.currentValueItem.getDisplayName());

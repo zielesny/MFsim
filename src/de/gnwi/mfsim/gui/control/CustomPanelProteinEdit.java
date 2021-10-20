@@ -427,71 +427,155 @@ public class CustomPanelProteinEdit extends JPanel {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
-
+    /**
+     * ProteinDefinitionInfoLabel
+     * 
+     * @return ProteinDefinitionInfoLabel
+     */
     public JLabel getProteinDefinitionInfoLabel() {
         return this.proteinDefinitionInfoLabel;
     }
 
+    /**
+     * LoadPdbFileButton
+     * 
+     * @return LoadPdbFileButton
+     */
     public JButton getLoadPdbFileButton() {
         return this.loadPdbFileButton;
     }
 
+    /**
+     * SetProteinPropertiesButton
+     * 
+     * @return SetProteinPropertiesButton
+     */
     public JButton getSetProteinPropertiesButton() {
         return this.setProteinPropertiesButton;
     }
 
+    /**
+     * SetPhButton
+     * 
+     * @return SetPhButton
+     */
     public JButton getSetPhButton() {
         return this.setPhButton;
     }
 
+    /**
+     * SetChainButton
+     * 
+     * @return SetChainButton
+     */
     public JButton getSetChainButton() {
         return this.setChainButton;
     }
 
+    /**
+     * SetMutantButton
+     * 
+     * @return SetMutantButton
+     */
     public JButton getSetMutantButton() {
         return this.setMutantButton;
     }
 
+    /**
+     * PropertySpicesTextArea
+     * 
+     * @return PropertySpicesTextArea
+     */
     public JTextArea getPropertySpicesTextArea() {
         return this.propertySpicesTextArea;
     }
 
+    /**
+     * PropertyPdbFileContentTextArea
+     * 
+     * @return PropertyPdbFileContentTextArea
+     */
     public JTextArea getPropertyPdbFileContentTextArea() {
         return this.propertyPdbFileContentTextArea;
     }
 
+    /**
+     * PropertyTextArea
+     * 
+     * @return PropertyTextArea
+     */
     public JTextArea getPropertyTextArea() {
         return this.propertySpicesTextArea;
     }
 
+    /**
+     * PropertySequencesTextArea
+     * 
+     * @return PropertySequencesTextArea
+     */
     public JTextArea getPropertySequencesTextArea() {
         return this.propertySequencesTextArea;
     }
 
+    /**
+     * ProteinPropertyPanel
+     * 
+     * @return ProteinPropertyPanel
+     */
     public JPanel getProteinPropertyPanel() {
         return this.proteinPropertyPanel;
     }
 
+    /**
+     * Property3dStructureJmol3dPanel
+     * 
+     * @return Property3dStructureJmol3dPanel
+     */
     public Jmol3dPanel getProperty3dStructureJmol3dPanel() {
         return this.property3dStructureJmol3dPanel;
     }
 
+    /**
+     * SetProteinRotationButton
+     * 
+     * @return SetProteinRotationButton
+     */
     public JButton getSetProteinRotationButton() {
         return setProteinRotationButton;
     }
 
+    /**
+     * GraphicsPreferencesButton
+     * 
+     * @return GraphicsPreferencesButton
+     */
     public JButton getGraphicsPreferencesButton() {
         return graphicsPreferencesButton;
     }
 
+    /**
+     * SetCurrentRotationButton
+     * 
+     * @return SetCurrentRotationButton
+     */
     public JButton getSetCurrentRotationButton() {
         return setCurrentRotationButton;
     }
 
+    /**
+     * ClearSettingsButton
+     * 
+     * @return ClearSettingsButton
+     */
     public JButton getClearSettingsButton() {
         return clearSettingsButton;
     }
 
+    /**
+     * BioAssemblyComboBox
+     * 
+     * @return BioAssemblyComboBox
+     */
     public JComboBox getBioAssemblyComboBox() {
         return bioAssemblyComboBox;
     }

@@ -8,3 +8,6 @@ Subfolder *Jobs* contains archived MFsim job input definitions for cyclotide/mem
 - [kB1 membrane interaction](https://w-hs.sciebo.de/s/mPl2E2PEtkqtWv6)
 - [kB1 hydrophobic patch mutants membrane interaction](https://w-hs.sciebo.de/s/JyQNKNdtVqbYKyi)
 - [Quantitative cyclotide-membrane interaction analysis](https://w-hs.sciebo.de/s/VGwXDawV4a05JUC)
+
+### Reference
+[K. van den Broek, M. Epple, L. S. Kersten, H. Kuhn and A. Zielesny, _Quantitative Estimation of Cyclotide-Induced Bilayer Membrane Disruption by Lipid Extraction with Mesoscopic Simulation_, Journal of Chemical Information an Modeling (2021), 61, 3027-3040](https://doi.org/10.1021/acs.jcim.1c00332) ([Link to ChemRxiv preprint](https://doi.org/10.26434/chemrxiv.14135783.v1))

@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Random;
+import de.gnwi.jdpd.interfaces.IRandom;
 import de.gnwi.spices.IPointInSpace;
 import de.gnwi.mfsim.model.preference.ModelDefinitions;
 
@@ -1067,7 +1067,7 @@ public class CompartmentBox extends ChangeNotifier implements ChangeReceiverInte
      * @param aRandomNumberGenerator Random number generator
      * @return Random point in the free volume of the simulation box
      */
-    public PointInSpace getRandomPointInFreeVolume(Random aRandomNumberGenerator) {
+    public PointInSpace getRandomPointInFreeVolume(IRandom aRandomNumberGenerator) {
         this.pointInSpace1.setX(aRandomNumberGenerator.nextDouble() * this.boxSize.getX());
         this.pointInSpace1.setY(aRandomNumberGenerator.nextDouble() * this.boxSize.getY());
         this.pointInSpace1.setZ(aRandomNumberGenerator.nextDouble() * this.boxSize.getZ());
@@ -1090,7 +1090,7 @@ public class CompartmentBox extends ChangeNotifier implements ChangeReceiverInte
      * @return Random graphical particle position in the free volume of the
      * simulation box
      */
-    public GraphicalParticlePosition getRandomPositionInFreeVolume(Random aRandomNumberGenerator) {
+    public GraphicalParticlePosition getRandomPositionInFreeVolume(IRandom aRandomNumberGenerator) {
         this.graphicalParticlePosition1.setX(aRandomNumberGenerator.nextDouble() * this.boxSize.getX());
         this.graphicalParticlePosition1.setY(aRandomNumberGenerator.nextDouble() * this.boxSize.getY());
         this.graphicalParticlePosition1.setZ(aRandomNumberGenerator.nextDouble() * this.boxSize.getZ());
@@ -1115,7 +1115,7 @@ public class CompartmentBox extends ChangeNotifier implements ChangeReceiverInte
      * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
-    public void fillFreeVolumeRandomPoints(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, int aNumberOfTrials, Random aRandomNumberGenerator) {
+    public void fillFreeVolumeRandomPoints(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, int aNumberOfTrials, IRandom aRandomNumberGenerator) {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
             throw new IllegalArgumentException("aNumber is less than 1.");
@@ -1189,7 +1189,7 @@ public class CompartmentBox extends ChangeNotifier implements ChangeReceiverInte
         int aNumberOfSpheres, 
         double aRadius, 
         int aNumberOfTrials,
-        Random aRandomNumberGenerator
+        IRandom aRandomNumberGenerator
     ) {
         PointInSpace tmpBodyCenter = new PointInSpace(
             this.boxSize.getX() / 2.0,

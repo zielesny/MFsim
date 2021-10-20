@@ -134,6 +134,11 @@ public class DialogCompartmentEdit extends CustomDialogApplyCancelSize implement
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * CompartmentPanel
+     * 
+     * @return CompartmentPanel
+     */
     public CustomPanelCompartment getCompartmentPanel() {
         return compartmentPanel;
     }

@@ -475,122 +475,272 @@ public class CustomPanelValueItemMatrixDiagram extends JPanel{
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * ImagePanel
+     * 
+     * @return ImagePanel
+     */
     public CustomPanelImage getImagePanel() {
         return this.imagePanel;
     }
 
+    /**
+     * CopyGraphicsButton
+     * 
+     * @return CopyGraphicsButton
+     */
     public JButton getCopyGraphicsButton() {
         return this.copyGraphicsButton;
     }
     
+    /**
+     * CreatMovieButton
+     * 
+     * @return CreatMovieButton
+     */
     public JButton getCreatMovieButton() {
         return this.createMovieButton;
     }
-    
+
+    /**
+     * DefaultButton
+     * 
+     * @return DefaultButton
+     */
     public JButton getDefaultButton() {
         return this.defaultButton;
     }
 
+    /**
+     * DiscardButton
+     * 
+     * @return DiscardButton
+     */
     public JButton getDiscardButton() {
         return this.discardButton;
     }
-    
+
+    /**
+     * FirstMovieSettingsButton
+     * 
+     * @return FirstMovieSettingsButton
+     */
     public JButton getFirstMovieSettingsButton() {
         return this.firstMovieSettingsButton;
     }
-    
+
+    /**
+     * PlayAnimationButton
+     * 
+     * @return PlayAnimationButton
+     */
     public JButton getPlayAnimationButton() {
         return this.playAnimationButton;
     }
 
+    /**
+     * ResetAverageButton
+     * 
+     * @return ResetAverageButton
+     */
     public JButton getResetAverageButton() {
         return this.resetAverageButton;
     }
 
+    /**
+     * SaveGraphicsButton
+     * 
+     * @return SaveGraphicsButton
+     */
     public JButton getSaveGraphicsButton() {
         return this.saveGraphicsButton;
     }
     
+    /**
+     * SecondMovieSettingsButton
+     * 
+     * @return SecondMovieSettingsButton
+     */
     public JButton getSecondMovieSettingsButton() {
         return this.secondMovieSettingsButton;
     }
 
+    /**
+     * ZoomButton
+     * 
+     * @return ZoomButton
+     */
     public JButton getZoomButton() {
         return this.zoomButton;
     }
 
+    /**
+     * RestoreButton
+     * 
+     * @return RestoreButton
+     */
     public JButton getRestoreButton() {
         return this.restoreButton;
     }
 
+    /**
+     * InvertedCheckBox
+     * 
+     * @return InvertedCheckBox
+     */
     public JCheckBox getInvertedCheckBox() {
         return this.invertedCheckBox;
     }
-    
+
+    /**
+     * MarkLastPointCheckBox
+     * 
+     * @return MarkLastPointCheckBox
+     */
     public JCheckBox getMarkLastPointCheckBox() {
         return this.markLastPointCheckBox;
     }
-    
+
+    /**
+     * ReducedTrendLineCheckBox
+     * 
+     * @return ReducedTrendLineCheckBox
+     */
     public JCheckBox getReducedTrendLineCheckBox() {
         return this.reducedTrendLineCheckBox;
     }
 
+    /**
+     * OutlineCheckBox
+     * 
+     * @return OutlineCheckBox
+     */
     public JCheckBox getOutlineCheckBox() {
         return this.outlineCheckBox;
     }
 
+    /**
+     * ShapesCheckBox
+     * 
+     * @return ShapesCheckBox
+     */
     public JCheckBox getShapesCheckBox() {
         return this.shapesCheckBox;
     }
 
+    /**
+     * ThickCheckBox
+     * 
+     * @return ThickCheckBox
+     */
     public JCheckBox getThickCheckBox() {
         return this.thickCheckBox;
     }
 
+    /**
+     * TrendLineCheckBox
+     * 
+     * @return TrendLineCheckBox
+     */
     public JCheckBox getTrendLineCheckBox() {
         return this.trendLineCheckBox;
     }
-    
+
+    /**
+     * ReducedStatisticsCheckBox
+     * 
+     * @return ReducedStatisticsCheckBox
+     */
     public JCheckBox getReducedStatisticsCheckBox() {
         return this.reducedStatisticsCheckBox;
     }
 
+    /**
+     * WhiteCheckBox
+     * 
+     * @return WhiteCheckBox
+     */
     public JCheckBox getWhiteCheckBox() {
         return this.whiteCheckBox;
     }
 
+    /**
+     * AverageComboBox
+     * 
+     * @return AverageComboBox
+     */
     public JComboBox getAverageComboBox() {
         return this.averageComboBox;
     }
-    
+
+    /**
+     * InformationLabel
+     * 
+     * @return InformationLabel
+     */
     public JLabel getInformationLabel() {
         return this.informationLabel;
     }
-    
+
+    /**
+     * ChartSettingsPanel
+     * 
+     * @return ChartSettingsPanel
+     */
     public JPanel getChartSettingsPanel() {
         return this.chartSettingsPanel;
     }
-    
+
+    /**
+     * AnimationRadioButton
+     * 
+     * @return AnimationRadioButton
+     */
     public JRadioButton getAnimationRadioButton() {
         return this.animationRadioButton;
     }
-    
+
+    /**
+     * ChartSettingsRadioButton
+     * 
+     * @return ChartSettingsRadioButton
+     */
     public JRadioButton getChartSettingsRadioButton() {
         return this.chartSettingsRadioButton;
     }
-    
+
+    /**
+     * MovieRadioButton
+     * 
+     * @return MovieRadioButton
+     */
     public JRadioButton getMovieRadioButton() {
         return this.movieRadioButton;
     }
-    
+
+    /**
+     * MovieSettingsRadioButton
+     * 
+     * @return MovieSettingsRadioButton
+     */
     public JRadioButton getMovieSettingsRadioButton() {
         return this.movieSettingsRadioButton;
     }
-    
+
+    /**
+     * DomainSlider
+     * 
+     * @return DomainSlider
+     */
     public JSlider getDomainSlider() {
         return this.domainSlider;
     }
-    
+
+    /**
+     * SpringLayout
+     * 
+     * @return SpringLayout
+     */
     public SpringLayout getSpringLayout() {
         return this.springLayout;
     }

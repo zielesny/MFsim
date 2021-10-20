@@ -20,11 +20,11 @@
 package de.gnwi.mfsim.model.util;
 
 import de.gnwi.mfsim.model.preference.Preferences;
-import de.gnwi.mfsim.model.util.ModelUtils;
 import java.util.Comparator;
 import java.util.LinkedList;
-import java.util.Random;
 import de.gnwi.mfsim.model.preference.ModelDefinitions;
+import de.gnwi.jdpd.samples.random.ApacheCommonsRandom;
+import org.apache.commons.rng.simple.RandomSource;
 
 /**
  * Miscellaneous utility methods to be instantiated
@@ -459,11 +459,11 @@ public class MiscUtilityMethods {
      * @param aRandomSeed Random seed value
      * @return Random number generator
      */
-    public Random getRandomNumberGenerator(long aRandomSeed) {
+    public ApacheCommonsRandom getRandomNumberGenerator(int aRandomSeed) {
         if (Preferences.getInstance().isDeterministicRandom()) {
-            return new Random(aRandomSeed);
+            return new ApacheCommonsRandom(RandomSource.XO_SHI_RO_256_SS, aRandomSeed);
         } else {
-            return new Random();
+            return new ApacheCommonsRandom(RandomSource.XO_SHI_RO_256_SS);
         }
     }
     // </editor-fold>

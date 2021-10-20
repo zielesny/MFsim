@@ -98,6 +98,9 @@ public class SimulationBoxChangeInfo {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Constructor">
+    /**
+     * Constructor
+     */
     public SimulationBoxChangeInfo() {
         this.rotationChangeAroundXaxisAngle = 0;
         this.rotationChangeAroundYaxisAngle = 0;

@@ -44,7 +44,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Random;
+import de.gnwi.jdpd.interfaces.IRandom;
+import de.gnwi.jdpd.samples.random.ApacheCommonsRandom;
 import java.util.regex.Pattern;
 import javax.vecmath.Matrix3d;
 import javax.vecmath.Matrix4d;
@@ -66,6 +67,7 @@ import org.biojava.bio.structure.quaternary.BiologicalAssemblyTransformation;
 import de.gnwi.mfsim.model.graphics.particle.IGraphicalParticle;
 import de.gnwi.mfsim.model.graphics.particle.IGraphicalParticlePosition;
 import de.gnwi.mfsim.model.preference.ModelDefinitions;
+import org.apache.commons.rng.simple.RandomSource;
 
 /**
  * Class converting PDB data to a valid format for MFsim.
@@ -88,7 +90,7 @@ public final class PdbToDpd {
     /**
      * Random number generator
      */
-    private Random random = null;
+    private IRandom random = null;
 
     /**
      * Masterdata object.
@@ -1766,7 +1768,7 @@ public final class PdbToDpd {
      *
      * @param aRandomNumberGenerator Random number generator
      */
-    public void setRandomNumberGenerator(Random aRandomNumberGenerator) {
+    public void setRandomNumberGenerator(IRandom aRandomNumberGenerator) {
         this.random = aRandomNumberGenerator;
     }
     
@@ -1775,7 +1777,7 @@ public final class PdbToDpd {
      *
      * @param aRandomSeed Random number generator seed
      */
-    public void setSeed(long aRandomSeed) {
+    public void setSeed(int aRandomSeed) {
         this.masterdata.setSeed(aRandomSeed);
     }
 
@@ -1784,7 +1786,7 @@ public final class PdbToDpd {
      */
     public void setRandomOrientation() {
         if (this.random == null) {
-            this.random = new Random(this.masterdata.getSeed());
+            this.random = new ApacheCommonsRandom(RandomSource.XO_SHI_RO_256_SS, this.masterdata.getSeed());
         }
         Quat4d tmpRandomQuaternion = Tools.randomQuaternion(this.random);
         this.setRotation(tmpRandomQuaternion);

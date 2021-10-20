@@ -59,8 +59,17 @@ public class JobResult implements Comparable<JobResult> {
      * Particle types
      */
     public enum ParticleType {
+        /**
+         * Molecule
+         */
         MOLECULE,
+        /**
+         * Particle
+         */
         PARTICLE,
+        /**
+         * Molecule particle (particle in molecule)
+         */
         MOLECULE_PARTICLE
     }
     // </editor-fold>
@@ -1929,7 +1938,7 @@ public class JobResult implements Comparable<JobResult> {
     // <editor-fold defaultstate="collapsed" desc="Public properties (set only)">
     /**
      * Maximum used parallel task number info string
-     * NOTE: No checks are performed.
+     * (No checks are performed)
      * 
      * @param tmpParallelTaskNumber MParallel task number
      * @param tmpMaximumUsedParallelTaskNumber Maximum used parallel task number
@@ -2464,7 +2473,7 @@ public class JobResult implements Comparable<JobResult> {
 
     /**
      * Returns specific value item matrix, see code.
-     * NOTE: NO checks are performed.
+     * (No checks are performed)
      *
      * @param anElementList Element list
      * @param aDataTypeFormatText Value item data type format
@@ -2705,7 +2714,7 @@ public class JobResult implements Comparable<JobResult> {
 
     /**
      * Sets nearest-neighbbor value items (see code)
-     * NOTE: NO checks are performed.
+     * (No checks are performed)
      * 
      * @param aBaseToNearestNeighborStepFrequencyMapFilePathname Base to 
      * nearest-neighbor step-frequency map file pathname

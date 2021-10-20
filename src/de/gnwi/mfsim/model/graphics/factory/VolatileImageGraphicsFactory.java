@@ -463,7 +463,7 @@ public class VolatileImageGraphicsFactory implements IGraphicsFactory {
     
     /**
      * Set particle properties
-     * NOTE: NO checks are performed.
+     * (No checks are performed)
      * 
      * @param tmpGraphicalParticle See calling method
      * @param tmpGraphicalParticleColor See calling method

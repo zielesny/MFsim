@@ -46,7 +46,7 @@ import java.io.File;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Random;
+import de.gnwi.jdpd.interfaces.IRandom;
 import de.gnwi.spices.IPointInSpace;
 import java.util.ArrayList;
 import de.gnwi.mfsim.model.preference.ModelDefinitions;
@@ -1780,7 +1780,7 @@ public class GraphicsUtilityMethods {
         int aNumber, 
         IPointInSpace aCenterPoint, 
         double aRadius,
-        Random aRandomNumberGenerator
+        IRandom aRandomNumberGenerator
     ) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -1864,7 +1864,7 @@ public class GraphicsUtilityMethods {
         int aNumber, 
         IPointInSpace aCenterPoint,
         double aRadius, 
-        Random aRandomNumberGenerator
+        IRandom aRandomNumberGenerator
     ) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -1987,7 +1987,7 @@ public class GraphicsUtilityMethods {
         double aXLength, 
         double aYLength, 
         double aZLength,
-        Random aRandomNumberGenerator
+        IRandom aRandomNumberGenerator
     ) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -2073,7 +2073,7 @@ public class GraphicsUtilityMethods {
         double aXLength,
         double aYLength, 
         double aZLength,
-        Random aRandomNumberGenerator
+        IRandom aRandomNumberGenerator
     ) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -2187,7 +2187,7 @@ public class GraphicsUtilityMethods {
         double aSphereRadius, 
         LinkedList<BodySphere> anExistingSphereList, 
         int aNumberOfTrials,
-        Random aRandomNumberGenerator
+        IRandom aRandomNumberGenerator
     ) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -2302,7 +2302,7 @@ public class GraphicsUtilityMethods {
         LinkedList<BodySphere> anExistingSphereList, 
         double aStepDistance, 
         int aNumberOfTrials,
-        Random aRandomNumberGenerator
+        IRandom aRandomNumberGenerator
     ) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -2487,7 +2487,7 @@ public class GraphicsUtilityMethods {
         double aXyLayerZLength, 
         LinkedList<BodySphere> anExistingSphereList, 
         int aNumberOfTrials,
-        Random aRandomNumberGenerator
+        IRandom aRandomNumberGenerator
     ) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -2599,7 +2599,7 @@ public class GraphicsUtilityMethods {
         LinkedList<BodySphere> anExistingSphereList, 
         double aStepDistance, 
         int aNumberOfTrials,
-        Random aRandomNumberGenerator
+        IRandom aRandomNumberGenerator
     ) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -2754,7 +2754,7 @@ public class GraphicsUtilityMethods {
      * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
-    public void fillRandomPointsOnSphereSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, PointInSpace aCenterPoint, double aRadius, Random aRandomNumberGenerator) throws IllegalArgumentException {
+    public void fillRandomPointsOnSphereSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, PointInSpace aCenterPoint, double aRadius, IRandom aRandomNumberGenerator) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
             throw new IllegalArgumentException("aNumber is less than 1.");
@@ -2828,7 +2828,7 @@ public class GraphicsUtilityMethods {
      * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
-    public void fillUpperRandomPointsOnSphereSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, PointInSpace aCenterPoint, double aRadius, Random aRandomNumberGenerator) throws IllegalArgumentException {
+    public void fillUpperRandomPointsOnSphereSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, PointInSpace aCenterPoint, double aRadius, IRandom aRandomNumberGenerator) throws IllegalArgumentException {
 
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -2914,7 +2914,7 @@ public class GraphicsUtilityMethods {
      * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
-    public void fillMiddleRandomPointsOnSphereSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, PointInSpace aCenterPoint, double aRadius, Random aRandomNumberGenerator) throws IllegalArgumentException {
+    public void fillMiddleRandomPointsOnSphereSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, PointInSpace aCenterPoint, double aRadius, IRandom aRandomNumberGenerator) throws IllegalArgumentException {
 
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -3008,7 +3008,7 @@ public class GraphicsUtilityMethods {
         double aXLength, 
         double aYLength, 
         double aZLength,
-        Random aRandomNumberGenerator
+        IRandom aRandomNumberGenerator
     ) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -3097,7 +3097,7 @@ public class GraphicsUtilityMethods {
         double aXLength, 
         double aYLength, 
         double aZLength,
-        Random aRandomNumberGenerator
+        IRandom aRandomNumberGenerator
     ) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -3186,7 +3186,7 @@ public class GraphicsUtilityMethods {
         double aXLength, 
         double aYLength, 
         double aZLength,
-        Random aRandomNumberGenerator
+        IRandom aRandomNumberGenerator
     ) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -3269,7 +3269,7 @@ public class GraphicsUtilityMethods {
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
     public void fillRandomPointsOnSingleXyLayerSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, PointInSpace aCenterPoint, double aXLength, double aYLength,
-            double aZLength, BodyXyLayerSingleSurfaceEnum aSingleSurface, Random aRandomNumberGenerator)
+            double aZLength, BodyXyLayerSingleSurfaceEnum aSingleSurface, IRandom aRandomNumberGenerator)
             throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -3481,7 +3481,7 @@ public class GraphicsUtilityMethods {
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
     public void fillRandomPointsOnAllXyLayerSurfaces(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, PointInSpace aCenterPoint, double aXLength, double aYLength,
-            double aZLength, Random aRandomNumberGenerator)
+            double aZLength, IRandom aRandomNumberGenerator)
             throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -3638,7 +3638,7 @@ public class GraphicsUtilityMethods {
         int aNumberOfSpheres, 
         double aRadius, 
         int aNumberOfTrials,
-        Random aRandomNumberGenerator
+        IRandom aRandomNumberGenerator
     ) {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aXyLayerCenterPoint == null) {
@@ -3753,7 +3753,7 @@ public class GraphicsUtilityMethods {
         int aNumberOfSpheres, 
         double aRadius, 
         int aNumberOfTrials,
-        Random aRandomNumberGenerator
+        IRandom aRandomNumberGenerator
     ) {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aSphereCenterPoint == null) {
@@ -3887,7 +3887,7 @@ public class GraphicsUtilityMethods {
         int aNumberOfSpheres, 
         double aRadius, 
         int aNumberOfTrials,
-        Random aRandomNumberGenerator
+        IRandom aRandomNumberGenerator
     ) {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aCompartmentBoxCenterPoint == null) {
@@ -4465,26 +4465,26 @@ public class GraphicsUtilityMethods {
      * settings value items could not be added
      */
     public int addMoleculeDisplaySettingsValueItems(
-            ValueItemContainer aValueItemContainer,
-            int aVerticalPosition,
-            String[] aRootNodeNames,
-            LinkedList<String> aParticleList,
-            HashMap<String, String> aParticleToParticleNameMap,
-            HashMap<String, String> anExcludedParticlesTable,
-            HashMap<String, Color> aParticleToCurrentColorMap,
-            HashMap<String, Color> aParticleToInitialColorMap,
-            LinkedList<String> aMoleculeList,
-            HashMap<String, String> anExcludedMoleculesTable,
-            HashMap<String, Color> aMoleculeToCurrentColorMap,
-            HashMap<String, Color> aMoleculeToInitialColorMap,
-            LinkedList<String> aMoleculeParticleStringList,
-            HashMap<String, GraphicalParticle> aMoleculeParticleStringToGraphicalParticleMap,
-            HashMap<String, String> anExcludedMoleculeParticleStringTable,
-            HashMap<String, Color> aMoleculeParticleStringToCurrentColorMap,
-            HashMap<String, Color> aMoleculeParticleStringToInitialColorMap,
-            HashMap<String, Double> aMoleculeParticleStringToCurrentRadiusScale,
-            HashMap<String, Float> aMoleculeParticleStringToCurrentTransparency,
-            boolean aHasCompartments
+        ValueItemContainer aValueItemContainer,
+        int aVerticalPosition,
+        String[] aRootNodeNames,
+        LinkedList<String> aParticleList,
+        HashMap<String, String> aParticleToParticleNameMap,
+        HashMap<String, String> anExcludedParticlesTable,
+        HashMap<String, Color> aParticleToCurrentColorMap,
+        HashMap<String, Color> aParticleToInitialColorMap,
+        LinkedList<String> aMoleculeList,
+        HashMap<String, String> anExcludedMoleculesTable,
+        HashMap<String, Color> aMoleculeToCurrentColorMap,
+        HashMap<String, Color> aMoleculeToInitialColorMap,
+        LinkedList<String> aMoleculeParticleStringList,
+        HashMap<String, GraphicalParticle> aMoleculeParticleStringToGraphicalParticleMap,
+        HashMap<String, String> anExcludedMoleculeParticleStringTable,
+        HashMap<String, Color> aMoleculeParticleStringToCurrentColorMap,
+        HashMap<String, Color> aMoleculeParticleStringToInitialColorMap,
+        HashMap<String, Double> aMoleculeParticleStringToCurrentRadiusScale,
+        HashMap<String, Float> aMoleculeParticleStringToCurrentTransparency,
+        boolean aHasCompartments
     ) {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aValueItemContainer == null) {
@@ -5052,7 +5052,7 @@ public class GraphicsUtilityMethods {
     /**
      * Corrects value to interval [aMinValue, aMaxValue].
      * Note: This method may "run forever".
-     * Note: No checks are performed.
+     * (No checks are performed)
      * 
      * @param aValue Value
      * @param aMinValue Minimum value

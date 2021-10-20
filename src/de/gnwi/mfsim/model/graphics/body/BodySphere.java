@@ -35,7 +35,7 @@ import de.gnwi.mfsim.model.valueItem.ValueItem;
 import de.gnwi.spices.IPointInSpace;
 import java.util.LinkedList;
 import de.gnwi.mfsim.model.preference.ModelDefinitions;
-import java.util.Random;
+import de.gnwi.jdpd.interfaces.IRandom;
 
 /**
  * This class represents a sphere. The sphere is defined by center and radius.
@@ -310,7 +310,12 @@ public class BodySphere extends ChangeNotifier implements BodyInterface, ChangeR
             return false;
         }
         // </editor-fold>
-        return this.graphicsUtilityMethods.getDistanceSquareInSpace(aPoint, this.bodyCenter) <= this.radiusSquareCorrected;
+        double tmpDeltaX = aPoint.getX() - this.bodyCenter.getX();
+        double tmpDeltaY = aPoint.getY() - this.bodyCenter.getY();
+        double tmpDeltaZ = aPoint.getZ() - this.bodyCenter.getZ();
+        return tmpDeltaX * tmpDeltaX + tmpDeltaY * tmpDeltaY + tmpDeltaZ * tmpDeltaZ <= this.radiusSquareCorrected;
+        // Old code:
+        // return this.graphicsUtilityMethods.getDistanceSquareInSpace(aPoint, this.bodyCenter) <= this.radiusSquareCorrected;
         // Slower alternative:
         // return this.graphicsUtilityMethods.getDistanceInSpace(aPoint, this.bodyCenter) <= this.radiusCorrected;
     }
@@ -348,7 +353,7 @@ public class BodySphere extends ChangeNotifier implements BodyInterface, ChangeR
      * @return Point in space inside of the body
      */
     @Override
-    public PointInSpace getRandomPointInVolume(Random aRandomNumberGenerator) {
+    public PointInSpace getRandomPointInVolume(IRandom aRandomNumberGenerator) {
         return this.getRandomPointsInVolume(1, aRandomNumberGenerator)[0];
     }
 
@@ -361,7 +366,7 @@ public class BodySphere extends ChangeNotifier implements BodyInterface, ChangeR
      * @throws IllegalArgumentException Thrown if aNumber is less than 1
      */
     @Override
-    public PointInSpace[] getRandomPointsInVolume(int aNumber, Random aRandomNumberGenerator) throws IllegalArgumentException {
+    public PointInSpace[] getRandomPointsInVolume(int aNumber, IRandom aRandomNumberGenerator) throws IllegalArgumentException {
 
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -384,7 +389,7 @@ public class BodySphere extends ChangeNotifier implements BodyInterface, ChangeR
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
     @Override
-    public void fillRandomPointsInVolume(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, Random aRandomNumberGenerator) throws IllegalArgumentException {
+    public void fillRandomPointsInVolume(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, IRandom aRandomNumberGenerator) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
             throw new IllegalArgumentException("aNumber is less than 1.");
@@ -414,7 +419,7 @@ public class BodySphere extends ChangeNotifier implements BodyInterface, ChangeR
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
     @Override
-    public void fillRandomPointsInVolume(IPointInSpace[] aBuffer1, IPointInSpace[] aBuffer2, int aFirstIndex, int aNumber, Random aRandomNumberGenerator) throws IllegalArgumentException {
+    public void fillRandomPointsInVolume(IPointInSpace[] aBuffer1, IPointInSpace[] aBuffer2, int aFirstIndex, int aNumber, IRandom aRandomNumberGenerator) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
             throw new IllegalArgumentException("aNumber is less than 1.");
@@ -459,7 +464,7 @@ public class BodySphere extends ChangeNotifier implements BodyInterface, ChangeR
         int aFirstIndex, 
         int aNumber, 
         int aNumberOfTrials,
-        Random aRandomNumberGenerator
+        IRandom aRandomNumberGenerator
     ) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -517,7 +522,7 @@ public class BodySphere extends ChangeNotifier implements BodyInterface, ChangeR
         int aNumber, 
         double aStepDistance, 
         int aNumberOfTrials,
-        Random aRandomNumberGenerator
+        IRandom aRandomNumberGenerator
     ) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -572,7 +577,7 @@ public class BodySphere extends ChangeNotifier implements BodyInterface, ChangeR
      * @return Point on surface of body
      */
     @Override
-    public PointInSpace getRandomPointOnSurface(Random aRandomNumberGenerator) {
+    public PointInSpace getRandomPointOnSurface(IRandom aRandomNumberGenerator) {
         return this.getRandomPointsOnSurface(1, aRandomNumberGenerator)[0];
     }
 
@@ -585,7 +590,7 @@ public class BodySphere extends ChangeNotifier implements BodyInterface, ChangeR
      * @throws IllegalArgumentException if aNumber is less than 1
      */
     @Override
-    public PointInSpace[] getRandomPointsOnSurface(int aNumber, Random aRandomNumberGenerator) throws IllegalArgumentException {
+    public PointInSpace[] getRandomPointsOnSurface(int aNumber, IRandom aRandomNumberGenerator) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
             throw new IllegalArgumentException("aNumber was less than 1.");
@@ -607,7 +612,7 @@ public class BodySphere extends ChangeNotifier implements BodyInterface, ChangeR
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
     @Override
-    public void fillRandomPointsOnSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, Random aRandomNumberGenerator) throws IllegalArgumentException {
+    public void fillRandomPointsOnSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, IRandom aRandomNumberGenerator) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
             throw new IllegalArgumentException("aNumber is less than 1.");
@@ -634,7 +639,7 @@ public class BodySphere extends ChangeNotifier implements BodyInterface, ChangeR
      * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
-    public void fillUpperRandomPointsOnSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, Random aRandomNumberGenerator) throws IllegalArgumentException {
+    public void fillUpperRandomPointsOnSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, IRandom aRandomNumberGenerator) throws IllegalArgumentException {
 
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -663,7 +668,7 @@ public class BodySphere extends ChangeNotifier implements BodyInterface, ChangeR
      * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
-    public void fillMiddleRandomPointsOnSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, Random aRandomNumberGenerator) throws IllegalArgumentException {
+    public void fillMiddleRandomPointsOnSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, IRandom aRandomNumberGenerator) throws IllegalArgumentException {
 
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aNumber < 1) {
@@ -703,7 +708,7 @@ public class BodySphere extends ChangeNotifier implements BodyInterface, ChangeR
         int aNumberOfSpheres, 
         double aRadius, 
         int aNumberOfTrials,
-        Random aRandomNumberGenerator
+        IRandom aRandomNumberGenerator
     ) {
         LinkedList<BodySphere> tmpSphereList = 
             this.graphicsUtilityMethods.getNonOverlappingRandomSpheresInSphere(
@@ -850,7 +855,7 @@ public class BodySphere extends ChangeNotifier implements BodyInterface, ChangeR
     }
 
     /**
-     * Sets body center WITHOUT re-initialisation of this object instance. NOTE: No checks are performed.
+     * Sets body center WITHOUT re-initialisation of this object instance. (No checks are performed)
      *
      * @param aBodyCenter Center of the body
      */
@@ -915,7 +920,7 @@ public class BodySphere extends ChangeNotifier implements BodyInterface, ChangeR
     //
     // <editor-fold defaultstate="collapsed" desc="CompartmentBox">
     /**
-     * Compartment box. NOTE: No checks are performed.
+     * Compartment box. (No checks are performed)
      *
      * @param aCompartmentBox Compartment box
      */

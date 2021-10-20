@@ -1,0 +1,363 @@
+/**
+ * Jdpd - Molecular Fragment Dissipative Particle Dynamics (DPD) Simulation
+ * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
+ * 
+ * Source code is available at <https://github.com/zielesny/Jdpd>  
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+--------------------------------------------------------------------------------
+Jdpd 1.5.0.0 (Jdpd.jar)
+--------------------------------------------------------------------------------
+for Java 11 or higher
+
+Dependencies:
+  - commons-math3-3.6.1.jar
+      Apache Commons Math 3.6.1 (https://commons.apache.org/proper/commons-math/)
+      Version 3.6.1
+  - commons-rng-client-api-1.3.jar
+    commons-rng-core-1.3.jar
+    commons-rng-sampling-1.3.jar
+    commons-rng-simple-1.3.jar
+      Apache Commons RNG 1.3 (http://commons.apache.org/proper/commons-rng/)
+      Version 1.3
+      
+Unit tests: 
+  - Package src.de.gnwi.jdpd.tests
+  
+Simulation input file description:  
+  - File Input.txt in package src.de.gnwi.jdpd.tests.test_Water_GWMVV              
+--------------------------------------------------------------------------------
+- Removed problems:
+  - A severe error was removed from the radius of gyration calculation which 
+    could affect the position of particles in the simulation box and lead to
+    wrong and unphysical "particle jumps".
+
+- Improvements:
+  - For mathematical functions (exp, pow, sqrt etc.) Apache Commons FastMath is 
+    used.
+  - The electrostatics treatment of charged particles is considerably extended:
+    - A charge distribution ("smearing") according to Groot (J. Chem. Phys. 118, 
+      2003, 11265) and González-Melchor et al. (J. Chem. Phys. 125, 2006, 224107)
+      is implemented.
+    - A splitting function to approximate the Ewald sum is implemented according 
+      to Fanourgakis (J. Phys. Chem. B 119, 2015, 1974).
+    See examples for corresponding settings. Job definitions of older versions 
+    are still compatible.
+  - The setting for initial potential energy minimization now contains an 
+    additional flag that defines if all (DPD, bond, electrostatic) forces 
+    (parameter "true") or DPD forces only (parameter "false") are to be 
+    used. Job definitions of older versions are still compatible: The flag is 
+    added and automatically set to "true".
+  - Minor improvements concerning logfile formatting.
+  - The initial step length for initial potential energy minimization is 
+    decreased to allow for a "smoother" minimization start.
+  - Test classes are reorganized.
+
+
+--------------------------------------------------------------------------------
+Jdpd 1.4.0.0 (Jdpd.jar)
+--------------------------------------------------------------------------------
+for Java 8 or higher
+
+Dependencies:
+  - commons-rng-client-api-1.3.jar
+    commons-rng-core-1.3.jar
+    commons-rng-sampling-1.3.jar
+    commons-rng-simple-1.3.jar
+      Apache Commons RNG 1.3 (http://commons.apache.org/proper/commons-rng/)
+      Version 1.3
+      
+Unit tests: 
+  - Package src.de.gnwi.jdpd.tests
+  
+Simulation input file description:  
+  - File Input.txt in package src.de.gnwi.jdpd.tests.test_Water_GWMVV              
+--------------------------------------------------------------------------------
+- Removals:
+  - The PCG pseudorandom generator is removed (Pcg32.java). For old job 
+    definitions this setting is automatically converted to the default random 
+    number generator.
+
+- Refactoring:
+  - Internal Enum HarmonicBondType with single value DEFAULT is refactored to 
+    enum BondType with single value HARMONIC. This does not affect older job
+    definitions, i.e. there are no compatibility issues.
+
+- Improvements:
+  - A harmonic bond now has a HarmonicBondBehaviour which is DEFAULT (repulsive 
+    and attractive), REPULSIVE (repulsive if squeezed but NOT attractive if 
+    elongated) or ATTRACTIVE (attractive if elongated, but NOT repulsive if 
+    squeezed). Backbone bonds may now be defined accordingly (see 
+    de.gnwi.jdpd.samples.FileInput.getMoleculeDescriptions()). Job definitions 
+    of older versions are still compatible.
+  - Random number generation is now based on Apache Commons RNG 1.3. If a 
+    specified random number generator is jumpable then jump-ahead operations 
+    are performed for successive random number generator creation (otherwise 
+    successive random number generators are created with incremented seeds). For 
+    random seed initialization procedures init_genrand() for integer arrays 
+    (MT19937, improved initialization 2002/1/26) and init_genrand64() for long 
+    arrays (MT19937-64, 2004/9/29 version) according to Takuji Nishimura and 
+    Makoto Matsumoto are used. The new default random number generator is 
+    xoshiro256** (ACRNG_XO_SHI_RO_256_SS). For old job definitions a possible 
+    now invalid RNG setting is automatically converted to the default random 
+    number generator.
+
+
+--------------------------------------------------------------------------------
+Jdpd 1.3.0.0 (Jdpd.jar)
+--------------------------------------------------------------------------------
+for Java 8 or higher
+
+Dependencies:
+  - commons-rng-client-api-1.1.jar
+    commons-rng-core-1.1.jar
+    commons-rng-sampling-1.1.jar
+    commons-rng-simple-1.1.jar
+      Apache Commons RNG 1.1 (http://commons.apache.org/proper/commons-rng/)
+      Version 1.1
+  - Pcg32.java
+      PCG pseudorandom generator implementation for Java 
+      (https://github.com/alexeyr/pcg-java)
+      Version 0.9.1
+      
+Unit tests: 
+  - Package src.de.gnwi.jdpd.tests
+  
+Simulation input file description:  
+  - File Input.txt in package src.de.gnwi.jdpd.tests.test_Water_GWMVV              
+--------------------------------------------------------------------------------
+- Removed problems:
+  - A fatal error concerning ad-hoc-electrostatic force calculations is removed.
+    Note that all prior Jdpd versions contained this severe calculation error
+    so that all prior electrostatic force calculations are spoiled.
+- Improvements:
+  - Dissipative force calculation is refactored with less numeric operations for
+    better performance (for all integration types).
+  - New log level PARTICLE for particle force magnitude and velocity analysis
+    is implemented: The min, mean and max value of the magnitude of 
+    conservative/random/dissipative DPD, conservative harmonic bond and 
+    conservative electrostatics forces on all particles may be evaluated as well 
+    as the min, mean and max value of the particle velocities and logged for 
+    every output step.
+  - New log level SCMVV for specific logging during integration with type SCMVV.
+  - Excess momentum is always removed before velocity scaling operation (if 
+    velocity scaling is defined).
+  - Internal improvements for logging of exceptions in parallelized calculation
+    tasks.
+  - Refactored log level names.
+  - Log levels detection changed from hashmap to (faster but less elegant) 
+    boolean array.
+  - Setting for velocity scaling may now contain the number of initial velocity
+    scaling steps. Job definitions of older versions are still compatible.
+  - Initial potential energy minimization steps now again include possible 
+    electrostatic interactions for force calculations due to removed severe 
+    problem concerning ad-hoc-electrostatic force calculations.
+  - Settings for molecule fixation now contain a maximum time step for the
+    fixation to be applied. Job definitions of older versions are still 
+    compatible.
+  - Settings for molecule velocity fixation now contain a maximum time step 
+    for the velocity fixation to be applied. Job definitions of older versions 
+    are still compatible.
+  - Settings for molecule boundaries now contain a maximum time step for the
+    boundaries to be applied. Job definitions of older versions are still 
+    compatible.
+
+
+--------------------------------------------------------------------------------
+Jdpd 1.2.0.0 (Jdpd.jar)
+--------------------------------------------------------------------------------
+for Java 8 or higher
+
+Dependencies:
+  - commons-rng-client-api-1.1.jar
+    commons-rng-core-1.1.jar
+    commons-rng-sampling-1.1.jar
+    commons-rng-simple-1.1.jar
+      Apache Commons RNG 1.1 (http://commons.apache.org/proper/commons-rng/)
+      Version 1.1
+  - Pcg32.java
+      PCG pseudorandom generator implementation for Java 
+      (https://github.com/alexeyr/pcg-java)
+      Version 0.9.1
+      
+Unit tests: 
+  - Package src.de.gnwi.jdpd.tests
+  
+Simulation input file description:  
+  - File Input.txt in package src.de.gnwi.jdpd.tests.test_Water_GWMVV              
+--------------------------------------------------------------------------------
+- Improvements:
+  - Settings for molecule acceleration now contain a maximum time step for the
+    acceleration to be applied. Job definitions of older versions are still 
+    compatible.
+
+
+--------------------------------------------------------------------------------
+Jdpd 1.1.1.0 (Jdpd.jar)
+--------------------------------------------------------------------------------
+for Java 8 or higher
+
+Dependencies:
+  - commons-rng-client-api-1.1.jar
+    commons-rng-core-1.1.jar
+    commons-rng-sampling-1.1.jar
+    commons-rng-simple-1.1.jar
+      Apache Commons RNG 1.1 (http://commons.apache.org/proper/commons-rng/)
+      Version 1.1
+  - Pcg32.java
+      PCG pseudorandom generator implementation for Java 
+      (https://github.com/alexeyr/pcg-java)
+      Version 0.9.1
+      
+Unit tests: 
+  - Package src.de.gnwi.jdpd.tests
+  
+Simulation input file description:  
+  - File Input.txt in package src.de.gnwi.jdpd.tests.test_Water_GWMVV              
+--------------------------------------------------------------------------------
+- Improvements:
+  - ParticlePositionsWriteTask now explicitly releases memory.  
+
+    
+--------------------------------------------------------------------------------
+Jdpd 1.1.0.0 (Jdpd.jar)
+--------------------------------------------------------------------------------
+for Java 8 or higher
+
+Dependencies:
+  - commons-rng-client-api-1.1.jar
+    commons-rng-core-1.1.jar
+    commons-rng-sampling-1.1.jar
+    commons-rng-simple-1.1.jar
+      Apache Commons RNG 1.1 (http://commons.apache.org/proper/commons-rng/)
+      Version 1.1
+  - Pcg32.java
+      PCG pseudorandom generator implementation for Java 
+      (https://github.com/alexeyr/pcg-java)
+      Version 0.9.1
+      
+Unit tests: 
+  - Package src.de.gnwi.jdpd.tests
+  
+Simulation input file description:  
+  - File Input.txt in package src.de.gnwi.jdpd.tests.test_Water_GWMVV              
+--------------------------------------------------------------------------------
+- Improvements:
+  - Implementation of Apache Commons RNG version 1.1 with faster  
+    ZigguratNormalizedGaussianSampler (which replaces BoxMullerGaussianSampler
+    of Apache Commons RNG version 1.0).  
+
+
+--------------------------------------------------------------------------------
+Jdpd 1.0.2.0 (Jdpd.jar)
+--------------------------------------------------------------------------------
+for Java 8 or higher
+
+Dependencies:
+  - commons-rng-core-1.0.jar
+    commons-rng-simple-1.0.jar
+    commons-rng-sampling-1.0.jar
+    commons-rng-client-api-1.0.jar
+    commons-rng-jmh-1.0.jar
+      Apache Commons RNG 1.0 (http://commons.apache.org/proper/commons-rng/)
+      Version 1.0
+  - Pcg32.java
+      PCG pseudorandom generator implementation for Java 
+      (https://github.com/alexeyr/pcg-java)
+      Version 0.9.1
+      
+Unit tests: 
+  - Package src.de.gnwi.jdpd.tests
+  
+Simulation input file description:  
+  - File Input.txt in package src.de.gnwi.jdpd.tests.test_Water_GWMVV              
+--------------------------------------------------------------------------------
+- Improvements:
+  - Initial potential energy minimization steps now exclude possible 
+    electrostatic interactions for force calculations (but not for potential
+    calculations) to avoid extreme forces due to unfavorable start geometries. 
+    For details see code in method 
+    calculateInitialPotentialEnergyMinimizationSteps() in class Utils of 
+    package de.gnwi.jdpd.utilities.  
+
+
+--------------------------------------------------------------------------------
+Jdpd 1.0.1.0 (Jdpd.jar)
+--------------------------------------------------------------------------------
+for Java 8 or higher
+
+Dependencies:
+  - commons-rng-core-1.0.jar
+    commons-rng-simple-1.0.jar
+    commons-rng-sampling-1.0.jar
+    commons-rng-client-api-1.0.jar
+    commons-rng-jmh-1.0.jar
+      Apache Commons RNG 1.0 (http://commons.apache.org/proper/commons-rng/)
+      Version 1.0
+  - Pcg32.java
+      PCG pseudorandom generator implementation for Java 
+      (https://github.com/alexeyr/pcg-java)
+      Version 0.9.1
+      
+Unit tests: 
+  - Package src.de.gnwi.jdpd.tests
+  
+Simulation input file description:  
+  - File Input.txt in package src.de.gnwi.jdpd.tests.test_Water_GWMVV              
+--------------------------------------------------------------------------------
+- Removed problems:
+  - Corrected ad-hoc electrostatic potential calculation in 
+    ParticlePairElectrostaticsAdHocPotentialCalculator:
+    Method calculateParticlePairInteraction() now correctly implements maximum
+    electrostatics force, cut-off length and damping settings.  
+
+
+--------------------------------------------------------------------------------
+Jdpd 1.0.0.0 (Jdpd.jar)
+--------------------------------------------------------------------------------
+for Java 8 or higher
+
+Authors:
+  - Karina van den Broek (karina.broek@studmail.w-hs.de) 
+  - Hubert Kuhn (kuhn@molecular-dynamics.de)
+  - Achim Zielesny (achim.zielesny@w-hs.de)
+
+Acknowledgements: 
+  Many thanks to Matthias Epple for helpful discussions, kind support and 
+  continual encouragement. The support of GNWI – Gesellschaft für 
+  naturwissenschaftliche Informatik mbH, Oer-Erkenschwick, Germany, is 
+  gratefully acknowledged.
+
+Dependencies:
+  - commons-rng-core-1.0.jar
+    commons-rng-simple-1.0.jar
+    commons-rng-sampling-1.0.jar
+    commons-rng-client-api-1.0.jar
+    commons-rng-jmh-1.0.jar
+      Apache Commons RNG 1.0 (http://commons.apache.org/proper/commons-rng/)
+      Version 1.0
+  - Pcg32.java
+      PCG pseudorandom generator implementation for Java 
+      (https://github.com/alexeyr/pcg-java)
+      Version 0.9.1
+      
+Unit tests: 
+  - Package src.de.gnwi.jdpd.tests
+  
+Simulation input file description:  
+  - File Input.txt in package src.de.gnwi.jdpd.tests.test_Water_GWMVV              
+--------------------------------------------------------------------------------
+Basic operational version

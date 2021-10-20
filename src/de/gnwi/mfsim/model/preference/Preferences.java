@@ -709,6 +709,13 @@ public final class Preferences {
      * NOTE: This number is not made persistent!
      */
     private int numberOfWorkingJobResultExecutionTasks;
+    
+    /**
+     * Flag for shape of zoom volume:
+     * True: Box volume shape, false: Ellipsoid volume shape.
+     * NOTE: This flag is not made persistent!
+     */
+    private boolean isBoxVolumeShapeForZoom;
 
     /**
      * Movie slicer configuration (NOTE: NOT to be made persistent, is ONLY
@@ -964,7 +971,6 @@ public final class Preferences {
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Simulation box slicer spin steps settings">
         tmpVerticalPosition = this.addSlicerSpinStepsEditablePrefencesValueItems(tmpValueItemContainer, tmpVerticalPosition);
-
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="JMol simulation box viewer graphics settings">
         tmpNodeNames = new String[]{ModelMessage.get("Preferences.Root"), ModelMessage.get("Preferences.SimulationBox"),
@@ -2661,6 +2667,35 @@ public final class Preferences {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public properties (get/set)">
+    // <editor-fold defaultstate="collapsed" desc="- isBoxVolumeShapeForZoom">
+    /**
+     * Flag for shape of zoom volume:
+     * True: Box volume shape, false: Ellipsoid volume shape.
+     *
+     * @param aValue Value
+     * @return True: Value changed, false: Otherwise
+     */
+    public boolean setBoxVolumeShapeForZoom(boolean aValue) {
+        boolean tmpHasChanged = false;
+        // <editor-fold defaultstate="collapsed" desc="Set new value if changed">
+        if (this.isBoxVolumeShapeForZoom != aValue) {
+            this.isBoxVolumeShapeForZoom = aValue;
+            tmpHasChanged = true;
+        }
+        // </editor-fold>
+        return tmpHasChanged;
+    }
+
+    /**
+     * Returns flag for shape of zoom volume:
+     * True: Box volume shape, false: Ellipsoid volume shape.
+     *
+     * @return True: Box volume shape, false: Ellipsoid volume shape.
+     */
+    public boolean isBoxVolumeShapeForZoom() {
+        return this.isBoxVolumeShapeForZoom;
+    }
+    // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- MovieSlicerConfiguration">
     /**
      * Movie slicer configuration (NOTE: NOT to be made persistent, is ONLY
@@ -11140,6 +11175,9 @@ public final class Preferences {
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="this.numberOfWorkingJobResultExecutionTasks">
         this.numberOfWorkingJobResultExecutionTasks = 0;
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="this.isBoxVolumeShapeForZoom">
+        this.isBoxVolumeShapeForZoom = true;
         // </editor-fold>
     }
     // </editor-fold>

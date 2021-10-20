@@ -449,66 +449,146 @@ public class CustomPanelPeptideEdit extends JPanel {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * PeptideTextArea
+     * 
+     * @return PeptideTextArea
+     */
     public JTextArea getPeptideTextArea() {
         return peptideTextArea;
     }
 
+    /**
+     * DescriptionTextArea
+     * 
+     * @return DescriptionTextArea
+     */
     public JTextArea getDescriptionTextArea() {
         return descriptionTextArea;
     }
 
+    /**
+     * ThreeLetterCodeTextArea
+     * 
+     * @return ThreeLetterCodeTextArea
+     */
     public JTextArea getThreeLetterCodeTextArea() {
         return threeLetterCodeTextArea;
     }
 
+    /**
+     * PeptideInfoLabel
+     * 
+     * @return PeptideInfoLabel
+     */
     public JLabel getPeptideInfoLabel() {
         return this.peptideInfoLabel;
     }
 
+    /**
+     * InfoTabbedPanel
+     * 
+     * @return InfoTabbedPanel
+     */
     public JTabbedPane getInfoTabbedPanel() {
         return infoTabbedPanel;
     }
 
+    /**
+     * PreviousDefinitionsList
+     * 
+     * @return PreviousDefinitionsList
+     */
     public JList getPreviousDefinitionsList() {
         return previousDefinitionsList;
     }
 
+    /**
+     * UsePreviousDefinitionButton
+     * 
+     * @return UsePreviousDefinitionButton
+     */
     public JButton getUsePreviousDefinitionButton() {
         return usePreviousDefinitionButton;
     }
 
+    /**
+     * RemovePreviousDefinitionButton
+     * 
+     * @return RemovePreviousDefinitionButton
+     */
     public JButton getRemovePreviousDefinitionButton() {
         return removePreviousDefinitionButton;
     }
 
+    /**
+     * ClearPreviousDefinitionsButton
+     * 
+     * @return ClearPreviousDefinitionsButton
+     */
     public JButton getClearPreviousDefinitionsButton() {
         return clearPreviousDefinitionsButton;
     }
 
+    /**
+     * AminoAcidsInfoList
+     * 
+     * @return AminoAcidsInfoList
+     */
     public JList getAminoAcidsInfoList() {
         return aminoAcidsInfoList;
     }
 
+    /**
+     * ClearPeptideButton
+     * 
+     * @return ClearPeptideButton
+     */
     public JButton getClearPeptideButton() {
         return clearPeptideButton;
     }
 
+    /**
+     * DischargeButton
+     * 
+     * @return DischargeButton
+     */
     public JButton getDischargeButton() {
         return dischargeButton;
     }
 
+    /**
+     * AppendAminoAcidButton
+     * 
+     * @return AppendAminoAcidButton
+     */
     public JButton getAppendAminoAcidButton() {
         return this.appendAminoAcidButton;
     }
 
+    /**
+     * AminoAcidImagePanel
+     * 
+     * @return AminoAcidImagePanel
+     */
     public CustomPanelImage getAminoAcidImagePanel() {
         return aminoAcidImagePanel;
     }
 
+    /**
+     * UndoButton
+     * 
+     * @return UndoButton
+     */
     public JButton getUndoButton() {
         return undoButton;
     }
 
+    /**
+     * PhButton
+     * 
+     * @return PhButton
+     */
     public JButton getPhButton() {
         return phButton;
     }

@@ -118,6 +118,11 @@ public class DialogMoveStepSlicerShow extends CustomDialogApplyCancelSize implem
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * CustomStepSlicerPanel
+     * 
+     * @return CustomStepSlicerPanel
+     */
     public CustomPanelStepSlicer getCustomStepSlicerPanel() {
         return customStepSlicerPanel;
     }

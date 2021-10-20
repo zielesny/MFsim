@@ -45,6 +45,16 @@ public interface GuiDefinitions {
     Color TABLE_CELL_DEFAULT_BACKGROUND_COLOR = Color.WHITE;
 
     /**
+     * Standard cell highlight foreground color
+     */
+    Color TABLE_CELL_HIGHLIGHT_FOREGROUND_COLOR = Color.BLACK;
+
+    /**
+     * Standard cell highlight background color
+     */
+    Color TABLE_CELL_HIGHLIGHT_BACKGROUND_COLOR = Color.LIGHT_GRAY;
+
+    /**
      * Standard cell foreground color
      */
     Color TABLE_CELL_DEFAULT_FOREGROUND_COLOR = Color.BLACK;

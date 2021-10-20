@@ -736,6 +736,11 @@ public class XyChart implements ChartInterface{
         }
     }
     
+    /**
+     * Sets number of discarded initial points
+     * 
+     * @param aNumberOfDiscardedInitialPoints Number of discarded initial points
+     */
     public void setNumberOfDiscardedInitialPoints(int aNumberOfDiscardedInitialPoints) {
         this.xyChartDataManipulator.setNumberOfDiscardedInitialPoints(aNumberOfDiscardedInitialPoints);
         this.updateData();

@@ -217,7 +217,6 @@ public final class StandardParticleInteractionData {
      * @throws IllegalArgumentException Thrown if an argument is illegal
      */
     public void updateParticleDescription(StandardParticleDescription aParticleDescription) throws IllegalArgumentException {
-
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aParticleDescription == null) {
             throw new IllegalArgumentException("aParticleDescription is null.");
@@ -251,7 +250,6 @@ public final class StandardParticleInteractionData {
         if (aParticle == null || aParticle.isEmpty()) {
             return null;
         }
-
         // </editor-fold>
         return this.particleToDescriptionMap.get(aParticle);
     }
@@ -820,20 +818,22 @@ public final class StandardParticleInteractionData {
                 ModelMessage.get("JdpdInputFile.parameter.particleName"), 
                 ModelMessage.get("ParticleDuplicate.NewParticle"), 
                 ModelMessage.get("ParticleDuplicate.NewCharge"),
+                ModelMessage.get("ParticleDuplicate.RepulsionCorrection"),
                 ModelMessage.get("ParticleDuplicate.NewParticleColor")
             }
         );
         tmpParticleDuplicateMatrixValueItem.setMatrixColumnWidths(
             new String[]{
-                ModelDefinitions.CELL_WIDTH_TEXT_150,    // Particle
-                ModelDefinitions.CELL_WIDTH_TEXT_200,    // Particle_Name
-                ModelDefinitions.CELL_WIDTH_TEXT_150,    // New_Particle
-                ModelDefinitions.CELL_WIDTH_NUMERIC_140, // New_Charge
-                ModelDefinitions.CELL_WIDTH_TEXT_150     // New_Particle_Color
+                ModelDefinitions.CELL_WIDTH_TEXT_150,    // particle
+                ModelDefinitions.CELL_WIDTH_TEXT_200,    // particleName
+                ModelDefinitions.CELL_WIDTH_TEXT_150,    // NewParticle
+                ModelDefinitions.CELL_WIDTH_NUMERIC_140, // NewCharge
+                ModelDefinitions.CELL_WIDTH_NUMERIC_140, // RepulsionCorrection
+                ModelDefinitions.CELL_WIDTH_TEXT_150     // NewParticleColor
             }
         );
         // <editor-fold defaultstate="collapsed" desc="- Set matrix">
-        tmpMatrix = new ValueItemMatrixElement[tmpParticles.length][5];
+        tmpMatrix = new ValueItemMatrixElement[tmpParticles.length][6];
         ValueItemDataTypeFormat tmpParticleTypeFormat = new ValueItemDataTypeFormat(false);
         ValueItemDataTypeFormat tmpNameTypeFormat = new ValueItemDataTypeFormat(false);
         String tmpAllowedCharacters = ModelDefinitions.PARTICLE_ALLOWED_CHARACTERS_REGEX_STRING;
@@ -841,6 +841,7 @@ public final class StandardParticleInteractionData {
         String[] tmpForbiddenTexts = tmpParticles;
         ValueItemDataTypeFormat tmpNewParticleTypeFormat = new ValueItemDataTypeFormat(tmpAllowedCharacters, tmpAllowedParticleMatch, tmpForbiddenTexts);
         ValueItemDataTypeFormat tmpChargeTypeFormat = new ValueItemDataTypeFormat("0", 0, -6, 6, true, true);
+        ValueItemDataTypeFormat tmpRepulsionCorrectionFactorTypeFormat = new ValueItemDataTypeFormat("1.0", 6, 0, 1);
         ValueItemDataTypeFormat tmpColorTypeFormat= new ValueItemDataTypeFormat(StandardColorEnum.getAllColorRepresentations());
         for (int i = 0; i < tmpParticles.length; i++) {
             StandardParticleDescription tmpParticleDescription = this.getParticleDescription(tmpParticles[i]);
@@ -848,7 +849,8 @@ public final class StandardParticleInteractionData {
             tmpMatrix[i][1] = new ValueItemMatrixElement(tmpParticleDescription.getName(), tmpNameTypeFormat);
             tmpMatrix[i][2] = new ValueItemMatrixElement("", tmpNewParticleTypeFormat);
             tmpMatrix[i][3] = new ValueItemMatrixElement(ModelMessage.get("ValueItemDataTypeFormat.NumericNullValueString"), tmpChargeTypeFormat);
-            tmpMatrix[i][4] = new ValueItemMatrixElement(ModelMessage.get("JdpdInputFile.parameter.defaultColor"), tmpColorTypeFormat);
+            tmpMatrix[i][4] = new ValueItemMatrixElement("1.0", tmpRepulsionCorrectionFactorTypeFormat);
+            tmpMatrix[i][5] = new ValueItemMatrixElement(tmpParticleDescription.getStandardColor(), tmpColorTypeFormat);
         }
         tmpParticleDuplicateMatrixValueItem.setMatrix(tmpMatrix);
         // </editor-fold>
@@ -895,12 +897,14 @@ public final class StandardParticleInteractionData {
                 if (!tmpParticleDuplicateMatrixValueItem.hasNumericNullValue(i, 3)) {
                     tmpNewCharge = tmpParticleDuplicateMatrixValueItem.getFormattedValue(i, 3);
                 }
-                String tmpNewParticleColor = tmpParticleDuplicateMatrixValueItem.getFormattedValue(i, 4);
+                double tmpRepulsionCorrectionFactor = tmpParticleDuplicateMatrixValueItem.getValueAsDouble(i, 4);
+                String tmpNewParticleColor = tmpParticleDuplicateMatrixValueItem.getFormattedValue(i, 5);
                 tmpParticleSetFileLineList = this.duplicateSingleParticle(
                     tmpParticleSetFileLineList, 
                     tmpOldParticle, 
                     tmpNewParticle, 
                     tmpNewCharge,
+                    tmpRepulsionCorrectionFactor,
                     tmpNewParticleColor
                 );
             }
@@ -1628,7 +1632,6 @@ public final class StandardParticleInteractionData {
         if (tmpParticles == null || tmpParticles.length == 0) {
             return null;
         }
-
         // </editor-fold>
         ValueItem tmpParticleTableValueItem = new ValueItem();
         tmpParticleTableValueItem.setName("ParticleTable");
@@ -1715,7 +1718,6 @@ public final class StandardParticleInteractionData {
      * temperature or null if no value item can be created
      */
     public ValueItem getInteractionsMatrixValueItem(String aFirstParticle, String aTemperature) {
-
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aFirstParticle == null || aFirstParticle.isEmpty()) {
             return null;
@@ -1726,7 +1728,6 @@ public final class StandardParticleInteractionData {
         if (!this.particleToDescriptionMap.containsKey(aFirstParticle)) {
             return null;
         }
-
         // </editor-fold>
         ValueItem tmpValueItem = new ValueItem();
         tmpValueItem.setName("MFSIM_SOURCE_INTERACTIONS_MATRIX");
@@ -1861,6 +1862,7 @@ public final class StandardParticleInteractionData {
      * null/empty)
      * @param aNewParticle New particle (not allowed to be null/empty)
      * @param aNewCharge New charge (may be null/empty)
+     * @param aRepulsionCorrectionFactor Repulsion correction factor
      * @param aNewParticleColor New particle color
      * @return New particle set file line list or null if new list could not be
      * created
@@ -1870,6 +1872,7 @@ public final class StandardParticleInteractionData {
         String anOldParticle, 
         String aNewParticle, 
         String aNewCharge,
+        double aRepulsionCorrectionFactor,
         String aNewParticleColor
     ) {
         // <editor-fold defaultstate="collapsed" desc="Checks">
@@ -1880,6 +1883,9 @@ public final class StandardParticleInteractionData {
             return null;
         }
         if (aNewParticle == null || aNewParticle.isEmpty()) {
+            return null;
+        }
+        if (aRepulsionCorrectionFactor < 0.0 || aRepulsionCorrectionFactor > 1.0) {
             return null;
         }
         if (anOldParticle.trim().equalsIgnoreCase(aNewParticle.trim())) {
@@ -1907,7 +1913,9 @@ public final class StandardParticleInteractionData {
 
         // Correct duplicated particle for charge
         LinkedList<String> tmpNewParticleSetFileLineList = new LinkedList<>();
-
+        tmpNewParticleSetFileLineList.add("# Repulsion correction factor (" + anOldParticle + "|" + aNewParticle + ") = " + String.valueOf(aRepulsionCorrectionFactor));
+        tmpNewParticleSetFileLineList.add("#");
+        
         String tmpParticleDescriptionStartLine = String.format(ModelDefinitions.SECTION_START_TAG_FORMAT, ModelDefinitions.PARTICLE_DESCRIPTION_SECTION_TAG);
         String tmpParticleDescriptionEndLine = String.format(ModelDefinitions.SECTION_END_TAG_FORMAT, ModelDefinitions.PARTICLE_DESCRIPTION_SECTION_TAG);
         boolean tmpIsDescriptionSectionStart = false;
@@ -1962,11 +1970,11 @@ public final class StandardParticleInteractionData {
                         }
                         String tmpNewInteractionLine = tmpCurrentLine;
                         if (tmpOtherParticle.equals(tmpWaterParticle)) {
-                            // <editor-fold defaultstate="collapsed" desc="Other particle is water">
+                            // <editor-fold defaultstate="collapsed" desc="Other particle is uncharged water">
                             for (int i = 0; i < tmpTemperatureStrings.length; i++) {
                                 double tmpA_OldParticle_Water = Double.valueOf(this.getInteraction(anOldParticle, tmpWaterParticle, tmpTemperatureStrings[i]));
                                 double tmpA_Water_Water = Double.valueOf(this.getInteraction(tmpWaterParticle, tmpWaterParticle, tmpTemperatureStrings[i]));
-                                double tmpDelta = Math.abs(tmpA_OldParticle_Water - tmpA_Water_Water);
+                                double tmpDelta = aRepulsionCorrectionFactor * Math.abs(tmpA_OldParticle_Water - tmpA_Water_Water);
                                 double tmpA_NewParticle_Water = tmpA_OldParticle_Water - tmpDelta;
                                 tmpNewInteractionLine = 
                                     this.stringUtilityMethods.replaceToken(
@@ -1975,7 +1983,6 @@ public final class StandardParticleInteractionData {
                                         this.stringUtilityMethods.formatDoubleValue(tmpA_NewParticle_Water, 6)
                                     );
                             }
-                            tmpNewParticleSetFileLineList.add(tmpNewInteractionLine);
                             // </editor-fold>
                         } else {
                             // <editor-fold defaultstate="collapsed" desc="Other particle is NOT water">
@@ -1984,7 +1991,7 @@ public final class StandardParticleInteractionData {
                                 for (int i = 0; i < tmpTemperatureStrings.length; i++) {
                                     double tmpA_OtherParticle_Water = Double.valueOf(this.getInteraction(tmpOtherParticle, tmpWaterParticle, tmpTemperatureStrings[i]));
                                     double tmpA_Water_Water = Double.valueOf(this.getInteraction(tmpWaterParticle, tmpWaterParticle, tmpTemperatureStrings[i]));
-                                    double tmpDelta = Math.abs(tmpA_OtherParticle_Water - tmpA_Water_Water);
+                                    double tmpDelta = aRepulsionCorrectionFactor * Math.abs(tmpA_OtherParticle_Water - tmpA_Water_Water);
                                     double tmpA_OldParticle_OtherParticle = Double.valueOf(this.getInteraction(anOldParticle, tmpOtherParticle, tmpTemperatureStrings[i]));;
                                     double tmpA_NewParticle_OtherParticle = tmpA_OldParticle_OtherParticle + tmpDelta;
                                     if (tmpA_OtherParticle_Water < tmpA_Water_Water) {
@@ -2084,6 +2091,9 @@ public final class StandardParticleInteractionData {
         // <editor-fold defaultstate="collapsed" desc="Duplicate particles">
         // <editor-fold defaultstate="collapsed" desc="- Initial definitions">
         LinkedList<String> tmpNewParticleSetFileLineList = new LinkedList<>();
+        tmpNewParticleSetFileLineList.add("# Old particle = " + anOldParticle);
+        tmpNewParticleSetFileLineList.add("# New particle = " + aNewParticle);
+        tmpNewParticleSetFileLineList.add("#");
 
         String tmpParticleDescriptionStartLine = String.format(ModelDefinitions.SECTION_START_TAG_FORMAT, ModelDefinitions.PARTICLE_DESCRIPTION_SECTION_TAG);
         String tmpParticleDescriptionEndLine = String.format(ModelDefinitions.SECTION_END_TAG_FORMAT, ModelDefinitions.PARTICLE_DESCRIPTION_SECTION_TAG);
@@ -3034,7 +3044,7 @@ public final class StandardParticleInteractionData {
     }
 
     /**
-     * Returns particle-pair descriptor. NOTE: No checks are performed.
+     * Returns particle-pair descriptor. (No checks are performed)
      *
      * @param aParticle1 Particle 1 of pair
      * @param aParticle1 Particle 2 of pair

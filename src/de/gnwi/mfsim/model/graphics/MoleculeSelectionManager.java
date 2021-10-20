@@ -83,7 +83,7 @@ public class MoleculeSelectionManager {
     // <editor-fold defaultstate="collapsed" desc="Public methods">
     /**
      * Returns if particle with specified index is selected.
-     * NOTE: No checks are performed.
+     * (No checks are performed)
      * 
      * @param aParticleIndex Particle index
      * @return True: Particle is selected, false: Otherwise
@@ -104,7 +104,7 @@ public class MoleculeSelectionManager {
     /**
      * Returns if molecule of particle with specified index is to be displayed
      * with its selection color and transparency.
-     * NOTE: No checks are performed.
+     * (No checks are performed)
      * 
      * @param aParticleIndex Particle index
      * @return True: Display with selection color and transparency, false: 
@@ -120,7 +120,7 @@ public class MoleculeSelectionManager {
 
     /**
      * Returns selected molecule color.
-     * NOTE: No checks are performed.
+     * (No checks are performed)
      * 
      * @param aParticleIndex Particle index
      * @return Selected molecule color or null if none is specified
@@ -135,7 +135,7 @@ public class MoleculeSelectionManager {
 
     /**
      * Returns selected molecule transparency.
-     * NOTE: No checks are performed.
+     * (No checks are performed)
      * 
      * @param aParticleIndex Particle index
      * @return Selected molecule transparency or -1 if none is specified
@@ -150,7 +150,7 @@ public class MoleculeSelectionManager {
 
     /**
      * Returns selected molecule name.
-     * NOTE: No checks are performed.
+     * (No checks are performed)
      * 
      * @param aParticleIndex Particle index
      * @return Selected molecule name or null if none is specified
@@ -166,7 +166,7 @@ public class MoleculeSelectionManager {
 
     /**
      * Returns selected molecule index.
-     * NOTE: No checks are performed.
+     * (No checks are performed)
      * 
      * @param aParticleIndex Particle index
      * @return Selected molecule index or -1 if none is specified
@@ -182,7 +182,7 @@ public class MoleculeSelectionManager {
     
     /**
      * Adds selected molecule.
-     * NOTE: No checks are performed.
+     * (No checks are performed)
      * 
      * @param aSelectedMolecule Selected molecule
      * @return True: Selected molecule was added, false: Otherwise (nothing changed)
@@ -206,7 +206,7 @@ public class MoleculeSelectionManager {
 
     /**
      * Removes selected molecule which contains particle index
-     * NOTE: No checks are performed.
+     * (No checks are performed)
      * 
      * @param aParticleIndex Particle index
      * @return True: Selected molecule was removed, false: Otherwise (nothing changed)
@@ -222,7 +222,7 @@ public class MoleculeSelectionManager {
 
     /**
      * Removes selected molecule
-     * NOTE: No checks are performed.
+     * (No checks are performed)
      * 
      * @param aSelectedMoleculeName Selected molecule name
      * @param aSelectedMoleculeIndex Selected molecule index
@@ -289,7 +289,7 @@ public class MoleculeSelectionManager {
     // <editor-fold defaultstate="collapsed" desc="Private methods">
     /**
      * Return molecule index name
-     * NOTE: No checks are performed.
+     * (No checks are performed)
      * 
      * @param aMoleculeName Molecule name
      * @param aMoleculeIndex Molecule index

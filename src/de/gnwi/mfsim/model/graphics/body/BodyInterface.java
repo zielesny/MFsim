@@ -26,8 +26,7 @@ import de.gnwi.mfsim.model.graphics.shape.ShapeInterface;
 import de.gnwi.mfsim.model.graphics.SimulationBoxViewEnum;
 import de.gnwi.mfsim.model.valueItem.ValueItem;
 import de.gnwi.spices.IPointInSpace;
-import java.util.LinkedList;
-import java.util.Random;
+import de.gnwi.jdpd.interfaces.IRandom;
 
 /**
  * Interface for bodies
@@ -60,7 +59,7 @@ public interface BodyInterface extends Comparable<BodyInterface>, ChangeNotifier
      * @param aRandomNumberGenerator Random number generator
      * @return Point in space inside the body
      */
-    PointInSpace getRandomPointInVolume(Random aRandomNumberGenerator);
+    PointInSpace getRandomPointInVolume(IRandom aRandomNumberGenerator);
 
     /**
      * Returns aNumber random points in space inside the body
@@ -69,7 +68,7 @@ public interface BodyInterface extends Comparable<BodyInterface>, ChangeNotifier
      * @param aRandomNumberGenerator Random number generator
      * @return Points in space inside the body
      */
-    PointInSpace[] getRandomPointsInVolume(int aNumber, Random aRandomNumberGenerator);
+    PointInSpace[] getRandomPointsInVolume(int aNumber, IRandom aRandomNumberGenerator);
 
     /**
      * Returns a random point on the surface of body
@@ -77,7 +76,7 @@ public interface BodyInterface extends Comparable<BodyInterface>, ChangeNotifier
      * @param aRandomNumberGenerator Random number generator
      * @return Point on surface of body
      */
-    PointInSpace getRandomPointOnSurface(Random aRandomNumberGenerator);
+    PointInSpace getRandomPointOnSurface(IRandom aRandomNumberGenerator);
 
     /**
      * Returns aNumber random points on the surface of body
@@ -86,7 +85,7 @@ public interface BodyInterface extends Comparable<BodyInterface>, ChangeNotifier
      * @param aRandomNumberGenerator Random number generator
      * @return Points on surface of body
      */
-    PointInSpace[] getRandomPointsOnSurface(int aNumber, Random aRandomNumberGenerator);
+    PointInSpace[] getRandomPointsOnSurface(int aNumber, IRandom aRandomNumberGenerator);
 
     /**
      * Fills aNumber random points inside the body into buffer.
@@ -97,7 +96,7 @@ public interface BodyInterface extends Comparable<BodyInterface>, ChangeNotifier
      * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
-    void fillRandomPointsInVolume(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, Random aRandomNumberGenerator);
+    void fillRandomPointsInVolume(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, IRandom aRandomNumberGenerator);
 
     /**
      * Fills aNumber random points inside the body into buffers.
@@ -110,7 +109,7 @@ public interface BodyInterface extends Comparable<BodyInterface>, ChangeNotifier
      * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
-    void fillRandomPointsInVolume(IPointInSpace[] aBuffer1, IPointInSpace[] aBuffer2, int aFirstIndex, int aNumber, Random aRandomNumberGenerator);
+    void fillRandomPointsInVolume(IPointInSpace[] aBuffer1, IPointInSpace[] aBuffer2, int aFirstIndex, int aNumber, IRandom aRandomNumberGenerator);
 
     /**
      * Fills aNumber random points inside the body into buffer. NOTE: The volume
@@ -126,7 +125,7 @@ public interface BodyInterface extends Comparable<BodyInterface>, ChangeNotifier
      * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
-    void fillRandomPointsInVolumeWithExcludingSpheres(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, int aNumberOfTrials, Random aRandomNumberGenerator);
+    void fillRandomPointsInVolumeWithExcludingSpheres(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, int aNumberOfTrials, IRandom aRandomNumberGenerator);
 
     /**
      * Fills aNumber random points inside the body into buffers. NOTE: The volume
@@ -147,7 +146,7 @@ public interface BodyInterface extends Comparable<BodyInterface>, ChangeNotifier
      * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
-    void fillRandomPointsInVolumeWithExcludingSpheres(IPointInSpace[] aBuffer1, IPointInSpace[] aBuffer2, int aFirstIndex, int aNumber, double aStepDistance, int aNumberOfTrials, Random aRandomNumberGenerator);
+    void fillRandomPointsInVolumeWithExcludingSpheres(IPointInSpace[] aBuffer1, IPointInSpace[] aBuffer2, int aFirstIndex, int aNumber, double aStepDistance, int aNumberOfTrials, IRandom aRandomNumberGenerator);
 
     /**
      * Fills aNumber random points on the surface of the body into buffer
@@ -158,7 +157,7 @@ public interface BodyInterface extends Comparable<BodyInterface>, ChangeNotifier
      * @param aRandomNumberGenerator Random number generator
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
-    void fillRandomPointsOnSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, Random aRandomNumberGenerator);
+    void fillRandomPointsOnSurface(IPointInSpace[] aBuffer, int aFirstIndex, int aNumber, IRandom aRandomNumberGenerator);
 
     /**
      * Returns shape in current box view

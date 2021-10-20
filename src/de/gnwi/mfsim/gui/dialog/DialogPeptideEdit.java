@@ -104,6 +104,11 @@ public class DialogPeptideEdit extends CustomDialogApplyCancelSize implements Ch
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * CustomPeptidePanel
+     * 
+     * @return CustomPeptidePanel
+     */
     public CustomPanelPeptideEdit getCustomPeptidePanel() {
         return customPeptidePanel;
     }

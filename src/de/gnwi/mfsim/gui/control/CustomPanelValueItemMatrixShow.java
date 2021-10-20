@@ -55,6 +55,9 @@ public class CustomPanelValueItemMatrixShow extends JPanel {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Constructor">
+    /**
+     * Constructor
+     */
     public CustomPanelValueItemMatrixShow() {
         super();
         this.springLayout = new SpringLayout();
@@ -105,6 +108,11 @@ public class CustomPanelValueItemMatrixShow extends JPanel {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * MatrixTable
+     * 
+     * @return MatrixTable
+     */
     public JTable getMatrixTable() {
         return matrixTable;
     }

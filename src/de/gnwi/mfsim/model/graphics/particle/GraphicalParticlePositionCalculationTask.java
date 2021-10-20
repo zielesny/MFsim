@@ -42,7 +42,7 @@ import de.gnwi.mfsim.model.util.ProgressTaskInterface;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import de.gnwi.mfsim.model.preference.ModelDefinitions;
-import java.util.Random;
+import de.gnwi.jdpd.interfaces.IRandom;
 
 /**
  * Task for graphical particle position calculation
@@ -226,8 +226,6 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
      */
     @Override
     public Boolean call() throws Exception {
-        // Save number of trials for compartment
-        int tmpOldNumberOfTrialsForCompartment = Preferences.getInstance().getNumberOfTrialsForCompartment();
         try {
             // <editor-fold defaultstate="collapsed" desc="Task starts. Set progress in percent to 0.">
             this.isStarted = true;
@@ -238,13 +236,8 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
             MiscUtilityMethods tmpMiscUtilityMethods = new MiscUtilityMethods();
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="Set random number generator and seed">
-            long tmpRandomSeed = this.compartmentContainer.getGeometryRandomSeed();
-            Random tmpRandomNumberGenerator = this.miscUtilityMethods.getRandomNumberGenerator(tmpRandomSeed);
-            // </editor-fold>
-            // <editor-fold defaultstate="collapsed" desc="Set minimum number of trials for compartment">
-            // Compartment trials may lead to very long start geometry 
-            // calculations which are NOT necessary for simple viewing tasks
-            Preferences.getInstance().setNumberOfTrialsForCompartment(ModelDefinitions.MINIMUM_NUMBER_OF_TRIALS_FOR_COMPARTMENT);
+            int tmpRandomSeed = this.compartmentContainer.getGeometryRandomSeed();
+            IRandom tmpRandomNumberGenerator = this.miscUtilityMethods.getRandomNumberGenerator(tmpRandomSeed);
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="Set bond length">
             // Bond length = 2 * radius of single particle in DPD units
@@ -294,6 +287,8 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                             for (int i = 0; i < tmpChemicalCompositionValueItem.getMatrixRowCount(); i++) {
                                 // <editor-fold defaultstate="collapsed" desc="Check if canceled">
                                 if (this.isStopped) {
+                                    // IMPORTANT: Restore matrix rows that were sorted with protein data first
+                                    tmpChemicalCompositionValueItem.restoreOriginalMatrixRowsAfterSorting();
                                     return returnCancelled();
                                 }
                                 // </editor-fold>
@@ -334,6 +329,8 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                                         }
                                         // <editor-fold defaultstate="collapsed" desc="Check if canceled">
                                         if (this.isStopped) {
+                                            // IMPORTANT: Restore matrix rows that were sorted with protein data first
+                                            tmpChemicalCompositionValueItem.restoreOriginalMatrixRowsAfterSorting();
                                             PdbToDpdPool.getInstance().setPdbToDpdForReuse(tmpPdbToDpd, tmpProteinData);
                                             return returnCancelled();
                                         }
@@ -347,6 +344,8 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                                             }
                                             // <editor-fold defaultstate="collapsed" desc="Check if canceled">
                                             if (this.isStopped) {
+                                                // IMPORTANT: Restore matrix rows that were sorted with protein data first
+                                                tmpChemicalCompositionValueItem.restoreOriginalMatrixRowsAfterSorting();
                                                 PdbToDpdPool.getInstance().setPdbToDpdForReuse(tmpPdbToDpd, tmpProteinData);
                                                 return returnCancelled();
                                             }
@@ -369,6 +368,8 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                                             tmpPdbToDpd.getGraphicalParticlePositions(tmpParticleToGraphicalParticleInterfaceMap, tmpProteinGraphicalParticlePositionsArray);
                                             // <editor-fold defaultstate="collapsed" desc="Check if canceled">
                                             if (this.isStopped) {
+                                                // IMPORTANT: Restore matrix rows that were sorted with protein data first
+                                                tmpChemicalCompositionValueItem.restoreOriginalMatrixRowsAfterSorting();
                                                 return returnCancelled();
                                             }
 
@@ -463,12 +464,11 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                                         GraphicalParticlePosition[] tmpLastParticleCoordinates = new GraphicalParticlePosition[tmpQuantityInVolume + tmpQuantityOnSurface];
                                         if (tmpQuantityInVolume > 0) {
                                             if (tmpIsSingleParticleMolecule) {
-                                                // If single particle molecule use tmpOldNumberOfTrialsForCompartment
                                                 tmpSphere.fillRandomPointsInVolumeWithExcludingSpheres(
                                                     tmpFirstParticleCoordinates, 
                                                     0, 
                                                     tmpQuantityInVolume, 
-                                                    tmpOldNumberOfTrialsForCompartment,
+                                                    Preferences.getInstance().getNumberOfTrialsForCompartment(),
                                                     tmpRandomNumberGenerator
                                                 );
                                                 tmpLastParticleCoordinates = tmpFirstParticleCoordinates;
@@ -486,6 +486,8 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                                         }
                                         // <editor-fold defaultstate="collapsed" desc="Check if canceled">
                                         if (this.isStopped) {
+                                            // IMPORTANT: Restore matrix rows that were sorted with protein data first
+                                            tmpChemicalCompositionValueItem.restoreOriginalMatrixRowsAfterSorting();
                                             return returnCancelled();
                                         }
                                         // </editor-fold>
@@ -504,6 +506,8 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                                         }
                                         // <editor-fold defaultstate="collapsed" desc="Check if canceled">
                                         if (this.isStopped) {
+                                            // IMPORTANT: Restore matrix rows that were sorted with protein data first
+                                            tmpChemicalCompositionValueItem.restoreOriginalMatrixRowsAfterSorting();
                                             return returnCancelled();
                                         }
                                         // </editor-fold>
@@ -521,6 +525,8 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                                         }
                                         // <editor-fold defaultstate="collapsed" desc="Check if canceled">
                                         if (this.isStopped) {
+                                            // IMPORTANT: Restore matrix rows that were sorted with protein data first
+                                            tmpChemicalCompositionValueItem.restoreOriginalMatrixRowsAfterSorting();
                                             return returnCancelled();
                                         }
                                         // </editor-fold>
@@ -781,12 +787,11 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                                             // </editor-fold>
                                             if (tmpQuantityInVolume > 0) {
                                                 if (tmpIsSingleParticleMolecule) {
-                                                    // If single particle molecule use tmpOldNumberOfTrialsForCompartment
                                                     tmpXyLayer.fillRandomPointsInVolumeWithExcludingSpheres(
                                                         tmpFirstParticleCoordinates, 
                                                         0, 
                                                         tmpQuantityInVolume, 
-                                                        tmpOldNumberOfTrialsForCompartment,
+                                                        Preferences.getInstance().getNumberOfTrialsForCompartment(),
                                                         tmpRandomNumberGenerator
                                                     );
                                                     tmpLastParticleCoordinates = tmpFirstParticleCoordinates;
@@ -1081,12 +1086,11 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                         // <editor-fold defaultstate="collapsed" desc="No protein data">
                         GraphicalParticlePosition[] tmpFirstParticleCoordinates = new GraphicalParticlePosition[tmpQuantity];
                         if (tmpIsSingleParticleMolecule) {
-                            // If single particle molecule use tmpOldNumberOfTrialsForCompartment
                             this.compartmentContainer.getCompartmentBox().fillFreeVolumeRandomPoints(
                                 tmpFirstParticleCoordinates, 
                                 0, 
                                 tmpQuantity, 
-                                tmpOldNumberOfTrialsForCompartment,
+                                Preferences.getInstance().getNumberOfTrialsForCompartment(),
                                 tmpRandomNumberGenerator
                             );
                         } else {
@@ -1100,6 +1104,8 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                         }
                         // <editor-fold defaultstate="collapsed" desc="Check if canceled">
                         if (this.isStopped) {
+                            // IMPORTANT: Restore matrix rows that were sorted with protein data first
+                            tmpBulkInfoValueItem.restoreOriginalMatrixRowsAfterSorting();
                             return returnCancelled();
                         }
                         // </editor-fold>
@@ -1118,6 +1124,8 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                         }
                         // <editor-fold defaultstate="collapsed" desc="Check if canceled">
                         if (this.isStopped) {
+                            // IMPORTANT: Restore matrix rows that were sorted with protein data first
+                            tmpBulkInfoValueItem.restoreOriginalMatrixRowsAfterSorting();
                             return returnCancelled();
                         }
                         // </editor-fold>
@@ -1132,6 +1140,8 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                             );
                         // <editor-fold defaultstate="collapsed" desc="Check if canceled">
                         if (this.isStopped) {
+                            // IMPORTANT: Restore matrix rows that were sorted with protein data first
+                            tmpBulkInfoValueItem.restoreOriginalMatrixRowsAfterSorting();
                             return returnCancelled();
                         }
                         // </editor-fold>
@@ -1143,6 +1153,8 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                             while (!tmpIsCorrect) {
                                 // <editor-fold defaultstate="collapsed" desc="Check if canceled">
                                 if (this.isStopped) {
+                                    // IMPORTANT: Restore matrix rows that were sorted with protein data first
+                                    tmpBulkInfoValueItem.restoreOriginalMatrixRowsAfterSorting();
                                     return returnCancelled();
                                 }
                                 // </editor-fold>
@@ -1195,6 +1207,8 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                             // </editor-fold>
                             // <editor-fold defaultstate="collapsed" desc="Check if canceled">
                             if (this.isStopped) {
+                                // IMPORTANT: Restore matrix rows that were sorted with protein data first
+                                tmpBulkInfoValueItem.restoreOriginalMatrixRowsAfterSorting();
                                 return returnCancelled();
                             }
                             // </editor-fold>
@@ -1210,6 +1224,8 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                 // </editor-fold>
                 // <editor-fold defaultstate="collapsed" desc="Check if canceled">
                 if (this.isStopped) {
+                    // IMPORTANT: Restore matrix rows that were sorted with protein data first
+                    tmpBulkInfoValueItem.restoreOriginalMatrixRowsAfterSorting();
                     return returnCancelled();
                 }
                 // </editor-fold>
@@ -1257,9 +1273,6 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
             this.propertyChangeSupport.firePropertyChange(ModelDefinitions.PROPERTY_CHANGE_ERROR, false, true);
             return this.returnCancelled();
         } finally {
-            // <editor-fold defaultstate="collapsed" desc="Restore number of trials for compartment">
-            Preferences.getInstance().setNumberOfTrialsForCompartment(tmpOldNumberOfTrialsForCompartment);
-            // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="Release memory">
             this.releaseMemory();
             // </editor-fold>

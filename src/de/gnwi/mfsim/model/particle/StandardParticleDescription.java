@@ -31,11 +31,14 @@ import de.gnwi.mfsim.model.preference.ModelDefinitions;
  */
 public class StandardParticleDescription {
 
-    // <editor-fold defaultstate="collapsed" desc="Private class variables">
+    // <editor-fold defaultstate="collapsed" desc="Private final class variables">
     /**
      * Pattern for single particle to match
      */
-    private Pattern particlePattern = Pattern.compile(ModelDefinitions.PARTICLE_REGEX_PATTERN_STRING);
+    private final Pattern particlePattern = Pattern.compile(ModelDefinitions.PARTICLE_REGEX_PATTERN_STRING);
+    // </editor-fold>
+    //
+    // <editor-fold defaultstate="collapsed" desc="Private class variables">
     /**
      * Particle
      */
@@ -57,6 +60,10 @@ public class StandardParticleDescription {
      */
     private String charge;
     /**
+     * Charge value of particle
+     */
+    private double chargeValue;
+    /**
      * Volume of particle
      */
     private String volume;
@@ -72,7 +79,6 @@ public class StandardParticleDescription {
      * Particle description string
      */
     private String particleDescriptionString;
-
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Constructor">
@@ -89,8 +95,16 @@ public class StandardParticleDescription {
      * @param aStandardColor standard color of particle
      * @throws IllegalArgumentException Thrown if an argument is illegal
      */
-    public StandardParticleDescription(String aParticle, String aName, String aMolWeightInDpdUnits, String aCharge, String aMolWeightInGMol, String aVolume,
-            String aGraphicsRadius, String aStandardColor) throws IllegalArgumentException {
+    public StandardParticleDescription(
+        String aParticle, 
+        String aName, 
+        String aMolWeightInDpdUnits, 
+        String aCharge, 
+        String aMolWeightInGMol, 
+        String aVolume,
+        String aGraphicsRadius, 
+        String aStandardColor
+    ) throws IllegalArgumentException {
         // <editor-fold defaultstate="collapsed" desc="Checks">
 
         if (aParticle == null || aParticle.isEmpty() || ModelDefinitions.GENERAL_SEPARATOR_PATTERN.matcher(aParticle).matches()) {
@@ -129,6 +143,7 @@ public class StandardParticleDescription {
         this.name = aName;
         this.massDpd = aMolWeightInDpdUnits;
         this.charge = aCharge;
+        this.chargeValue = Double.valueOf(this.charge);
         this.massGMol = aMolWeightInGMol;
         this.volume = aVolume;
         this.graphicsRadius = aGraphicsRadius;
@@ -151,7 +166,6 @@ public class StandardParticleDescription {
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
     public StandardParticleDescription(String aParticleDescriptionString) throws IllegalArgumentException {
-
         // <editor-fold defaultstate="collapsed" desc="Checks">
 
         if (aParticleDescriptionString == null || aParticleDescriptionString.isEmpty()) {
@@ -159,7 +173,6 @@ public class StandardParticleDescription {
         }
 
         // </editor-fold>
-
         String[] tmpParticleDataArray = ModelDefinitions.GENERAL_SEPARATOR_PATTERN.split(aParticleDescriptionString);
         if (tmpParticleDataArray == null || tmpParticleDataArray.length != 8) {
             throw new IllegalArgumentException("An argument is illegal.");
@@ -169,12 +182,12 @@ public class StandardParticleDescription {
         this.massDpd = tmpParticleDataArray[2].trim();
         this.massGMol = tmpParticleDataArray[3].trim();
         this.charge = tmpParticleDataArray[4].trim();
+        this.chargeValue = Double.valueOf(this.charge);
         this.volume = tmpParticleDataArray[5].trim();
         this.graphicsRadius = tmpParticleDataArray[6].trim();
         this.standardColor = tmpParticleDataArray[7].trim();
         this.particleDescriptionString = aParticleDescriptionString;
     }
-
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public methods">
@@ -186,7 +199,6 @@ public class StandardParticleDescription {
     public String getParticleDescriptionString() {
         return this.particleDescriptionString;
     }
-
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public properties (get only)">
@@ -233,6 +245,15 @@ public class StandardParticleDescription {
      */
     public String getCharge() {
         return this.charge;
+    }
+
+    /**
+     * Charge value of particle
+     *
+     * @return Charge value of particle
+     */
+    public double getChargeValue() {
+        return this.chargeValue;
     }
 
     /**

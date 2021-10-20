@@ -1500,5 +1500,6 @@ public class SpherePackingUtils {
 		}
 		return coordinates;
 	}
+
 }
 

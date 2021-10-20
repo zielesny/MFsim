@@ -134,6 +134,11 @@ public class DialogDistributionMovieShow extends CustomDialogApplyCancelSize imp
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * CustomPanelDistributionMovie
+     * 
+     * @return CustomPanelDistributionMovie
+     */
     public CustomPanelDistributionMovie getCustomPanelDistributionMovie(){
         return this.customPanelDistributionMovie;
     }

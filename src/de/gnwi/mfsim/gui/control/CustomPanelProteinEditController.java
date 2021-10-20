@@ -52,6 +52,8 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import de.gnwi.mfsim.model.util.ModelUtils;
 import de.gnwi.mfsim.gui.preference.GuiDefinitions;
+import de.gnwi.mfsim.model.valueItem.ValueItemMatrixElement;
+import de.gnwi.mfsim.model.valueItem.ValueItemUpdateNotifierInterface;
 import javax.swing.ComboBoxModel;
 
 /**
@@ -59,7 +61,7 @@ import javax.swing.ComboBoxModel;
  *
  * @author Achim Zielesny
  */
-public class CustomPanelProteinEditController extends ChangeNotifier {
+public class CustomPanelProteinEditController extends ChangeNotifier implements ValueItemUpdateNotifierInterface {
 
     // <editor-fold defaultstate="collapsed" desc="Private class variables">
     /**
@@ -341,6 +343,34 @@ public class CustomPanelProteinEditController extends ChangeNotifier {
     public SpicesGraphics getLastValidSpices() {
         return this.lastValidSpices;
     }
+    // </editor-fold>
+    //
+    // <editor-fold defaultstate="collapsed" desc="notifyDependentValueItemsForUpdate() method">
+    /**
+     * Notify dependent value items of container for update
+     *
+     * @param anUpdateNotifierValueItem Value item that notifies update
+     */
+    @Override
+    public void notifyDependentValueItemsForUpdate(ValueItem anUpdateNotifierValueItem) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (anUpdateNotifierValueItem == null) {
+            return;
+        }
+        if (anUpdateNotifierValueItem.getValueItemContainer() == null) {
+            return;
+        }
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Update notifier PROTEIN_MUTANT">
+        if (anUpdateNotifierValueItem.getName().equals("PROTEIN_MUTANT")) {
+            ValueItemMatrixElement[][] tmpMatrix = anUpdateNotifierValueItem.getMatrix();
+            for(int i = 0; i < tmpMatrix.length; i++) {
+                // Highlight replacement if different to original amino acid
+                tmpMatrix[i][3].getTypeFormat().setHightlight(!tmpMatrix[i][2].getValue().equals(tmpMatrix[i][3].getValue()));
+            }
+        }
+        // </editor-fold>
+    }    
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public properties (get)">
@@ -673,7 +703,6 @@ public class CustomPanelProteinEditController extends ChangeNotifier {
             // <editor-fold defaultstate="collapsed" desc="Set property value item container">
             ValueItemContainer tmpPropertyValueItemContainer = new ValueItemContainer(null);
             int tmpVerticalPosition = 1;
-
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="Set property value items">
             String[] tmpNodeNames = new String[]{GuiMessage.get("proteinPropertySettings.Nodename")};
@@ -781,7 +810,7 @@ public class CustomPanelProteinEditController extends ChangeNotifier {
         try {
             MouseCursorManagement.getInstance().setWaitCursor();
             // <editor-fold defaultstate="collapsed" desc="Set mutant value item container">
-            ValueItemContainer tmpMutantValueItemContainer = new ValueItemContainer(null);
+            ValueItemContainer tmpMutantValueItemContainer = new ValueItemContainer(this);
             int tmpVerticalPosition = 1;
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="Set mutant value item">
@@ -805,11 +834,11 @@ public class CustomPanelProteinEditController extends ChangeNotifier {
                 HashMap<String, String> tmpChainNameToIdMap = this.pdbToDpd.getNameChainIDMap();
                 HashMap<String, AminoAcid[]> tmpCurrentAminoAcidSequenceMap = this.pdbToDpd.getCurrentAminoAcidSequence();
                 for (int i = 0; i < tmpMutantValueItem.getMatrixRowCount(); i++) {
-                    if (!tmpMutantValueItem.getValue(i, 2).equals(tmpMutantValueItem.getValue(i, 3))) {
-                        String tmpId = tmpChainNameToIdMap.get(tmpMutantValueItem.getValue(i, 0));
-                        // Get replaced amino acid index (NOTE: Starts with index = 1)
-                        int tmpReplacedAminoAcidIndexInChain = tmpMutantValueItem.getValueAsInt(i, 1) - 1;
-                        AminoAcid[] tmpCurrentAminoAcids = tmpCurrentAminoAcidSequenceMap.get(tmpId);
+                    String tmpId = tmpChainNameToIdMap.get(tmpMutantValueItem.getValue(i, 0));
+                    AminoAcid[] tmpCurrentAminoAcids = tmpCurrentAminoAcidSequenceMap.get(tmpId);
+                    // Get replaced amino acid index (NOTE: Starts with index = 1)
+                    int tmpReplacedAminoAcidIndexInChain = tmpMutantValueItem.getValueAsInt(i, 1) - 1;
+                    if (!tmpCurrentAminoAcids[tmpReplacedAminoAcidIndexInChain].getName().equals(tmpMutantValueItem.getValue(i, 3))) {
                         AminoAcid tmpReplacedAminoAcid = AminoAcids.getInstance().getAminoAcidsUtility().getAminoAcidFromName(tmpMutantValueItem.getValue(i, 3));
                         tmpCurrentAminoAcids[tmpReplacedAminoAcidIndexInChain] = tmpReplacedAminoAcid;
                     }

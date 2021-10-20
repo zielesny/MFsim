@@ -111,6 +111,11 @@ public class DialogJmolViewerShow extends CustomDialogApplyCancelSize implements
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * CustomJmolViewerPanel
+     * 
+     * @return CustomJmolViewerPanel
+     */
     public CustomPanelJmolViewer getCustomJmolViewerPanel() {
         return customJmolViewerPanel;
     }

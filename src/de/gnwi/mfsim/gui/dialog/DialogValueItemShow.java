@@ -108,6 +108,11 @@ public class DialogValueItemShow extends CustomDialogApplyCancelSize {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * CustomValueItemShowPanel
+     * 
+     * @return CustomValueItemShowPanel
+     */
     public CustomPanelValueItemShow getCustomValueItemShowPanel() {
         return customValueItemShowPanel;
     }

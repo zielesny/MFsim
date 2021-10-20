@@ -96,6 +96,11 @@ public class DialogValueItemMatrixDiagram extends CustomDialogApplyCancelSize {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * CustomPanelValueItemMatrixDiagram
+     * 
+     * @return CustomPanelValueItemMatrixDiagram
+     */
     public CustomPanelValueItemMatrixDiagram getCustomPanelValueItemMatrixDiagram(){
         return this.customPanelValueItemMatrixDiagram;
     }

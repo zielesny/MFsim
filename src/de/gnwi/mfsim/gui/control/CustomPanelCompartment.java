@@ -108,14 +108,29 @@ public class CustomPanelCompartment extends JPanel {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * MainTabbedPanel
+     * 
+     * @return MainTabbedPanel
+     */
     public JTabbedPane getMainTabbedPanel() {
         return mainTabbedPanel;
     }
 
+    /**
+     * CompartmentGraphicsPanel
+     * 
+     * @return CompartmentGraphicsPanel
+     */
     public CustomPanelCompartmentGraphics getCompartmentGraphicsPanel() {
         return compartmentGraphicsPanel;
     }
 
+    /**
+     * CompartmentEditPanel
+     * 
+     * @return CompartmentEditPanel
+     */
     public CustomPanelCompartmentEdit getCompartmentEditPanel() {
         return compartmentEditPanel;
     }

@@ -95,6 +95,11 @@ public class DialogStructureShow extends CustomDialogApplyCancelSize {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * CustomPanelStructureShow
+     * 
+     * @return CustomPanelStructureShow
+     */
     public CustomPanelStructureShow getCustomPanelStructureShow() {
         return customPanelStructureShow;
     }

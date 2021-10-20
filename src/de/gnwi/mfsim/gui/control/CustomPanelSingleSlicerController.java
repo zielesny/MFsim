@@ -227,9 +227,9 @@ public class CustomPanelSingleSlicerController extends ChangeNotifier implements
             this.singleSlicerPanel.getSimulationBoxPanel().getEditMoveAndSpinSettingsButton().setVisible(false);
             this.singleSlicerPanel.getSimulationBoxPanel().getBoxWaitButton().setVisible(false);
             this.singleSlicerPanel.getSimulationBoxPanel().getBoxMoveButton().setVisible(false);
-            this.singleSlicerPanel.getSimulationBoxPanel().getSpinAroundXButton().setVisible(false);
-            this.singleSlicerPanel.getSimulationBoxPanel().getSpinAroundYButton().setVisible(false);
-            this.singleSlicerPanel.getSimulationBoxPanel().getSpinAroundZButton().setVisible(false);
+            this.singleSlicerPanel.getSimulationBoxPanel().getFlyButton().setVisible(false);
+            this.singleSlicerPanel.getSimulationBoxPanel().getSpinHorizontalButton().setVisible(false);
+            this.singleSlicerPanel.getSimulationBoxPanel().getSpinVerticalButton().setVisible(false);
             this.imageFileType = anImageFileType;
             this.graphicalParticlePositionInfo = aGraphicalParticlePositionInfo;
             // Set value item container for molecule/particles display settings if available

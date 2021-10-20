@@ -120,6 +120,11 @@ public class DialogProgress extends CustomDialogApplyCancelSize {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * ProgressBar
+     * 
+     * @return ProgressBar
+     */
     public JProgressBar getProgressBar() {
         return progressBar;
     }

@@ -391,59 +391,128 @@ public class CustomPanelProteinShow extends JPanel {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
-
+    /**
+     * ProteinDefinitionInfoLabel
+     * 
+     * @return ProteinDefinitionInfoLabel
+     */
     public JLabel getProteinDefinitionInfoLabel() {
         return this.proteinDefinitionInfoLabel;
     }
 
+    /**
+     * PropertySpicesTextArea
+     * 
+     * @return PropertySpicesTextArea
+     */
     public JTextArea getPropertySpicesTextArea() {
         return this.propertySpicesTextArea;
     }
 
+    /**
+     * PropertyPdbFileContentTextArea
+     * 
+     * @return PropertyPdbFileContentTextArea
+     */
     public JTextArea getPropertyPdbFileContentTextArea() {
         return this.propertyPdbFileContentTextArea;
     }
 
+    /**
+     * PropertyTextArea
+     * 
+     * @return PropertyTextArea
+     */
     public JTextArea getPropertyTextArea() {
         return this.propertySpicesTextArea;
     }
 
+    /**
+     * PropertySequencesTextArea
+     * 
+     * @return PropertySequencesTextArea
+     */
     public JTextArea getPropertySequencesTextArea() {
         return this.propertySequencesTextArea;
     }
 
+    /**
+     * ProteinPropertyPanel
+     * 
+     * @return ProteinPropertyPanel
+     */
     public JPanel getProteinPropertyPanel() {
         return this.proteinPropertyPanel;
     }
 
+    /**
+     * Property3dStructureJmol3dPanel
+     * 
+     * @return Property3dStructureJmol3dPanel
+     */
     public Jmol3dPanel getProperty3dStructureJmol3dPanel() {
         return this.property3dStructureJmol3dPanel;
     }
 
+    /**
+     * GraphicsPreferencesButton
+     * 
+     * @return GraphicsPreferencesButton
+     */
     public JButton getGraphicsPreferencesButton() {
         return graphicsPreferencesButton;
     }
 
+    /**
+     * ShowProteinRotationButton
+     * 
+     * @return ShowProteinRotationButton
+     */
     public JButton getShowProteinRotationButton() {
         return showProteinRotationButton;
     }
 
+    /**
+     * ShowChainButton
+     * 
+     * @return ShowChainButton
+     */
     public JButton getShowChainButton() {
         return this.showChainButton;
     }
 
+    /**
+     * ShowPhButton
+     * 
+     * @return ShowPhButton
+     */
     public JButton getShowPhButton() {
         return this.showPhButton;
     }
 
+    /**
+     * ShowProteinPropertiesButton
+     * 
+     * @return ShowProteinPropertiesButton
+     */
     public JButton getShowProteinPropertiesButton() {
         return this.showProteinPropertiesButton;
     }
 
+    /**
+     * ShowMutantButton
+     * 
+     * @return ShowMutantButton
+     */
     public JButton getShowMutantButton() {
         return this.showMutantButton;
     }
 
+    /**
+     * ShowMutantButton
+     * 
+     * @return ShowMutantButton
+     */
     public JLabel getBioAssemblyInfoLabel() {
         return bioAssemblyInfoLabel;
     }

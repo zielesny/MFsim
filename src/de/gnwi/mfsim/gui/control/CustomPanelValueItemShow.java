@@ -52,7 +52,7 @@ public class CustomPanelValueItemShow extends JPanel {
 
     private JComboBox selectTimeStepDisplayComboBox;
 
-    private JButton copyMatrixDiagramButton;
+    private JButton copyMatrixDataButton;
 
     private JPanel simulationBoxImageActionPanel;
 
@@ -351,18 +351,18 @@ public class CustomPanelValueItemShow extends JPanel {
                                 this.selectedFeatureMatrixPanel.add(this.matrixDiagramButton);
                                 this.selectedFeatureMatrixPanelSpringLayout.putConstraint(SpringLayout.SOUTH, this.matrixDiagramButton, 45, SpringLayout.NORTH, this.selectedFeatureMatrixPanel);
                                 this.selectedFeatureMatrixPanelSpringLayout.putConstraint(SpringLayout.NORTH, this.matrixDiagramButton, 10, SpringLayout.NORTH, this.selectedFeatureMatrixPanel);
-                                this.selectedFeatureMatrixPanelSpringLayout.putConstraint(SpringLayout.EAST, this.matrixDiagramButton, -10, SpringLayout.EAST, this.selectedFeatureMatrixPanel);
-                                this.selectedFeatureMatrixPanelSpringLayout.putConstraint(SpringLayout.WEST, this.matrixDiagramButton, -90, SpringLayout.EAST, this.selectedFeatureMatrixPanel);
+                                this.selectedFeatureMatrixPanelSpringLayout.putConstraint(SpringLayout.EAST, this.matrixDiagramButton, -90, SpringLayout.EAST, this.selectedFeatureMatrixPanel);
+                                this.selectedFeatureMatrixPanelSpringLayout.putConstraint(SpringLayout.WEST, this.matrixDiagramButton, -170, SpringLayout.EAST, this.selectedFeatureMatrixPanel);
                             }
                             {
-                                this.copyMatrixDiagramButton = new JButton();
-                                this.copyMatrixDiagramButton.setToolTipText(GuiMessage.get("CustomPanelValueItemShow.copyMatrixDiagramButton.toolTipText")); 
-                                this.copyMatrixDiagramButton.setText(GuiMessage.get("CustomPanelValueItemShow.copyMatrixDiagramButton.text")); 
-                                this.selectedFeatureMatrixPanel.add(this.copyMatrixDiagramButton);
-                                this.selectedFeatureMatrixPanelSpringLayout.putConstraint(SpringLayout.EAST, this.copyMatrixDiagramButton, -90, SpringLayout.EAST, this.selectedFeatureMatrixPanel);
-                                this.selectedFeatureMatrixPanelSpringLayout.putConstraint(SpringLayout.WEST, this.copyMatrixDiagramButton, -170, SpringLayout.EAST, this.selectedFeatureMatrixPanel);
-                                this.selectedFeatureMatrixPanelSpringLayout.putConstraint(SpringLayout.SOUTH, this.copyMatrixDiagramButton, 45, SpringLayout.NORTH, this.selectedFeatureMatrixPanel);
-                                this.selectedFeatureMatrixPanelSpringLayout.putConstraint(SpringLayout.NORTH, this.copyMatrixDiagramButton, 10, SpringLayout.NORTH, this.selectedFeatureMatrixPanel);
+                                this.copyMatrixDataButton = new JButton();
+                                this.copyMatrixDataButton.setToolTipText(GuiMessage.get("CustomPanelValueItemShow.copyMatrixDataButton.toolTipText")); 
+                                this.copyMatrixDataButton.setText(GuiMessage.get("CustomPanelValueItemShow.copyMatrixDataButton.text")); 
+                                this.selectedFeatureMatrixPanel.add(this.copyMatrixDataButton);
+                                this.selectedFeatureMatrixPanelSpringLayout.putConstraint(SpringLayout.EAST, this.copyMatrixDataButton, -10, SpringLayout.EAST, this.selectedFeatureMatrixPanel);
+                                this.selectedFeatureMatrixPanelSpringLayout.putConstraint(SpringLayout.WEST, this.copyMatrixDataButton, -90, SpringLayout.EAST, this.selectedFeatureMatrixPanel);
+                                this.selectedFeatureMatrixPanelSpringLayout.putConstraint(SpringLayout.SOUTH, this.copyMatrixDataButton, 45, SpringLayout.NORTH, this.selectedFeatureMatrixPanel);
+                                this.selectedFeatureMatrixPanelSpringLayout.putConstraint(SpringLayout.NORTH, this.copyMatrixDataButton, 10, SpringLayout.NORTH, this.selectedFeatureMatrixPanel);
                             }
                             {
                                 this.selectedFeatureMatrixShowPanel = new CustomPanelValueItemMatrixShow();
@@ -615,122 +615,272 @@ public class CustomPanelValueItemShow extends JPanel {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * CollapseTreeButton
+     * 
+     * @return CollapseTreeButton
+     */
     public JButton getCollapseTreeButton() {
         return collapseTreeButton;
     }
 
+    /**
+     * ExpandTreeButton
+     * 
+     * @return ExpandTreeButton
+     */
     public JButton getExpandTreeButton() {
         return expandTreeButton;
     }
 
+    /**
+     * ContentLabel
+     * 
+     * @return ContentLabel
+     */
     public JLabel getContentLabel() {
         return this.contentLabel;
     }
 
+    /**
+     * FeatureOverviewTree
+     * 
+     * @return FeatureOverviewTree
+     */
     public JTree getFeatureOverviewTree() {
         return featureOverviewTree;
     }
 
+    /**
+     * SelectedFeatureCardsPanel
+     * 
+     * @return SelectedFeatureCardsPanel
+     */
     public JPanel getSelectedFeatureCardsPanel() {
         return selectedFeatureCardsPanel;
     }
 
+    /**
+     * SelectedFeatureInfoPanel
+     * 
+     * @return SelectedFeatureInfoPanel
+     */
     public JPanel getSelectedFeatureInfoPanel() {
         return selectedFeatureInfoPanel;
     }
 
+    /**
+     * SelectedFeaturePanel
+     * 
+     * @return SelectedFeaturePanel
+     */
     public JPanel getSelectedFeaturePanel() {
         return selectedFeaturePanel;
     }
 
+    /**
+     * SelectedFeatureTabbedPanel
+     * 
+     * @return SelectedFeatureTabbedPanel
+     */
     public JTabbedPane getSelectedFeatureTabbedPanel() {
         return selectedFeatureTabbedPanel;
     }
 
+    /**
+     * FeatureOverviewPanel
+     * 
+     * @return FeatureOverviewPanel
+     */
     public JPanel getFeatureOverviewPanel() {
         return featureOverviewPanel;
     }
 
+    /**
+     * TextNameLabel
+     * 
+     * @return TextNameLabel
+     */
     public JLabel getTextNameLabel() {
         return textNameLabel;
     }
 
+    /**
+     * MatrixNameLabel
+     * 
+     * @return MatrixNameLabel
+     */
     public JLabel getMatrixNameLabel() {
         return matrixNameLabel;
     }
 
+    /**
+     * MatrixDiagramButton
+     * 
+     * @return MatrixDiagramButton
+     */
     public JButton getMatrixDiagramButton() {
         return matrixDiagramButton;
     }
 
+    /**
+     * SelectedFeatureMatrixShowPanel
+     * 
+     * @return SelectedFeatureMatrixShowPanel
+     */
     public CustomPanelValueItemMatrixShow getSelectedFeatureMatrixShowPanel() {
         return selectedFeatureMatrixShowPanel;
     }
 
+    /**
+     * SelectedFeatureDescriptionPanel
+     * 
+     * @return SelectedFeatureDescriptionPanel
+     */
     public CustomPanelDescription getSelectedFeatureDescriptionPanel() {
         return selectedFeatureDescriptionPanel;
     }
 
+    /**
+     * SelectedFeatureHintPanel
+     * 
+     * @return SelectedFeatureHintPanel
+     */
     public CustomPanelDescription getSelectedFeatureHintPanel() {
         return selectedFeatureHintPanel;
     }
 
+    /**
+     * SelectedFeatureErrorPanel
+     * 
+     * @return SelectedFeatureErrorPanel
+     */
     public CustomPanelDescription getSelectedFeatureErrorPanel() {
         return selectedFeatureErrorPanel;
     }
 
+    /**
+     * CompartmentNameLabel
+     * 
+     * @return CompartmentNameLabel
+     */
     public JLabel getCompartmentNameLabel() {
         return compartmentNameLabel;
     }
 
+    /**
+     * CompartmentActionPanel
+     * 
+     * @return CompartmentActionPanel
+     */
     public JPanel getCompartmentActionPanel() {
         return compartmentActionPanel;
     }
 
+    /**
+     * CompartmentImagePanel
+     * 
+     * @return CompartmentImagePanel
+     */
     public CustomPanelImage getCompartmentImagePanel() {
         return compartmentImagePanel;
     }
 
+    /**
+     * CompartmentViewButton
+     * 
+     * @return CompartmentViewButton
+     */
     public JButton getCompartmentViewButton() {
         return compartmentViewButton;
     }
 
+    /**
+     * SimulationBoxNameLabel
+     * 
+     * @return SimulationBoxNameLabel
+     */
     public JLabel getSimulationBoxNameLabel() {
         return simulationBoxNameLabel;
     }
 
+    /**
+     * SimulationBoxImagePanel
+     * 
+     * @return SimulationBoxImagePanel
+     */
     public CustomPanelImage getSimulationBoxImagePanel() {
         return simulationBoxImagePanel;
     }
 
+    /**
+     * ViewButton
+     * 
+     * @return ViewButton
+     */
     public JButton getViewButton() {
         return viewButton;
     }
 
+    /**
+     * SlicerTimeStepPreferencesEditButton
+     * 
+     * @return SlicerTimeStepPreferencesEditButton
+     */
     public JButton getSlicerTimeStepPreferencesEditButton() {
         return slicerTimeStepPreferencesEditButton;
     }
 
-    public JButton getCopyMatrixDiagramButton() {
-        return copyMatrixDiagramButton;
+    /**
+     * CopyMatrixDataButton
+     * 
+     * @return CopyMatrixDataButton
+     */
+    public JButton getCopyMatrixDataButton() {
+        return copyMatrixDataButton;
     }
 
+    /**
+     * SelectSimulationBoxDisplayComboBox
+     * 
+     * @return SelectSimulationBoxDisplayComboBox
+     */
     public JComboBox getSelectSimulationBoxDisplayComboBox() {
         return selectSimulationBoxDisplayComboBox;
     }
 
+    /**
+     * SelectTimeStepDisplayComboBox
+     * 
+     * @return SelectTimeStepDisplayComboBox
+     */
     public JComboBox getSelectTimeStepDisplayComboBox() {
         return selectTimeStepDisplayComboBox;
     }
 
+    /**
+     * SelectSimulationBoxDisplayCompartmentComboBox
+     * 
+     * @return SelectSimulationBoxDisplayCompartmentComboBox
+     */
     public JComboBox getSelectSimulationBoxDisplayCompartmentComboBox() {
         return selectSimulationBoxDisplayCompartmentComboBox;
     }
 
+    /**
+     * ShowBoxPropertiesButton
+     * 
+     * @return ShowBoxPropertiesButton
+     */
     public JButton getShowBoxPropertiesButton() {
         return showBoxPropertiesButton;
     }
 
+    /**
+     * CompartmentShowButton
+     * 
+     * @return CompartmentShowButton
+     */
     public JButton getCompartmentShowButton() {
         return compartmentShowButton;
     }

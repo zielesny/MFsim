@@ -342,7 +342,7 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
                 // </editor-fold>
                 // <editor-fold defaultstate="collapsed" desc="- Update compartment geometry">
                 // <editor-fold defaultstate="collapsed" desc="-- Compartment Sphere">
-                if (anUpdateNotifierValueItem.getName().startsWith(ModelDefinitions.COMPARTMENT_SPHERE_CHEMICAL_COMPOSITION_PREFIX_NAME)) {
+                if (anUpdateNotifierValueItem.getName().startsWith(ModelDefinitions.CHEMICAL_COMPOSITION_PREFIX_NAME_COMPARTMENT_SPHERE)) {
                     ValueItem tmpBoxInfoValueItem = this.getBoxInfoValueItem();
                     if (tmpBoxInfoValueItem == null) {
                         return;
@@ -358,22 +358,22 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
                     double tmpRadius = this.jobUtilityMethods.getRadiusOfParticlesInDpdBox(tmpTotalNumberOfParticles, tmpDensityInfoValueItem.getValueAsDouble(),
                             tmpGeometryDataValueItem.getTypeFormat(0, 3).getNumberOfDecimals());
                     // Update geometry data AND display value item. NOTE: Geometry data value item is in DPD units ...
-                    ValueItemMatrixElement[][] tmpMatrix = tmpGeometryDataValueItem.getMatrix();
-                    tmpMatrix[0][3].getTypeFormat().setMinimumValue(Math.min(tmpBoxInfoValueItem.getValueAsDouble(0, 0), Math.min(tmpBoxInfoValueItem.getValueAsDouble(0, 1), tmpBoxInfoValueItem.getValueAsDouble(0, 2))) * ModelDefinitions.MINIMUM_COMPARTMENT_FACTOR);
-                    tmpMatrix[0][3].getTypeFormat().setDefaultValue(String.valueOf(tmpRadius));
+                    ValueItemMatrixElement[][] tmpMatrixOfGeometryDataValueItem = tmpGeometryDataValueItem.getMatrix();
+                    tmpMatrixOfGeometryDataValueItem[0][3].getTypeFormat().setMinimumValue(Math.min(tmpBoxInfoValueItem.getValueAsDouble(0, 0), Math.min(tmpBoxInfoValueItem.getValueAsDouble(0, 1), tmpBoxInfoValueItem.getValueAsDouble(0, 2))) * ModelDefinitions.MINIMUM_COMPARTMENT_FACTOR);
+                    tmpMatrixOfGeometryDataValueItem[0][3].getTypeFormat().setDefaultValue(String.valueOf(tmpRadius));
                     tmpGeometryDataValueItem.setValue(String.valueOf(tmpRadius), 0, 3);
                     // ... and geometry display value item in physical units (Angstrom)
-                    tmpMatrix = tmpGeometryDataValueItem.getDisplayValueItem().getMatrix();
+                    ValueItemMatrixElement[][] tmpMatrixOfGeometryDisplayValueItem = tmpGeometryDataValueItem.getDisplayValueItem().getMatrix();
                     // NOTE: Use value from tmpGeometryDataValueItem to avoid roundoff errors
-                    tmpMatrix[0][3].getTypeFormat().setMinimumValue(tmpGeometryDataValueItem.getMatrix()[0][3].getTypeFormat().getMinimumValue() * this.getLengthConversionFactor());
+                    tmpMatrixOfGeometryDisplayValueItem[0][3].getTypeFormat().setMinimumValue(tmpGeometryDataValueItem.getMatrix()[0][3].getTypeFormat().getMinimumValue() * this.getLengthConversionFactor());
                     // NOTE: Default value is NOT truly affected by roundoff errors 
-                    tmpMatrix[0][3].getTypeFormat().setDefaultValue(String.valueOf(tmpRadius * this.getLengthConversionFactor()));
+                    tmpMatrixOfGeometryDisplayValueItem[0][3].getTypeFormat().setDefaultValue(String.valueOf(tmpRadius * this.getLengthConversionFactor()));
                     tmpGeometryDataValueItem.getDisplayValueItem().setValue(String.valueOf(tmpGeometryDataValueItem.getValueAsDouble(0, 3) * this.getLengthConversionFactor()), 0, 3);
                     this.checkCompartmentGeometry(tmpGeometryDataValueItem);
                 }
                 // </editor-fold>
                 // <editor-fold defaultstate="collapsed" desc="-- Compartment xy-layer">
-                if (anUpdateNotifierValueItem.getName().startsWith(ModelDefinitions.COMPARTMENT_XY_LAYER_CHEMICAL_COMPOSITION_PREFIX_NAME)) {
+                if (anUpdateNotifierValueItem.getName().startsWith(ModelDefinitions.CHEMICAL_COMPOSITION_PREFIX_NAME_COMPARTMENT_XY_LAYER)) {
                     ValueItem tmpBoxInfoValueItem = this.getBoxInfoValueItem();
                     if (tmpBoxInfoValueItem == null) {
                         return;
@@ -389,15 +389,15 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
                     double tmpZLength = this.jobUtilityMethods.getZLengthOfBoxOfParticlesInDpdBox(tmpTotalNumberOfParticles, tmpDensityInfoValueItem.getValueAsDouble(),
                             tmpGeometryDataValueItem.getValueAsDouble(0, 3), tmpGeometryDataValueItem.getValueAsDouble(0, 4), tmpGeometryDataValueItem.getTypeFormat(0, 3).getNumberOfDecimals());
                     // Update geometry data AND display value item. NOTE: Geometry data value item is in DPD units ...
-                    ValueItemMatrixElement[][] tmpMatrix = tmpGeometryDataValueItem.getMatrix();
-                    tmpMatrix[0][5].getTypeFormat().setMinimumValue(tmpBoxInfoValueItem.getValueAsDouble(0, 2) * ModelDefinitions.MINIMUM_COMPARTMENT_FACTOR);
-                    tmpMatrix[0][5].getTypeFormat().setDefaultValue(String.valueOf(tmpZLength));
+                    ValueItemMatrixElement[][] tmpMatrixOfGeometryDataValueItem = tmpGeometryDataValueItem.getMatrix();
+                    tmpMatrixOfGeometryDataValueItem[0][5].getTypeFormat().setMinimumValue(tmpBoxInfoValueItem.getValueAsDouble(0, 2) * ModelDefinitions.MINIMUM_COMPARTMENT_FACTOR);
+                    tmpMatrixOfGeometryDataValueItem[0][5].getTypeFormat().setDefaultValue(String.valueOf(tmpZLength));
                     tmpGeometryDataValueItem.setValue(String.valueOf(tmpZLength), 0, 5);
                     // ... and geometry display value item in physical units (Angstrom)
-                    tmpMatrix = tmpGeometryDataValueItem.getDisplayValueItem().getMatrix();
-                    tmpMatrix[0][5].getTypeFormat().setMinimumValue(tmpGeometryDataValueItem.getMatrix()[0][5].getTypeFormat().getMinimumValue() * this.getLengthConversionFactor());
+                    ValueItemMatrixElement[][] tmpMatrixOfGeometryDisplayValueItem = tmpGeometryDataValueItem.getDisplayValueItem().getMatrix();
+                    tmpMatrixOfGeometryDisplayValueItem[0][5].getTypeFormat().setMinimumValue(tmpGeometryDataValueItem.getMatrix()[0][5].getTypeFormat().getMinimumValue() * this.getLengthConversionFactor());
                     // NOTE: Default value is NOT truly affected by roundoff errors 
-                    tmpMatrix[0][5].getTypeFormat().setDefaultValue(String.valueOf(tmpZLength * this.getLengthConversionFactor()));
+                    tmpMatrixOfGeometryDisplayValueItem[0][5].getTypeFormat().setDefaultValue(String.valueOf(tmpZLength * this.getLengthConversionFactor()));
                     tmpGeometryDataValueItem.getDisplayValueItem().setValue(String.valueOf(tmpGeometryDataValueItem.getValueAsDouble(0, 5) * this.getLengthConversionFactor()), 0, 5);
                     this.checkCompartmentGeometry(tmpGeometryDataValueItem);
                 }
@@ -484,7 +484,7 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
                         )
                     );
                 // <editor-fold defaultstate="collapsed" desc="- Compartment xy-layer">
-                if (anUpdateNotifierValueItem.getName().startsWith(ModelDefinitions.COMPARTMENT_XY_LAYER_CHEMICAL_COMPOSITION_PREFIX_NAME)) {
+                if (anUpdateNotifierValueItem.getName().startsWith(ModelDefinitions.CHEMICAL_COMPOSITION_PREFIX_NAME_COMPARTMENT_XY_LAYER)) {
                     if (!this.isLatticeGeometryInXyLayerPossible(anUpdateNotifierValueItem)) {
                         // <editor-fold defaultstate="collapsed" desc="Remove possible simple cubic lattice from other rows">
                         for (int i = 0; i < anUpdateNotifierValueItem.getMatrixRowCount(); i++) {
@@ -528,7 +528,7 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
                 // </editor-fold>
             } else {
                 // <editor-fold defaultstate="collapsed" desc="-- Compartment Sphere">
-                if (anUpdateNotifierValueItem.getName().startsWith(ModelDefinitions.COMPARTMENT_SPHERE_CHEMICAL_COMPOSITION_PREFIX_NAME)) {
+                if (anUpdateNotifierValueItem.getName().startsWith(ModelDefinitions.CHEMICAL_COMPOSITION_PREFIX_NAME_COMPARTMENT_SPHERE)) {
                     ValueItemMatrixElement[][] tmpMatrix = anUpdateNotifierValueItem.getMatrix();
                     // Molecular structure with possible protein data is in column with index 1
                     if (tmpMatrix[tmpChangedRow][1].hasProteinData()) {
@@ -575,7 +575,7 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
                 }
                 // </editor-fold>
                 // <editor-fold defaultstate="collapsed" desc="-- Compartment xy-layer">
-                if (anUpdateNotifierValueItem.getName().startsWith(ModelDefinitions.COMPARTMENT_XY_LAYER_CHEMICAL_COMPOSITION_PREFIX_NAME)) {
+                if (anUpdateNotifierValueItem.getName().startsWith(ModelDefinitions.CHEMICAL_COMPOSITION_PREFIX_NAME_COMPARTMENT_XY_LAYER)) {
                     boolean tmpIsLatticeGeometryInXyLayerPossible = this.isLatticeGeometryInXyLayerPossible(anUpdateNotifierValueItem);
                     boolean tmpIsQuantityOnSurface = this.isQuantityOnSurface(anUpdateNotifierValueItem, tmpChangedRow);
                     // Orientation is in column with index 7
@@ -791,153 +791,158 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
             return null;
         }
         // </editor-fold>
-        // <editor-fold defaultstate="collapsed" desc="Check modification possibility">
-        // Modifications are only possible if molecules are unchanged
-        CompartmentContainer tmpModifiedCompartmentContainer = new CompartmentContainer(aModifiedValueItemContainer);
-        ValueItem tmpMoleculeInfoValueItem = this.getMoleculeInfoValueItem();
-        ValueItem tmpModifiedMoleculeInfoValueItem = tmpModifiedCompartmentContainer.getMoleculeInfoValueItem();
-        if (!jobUtilityMethods.areMoleculesEqual(tmpMoleculeInfoValueItem, tmpModifiedMoleculeInfoValueItem)) {
+        try {
+            // <editor-fold defaultstate="collapsed" desc="Check modification possibility">
+            // Modifications are only possible if molecules are unchanged
+            CompartmentContainer tmpModifiedCompartmentContainer = new CompartmentContainer(aModifiedValueItemContainer);
+            ValueItem tmpMoleculeInfoValueItem = this.getMoleculeInfoValueItem();
+            ValueItem tmpModifiedMoleculeInfoValueItem = tmpModifiedCompartmentContainer.getMoleculeInfoValueItem();
+            if (!jobUtilityMethods.areMoleculesEqual(tmpMoleculeInfoValueItem, tmpModifiedMoleculeInfoValueItem)) {
+                return null;
+            }
+            // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="Modify compartments">
+            LinkedList<String> tmpBlockNameList = this.valueItemContainer.getBlockNames();
+            // Important: Sort block names so that new creation and modification follows the same order
+            Collections.sort(tmpBlockNameList);
+            for (String tmpBlockName : tmpBlockNameList) {
+                // <editor-fold defaultstate="collapsed" desc="Modify single compartment (sphere or xy-layer)">
+                // <editor-fold defaultstate="collapsed" desc="- Create empty compartment in modified compartment container">
+                String tmpNewBlockNameInModifiedCompartmentContainer = null;
+                if (this.isSphereCompartment(tmpBlockName)) {
+                    ValueItem tmpCompartmentSpecifiedNameValueItem = this.getSphereCompartmentSpecifiedNameValueItemOfBlock(tmpBlockName);
+                    String tmpCompartmentName = "";
+                    if (tmpCompartmentSpecifiedNameValueItem != null) {
+                        tmpCompartmentName = tmpCompartmentSpecifiedNameValueItem.getValue();
+                    }
+                    // Sphere compartment with tmpBlockName is added (see sort of tmpBlockNameList above)
+                    tmpNewBlockNameInModifiedCompartmentContainer = tmpModifiedCompartmentContainer.addCompartmentSphere(tmpCompartmentName);
+                } else if (this.isXyLayerCompartment(tmpBlockName)) {
+                    ValueItem tmpCompartmentSpecifiedNameValueItem = this.getXyLayerCompartmentSpecifiedNameValueItemOfBlock(tmpBlockName);
+                    String tmpCompartmentName = "";
+                    if (tmpCompartmentSpecifiedNameValueItem != null) {
+                        tmpCompartmentName = tmpCompartmentSpecifiedNameValueItem.getValue();
+                    }
+                    // Xy-Layer compartment with tmpBlockName is added (see sort of tmpBlockNameList above)
+                    tmpNewBlockNameInModifiedCompartmentContainer = tmpModifiedCompartmentContainer.addCompartmentXyLayer(tmpCompartmentName);
+                } else {
+                    continue;
+                }
+                // </editor-fold>
+                // <editor-fold defaultstate="collapsed" desc="- Modify empty compartment in modified compartment container">
+                ValueItem tmpChemicalCompositionValueItem = this.getChemicalCompositionValueItemOfBlock(tmpBlockName);
+                ValueItem tmpModifiedChemicalCompositionValueItem = 
+                    tmpModifiedCompartmentContainer.getChemicalCompositionValueItemOfBlock(tmpNewBlockNameInModifiedCompartmentContainer);
+                ValueItem tmpModifiedBulkInfoValueItem = tmpModifiedCompartmentContainer.getBulkInfoValueItem();
+                ValueItem tmpModifiedDensityInfoValueItem = tmpModifiedCompartmentContainer.getDensityInfoValueItem();
+                for (int i = 0; i < tmpChemicalCompositionValueItem.getMatrixRowCount(); i++) {
+                    // Column 2: Chemical composition in percent, column 4: Volume/surface distribution in percent
+                    if (tmpChemicalCompositionValueItem.getValueAsDouble(i, 2) != tmpModifiedChemicalCompositionValueItem.getValueAsDouble(i, 2)
+                        || tmpChemicalCompositionValueItem.getValueAsDouble(i, 4) != tmpModifiedChemicalCompositionValueItem.getValueAsDouble(i, 4)) {
+                        // <editor-fold defaultstate="collapsed" desc="-- Update bulk and compartment composition">
+                        // IMPORTANT: All composition values must have the same number of decimals! Set new percentages
+                        double tmpNewBulkValue = tmpModifiedBulkInfoValueItem.getValueAsDouble(i, 2) - tmpChemicalCompositionValueItem.getValueAsDouble(i, 2);
+                        tmpModifiedBulkInfoValueItem.setValue(String.valueOf(tmpNewBulkValue), i, 2);
+                        tmpModifiedChemicalCompositionValueItem.setValue(tmpChemicalCompositionValueItem.getValue(i, 2), i, 2);
+                        // Set new number of molecules
+                        int tmpSumOfMolecules = tmpModifiedChemicalCompositionValueItem.getValueAsInt(i, 3) + tmpModifiedBulkInfoValueItem.getValueAsInt(i, 3);
+                        double tmpBulkFraction = tmpModifiedBulkInfoValueItem.getValueAsDouble(i, 2)
+                                / (tmpModifiedBulkInfoValueItem.getValueAsDouble(i, 2) + tmpModifiedChemicalCompositionValueItem.getValueAsDouble(i, 2));
+                        int tmpBulkMolecules = (int) Math.floor(tmpBulkFraction * (double) tmpSumOfMolecules);
+                        int tmpCompartmentMolecules = tmpSumOfMolecules - tmpBulkMolecules;
+                        tmpModifiedBulkInfoValueItem.setValue(String.valueOf(tmpBulkMolecules), i, 3);
+                        tmpModifiedChemicalCompositionValueItem.setValue(String.valueOf(tmpCompartmentMolecules), i, 3);
+                        // </editor-fold>
+                        // <editor-fold defaultstate="collapsed" desc="-- Update compartment geometry">
+                        // <editor-fold defaultstate="collapsed" desc="--- Compartment Sphere">
+                        if (this.isSphereCompartment(tmpBlockName)) {
+                            ValueItem tmpModifiedGeometryDataValueItem = 
+                                tmpModifiedCompartmentContainer.getValueItemContainer().getValueItemOfBlock(
+                                    tmpNewBlockNameInModifiedCompartmentContainer,
+                                    ModelDefinitions.COMPARTMENT_SPHERE_GEOMETRY_DATA_PREFIX_NAME
+                                );
+                            int tmpTotalNumberOfParticles = 0;
+                            for (int k = 0; k < tmpModifiedChemicalCompositionValueItem.getMatrixRowCount(); k++) {
+                                // Number of molecules * Number of particles per molecule
+                                tmpTotalNumberOfParticles += tmpModifiedChemicalCompositionValueItem.getValueAsInt(k, 3) * tmpModifiedMoleculeInfoValueItem.getValueAsInt(k, 3);
+                            }
+                            // NOTE: Radius is cut (!) after tmpNumberOfDecimals decimals so radius is always a little smaller than in "reality": This avoids possible drawing problems.
+                            double tmpRadius = this.jobUtilityMethods.getRadiusOfParticlesInDpdBox(tmpTotalNumberOfParticles, tmpModifiedDensityInfoValueItem.getValueAsDouble(),
+                                    tmpModifiedGeometryDataValueItem.getTypeFormat(0, 3).getNumberOfDecimals());
+                            // Update geometry data AND display value item. NOTE: Geometry data value item is in DPD units ...
+                            tmpModifiedGeometryDataValueItem.setValue(String.valueOf(tmpRadius), 0, 3);
+                            // ... and geometry display value item in physical units (Angstrom)
+                            tmpModifiedGeometryDataValueItem.getDisplayValueItem().setValue(String.valueOf(tmpRadius * tmpModifiedCompartmentContainer.getLengthConversionFactor()), 0, 3);
+                            tmpModifiedCompartmentContainer.checkCompartmentGeometry(tmpModifiedGeometryDataValueItem);
+                        }
+
+                        // </editor-fold>
+                        // <editor-fold defaultstate="collapsed" desc="--- Compartment xy-layer">
+                        if (this.isXyLayerCompartment(tmpBlockName)) {
+                            ValueItem tmpGeometryDataValueItem = 
+                                this.getValueItemContainer().getValueItemOfBlock(
+                                    tmpBlockName,
+                                    ModelDefinitions.COMPARTMENT_XY_LAYER_GEOMETRY_DATA_PREFIX_NAME
+                                );
+                            ValueItem tmpModifiedGeometryDataValueItem = 
+                                tmpModifiedCompartmentContainer.getValueItemContainer().getValueItemOfBlock(
+                                    tmpNewBlockNameInModifiedCompartmentContainer,
+                                    ModelDefinitions.COMPARTMENT_XY_LAYER_GEOMETRY_DATA_PREFIX_NAME
+                                );
+                            int tmpTotalNumberOfParticles = 0;
+                            for (int k = 0; k < tmpModifiedChemicalCompositionValueItem.getMatrixRowCount(); k++) {
+                                // Number of molecules * Number of particles per molecule
+                                tmpTotalNumberOfParticles += tmpModifiedChemicalCompositionValueItem.getValueAsInt(k, 3) * tmpModifiedMoleculeInfoValueItem.getValueAsInt(k, 3);
+                            }
+                            // NOTE: Z-length is cut (!) after tmpNumberOfDecimals decimals so z-length is always a little smaller than in "reality": This avoids possible drawing problems.
+                            double tmpZLength = this.jobUtilityMethods.getZLengthOfBoxOfParticlesInDpdBox(tmpTotalNumberOfParticles, tmpModifiedDensityInfoValueItem.getValueAsDouble(),
+                                    tmpModifiedGeometryDataValueItem.getValueAsDouble(0, 3), tmpModifiedGeometryDataValueItem.getValueAsDouble(0, 4),
+                                    tmpModifiedGeometryDataValueItem.getTypeFormat(0, 3).getNumberOfDecimals());
+                            // Update geometry data AND display value item. NOTE: Geometry data value item is in DPD units ...
+                            tmpModifiedGeometryDataValueItem.setValue(String.valueOf(tmpZLength), 0, 5);
+                            // ... and geometry display value item in physical units (Angstrom)
+                            tmpModifiedGeometryDataValueItem.getDisplayValueItem().setValue(String.valueOf(tmpZLength * tmpModifiedCompartmentContainer.getLengthConversionFactor()), 0, 5);
+
+                            // Move modified xy-layder compartment to top or bottom if it was there before
+                            if (this.isXyLayerCompartmentNearTop(tmpGeometryDataValueItem)) {
+                                tmpModifiedCompartmentContainer.moveXyLayerCompartmentToTop(tmpModifiedGeometryDataValueItem);
+                            } else if (this.isXyLayerCompartmentNearBottom(tmpGeometryDataValueItem)) {
+                                tmpModifiedCompartmentContainer.moveXyLayerCompartmentToBottom(tmpModifiedGeometryDataValueItem);
+                            }
+
+                            tmpModifiedCompartmentContainer.checkCompartmentGeometry(tmpModifiedGeometryDataValueItem);
+                        }
+
+                        // </editor-fold>
+                        // </editor-fold>
+                        // <editor-fold defaultstate="collapsed" desc="-- Update composition percentage value ranges">
+                        tmpModifiedCompartmentContainer.updateCompositionPercentageValueRange(tmpModifiedBulkInfoValueItem, i);
+                        // </editor-fold>
+                        // <editor-fold defaultstate="collapsed" desc="-- Update compartment distribution">
+                        // Set percentage on surface
+                        tmpModifiedChemicalCompositionValueItem.setValue(tmpChemicalCompositionValueItem.getValue(i, 4), i, 4);
+                        int tmpNumberOfSurfaceMolecules = 
+                            (int) Math.floor(tmpModifiedChemicalCompositionValueItem.getValueAsDouble(i, 4) / 100.0 * tmpModifiedChemicalCompositionValueItem.getValueAsDouble(i, 3));
+                        int tmpNumberOfVolumeMolecules = tmpModifiedChemicalCompositionValueItem.getValueAsInt(i, 3) - tmpNumberOfSurfaceMolecules;
+                        tmpModifiedChemicalCompositionValueItem.setValue(String.valueOf(tmpNumberOfVolumeMolecules), i, 5);
+                        tmpModifiedChemicalCompositionValueItem.setValue(String.valueOf(tmpNumberOfSurfaceMolecules), i, 6);
+                        // </editor-fold>
+                        // <editor-fold defaultstate="collapsed" desc="-- Update orientation">
+                        ValueItemMatrixElement[][] tmpModifiedMatrix = tmpModifiedChemicalCompositionValueItem.getMatrix();
+                        // Orientation is in column with index 7
+                        tmpModifiedMatrix[i][7] = tmpChemicalCompositionValueItem.getMatrix()[i][7];
+                        // </editor-fold>
+                    }
+                }
+                // </editor-fold>
+                // </editor-fold>
+            }
+            // </editor-fold>
+            return tmpModifiedCompartmentContainer;
+        } catch (Exception anException) {
+            ModelUtils.appendToLogfile(true, "Compartment container could not be modified due to an internal error. As a safeguard all compartments are removed.");
             return null;
         }
-        // </editor-fold>
-        // <editor-fold defaultstate="collapsed" desc="Modify compartments">
-        LinkedList<String> tmpBlockNameList = this.valueItemContainer.getBlockNames();
-        // Important: Sort block names so that new creation and modification follows the same order
-        Collections.sort(tmpBlockNameList);
-        for (String tmpBlockName : tmpBlockNameList) {
-            // <editor-fold defaultstate="collapsed" desc="Modify single compartment (sphere or xy-layer)">
-            // <editor-fold defaultstate="collapsed" desc="- Create empty compartment in modified compartment container">
-            String tmpNewBlockNameInModifiedCompartmentContainer = null;
-            if (this.isSphereCompartment(tmpBlockName)) {
-                ValueItem tmpCompartmentSpecifiedNameValueItem = this.getSphereCompartmentSpecifiedNameValueItemOfBlock(tmpBlockName);
-                String tmpCompartmentName = "";
-                if (tmpCompartmentSpecifiedNameValueItem != null) {
-                    tmpCompartmentName = tmpCompartmentSpecifiedNameValueItem.getValue();
-                }
-                // Sphere compartment with tmpBlockName is added (see sort of tmpBlockNameList above)
-                tmpNewBlockNameInModifiedCompartmentContainer = tmpModifiedCompartmentContainer.addCompartmentSphere(tmpCompartmentName);
-            } else if (this.isXyLayerCompartment(tmpBlockName)) {
-                ValueItem tmpCompartmentSpecifiedNameValueItem = this.getXyLayerCompartmentSpecifiedNameValueItemOfBlock(tmpBlockName);
-                String tmpCompartmentName = "";
-                if (tmpCompartmentSpecifiedNameValueItem != null) {
-                    tmpCompartmentName = tmpCompartmentSpecifiedNameValueItem.getValue();
-                }
-                // Xy-Layer compartment with tmpBlockName is added (see sort of tmpBlockNameList above)
-                tmpNewBlockNameInModifiedCompartmentContainer = tmpModifiedCompartmentContainer.addCompartmentXyLayer(tmpCompartmentName);
-            } else {
-                continue;
-            }
-            // </editor-fold>
-            // <editor-fold defaultstate="collapsed" desc="- Modify empty compartment in modified compartment container">
-            ValueItem tmpChemicalCompositionValueItem = this.getChemicalCompositionValueItemOfBlock(tmpBlockName);
-            ValueItem tmpModifiedChemicalCompositionValueItem = 
-                tmpModifiedCompartmentContainer.getChemicalCompositionValueItemOfBlock(tmpNewBlockNameInModifiedCompartmentContainer);
-            ValueItem tmpModifiedBulkInfoValueItem = tmpModifiedCompartmentContainer.getBulkInfoValueItem();
-            ValueItem tmpModifiedDensityInfoValueItem = tmpModifiedCompartmentContainer.getDensityInfoValueItem();
-            for (int i = 0; i < tmpChemicalCompositionValueItem.getMatrixRowCount(); i++) {
-                // Column 2: Chemical composition in percent, column 4: Volume/surface distribution in percent
-                if (tmpChemicalCompositionValueItem.getValueAsDouble(i, 2) != tmpModifiedChemicalCompositionValueItem.getValueAsDouble(i, 2)
-                    || tmpChemicalCompositionValueItem.getValueAsDouble(i, 4) != tmpModifiedChemicalCompositionValueItem.getValueAsDouble(i, 4)) {
-                    // <editor-fold defaultstate="collapsed" desc="-- Update bulk and compartment composition">
-                    // IMPORTANT: All composition values must have the same number of decimals! Set new percentages
-                    double tmpNewBulkValue = tmpModifiedBulkInfoValueItem.getValueAsDouble(i, 2) - tmpChemicalCompositionValueItem.getValueAsDouble(i, 2);
-                    tmpModifiedBulkInfoValueItem.setValue(String.valueOf(tmpNewBulkValue), i, 2);
-                    tmpModifiedChemicalCompositionValueItem.setValue(tmpChemicalCompositionValueItem.getValue(i, 2), i, 2);
-                    // Set new number of molecules
-                    int tmpSumOfMolecules = tmpModifiedChemicalCompositionValueItem.getValueAsInt(i, 3) + tmpModifiedBulkInfoValueItem.getValueAsInt(i, 3);
-                    double tmpBulkFraction = tmpModifiedBulkInfoValueItem.getValueAsDouble(i, 2)
-                            / (tmpModifiedBulkInfoValueItem.getValueAsDouble(i, 2) + tmpModifiedChemicalCompositionValueItem.getValueAsDouble(i, 2));
-                    int tmpBulkMolecules = (int) Math.floor(tmpBulkFraction * (double) tmpSumOfMolecules);
-                    int tmpCompartmentMolecules = tmpSumOfMolecules - tmpBulkMolecules;
-                    tmpModifiedBulkInfoValueItem.setValue(String.valueOf(tmpBulkMolecules), i, 3);
-                    tmpModifiedChemicalCompositionValueItem.setValue(String.valueOf(tmpCompartmentMolecules), i, 3);
-                    // </editor-fold>
-                    // <editor-fold defaultstate="collapsed" desc="-- Update compartment geometry">
-                    // <editor-fold defaultstate="collapsed" desc="--- Compartment Sphere">
-                    if (this.isSphereCompartment(tmpBlockName)) {
-                        ValueItem tmpModifiedGeometryDataValueItem = 
-                            tmpModifiedCompartmentContainer.getValueItemContainer().getValueItemOfBlock(
-                                tmpNewBlockNameInModifiedCompartmentContainer,
-                                ModelDefinitions.COMPARTMENT_SPHERE_GEOMETRY_DATA_PREFIX_NAME
-                            );
-                        int tmpTotalNumberOfParticles = 0;
-                        for (int k = 0; k < tmpModifiedChemicalCompositionValueItem.getMatrixRowCount(); k++) {
-                            // Number of molecules * Number of particles per molecule
-                            tmpTotalNumberOfParticles += tmpModifiedChemicalCompositionValueItem.getValueAsInt(k, 3) * tmpModifiedMoleculeInfoValueItem.getValueAsInt(k, 3);
-                        }
-                        // NOTE: Radius is cut (!) after tmpNumberOfDecimals decimals so radius is always a little smaller than in "reality": This avoids possible drawing problems.
-                        double tmpRadius = this.jobUtilityMethods.getRadiusOfParticlesInDpdBox(tmpTotalNumberOfParticles, tmpModifiedDensityInfoValueItem.getValueAsDouble(),
-                                tmpModifiedGeometryDataValueItem.getTypeFormat(0, 3).getNumberOfDecimals());
-                        // Update geometry data AND display value item. NOTE: Geometry data value item is in DPD units ...
-                        tmpModifiedGeometryDataValueItem.setValue(String.valueOf(tmpRadius), 0, 3);
-                        // ... and geometry display value item in physical units (Angstrom)
-                        tmpModifiedGeometryDataValueItem.getDisplayValueItem().setValue(String.valueOf(tmpRadius * tmpModifiedCompartmentContainer.getLengthConversionFactor()), 0, 3);
-                        tmpModifiedCompartmentContainer.checkCompartmentGeometry(tmpModifiedGeometryDataValueItem);
-                    }
-
-                    // </editor-fold>
-                    // <editor-fold defaultstate="collapsed" desc="--- Compartment xy-layer">
-                    if (this.isXyLayerCompartment(tmpBlockName)) {
-                        ValueItem tmpGeometryDataValueItem = 
-                            this.getValueItemContainer().getValueItemOfBlock(
-                                tmpBlockName,
-                                ModelDefinitions.COMPARTMENT_XY_LAYER_GEOMETRY_DATA_PREFIX_NAME
-                            );
-                        ValueItem tmpModifiedGeometryDataValueItem = 
-                            tmpModifiedCompartmentContainer.getValueItemContainer().getValueItemOfBlock(
-                                tmpNewBlockNameInModifiedCompartmentContainer,
-                                ModelDefinitions.COMPARTMENT_XY_LAYER_GEOMETRY_DATA_PREFIX_NAME
-                            );
-                        int tmpTotalNumberOfParticles = 0;
-                        for (int k = 0; k < tmpModifiedChemicalCompositionValueItem.getMatrixRowCount(); k++) {
-                            // Number of molecules * Number of particles per molecule
-                            tmpTotalNumberOfParticles += tmpModifiedChemicalCompositionValueItem.getValueAsInt(k, 3) * tmpModifiedMoleculeInfoValueItem.getValueAsInt(k, 3);
-                        }
-                        // NOTE: Z-length is cut (!) after tmpNumberOfDecimals decimals so z-length is always a little smaller than in "reality": This avoids possible drawing problems.
-                        double tmpZLength = this.jobUtilityMethods.getZLengthOfBoxOfParticlesInDpdBox(tmpTotalNumberOfParticles, tmpModifiedDensityInfoValueItem.getValueAsDouble(),
-                                tmpModifiedGeometryDataValueItem.getValueAsDouble(0, 3), tmpModifiedGeometryDataValueItem.getValueAsDouble(0, 4),
-                                tmpModifiedGeometryDataValueItem.getTypeFormat(0, 3).getNumberOfDecimals());
-                        // Update geometry data AND display value item. NOTE: Geometry data value item is in DPD units ...
-                        tmpModifiedGeometryDataValueItem.setValue(String.valueOf(tmpZLength), 0, 5);
-                        // ... and geometry display value item in physical units (Angstrom)
-                        tmpModifiedGeometryDataValueItem.getDisplayValueItem().setValue(String.valueOf(tmpZLength * tmpModifiedCompartmentContainer.getLengthConversionFactor()), 0, 5);
-
-                        // Move modified xy-layder compartment to top or bottom if it was there before
-                        if (this.isXyLayerCompartmentNearTop(tmpGeometryDataValueItem)) {
-                            tmpModifiedCompartmentContainer.moveXyLayerCompartmentToTop(tmpModifiedGeometryDataValueItem);
-                        } else if (this.isXyLayerCompartmentNearBottom(tmpGeometryDataValueItem)) {
-                            tmpModifiedCompartmentContainer.moveXyLayerCompartmentToBottom(tmpModifiedGeometryDataValueItem);
-                        }
-
-                        tmpModifiedCompartmentContainer.checkCompartmentGeometry(tmpModifiedGeometryDataValueItem);
-                    }
-
-                    // </editor-fold>
-                    // </editor-fold>
-                    // <editor-fold defaultstate="collapsed" desc="-- Update composition percentage value ranges">
-                    tmpModifiedCompartmentContainer.updateCompositionPercentageValueRange(tmpModifiedBulkInfoValueItem, i);
-                    // </editor-fold>
-                    // <editor-fold defaultstate="collapsed" desc="-- Update compartment distribution">
-                    // Set percentage on surface
-                    tmpModifiedChemicalCompositionValueItem.setValue(tmpChemicalCompositionValueItem.getValue(i, 4), i, 4);
-                    int tmpNumberOfSurfaceMolecules = 
-                        (int) Math.floor(tmpModifiedChemicalCompositionValueItem.getValueAsDouble(i, 4) / 100.0 * tmpModifiedChemicalCompositionValueItem.getValueAsDouble(i, 3));
-                    int tmpNumberOfVolumeMolecules = tmpModifiedChemicalCompositionValueItem.getValueAsInt(i, 3) - tmpNumberOfSurfaceMolecules;
-                    tmpModifiedChemicalCompositionValueItem.setValue(String.valueOf(tmpNumberOfVolumeMolecules), i, 5);
-                    tmpModifiedChemicalCompositionValueItem.setValue(String.valueOf(tmpNumberOfSurfaceMolecules), i, 6);
-                    // </editor-fold>
-                    // <editor-fold defaultstate="collapsed" desc="-- Update orientation">
-                    ValueItemMatrixElement[][] tmpModifiedMatrix = tmpModifiedChemicalCompositionValueItem.getMatrix();
-                    // Orientation is in column with index 7
-                    tmpModifiedMatrix[i][7] = tmpChemicalCompositionValueItem.getMatrix()[i][7];
-                    // </editor-fold>
-                }
-            }
-            // </editor-fold>
-            // </editor-fold>
-        }
-        // </editor-fold>
-        return tmpModifiedCompartmentContainer;
     }
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- Compartment related methods">
@@ -1177,7 +1182,7 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
      * exists
      */
     public ValueItem getSphereChemicalCompositionValueItemOfBlock(String aBlockName) {
-        return this.valueItemContainer.getValueItemOfBlock(aBlockName, ModelDefinitions.COMPARTMENT_SPHERE_CHEMICAL_COMPOSITION_PREFIX_NAME);
+        return this.valueItemContainer.getValueItemOfBlock(aBlockName, ModelDefinitions.CHEMICAL_COMPOSITION_PREFIX_NAME_COMPARTMENT_SPHERE);
     }
 
     /**
@@ -1188,7 +1193,7 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
      * exists
      */
     public ValueItem getXyLayerChemicalCompositionValueItemOfBlock(String aBlockName) {
-        return this.valueItemContainer.getValueItemOfBlock(aBlockName, ModelDefinitions.COMPARTMENT_XY_LAYER_CHEMICAL_COMPOSITION_PREFIX_NAME);
+        return this.valueItemContainer.getValueItemOfBlock(aBlockName, ModelDefinitions.CHEMICAL_COMPOSITION_PREFIX_NAME_COMPARTMENT_XY_LAYER);
     }
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- Composition update related methods">
@@ -1226,7 +1231,12 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
             return;
         }
         // </editor-fold>
-        LinkedList<ValueItem> tmpChemicalCompositionValueItemList = aBulkValueItem.getValueItemContainer().getValueItems(new String[]{ModelDefinitions.CHEMICAL_COMPOSITION_PREFIX_NAME});
+        LinkedList<ValueItem> tmpChemicalCompositionValueItemList = 
+            aBulkValueItem.getValueItemContainer().getValueItems(
+                new String[]{
+                    ModelDefinitions.CHEMICAL_COMPOSITION_PREFIX_NAME
+                }
+            );
         for (ValueItem tmpChemicalCompositionValueItem : tmpChemicalCompositionValueItemList) {
             double tmpCurrentValue = tmpChemicalCompositionValueItem.getValueAsDouble(aRow, 2);
             double tmpCurrentBulkValue = aBulkValueItem.getValueAsDouble(aRow, 2);
@@ -1368,7 +1378,6 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
         if (aCompartmentGeometryValueItem == null) {
             return;
         }
-
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Compartment Sphere">
         if (this.graphicsUtilityMethods.isSphereGeometryValueItem(aCompartmentGeometryValueItem)) {
@@ -1382,7 +1391,10 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
                 for (int i = 0; i < 4; i++) {
                     tmpGeometryDisplayValueItem.setValue(String.valueOf(tmpGeometryDataValueItem.getValueAsDouble(0, i) * this.getLengthConversionFactor()), 0, i);
                 }
-
+                int tmpIndex = 0;
+                for (int i = 4; i < 8; i++) {
+                    tmpGeometryDisplayValueItem.setValue(String.valueOf(tmpGeometryDataValueItem.getValueAsDouble(0, tmpIndex++)), 0, i);
+                }
                 // </editor-fold>
             } else {
                 // <editor-fold defaultstate="collapsed" desc="aCompartmentGeometryValueItem = Geometry display value item">
@@ -1392,10 +1404,13 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
                 for (int i = 0; i < 4; i++) {
                     tmpGeometryDataValueItem.setValue(String.valueOf(tmpGeometryDisplayValueItem.getValueAsDouble(0, i) / this.getLengthConversionFactor()), 0, i);
                 }
-
+                // ... and display value item
+                int tmpIndex = 0;
+                for (int i = 4; i < 8; i++) {
+                    tmpGeometryDisplayValueItem.setValue(String.valueOf(tmpGeometryDataValueItem.getValueAsDouble(0, tmpIndex++)), 0, i);
+                }
                 // </editor-fold>
             }
-
             // <editor-fold defaultstate="collapsed" desc="Check geometry: Does compartment peer out of box?">
             if (this.compartmentBox.isOutOfBox(tmpGeometryDataValueItem)) {
                 tmpGeometryDataValueItem.setError(ModelMessage.get("CompartmentContainer.valueItem.error.outOfBox"));
@@ -1404,7 +1419,6 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
                 tmpGeometryDataValueItem.removeError();
                 tmpGeometryDisplayValueItem.removeError();
             }
-
             // </editor-fold>
         }
         // </editor-fold>
@@ -1420,7 +1434,10 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
                 for (int i = 0; i < 6; i++) {
                     tmpGeometryDisplayValueItem.setValue(String.valueOf(tmpGeometryDataValueItem.getValueAsDouble(0, i) * this.getLengthConversionFactor()), 0, i);
                 }
-
+                int tmpIndex = 0;
+                for (int i = 6; i < 12; i++) {
+                    tmpGeometryDisplayValueItem.setValue(String.valueOf(tmpGeometryDataValueItem.getValueAsDouble(0, tmpIndex++)), 0, i);
+                }
                 // </editor-fold>
             } else {
                 // <editor-fold defaultstate="collapsed" desc="aCompartmentGeometryValueItem = Geometry display value item">
@@ -1430,7 +1447,11 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
                 for (int i = 0; i < 6; i++) {
                     tmpGeometryDataValueItem.setValue(String.valueOf(tmpGeometryDisplayValueItem.getValueAsDouble(0, i) / this.getLengthConversionFactor()), 0, i);
                 }
-
+                // ... and display value item
+                int tmpIndex = 0;
+                for (int i = 6; i < 12; i++) {
+                    tmpGeometryDisplayValueItem.setValue(String.valueOf(tmpGeometryDataValueItem.getValueAsDouble(0, tmpIndex++)), 0, i);
+                }
                 // </editor-fold>
             }
             // <editor-fold defaultstate="collapsed" desc="Check geometry: Does compartment peer out of box?">
@@ -1441,10 +1462,8 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
                 tmpGeometryDataValueItem.removeError();
                 tmpGeometryDisplayValueItem.removeError();
             }
-
             // </editor-fold>
         }
-
         // </editor-fold>
     }
 
@@ -1635,8 +1654,8 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
      * 
      * @return Geometry random seed value
      */
-    public long getGeometryRandomSeed() {
-        return this.valueItemContainer.getValueItem(ModelDefinitions.COMPARTMENT_GEOMETRY_RANDOM_SEED_NAME).getValueAsLong();
+    public int getGeometryRandomSeed() {
+        return this.valueItemContainer.getValueItem(ModelDefinitions.COMPARTMENT_GEOMETRY_RANDOM_SEED_NAME).getValueAsInt();
     }
     
     /**
@@ -1773,7 +1792,6 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
         for (int i = 0; i < tmpBulkInfoValueItem.getMatrixRowCount(); i++) {
             // <editor-fold defaultstate="collapsed" desc="Set row with 8 columns">
             ValueItemMatrixElement[] tmpRow = new ValueItemMatrixElement[8];
-
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="Column 0: Molecule name">
             // Column is equal to column 0 of tmpBulkValueItem
@@ -1902,7 +1920,7 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
         // <editor-fold defaultstate="collapsed" desc="Set chemical composition value item (vertical position 0)">
         ValueItem tmpChemicalCompositionValueItem = this.getCompartmentChemicalCompositionValueItem();
         tmpChemicalCompositionValueItem.setVerticalPosition(0);
-        tmpChemicalCompositionValueItem.setName(ModelDefinitions.COMPARTMENT_SPHERE_CHEMICAL_COMPOSITION_PREFIX_NAME + String.valueOf(tmpNewBlockNameIndex));
+        tmpChemicalCompositionValueItem.setName(ModelDefinitions.CHEMICAL_COMPOSITION_PREFIX_NAME_COMPARTMENT_SPHERE + String.valueOf(tmpNewBlockNameIndex));
         tmpChemicalCompositionValueItem.setNodeNames(tmpNodeNames);
         tmpChemicalCompositionValueItem.setDisplayName(ModelMessage.get("CompartmentContainer.valueItem.displayName.SPHERE_CHEMICAL_COMPOSITION"));
         tmpChemicalCompositionValueItem.setBlockName(tmpNewBlockName);
@@ -1986,9 +2004,9 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="- Set geometry display value item (vertical position 2)">
         // <editor-fold defaultstate="collapsed" desc="-- Set matrix">
-        tmpMatrix = new ValueItemMatrixElement[1][4];
+        tmpMatrix = new ValueItemMatrixElement[1][8];
         // NOTE: Geometry display value item contains physical units (Angstrom)
-        // <editor-fold defaultstate="collapsed" desc="-- Column 0: X-Position">
+        // <editor-fold defaultstate="collapsed" desc="-- Column 0 (editable): X-Position (in Angstrom)">
         tmpMatrix[0][0] = 
             new ValueItemMatrixElement(
                 String.valueOf(tmpBoxInfoValueItem.getValueAsDouble(0, 0) / 2.0 * this.getLengthConversionFactor()), 
@@ -2000,7 +2018,7 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
                 )
             );
         // </editor-fold>
-        // <editor-fold defaultstate="collapsed" desc="-- Column 1: Y-Position">
+        // <editor-fold defaultstate="collapsed" desc="-- Column 1 (editable): Y-Position (in Angstrom)">
         tmpMatrix[0][1] = 
             new ValueItemMatrixElement(
                 String.valueOf(tmpBoxInfoValueItem.getValueAsDouble(0, 1) / 2.0 * this.getLengthConversionFactor()), 
@@ -2012,7 +2030,7 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
                 )
             );
         // </editor-fold>
-        // <editor-fold defaultstate="collapsed" desc="-- Column 2: Z-Position">
+        // <editor-fold defaultstate="collapsed" desc="-- Column 2 (editable): Z-Position (in Angstrom)">
         tmpMatrix[0][2] = 
             new ValueItemMatrixElement(
                 String.valueOf(tmpBoxInfoValueItem.getValueAsDouble(0, 2) / 2.0 * this.getLengthConversionFactor()), 
@@ -2024,7 +2042,7 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
                 )
             );
         // </editor-fold>
-        // <editor-fold defaultstate="collapsed" desc="-- Column 3: Radius">
+        // <editor-fold defaultstate="collapsed" desc="-- Column 3 (editable): Radius (in Angstrom)">
         // ---------
         // Old code:
         // NOTE: Not editable and not NUMERIC_NULL
@@ -2043,6 +2061,59 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
                 )
             );
         // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="-- Column 4 (non-editable): X-Position (in DPD units)">
+        tmpMatrix[0][4] = 
+            new ValueItemMatrixElement(
+                String.valueOf(tmpBoxInfoValueItem.getValueAsDouble(0, 0) / 2.0), 
+                new ValueItemDataTypeFormat(
+                    "0.0",
+                    tmpBoxInfoValueItem.getTypeFormat(0, 0).getNumberOfDecimals(), 
+                    0, 
+                    tmpBoxInfoValueItem.getValueAsDouble(0, 0),
+                    false
+                )
+            );
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="-- Column 5 (non-editable): Y-Position (in DPD units)">
+        tmpMatrix[0][5] = 
+            new ValueItemMatrixElement(
+                String.valueOf(tmpBoxInfoValueItem.getValueAsDouble(0, 1) / 2.0), 
+                new ValueItemDataTypeFormat(
+                    "0.0",
+                    tmpBoxInfoValueItem.getTypeFormat(0, 1).getNumberOfDecimals(), 
+                    0, 
+                    tmpBoxInfoValueItem.getValueAsDouble(0, 1),
+                    false
+                )
+            );
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="-- Column 6 (non-editable): Z-Position (in DPD units)">
+        tmpMatrix[0][6] = 
+            new ValueItemMatrixElement(
+                String.valueOf(tmpBoxInfoValueItem.getValueAsDouble(0, 2) / 2.0), 
+                new ValueItemDataTypeFormat(
+                    "0.000",
+                    tmpBoxInfoValueItem.getTypeFormat(0, 2).getNumberOfDecimals(), 
+                    0, 
+                    tmpBoxInfoValueItem.getValueAsDouble(0, 2),
+                    false
+                )
+            );
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="-- Column 7 (non-editable): Radius (in DPD units)">
+        tmpMatrix[0][7] = 
+            new ValueItemMatrixElement(
+                "0.0", 
+                new ValueItemDataTypeFormat(
+                    "0.0",
+                    tmpBoxInfoValueItem.getTypeFormat(0, 0).getNumberOfDecimals(), 
+                    0,
+                    Double.MAX_VALUE,
+                    false, // isEditable
+                    false  // isNumericNullAllowed
+                )
+            );
+        // </editor-fold>
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="-- Set value item">
         ValueItem tmpGeometryDisplayValueItem = new ValueItem();
@@ -2050,17 +2121,25 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
         tmpGeometryDisplayValueItem.setName(ModelDefinitions.COMPARTMENT_SPHERE_GEOMETRY_DISPLAY_PREFIX_NAME + String.valueOf(tmpNewBlockNameIndex));
         tmpGeometryDisplayValueItem.setBasicType(ValueItemEnumBasicType.VECTOR);
         tmpGeometryDisplayValueItem.setMatrixColumnNames(new String[] {
-                ModelMessage.get("CompartmentContainer.parameter.xPosition"),
-                ModelMessage.get("CompartmentContainer.parameter.yPosition"), 
-                ModelMessage.get("CompartmentContainer.parameter.zPosition"),
-                ModelMessage.get("CompartmentContainer.parameter.radiusInBox")
+                ModelMessage.get("CompartmentContainer.parameter.xPositionInAngstrom"),
+                ModelMessage.get("CompartmentContainer.parameter.yPositionInAngstrom"), 
+                ModelMessage.get("CompartmentContainer.parameter.zPositionInAngstrom"),
+                ModelMessage.get("CompartmentContainer.parameter.radiusInBoxInAngstrom"),
+                ModelMessage.get("CompartmentContainer.parameter.xPositionInDPD"),
+                ModelMessage.get("CompartmentContainer.parameter.yPositionInDPD"), 
+                ModelMessage.get("CompartmentContainer.parameter.zPositionInDPD"),
+                ModelMessage.get("CompartmentContainer.parameter.radiusInBoxInDPD")
             }
         );
         tmpGeometryDisplayValueItem.setMatrixColumnWidths(new String[] {
-                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // x-Position
-                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // y-Position
-                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // z-Position
-                ModelDefinitions.CELL_WIDTH_NUMERIC_100  // radius
+                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // x-Position in Angstrom
+                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // y-Position in Angstrom
+                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // z-Position in Angstrom
+                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // radius in Angstrom
+                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // x-Position in DPD units
+                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // y-Position in DPD units
+                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // z-Position in DPD units
+                ModelDefinitions.CELL_WIDTH_NUMERIC_100  // radius in DPD units
             }
         );
         tmpGeometryDisplayValueItem.setNodeNames(tmpNodeNames);
@@ -2156,7 +2235,7 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
         // <editor-fold defaultstate="collapsed" desc="Set chemical composition value item (vertical position 0)">
         ValueItem tmpChemicalCompositionValueItem = this.getCompartmentChemicalCompositionValueItem();
         tmpChemicalCompositionValueItem.setVerticalPosition(0);
-        tmpChemicalCompositionValueItem.setName(ModelDefinitions.COMPARTMENT_XY_LAYER_CHEMICAL_COMPOSITION_PREFIX_NAME + String.valueOf(tmpNewBlockNameIndex));
+        tmpChemicalCompositionValueItem.setName(ModelDefinitions.CHEMICAL_COMPOSITION_PREFIX_NAME_COMPARTMENT_XY_LAYER + String.valueOf(tmpNewBlockNameIndex));
         tmpChemicalCompositionValueItem.setNodeNames(tmpNodeNames);
         tmpChemicalCompositionValueItem.setDisplayName(ModelMessage.get("CompartmentContainer.valueItem.displayName.XY_LAYER_CHEMICAL_COMPOSITION"));
         tmpChemicalCompositionValueItem.setBlockName(tmpNewBlockName);
@@ -2171,21 +2250,39 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
         tmpMatrix[0][0] = 
             new ValueItemMatrixElement(
                 String.valueOf(tmpBoxInfoValueItem.getValueAsDouble(0, 0) / 2.0), 
-                new ValueItemDataTypeFormat("0.0", tmpBoxInfoValueItem.getTypeFormat(0, 0).getNumberOfDecimals(), 0, tmpBoxInfoValueItem.getValueAsDouble(0, 0))
+                new ValueItemDataTypeFormat(
+                    "0.0", 
+                    tmpBoxInfoValueItem.getTypeFormat(0, 0).getNumberOfDecimals(), 
+                    0, 
+                    tmpBoxInfoValueItem.getValueAsDouble(0, 0),
+                    true
+                )
             );
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="-- Column 1: Y-Position">
         tmpMatrix[0][1] = 
             new ValueItemMatrixElement(
                 String.valueOf(tmpBoxInfoValueItem.getValueAsDouble(0, 1) / 2.0), 
-                new ValueItemDataTypeFormat("0.0", tmpBoxInfoValueItem.getTypeFormat(0, 1).getNumberOfDecimals(), 0, tmpBoxInfoValueItem.getValueAsDouble(0, 1))
+                new ValueItemDataTypeFormat(
+                    "0.0", 
+                    tmpBoxInfoValueItem.getTypeFormat(0, 1).getNumberOfDecimals(), 
+                    0, 
+                    tmpBoxInfoValueItem.getValueAsDouble(0, 1),
+                    true
+                )
             );
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="-- Column 2: Z-Position">
         tmpMatrix[0][2] = 
             new ValueItemMatrixElement(
                 String.valueOf(tmpBoxInfoValueItem.getValueAsDouble(0, 2) / 2.0), 
-                new ValueItemDataTypeFormat("0.0", tmpBoxInfoValueItem.getTypeFormat(0, 2).getNumberOfDecimals(), 0, tmpBoxInfoValueItem.getValueAsDouble(0, 2))
+                new ValueItemDataTypeFormat(
+                    "0.0", 
+                    tmpBoxInfoValueItem.getTypeFormat(0, 2).getNumberOfDecimals(), 
+                    0, 
+                    tmpBoxInfoValueItem.getValueAsDouble(0, 2),
+                    true
+                )
             );
 
         // </editor-fold>
@@ -2266,9 +2363,9 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="- Set geometry display value item (vertical position 2)">
         // <editor-fold defaultstate="collapsed" desc="-- Set matrix">
-        tmpMatrix = new ValueItemMatrixElement[1][6];
+        tmpMatrix = new ValueItemMatrixElement[1][12];
         // NOTE: Geometry display value item contains physical units (Angstrom)
-        // <editor-fold defaultstate="collapsed" desc="-- Column 0: X-Position">
+        // <editor-fold defaultstate="collapsed" desc="-- Column 0 (editable): X-Position (in Angstrom)">
         tmpMatrix[0][0] = 
             new ValueItemMatrixElement(
                 String.valueOf(tmpBoxInfoValueItem.getValueAsDouble(0, 0) / 2.0 * this.getLengthConversionFactor()), 
@@ -2279,7 +2376,7 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
                 )
             );
         // </editor-fold>
-        // <editor-fold defaultstate="collapsed" desc="-- Column 1: Y-Position">
+        // <editor-fold defaultstate="collapsed" desc="-- Column 1 (editable): Y-Position (in Angstrom)">
         tmpMatrix[0][1] = 
             new ValueItemMatrixElement(
                 String.valueOf(tmpBoxInfoValueItem.getValueAsDouble(0, 1) / 2.0 * this.getLengthConversionFactor()), 
@@ -2290,7 +2387,7 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
                 )
             );
         // </editor-fold>
-        // <editor-fold defaultstate="collapsed" desc="-- Column 2: Z-Position">
+        // <editor-fold defaultstate="collapsed" desc="-- Column 2 (editable): Z-Position (in Angstrom)">
         tmpMatrix[0][2] = 
             new ValueItemMatrixElement(
                 String.valueOf(tmpBoxInfoValueItem.getValueAsDouble(0, 2) / 2.0 * this.getLengthConversionFactor()), 
@@ -2302,7 +2399,7 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
                 )
             );
         // </editor-fold>
-        // <editor-fold defaultstate="collapsed" desc="-- Column 3: X-Length">
+        // <editor-fold defaultstate="collapsed" desc="-- Column 3 (editable): X-Length (in Angstrom)">
         // X-length is equal to x-length of simulation box
         // ---------
         // Old code:
@@ -2323,7 +2420,7 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
                 )
             );
         // </editor-fold>
-        // <editor-fold defaultstate="collapsed" desc="-- Column 4: Y-Length">
+        // <editor-fold defaultstate="collapsed" desc="-- Column 4 (editable): Y-Length (in Angstrom)">
         // Y-length is equal to y-length of simulation box
         // ---------
         // Old code:
@@ -2344,7 +2441,7 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
                 )
             );
         // </editor-fold>
-        // <editor-fold defaultstate="collapsed" desc="-- Column 5: Z-Length">
+        // <editor-fold defaultstate="collapsed" desc="-- Column 5 (editable): Z-Length (in Angstrom)">
         // ---------
         // Old code:
         // NOTE: Not editable and not NUMERIC_NULL
@@ -2363,6 +2460,90 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
                 )
             );
         // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="-- Column 6 (non-editable): X-Position (in DPD units)">
+        tmpMatrix[0][6] = 
+            new ValueItemMatrixElement(
+                String.valueOf(tmpBoxInfoValueItem.getValueAsDouble(0, 0) / 2.0), 
+                new ValueItemDataTypeFormat(
+                    "0.0", 
+                    tmpBoxInfoValueItem.getTypeFormat(0, 0).getNumberOfDecimals(), 
+                    0, 
+                    tmpBoxInfoValueItem.getValueAsDouble(0, 0),
+                    false
+                )
+            );
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="-- Column 7 (non-editable): Y-Position (in DPD units)">
+        tmpMatrix[0][7] = 
+            new ValueItemMatrixElement(
+                String.valueOf(tmpBoxInfoValueItem.getValueAsDouble(0, 1) / 2.0), 
+                new ValueItemDataTypeFormat(
+                    "0.0", 
+                    tmpBoxInfoValueItem.getTypeFormat(0, 1).getNumberOfDecimals(), 
+                    0, 
+                    tmpBoxInfoValueItem.getValueAsDouble(0, 1),
+                    false
+                )
+            );
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="-- Column 8 (non-editable): Z-Position (in DPD units)">
+        tmpMatrix[0][8] = 
+            new ValueItemMatrixElement(
+                String.valueOf(tmpBoxInfoValueItem.getValueAsDouble(0, 2) / 2.0), 
+                new ValueItemDataTypeFormat(
+                    "0.0", 
+                    tmpBoxInfoValueItem.getTypeFormat(0, 2).getNumberOfDecimals(), 
+                    0, 
+                    tmpBoxInfoValueItem.getValueAsDouble(0, 2),
+                    false
+                )
+            );
+
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="-- Column 9 (non-editable): X-Length (in DPD units)">
+        // X-length is equal to x-length of simulation box
+        tmpMatrix[0][9] = 
+            new ValueItemMatrixElement(
+                tmpBoxInfoValueItem.getValue(0, 0), 
+                new ValueItemDataTypeFormat(
+                    tmpBoxInfoValueItem.getValue(0, 0),
+                    tmpBoxInfoValueItem.getTypeFormat(0, 0).getNumberOfDecimals(),
+                    tmpBoxInfoValueItem.getValueAsDouble(0, 0) * ModelDefinitions.MINIMUM_COMPARTMENT_FACTOR,
+                    Double.MAX_VALUE,
+                    false, // isEditable
+                    false  // isNumericNullAllowed
+                )
+            );
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="-- Column 10 (non-editable): Y-Length (in DPD units)">
+        // Y-length is equal to y-length of simulation box
+        tmpMatrix[0][10] = 
+            new ValueItemMatrixElement(
+                tmpBoxInfoValueItem.getValue(0, 1), 
+                new ValueItemDataTypeFormat(
+                    tmpBoxInfoValueItem.getValue(0, 1),
+                    tmpBoxInfoValueItem.getTypeFormat(0, 1).getNumberOfDecimals(),
+                    tmpBoxInfoValueItem.getValueAsDouble(0, 1) * ModelDefinitions.MINIMUM_COMPARTMENT_FACTOR,
+                    Double.MAX_VALUE,
+                    false, // isEditable
+                    false  // isNumericNullAllowed
+                )
+            );
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="-- Column 11 (non-editable): Z-Length (in DPD units)">
+        tmpMatrix[0][11] = 
+            new ValueItemMatrixElement(
+                "0.0", 
+                new ValueItemDataTypeFormat(
+                    "0.0",
+                    tmpBoxInfoValueItem.getTypeFormat(0, 2).getNumberOfDecimals(),
+                    0.0,
+                    Double.MAX_VALUE,
+                    false, // isEditable
+                    false  // isNumericNullAllowed
+                )
+            );
+        // </editor-fold>
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="-- Set value item">
         ValueItem tmpGeometryDisplayValueItem = new ValueItem();
@@ -2370,21 +2551,33 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
         tmpGeometryDisplayValueItem.setName(ModelDefinitions.COMPARTMENT_XY_LAYER_GEOMETRY_DISPLAY_PREFIX_NAME + String.valueOf(tmpNewBlockNameIndex));
         tmpGeometryDisplayValueItem.setBasicType(ValueItemEnumBasicType.VECTOR);
         tmpGeometryDisplayValueItem.setMatrixColumnNames(new String[] {
-                ModelMessage.get("CompartmentContainer.parameter.xPosition"),
-                ModelMessage.get("CompartmentContainer.parameter.yPosition"), 
-                ModelMessage.get("CompartmentContainer.parameter.zPosition"),
-                ModelMessage.get("CompartmentContainer.parameter.xLength"), 
-                ModelMessage.get("CompartmentContainer.parameter.yLength"),
-                ModelMessage.get("CompartmentContainer.parameter.zLength")
+                ModelMessage.get("CompartmentContainer.parameter.xPositionInAngstrom"),
+                ModelMessage.get("CompartmentContainer.parameter.yPositionInAngstrom"), 
+                ModelMessage.get("CompartmentContainer.parameter.zPositionInAngstrom"),
+                ModelMessage.get("CompartmentContainer.parameter.xLengthInAngstrom"), 
+                ModelMessage.get("CompartmentContainer.parameter.yLengthInAngstrom"),
+                ModelMessage.get("CompartmentContainer.parameter.zLengthInAngstrom"),
+                ModelMessage.get("CompartmentContainer.parameter.xPositionInDPD"),
+                ModelMessage.get("CompartmentContainer.parameter.yPositionInDPD"), 
+                ModelMessage.get("CompartmentContainer.parameter.zPositionInDPD"),
+                ModelMessage.get("CompartmentContainer.parameter.xLengthInDPD"), 
+                ModelMessage.get("CompartmentContainer.parameter.yLengthInDPD"),
+                ModelMessage.get("CompartmentContainer.parameter.zLengthInDPD")
             }
         );
         tmpGeometryDisplayValueItem.setMatrixColumnWidths(new String[] { 
-                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // x-Position
-                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // y-Position
-                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // z-Position
-                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // x-Length
-                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // y-Length
-                ModelDefinitions.CELL_WIDTH_NUMERIC_100  // z-Length
+                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // x-Position in Angstrom
+                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // y-Position in Angstrom
+                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // z-Position in Angstrom
+                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // x-Length in Angstrom
+                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // y-Length in Angstrom
+                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // z-Length in Angstrom
+                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // x-Position in DPD units
+                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // y-Position in DPD units
+                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // z-Position in DPD units
+                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // x-Length in DPD units
+                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // y-Length in DPD units
+                ModelDefinitions.CELL_WIDTH_NUMERIC_100  // z-Length in DPD units
             }
         );
         tmpGeometryDisplayValueItem.setNodeNames(tmpNodeNames);
@@ -2487,6 +2680,173 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
         tmpGeometryRandomSeedValueItem.setValue(String.valueOf(aSeedValue));
         return tmpGeometryRandomSeedValueItem;
     }
+    
+    /**
+     * Updates geometry display value items with data from corresponding 
+     * geometry data value items if necessary
+     */
+    private void updateGeometryDisplayValueItems() {
+        ValueItem[] tmpValueItems = this.valueItemContainer.getValueItemsOfContainer();
+        if (tmpValueItems != null && tmpValueItems.length > 0) {
+            for (ValueItem tmpValueItem : tmpValueItems) {
+                if (this.graphicsUtilityMethods.isSphereGeometryDisplayValueItem(tmpValueItem)) {
+                    if (tmpValueItem.getMatrixColumnCount() == 4) {
+                        ValueItem tmpDataValueItem = tmpValueItem.getDataValueItem();
+                        tmpValueItem.setMatrixColumnNames(new String[] {
+                                ModelMessage.get("CompartmentContainer.parameter.xPositionInAngstrom"),
+                                ModelMessage.get("CompartmentContainer.parameter.yPositionInAngstrom"), 
+                                ModelMessage.get("CompartmentContainer.parameter.zPositionInAngstrom"),
+                                ModelMessage.get("CompartmentContainer.parameter.radiusInBoxInAngstrom"),
+                                ModelMessage.get("CompartmentContainer.parameter.xPositionInDPD"),
+                                ModelMessage.get("CompartmentContainer.parameter.yPositionInDPD"), 
+                                ModelMessage.get("CompartmentContainer.parameter.zPositionInDPD"),
+                                ModelMessage.get("CompartmentContainer.parameter.radiusInBoxInDPD")
+                            }
+                        );
+                        tmpValueItem.setMatrixColumnWidths(new String[] {
+                                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // x-Position in Angstrom
+                                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // y-Position in Angstrom
+                                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // z-Position in Angstrom
+                                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // radius in Angstrom
+                                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // x-Position in DPD units
+                                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // y-Position in DPD units
+                                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // z-Position in DPD units
+                                ModelDefinitions.CELL_WIDTH_NUMERIC_100  // radius in DPD units
+                            }
+                        );
+                        ValueItemMatrixElement[][] tmpMatrix = new ValueItemMatrixElement[1][8];
+                        tmpMatrix[0][0] = tmpValueItem.getMatrix()[0][0];
+                        tmpMatrix[0][1] = tmpValueItem.getMatrix()[0][1];
+                        tmpMatrix[0][2] = tmpValueItem.getMatrix()[0][2];
+                        tmpMatrix[0][3] = tmpValueItem.getMatrix()[0][3];
+                        tmpMatrix[0][4] = tmpDataValueItem.getMatrix()[0][0].getClone();
+                        tmpMatrix[0][4].getTypeFormat().setEditable(false);
+                        tmpMatrix[0][5] = tmpDataValueItem.getMatrix()[0][1].getClone();
+                        tmpMatrix[0][5].getTypeFormat().setEditable(false);
+                        tmpMatrix[0][6] = tmpDataValueItem.getMatrix()[0][2].getClone();
+                        tmpMatrix[0][6].getTypeFormat().setEditable(false);
+                        tmpMatrix[0][7] = tmpDataValueItem.getMatrix()[0][3].getClone();
+                        tmpMatrix[0][7].getTypeFormat().setEditable(false);
+                        tmpValueItem.setMatrix(tmpMatrix);
+                    }
+                } else if (this.graphicsUtilityMethods.isXyLayerGeometryDisplayValueItem(tmpValueItem)) {
+                    if (tmpValueItem.getMatrixColumnCount() == 6) {
+                        ValueItem tmpDataValueItem = tmpValueItem.getDataValueItem();
+                        tmpValueItem.setMatrixColumnNames(new String[] {
+                                ModelMessage.get("CompartmentContainer.parameter.xPositionInAngstrom"),
+                                ModelMessage.get("CompartmentContainer.parameter.yPositionInAngstrom"), 
+                                ModelMessage.get("CompartmentContainer.parameter.zPositionInAngstrom"),
+                                ModelMessage.get("CompartmentContainer.parameter.xLengthInAngstrom"), 
+                                ModelMessage.get("CompartmentContainer.parameter.yLengthInAngstrom"),
+                                ModelMessage.get("CompartmentContainer.parameter.zLengthInAngstrom"),
+                                ModelMessage.get("CompartmentContainer.parameter.xPositionInDPD"),
+                                ModelMessage.get("CompartmentContainer.parameter.yPositionInDPD"), 
+                                ModelMessage.get("CompartmentContainer.parameter.zPositionInDPD"),
+                                ModelMessage.get("CompartmentContainer.parameter.xLengthInDPD"), 
+                                ModelMessage.get("CompartmentContainer.parameter.yLengthInDPD"),
+                                ModelMessage.get("CompartmentContainer.parameter.zLengthInDPD")
+                            }
+                        );
+                        tmpValueItem.setMatrixColumnWidths(new String[] { 
+                                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // x-Position in Angstrom
+                                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // y-Position in Angstrom
+                                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // z-Position in Angstrom
+                                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // x-Length in Angstrom
+                                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // y-Length in Angstrom
+                                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // z-Length in Angstrom
+                                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // x-Position in DPD units
+                                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // y-Position in DPD units
+                                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // z-Position in DPD units
+                                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // x-Length in DPD units
+                                ModelDefinitions.CELL_WIDTH_NUMERIC_100, // y-Length in DPD units
+                                ModelDefinitions.CELL_WIDTH_NUMERIC_100  // z-Length in DPD units
+                            }
+                        );
+                        ValueItemMatrixElement[][] tmpMatrix = new ValueItemMatrixElement[1][12];
+                        tmpMatrix[0][0] = tmpValueItem.getMatrix()[0][0];
+                        tmpMatrix[0][1] = tmpValueItem.getMatrix()[0][1];
+                        tmpMatrix[0][2] = tmpValueItem.getMatrix()[0][2];
+                        tmpMatrix[0][3] = tmpValueItem.getMatrix()[0][3];
+                        tmpMatrix[0][4] = tmpValueItem.getMatrix()[0][4];
+                        tmpMatrix[0][5] = tmpValueItem.getMatrix()[0][5];
+                        tmpMatrix[0][6] = tmpDataValueItem.getMatrix()[0][0].getClone();
+                        tmpMatrix[0][6].getTypeFormat().setEditable(false);
+                        tmpMatrix[0][7] = tmpDataValueItem.getMatrix()[0][1].getClone();
+                        tmpMatrix[0][7].getTypeFormat().setEditable(false);
+                        tmpMatrix[0][8] = tmpDataValueItem.getMatrix()[0][2].getClone();
+                        tmpMatrix[0][8].getTypeFormat().setEditable(false);
+                        tmpMatrix[0][9] = tmpDataValueItem.getMatrix()[0][3].getClone();
+                        tmpMatrix[0][9].getTypeFormat().setEditable(false);
+                        tmpMatrix[0][10] = tmpDataValueItem.getMatrix()[0][4].getClone();
+                        tmpMatrix[0][10].getTypeFormat().setEditable(false);
+                        tmpMatrix[0][11] = tmpDataValueItem.getMatrix()[0][5].getClone();
+                        tmpMatrix[0][11].getTypeFormat().setEditable(false);
+                        tmpValueItem.setMatrix(tmpMatrix);
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * Corrects composition related value items due to strange error with 
+     * differently sorted rows
+     * 
+     * @throws Exception Thrown if error occurs
+     */
+    private void correctCompositionRelatedValueItems() throws Exception {
+        try {
+            ValueItem tmpMoleculeInfoValueItem = this.valueItemContainer.getValueItem(ModelDefinitions.MOLECULE_INFO_NAME);
+            ValueItem tmpBulkInfoValueItem = this.valueItemContainer.getValueItem(ModelDefinitions.COMPARTMENT_BULK_NAME);
+            LinkedList<ValueItem> tmpChemicalCompositionValueItemList = this.valueItemContainer.getSortedValueItemsOfContainer(ModelDefinitions.CHEMICAL_COMPOSITION_PREFIX_NAME);
+            String[] tmpMoleculeNameArray = new String[tmpMoleculeInfoValueItem.getMatrixRowCount()];
+            for (int i = 0; i < tmpMoleculeInfoValueItem.getMatrixRowCount(); i++) {
+                // Column 0 - Molecule name
+                tmpMoleculeNameArray[i] = tmpMoleculeInfoValueItem.getValue(i, 0);
+            }
+            // Check tmpBulkInfoValueItem
+            for (int i = 0; i < tmpMoleculeNameArray.length; i++) {
+                // Column 0 - Molecule name
+                if (!tmpMoleculeNameArray[i].equals(tmpBulkInfoValueItem.getValue(i, 0))) {
+                    this.correctValueItemRowOrderWithMoleculeNames(tmpBulkInfoValueItem, tmpMoleculeNameArray);
+                    break;
+                }
+            }
+            // Check tmpChemicalCompositionValueItemList
+            for (ValueItem tmpChemicalCompositionValueItem : tmpChemicalCompositionValueItemList) {
+                for (int i = 0; i < tmpMoleculeNameArray.length; i++) {
+                    // Column 0 - Molecule name
+                    if (!tmpMoleculeNameArray[i].equals(tmpChemicalCompositionValueItem.getValue(i, 0))) {
+                        this.correctValueItemRowOrderWithMoleculeNames(tmpChemicalCompositionValueItem, tmpMoleculeNameArray);
+                        break;
+                    }
+                }
+            }
+        } catch (Exception anException) {
+            ModelUtils.appendToLogfile(true, anException);
+            throw new Exception("Composition related value items could not be corrected (this should never happen).", anException);
+        }
+    }
+    
+    /**
+     * Auxiliary method that corrects value item row order according to molecule names
+     * 
+     * @param aValueItem Value item
+     * @param aMoleculeNameArray Array of molecule names
+     */
+    private void correctValueItemRowOrderWithMoleculeNames(ValueItem aValueItem, String[] aMoleculeNameArray) {
+        ValueItemMatrixElement[][] tmpMatrix = new ValueItemMatrixElement[aMoleculeNameArray.length][];
+        for (int i = 0; i < aMoleculeNameArray.length; i++) {
+            for (int k = 0; k < aValueItem.getMatrixRowCount(); k++) {
+                // Column 0 - Molecule name
+                if (aValueItem.getValue(k, 0).equals(aMoleculeNameArray[i])) {
+                    tmpMatrix[i] = aValueItem.getMatrix()[k];
+                    break;
+                }
+            }
+        }
+        aValueItem.setMatrix(tmpMatrix);
+    }
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- XML related methods">
     /**
@@ -2544,6 +2904,10 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
                         this.getGeometryRandomSeedValueItem(ModelDefinitions.DETERMINISTIC_RANDOM_SEED_DEFAULT)
                     );
                 }
+                // Update geometry display value items if necessary
+                this.updateGeometryDisplayValueItems();
+                // Corrects composition related value items due to possible strange error with differently sorted rows
+                this.correctCompositionRelatedValueItems();
                 return true;
             }
         } catch (Exception anException) {
@@ -2556,7 +2920,7 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
     //
     // <editor-fold defaultstate="collapsed" desc="Private properties (set)">
     /**
-     * Value item container. NOTE: No checks are performed.
+     * Value item container. (No checks are performed)
      *
      * @param aValueItemContainer ValueItemContainer
      */

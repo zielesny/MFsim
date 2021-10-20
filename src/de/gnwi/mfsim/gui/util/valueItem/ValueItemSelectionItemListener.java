@@ -72,7 +72,6 @@ public class ValueItemSelectionItemListener implements ItemListener {
         this.comboBox = aComboBox;
         this.valueItem = aValueItem;
     }
-
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public events">
@@ -81,6 +80,7 @@ public class ValueItemSelectionItemListener implements ItemListener {
      *
      * @param anItemEvent Item event
      */
+    @Override
     public void itemStateChanged(ItemEvent anItemEvent) {
         try {
             // Set mouse wait cursor since value item update cascade may take its time

@@ -140,7 +140,7 @@ public final class ModelUtils {
     
     /**
      * Returns current timestamp in standard form (see
- ModelDefinitions.STANDARD_TIMESTAMP_FORMAT)
+     * ModelDefinitions.STANDARD_TIMESTAMP_FORMAT)
      *
      * @return Current timestamp in standard form or null if none could be 
      * created

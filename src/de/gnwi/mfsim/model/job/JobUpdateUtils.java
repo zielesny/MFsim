@@ -52,6 +52,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import javax.swing.JOptionPane;
 import de.gnwi.mfsim.model.preference.ModelDefinitions;
+import de.gnwi.spices.ParticleFrequency;
 
 /**
  * Methods for update of value items of JobInput instances
@@ -120,7 +121,6 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="Update receiver ParticlePairDistanceCalculation">
             this.updateParticlePairDistanceCalculation(tmpParticleTableValueItem, tmpParticleTableValueItem.getValueItemContainer().getValueItem("ParticlePairDistanceCalculation"));
-
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="Update receiver InteractionTable">
             // NOTE: Parameter "false" initiates check if update is necessary
@@ -150,7 +150,7 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
                 tmpParticleTableValueItem.notifyDependentValueItemsForUpdate();
             }
             // </editor-fold>
-            // <editor-fold defaultstate="collapsed" desc="Update receiverMoleculeTable">
+            // <editor-fold defaultstate="collapsed" desc="Update receiver MoleculeTable">
             tmpMoleculeTableValueItem.initializeChangeDetection();
             this.checkMonomerShortcutsOfMolecules(tmpMonomerTableValueItem, tmpMoleculeTableValueItem);
             if (tmpMoleculeTableValueItem.hasChangeDetected()) {
@@ -178,6 +178,11 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
             ValueItem tmpMoleculeParticlePairDistanceCalculationValueItem = tmpMoleculeTableValueItem.getValueItemContainer().getValueItem("MoleculeParticlePairDistanceCalculation");
             ValueItem tmpProteinDistanceForcesValueItem = tmpMoleculeTableValueItem.getValueItemContainer().getValueItem("ProteinDistanceForces");
             ValueItem tmpBoundaryValueItem = tmpMoleculeTableValueItem.getValueItemContainer().getValueItem("MoleculeBoundary");
+            ValueItem tmpElectrostaticsValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("Electrostatics");
+            ValueItem tmpTimeStepNumberValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("TimeStepNumber");
+            ValueItem tmpTimeStepLengthValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("TimeStepLength");
+            ValueItem tmpTemperatureValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("Temperature");
+            ValueItem tmpMoleculeChargeValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("MoleculeCharge");
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="FIRST update ParticleTable value item">
             tmpParticleTableValueItem.initializeChangeDetection();
@@ -193,7 +198,10 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
                 this.checkMoleculeColorsForHint(tmpMoleculeTableValueItem);
             }
             // </editor-fold>
-            // <editor-fold defaultstate="collapsed" desc="1. Update molecule names etc.">
+            // <editor-fold defaultstate="collapsed" desc="1. Update molecule charge and names etc.">
+            // <editor-fold defaultstate="collapsed" desc="- Update receiver MoleculeCharge">
+            this.updateMoleculeCharge(tmpMonomerTableValueItem, tmpMoleculeTableValueItem, tmpMoleculeChargeValueItem);
+            // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="- Update receiver Concentration">
             this.updateMoleculeNameFixed(tmpMoleculeTableValueItem, tmpConcentrationValueItem);
             // </editor-fold>
@@ -219,15 +227,24 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
             this.updateNearestNeighborParticleValueItem(tmpMonomerTableValueItem, tmpMoleculeTableValueItem, tmpMoleculeTableValueItem.getValueItemContainer().getValueItem("NearestNeighborParticle"));
             // </editor-fold>
             // </editor-fold>
-            // <editor-fold defaultstate="collapsed" desc="2. Notify other value items">
+            // <editor-fold defaultstate="collapsed" desc="2. Notify Concentration, Quantity, BoxSize">
             // NOTE: Value items Concentration, Quantity must be notified.
             if (tmpConcentrationValueItem.isActive()) {
                 tmpConcentrationValueItem.notifyDependentValueItemsForUpdate();
             }
             tmpQuantityValueItem.notifyDependentValueItemsForUpdate();
-            // Update box size (NOTE: Although Quantity might be unchanged there may be a change in the number of particles in the simulation box due to a new molecular structure!)
+            // Update box size (NOTE: Although Quantity might be unchanged there 
+            // may be a change in the number of particles in the simulation box 
+            // due to a new molecular structure!)
             tmpBoxSizeValueItem.initializeChangeDetection();
-            this.updateBoxSize(tmpBoxSizeValueItem, tmpDensityValueItem, tmpMonomerTableValueItem, tmpMoleculeTableValueItem, tmpQuantityValueItem, tmpParticleTableValueItem);
+            this.updateBoxSize(
+                tmpBoxSizeValueItem, 
+                tmpDensityValueItem, 
+                tmpMonomerTableValueItem, 
+                tmpMoleculeTableValueItem, 
+                tmpQuantityValueItem, 
+                tmpParticleTableValueItem
+            );
             if (tmpBoxSizeValueItem.hasChangeDetected()) {
                 tmpBoxSizeValueItem.notifyDependentValueItemsForUpdate();
             }
@@ -244,7 +261,10 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
             // NOTE: MUST be AFTER update of MonomerTable, MoleculeTable and ParticleTable value item
             this.updateMoleculeParticlePairDistanceCalculation(tmpMonomerTableValueItem, tmpMoleculeTableValueItem, tmpMoleculeParticlePairDistanceCalculationValueItem);
             // </editor-fold>
-            // <editor-fold defaultstate="collapsed" desc="6. Update ProteinDistanceForces">
+            // <editor-fold defaultstate="collapsed" desc="6. Update Bonds12Table">
+            this.updateVolumeBasedBondLengthsInBonds12(tmpBonds12TableValueItem);
+            // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="7. Update ProteinDistanceForces">
             boolean tmpHasProteinData = false;
             for (int i = 0; i < tmpMoleculeTableValueItem.getMatrixRowCount(); i++) {
                 // Column 1: Molecular structure with possible protein data
@@ -261,24 +281,23 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
                 tmpProteinDistanceForcesValueItem.setLocked(true);
             }
             // </editor-fold>
-            // <editor-fold defaultstate="collapsed" desc="7. Update receiver MoleculeBackboneForces">
+            // <editor-fold defaultstate="collapsed" desc="8. Update receiver MoleculeBackboneForces">
             // IMPORTANT: Call of this.updateMoleculeBackboneForces() MUST be a late call since already updated other value items are necessary for calculation
             this.updateMoleculeBackboneForces(tmpMoleculeTableValueItem.getValueItemContainer());
             // </editor-fold>
-            // <editor-fold defaultstate="collapsed" desc="8. Update receiver ProteinBackboneForces">
+            // <editor-fold defaultstate="collapsed" desc="9. Update receiver ProteinBackboneForces">
             // IMPORTANT: Call of this.updateMoleculeBackboneForces() MUST be a late call since already updated other value items are necessary for calculation
             this.updateProteinBackboneForces(tmpMoleculeTableValueItem.getValueItemContainer());
             // </editor-fold>
-            // <editor-fold defaultstate="collapsed" desc="9. Update receiver TimeStepNumber and TimeStepLength">
-            // IMPORTANT: Call of this.updatePhysicalTimePeriods() MUST be a late call since already updated other value items are necessary for calculation
-            this.updatePhysicalTimePeriods(anUpdateNotifierValueItem.getValueItemContainer());
-            // </editor-fold>
-            // <editor-fold defaultstate="collapsed" desc="10. Update receiver ParticleNumber">
-            // IMPORTANT: Call of this.updateParticleNumber() MUST be a late call since already updated other value items are necessary for calculation
+            // <editor-fold defaultstate="collapsed" desc="10. Update receiver Electrostatics, TimeStepNumber, TimeStepLength, ParticleNumber">
+            // IMPORTANT: Call of the following methods MUST be the LAST call since already updated other value items are necessary for calculation
+            double[] tmpResultArray = this.jobUtilityMethods.getLengthAndTimeConversionFactorsFromDpdToPhysicalUnits(anUpdateNotifierValueItem.getValueItemContainer());
+            double tmpLengthConversionFactor = tmpResultArray[0];
+            double tmpTimeConversionFactor = tmpResultArray[1];
+            double tmpTemperatureInK = tmpTemperatureValueItem.getValueAsDouble();
+            this.updateElectrostatics(tmpElectrostaticsValueItem, tmpLengthConversionFactor, tmpTemperatureInK);
+            this.updatePhysicalTimePeriods(tmpTimeStepNumberValueItem, tmpTimeStepLengthValueItem, tmpTimeConversionFactor);
             this.updateParticleNumber(anUpdateNotifierValueItem.getValueItemContainer());
-            // </editor-fold>
-            // <editor-fold defaultstate="collapsed" desc="11. Update Bonds12Table">
-            this.updateVolumeBasedBondLengthsInBonds12(tmpBonds12TableValueItem);
             // </editor-fold>
             return;
         }
@@ -296,6 +315,7 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
             ValueItem tmpInteractionTableValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("InteractionTable");
             ValueItem tmpMoleculeBackboneForcesValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("MoleculeBackboneForces");
             ValueItem tmpProteinBackboneForcesValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("ProteinBackboneForces");
+            ValueItem tmpElectrostaticsValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("Electrostatics");
             ValueItem tmpTimeStepNumberValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("TimeStepNumber");
             ValueItem tmpTimeStepLengthValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("TimeStepLength");
             ValueItem tmpBonds12TableValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("Bonds12Table");
@@ -317,13 +337,15 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
             // <editor-fold defaultstate="collapsed" desc="Update receiver Bonds12Table">
             this.updateVolumeBasedBondLengthsInBonds12(tmpBonds12TableValueItem);
             // </editor-fold>
-            // <editor-fold defaultstate="collapsed" desc="Update receiver MoleculeBackboneForces, ProteinBackboneForces, TimeStepNumber, TimeStepLength and ParticleNumber">
+            // <editor-fold defaultstate="collapsed" desc="Update receiver MoleculeBackboneForces, ProteinBackboneForces, Electrostatics, TimeStepNumber, TimeStepLength, ParticleNumber">
             // IMPORTANT: Call of the following methods MUST be the LAST call since already updated other value items are necessary for calculation
             double[] tmpResultArray = this.jobUtilityMethods.getLengthAndTimeConversionFactorsFromDpdToPhysicalUnits(anUpdateNotifierValueItem.getValueItemContainer());
             double tmpLengthConversionFactor = tmpResultArray[0];
             double tmpTimeConversionFactor = tmpResultArray[1];
             this.updateMoleculeBackboneForcesDpdLength(tmpMoleculeBackboneForcesValueItem, tmpLengthConversionFactor);
             this.updateProteinBackboneForcesDpdLength(tmpProteinBackboneForcesValueItem, tmpLengthConversionFactor);
+            double tmpTemperatureInK = tmpTemperatureValueItem.getValueAsDouble();
+            this.updateElectrostatics(tmpElectrostaticsValueItem, tmpLengthConversionFactor, tmpTemperatureInK);
             this.updatePhysicalTimePeriods(tmpTimeStepNumberValueItem, tmpTimeStepLengthValueItem, tmpTimeConversionFactor);
             this.updateParticleNumber(anUpdateNotifierValueItem.getValueItemContainer());
             // </editor-fold>
@@ -338,9 +360,15 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
             // <editor-fold defaultstate="collapsed" desc="Update receiver Quantity">
             ValueItem tmpQuantityValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("Quantity");
             tmpQuantityValueItem.initializeChangeDetection();
-            this.calculateQuantity(anUpdateNotifierValueItem, tmpQuantityValueItem, anUpdateNotifierValueItem.getValueItemContainer().getValueItem("ParticleTable"),
-                    anUpdateNotifierValueItem.getValueItemContainer().getValueItem("MonomerTable"), anUpdateNotifierValueItem.getValueItemContainer().getValueItem("MoleculeTable"),
-                    anUpdateNotifierValueItem.getValueItemContainer().getValueItem("Density"), anUpdateNotifierValueItem.getValueItemContainer().getValueItem("BoxSize"));
+            this.calculateQuantity(
+                anUpdateNotifierValueItem, 
+                tmpQuantityValueItem, 
+                anUpdateNotifierValueItem.getValueItemContainer().getValueItem("ParticleTable"),
+                anUpdateNotifierValueItem.getValueItemContainer().getValueItem("MonomerTable"), 
+                anUpdateNotifierValueItem.getValueItemContainer().getValueItem("MoleculeTable"),
+                anUpdateNotifierValueItem.getValueItemContainer().getValueItem("Density"), 
+                anUpdateNotifierValueItem.getValueItemContainer().getValueItem("BoxSize")
+            );
             if (tmpQuantityValueItem.hasChangeDetected()) {
                 tmpQuantityValueItem.notifyDependentValueItemsForUpdate();
             }
@@ -360,13 +388,14 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
             ValueItem tmpCompartmentsValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("Compartments");
             ValueItem tmpMoleculeBackboneForcesValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("MoleculeBackboneForces");
             ValueItem tmpProteinBackboneForcesValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("ProteinBackboneForces");
+            ValueItem tmpTemperatureValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("Temperature");
+            ValueItem tmpElectrostaticsValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("Electrostatics");
             ValueItem tmpTimeStepNumberValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("TimeStepNumber");
             ValueItem tmpTimeStepLengthValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("TimeStepLength");
             ValueItem tmpBonds12TableValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("Bonds12Table");
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="Update receiver Compartments">
             this.updateCompartments(tmpCompartmentsValueItem);
-
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="Update itself and BoxSize">
             // IMPORTANT: FIRST update itself and BoxSize
@@ -387,19 +416,20 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
             // <editor-fold defaultstate="collapsed" desc="Update receiver Bonds12Table">
             this.updateVolumeBasedBondLengthsInBonds12(tmpBonds12TableValueItem);
             // </editor-fold>
-            // <editor-fold defaultstate="collapsed" desc="Update receiver MoleculeBackboneForces, ProteinBackboneForces, TimeStepNumber, TimeStepLength and ParticleNumber">
+            // <editor-fold defaultstate="collapsed" desc="Update receiver MoleculeBackboneForces, ProteinBackboneForces, Electrostatics, TimeStepNumber, TimeStepLength, ParticleNumber">
             // IMPORTANT: Call of the following methods MUST be the LAST call since already updated other value items are necessary for calculation
             double[] tmpResultArray = this.jobUtilityMethods.getLengthAndTimeConversionFactorsFromDpdToPhysicalUnits(anUpdateNotifierValueItem.getValueItemContainer());
             double tmpLengthConversionFactor = tmpResultArray[0];
             double tmpTimeConversionFactor = tmpResultArray[1];
             this.updateMoleculeBackboneForcesDpdLength(tmpMoleculeBackboneForcesValueItem, tmpLengthConversionFactor);
             this.updateProteinBackboneForcesDpdLength(tmpProteinBackboneForcesValueItem, tmpLengthConversionFactor);
+            double tmpTemperatureInK = tmpTemperatureValueItem.getValueAsDouble();
+            this.updateElectrostatics(tmpElectrostaticsValueItem, tmpLengthConversionFactor, tmpTemperatureInK);
             this.updatePhysicalTimePeriods(tmpTimeStepNumberValueItem, tmpTimeStepLengthValueItem, tmpTimeConversionFactor);
             this.updateParticleNumber(anUpdateNotifierValueItem.getValueItemContainer());
             // </editor-fold>
             return;
         }
-
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Update notifier BoxSize">
         if (anUpdateNotifierValueItem.getName().equals("BoxSize")) {
@@ -425,16 +455,24 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
             // </editor-fold>
             if (tmpConcentrationValueItem.isActive()) {
                 // <editor-fold defaultstate="collapsed" desc="Recalculate Quantity">
-                // IMPORTANT: NO further updates at this point since only quantites are recalculated. This may be necessary due to roundoff errors in box size recalcualtion!
+                // IMPORTANT: NO further updates at this point since only 
+                // quantities are recalculated. This may be necessary due to 
+                // roundoff errors in box size recalcualtion! But Quantity
+                // change has to be detected ...
+                tmpQuantityValueItem.initializeChangeDetection();
                 this.calculateQuantity(
-                        tmpConcentrationValueItem,
-                        tmpQuantityValueItem,
-                        tmpParticleTableValueItem,
-                        tmpMonomerTableValueItem,
-                        tmpMoleculeTableValueItem,
-                        tmpDensityValueItem,
-                        anUpdateNotifierValueItem
+                    tmpConcentrationValueItem,
+                    tmpQuantityValueItem,
+                    tmpParticleTableValueItem,
+                    tmpMonomerTableValueItem,
+                    tmpMoleculeTableValueItem,
+                    tmpDensityValueItem,
+                    anUpdateNotifierValueItem
                 );
+                // ... and notified if necessary!
+                if (tmpQuantityValueItem.hasChangeDetected()) {
+                    tmpQuantityValueItem.notifyDependentValueItemsForUpdate();
+                }
                 // </editor-fold>
             }
             // IMPORTANT: Update Compartments AFTER QUANTITIY
@@ -465,14 +503,22 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
             ValueItem tmpParticleTableValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("ParticleTable");
             ValueItem tmpDensityValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("Density");
             ValueItem tmpInteractionTableValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("InteractionTable");
-
+            ValueItem tmpTemperatureValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("Temperature");
+            ValueItem tmpElectrostaticsValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("Electrostatics");
+            ValueItem tmpTimeStepNumberValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("TimeStepNumber");
+            ValueItem tmpTimeStepLengthValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("TimeStepLength");
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="Update receiver InteractionTable">
             this.updateInteractionTableWithNewDensityAndTemperature(tmpDensityValueItem, anUpdateNotifierValueItem, tmpParticleTableValueItem, tmpInteractionTableValueItem);
             // </editor-fold>
-            // <editor-fold defaultstate="collapsed" desc="Update receiver TimeStepNumber and TimeStepLength">
-            // IMPORTANT: Call of this.updatePhysicalTimePeriods() MUST be the LAST call since already updated other value items are necessary for calculation
-            this.updatePhysicalTimePeriods(anUpdateNotifierValueItem.getValueItemContainer());
+            // <editor-fold defaultstate="collapsed" desc="Update receiver Electrostatics, TimeStepNumber, TimeStepLength">
+            // IMPORTANT: Call of the following methods MUST be the LAST call since already updated other value items are necessary for calculation
+            double[] tmpResultArray = this.jobUtilityMethods.getLengthAndTimeConversionFactorsFromDpdToPhysicalUnits(anUpdateNotifierValueItem.getValueItemContainer());
+            double tmpLengthConversionFactor = tmpResultArray[0];
+            double tmpTimeConversionFactor = tmpResultArray[1];
+            double tmpTemperatureInK = tmpTemperatureValueItem.getValueAsDouble();
+            this.updateElectrostatics(tmpElectrostaticsValueItem, tmpLengthConversionFactor, tmpTemperatureInK);
+            this.updatePhysicalTimePeriods(tmpTimeStepNumberValueItem, tmpTimeStepLengthValueItem, tmpTimeConversionFactor);
             // </editor-fold>
             return;
         }
@@ -889,6 +935,109 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
             this.updateCompartmentContainerWithGeometryRandomSeed(aJobInput.getValueItemContainer().getValueItem("Compartments"), tmpGeometryRandomSeedValueItem.getValueAsLong());
         }
     }
+    
+    /**
+     * Updates value item "InitialPotentialEnergyMinimizationStepNumber" in specified job input if necessary
+     * 
+     * @param aJobInput Job input to be updated
+     */
+    public void updateInitialPotentialEnergyMinimizationStepNumber(JobInput aJobInput) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aJobInput == null) {
+            return;
+        }
+        // </editor-fold>
+        ValueItem tmpOldInitialPotentialEnergyMinimizationStepNumberValueItem = 
+            aJobInput.getValueItemContainer().getValueItem("InitialPotentialEnergyMinimizationStepNumber");
+        if (tmpOldInitialPotentialEnergyMinimizationStepNumberValueItem.getMatrixColumnCount() < 2) {
+            ValueItem tmpNewInitialPotentialEnergyMinimizationStepNumberValueItem = 
+                JdpdValueItemDefinition.getInstance().getClonedJdpdInputFileValueItem("InitialPotentialEnergyMinimizationStepNumber");
+            tmpNewInitialPotentialEnergyMinimizationStepNumberValueItem.setValue(
+                tmpOldInitialPotentialEnergyMinimizationStepNumberValueItem.getValue(), 
+                0, 
+                0
+            );
+            // For compatibility: Before all forces were used for initial potential energy minimization
+            tmpNewInitialPotentialEnergyMinimizationStepNumberValueItem.setValue(
+                ModelMessage.get("JdpdInputFile.parameter.true"), 
+                0, 
+                1
+            );
+            aJobInput.getValueItemContainer().replaceValueItemWithKeptVerticalPositionAndNodeNames(tmpNewInitialPotentialEnergyMinimizationStepNumberValueItem);
+        }
+    }
+    
+    /**
+     * Updates value item "Electrostatics" in specified job input if necessary
+     * 
+     * @param aJobInput Job input to be updated
+     */
+    public void updateElectrostatics(JobInput aJobInput) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aJobInput == null) {
+            return;
+        }
+        // </editor-fold>
+        ValueItem tmpOldElectrostaticsValueItem = aJobInput.getValueItemContainer().getValueItem("Electrostatics");
+        if (tmpOldElectrostaticsValueItem.getMatrixColumnCount() < 9) {
+            ValueItem tmpNewElectrostaticsValueItem = JdpdValueItemDefinition.getInstance().getClonedJdpdInputFileValueItem("Electrostatics");
+            // Copy activity and lock status ...
+            tmpNewElectrostaticsValueItem.setActivity(tmpOldElectrostaticsValueItem.isActive());
+            tmpNewElectrostaticsValueItem.setLocked(tmpOldElectrostaticsValueItem.isLocked());
+            // ... and replace in value item container
+            aJobInput.getValueItemContainer().replaceValueItemWithKeptVerticalPositionAndNodeNames(tmpNewElectrostaticsValueItem);
+            // Set default values for electrostatics coupling constant and decay length
+            this.updateElectrostatics(aJobInput.getValueItemContainer());
+
+            // Update according to old settings
+
+            // electrostaticsForceCutoff
+            tmpNewElectrostaticsValueItem.setValue(tmpOldElectrostaticsValueItem.getValue(0, 0), 0, 0);
+            // electrostaticsForceMaximumValue
+            tmpNewElectrostaticsValueItem.setValue(tmpOldElectrostaticsValueItem.getValue(0, 1), 0, 1);
+            // electrostaticsForceEffectiveExponent
+            tmpNewElectrostaticsValueItem.setValue(tmpOldElectrostaticsValueItem.getValue(0, 3), 0, 2);
+            // electrostaticsForceDampingDistance
+            tmpNewElectrostaticsValueItem.setValue(tmpOldElectrostaticsValueItem.getValue(0, 4), 0, 3);
+            // electrostaticsForceDampingFactor
+            tmpNewElectrostaticsValueItem.setValue(tmpOldElectrostaticsValueItem.getValue(0, 5), 0, 4);
+            // Note: The effective charge factor (column 2) for each charge of 
+            //       ad-hoc electrostatics is no longer supported since it is 
+            //       redundant.
+            //       The product of effective charge factors is transferred to 
+            //       the electrostatics coupling constant.
+            // electrostaticsCouplingConstant
+            double tmpElectrostaticsCouplingConstant = tmpOldElectrostaticsValueItem.getValueAsDouble(0, 2) * tmpOldElectrostaticsValueItem.getValueAsDouble(0, 2);
+            tmpNewElectrostaticsValueItem.setValue(String.valueOf(tmpElectrostaticsCouplingConstant), 0, 5);
+            // electrostaticsChargeDistributionType
+            tmpNewElectrostaticsValueItem.setValue(ModelMessage.get("JdpdInputFile.parameter.electrostaticsChargeDistributionType.None"), 0, 6);
+            // electrostaticsDecayLength: Do nothing (already set above)!
+            // electrostaticsSplittingType
+            tmpNewElectrostaticsValueItem.setValue(ModelMessage.get("JdpdInputFile.parameter.electrostaticsSplittingType.None"), 0, 8);
+        }
+    }
+    
+    /**
+     * Adds and updates value item "MoleculeCharge" in specified job input if necessary
+     * 
+     * @param aJobInput Job input to be updated
+     */
+    public void addMoleculeCharge(JobInput aJobInput) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aJobInput == null) {
+            return;
+        }
+        // </editor-fold>
+        if (!aJobInput.getValueItemContainer().hasValueItem("MoleculeCharge")) {
+            ValueItem tmpNewMoleculeChargeValueItem = JdpdValueItemDefinition.getInstance().getClonedJdpdInputFileValueItem("MoleculeCharge");
+            aJobInput.getValueItemContainer().insertValueItemBefore(tmpNewMoleculeChargeValueItem, "Density");
+            this.updateMoleculeCharge(
+                aJobInput.getValueItemContainer().getValueItem("MonomerTable"),
+                aJobInput.getValueItemContainer().getValueItem("MoleculeTable"),
+                aJobInput.getValueItemContainer().getValueItem("MoleculeCharge")
+            );
+        }
+    }
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Private methods">
@@ -902,7 +1051,6 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
      * @param aMoleculeTableValueItem MoleculeTable value item (may be changed)
      */
     private void checkMonomerShortcutsOfMolecules(ValueItem aMonomerTableValueItem, ValueItem aMoleculeTableValueItem) {
-
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aMonomerTableValueItem == null || !aMonomerTableValueItem.getName().equals("MonomerTable") || aMoleculeTableValueItem == null || !aMoleculeTableValueItem.getName().equals("MoleculeTable")) {
             return;
@@ -975,6 +1123,82 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
             }
         }
         aMoleculeTableValueItem.removeHint();
+    }
+    // </editor-fold>
+    // <editor-fold defaultstate="collapsed" desc="-- MoleculeCharge as update receiver">
+    /**
+     * Update molecule charge value item
+     * 
+     * @param aMonomerTableValueItem Monomer table value item (is NOT changed)
+     * @param aMoleculeTableValueItem  Molecule table value item (is NOT changed)
+     * @param aMoleculeChargeValueItem  Monomer table value item (may be changed)
+     */
+    private void updateMoleculeCharge(ValueItem aMonomerTableValueItem, ValueItem aMoleculeTableValueItem, ValueItem aMoleculeChargeValueItem) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aMonomerTableValueItem == null || !aMonomerTableValueItem.getName().equals("MonomerTable")) {
+            return;
+        }
+        if (aMoleculeTableValueItem == null || !aMoleculeTableValueItem.getName().equals("MoleculeTable")) {
+            return;
+        }
+        if (aMoleculeChargeValueItem == null || !aMoleculeChargeValueItem.getName().equals("MoleculeCharge")) {
+            return;
+        }
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Set default matrix with all molecules if necessary">
+        if (aMoleculeChargeValueItem.getMatrixRowCount() != aMoleculeTableValueItem.getMatrixRowCount()) {
+            ValueItemMatrixElement[][] tmpMatrix = new ValueItemMatrixElement[aMoleculeTableValueItem.getMatrixRowCount()][];
+            ValueItemDataTypeFormat tmpNonEditableTextTypeFormat = new ValueItemDataTypeFormat(false);
+            for (int i = 0; i < aMoleculeTableValueItem.getMatrixRowCount(); i++) {
+                ValueItemMatrixElement[] tmpRow = new ValueItemMatrixElement[4];
+                String tmpMoleculeName = aMoleculeTableValueItem.getValue(i, 0);
+                tmpRow[0] = new ValueItemMatrixElement(tmpMoleculeName, tmpNonEditableTextTypeFormat);
+                tmpRow[1] = new ValueItemMatrixElement("0", tmpNonEditableTextTypeFormat);
+                tmpRow[2] = new ValueItemMatrixElement("0", tmpNonEditableTextTypeFormat);
+                tmpRow[3] = new ValueItemMatrixElement("0", tmpNonEditableTextTypeFormat);
+                tmpMatrix[i] = tmpRow;
+            }
+            aMoleculeChargeValueItem.setMatrix(tmpMatrix);
+        } else {
+            // Update molecule names (column 0) if necessary
+            for (int i = 0; i < aMoleculeTableValueItem.getMatrixRowCount(); i++) {
+                if (!aMoleculeChargeValueItem.getValue(i, 0).equals(aMoleculeTableValueItem.getValue(i, 0))) {
+                    aMoleculeChargeValueItem.setValue(aMoleculeTableValueItem.getValue(i, 0), i, 0);
+                }
+            }
+        }
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Replace monomer shortcuts in molecule table">
+        ValueItem tmpMoleculeTableWithoutMonomerShortcutsValueItem = aMoleculeTableValueItem;
+        if (aMonomerTableValueItem.isActive()) {
+            // First clone molecules value item
+            tmpMoleculeTableWithoutMonomerShortcutsValueItem = aMoleculeTableValueItem.getClone();
+            // Second replace in cloned molecules value item
+            this.jobUtilityMethods.replaceMonomerShortcutsInMolecularStructure(tmpMoleculeTableWithoutMonomerShortcutsValueItem, aMonomerTableValueItem);
+        }
+        // </editor-fold>
+        // Loop over all molecules
+        for (int i = 0; i < tmpMoleculeTableWithoutMonomerShortcutsValueItem.getMatrixRowCount(); i++) {
+            SpicesGraphics tmpSpices = SpicesPool.getInstance().getSpices(tmpMoleculeTableWithoutMonomerShortcutsValueItem.getValue(i, 1));
+            ParticleFrequency[] tmpParticleFrequencies = tmpSpices.getParticleFrequencies();
+            SpicesPool.getInstance().setSpicesForReuse(tmpSpices);
+            double tmpPositiveCharge = 0.0;
+            double tmpNegativeCharge = 0.0;
+            for (int k = 0; k < tmpParticleFrequencies.length; k++) {
+                String tmpParticle = tmpParticleFrequencies[k].getParticle();
+                int tmpParticleFrequency = tmpParticleFrequencies[k].getFrequency();
+                double tmpParticleCharge = StandardParticleInteractionData.getInstance().getParticleDescription(tmpParticle).getChargeValue();
+                if (tmpParticleCharge > 0.0) {
+                    tmpPositiveCharge += tmpParticleCharge * tmpParticleFrequency;
+                } else if (tmpParticleCharge < 0.0) {
+                    tmpNegativeCharge += tmpParticleCharge * tmpParticleFrequency;
+                }                       
+            }
+            double tmpNetCharge = tmpPositiveCharge + tmpNegativeCharge;
+            aMoleculeChargeValueItem.setValue(String.valueOf(tmpPositiveCharge), i, 1);
+            aMoleculeChargeValueItem.setValue(String.valueOf(tmpNegativeCharge), i, 2);
+            aMoleculeChargeValueItem.setValue(String.valueOf(tmpNetCharge), i, 3);
+        }
     }
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="-- MoleculeTable as update notifier">
@@ -1772,8 +1996,12 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
      * @param anInteractionTableValueItem InteractionTable value item (may be
      * changed)
      */
-    private void updateInteractionTableWithNewDensityAndTemperature(ValueItem aDensityValueItem, ValueItem aTemperatureValueItem, ValueItem aParticleTableValueItem,
-            ValueItem anInteractionTableValueItem) {
+    private void updateInteractionTableWithNewDensityAndTemperature(
+        ValueItem aDensityValueItem, 
+        ValueItem aTemperatureValueItem, 
+        ValueItem aParticleTableValueItem,
+        ValueItem anInteractionTableValueItem
+    ) {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aDensityValueItem == null || !aDensityValueItem.getName().equals("Density")) {
             return;
@@ -1787,7 +2015,6 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
         if (anInteractionTableValueItem == null || !anInteractionTableValueItem.getName().equals("InteractionTable")) {
             return;
         }
-
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Perform update">
         ValueItemMatrixElement[][] tmpNewMatrix = new ValueItemMatrixElement[anInteractionTableValueItem.getMatrixRowCount()][];
@@ -3040,6 +3267,56 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
             double tmpLengthInDpd = tmpLengthInAngstrom/aLengthConversionFactor;
             aProteinBackboneForcesValueItem.setValue(String.valueOf(tmpLengthInDpd), i, 4);
         }
+    }
+    // </editor-fold>
+    // <editor-fold defaultstate="collapsed" desc="-- Electrostatics as update receiver">
+    /**
+     * Updates electrostatics value item
+
+     * @param aJobInputValueItemContainer ValueItemContainer instance that
+     * contains ParticleTable, MonomerTable, MoleculeTable, Quantity, Density and
+     * Temperature value item (value items are NOT changed) as well as
+     * Electrostatics value item (this may be changed)
+     */
+    private void updateElectrostatics(ValueItemContainer aJobInputValueItemContainer) {
+        if (aJobInputValueItemContainer != null) {
+            ValueItem tmpElectrostaticsValueItem = aJobInputValueItemContainer.getValueItem("Electrostatics");
+            double tmpLengthConversionFactor = this.jobUtilityMethods.getLengthConversionFactorFromDpdToPhysicalLength(aJobInputValueItemContainer);
+            ValueItem tmpTemperatureValueItem = aJobInputValueItemContainer.getValueItem("Temperature");
+            if (tmpTemperatureValueItem != null) {
+                double tmpTemperatureInK = tmpTemperatureValueItem.getValueAsDouble();
+                this.updateElectrostatics(tmpElectrostaticsValueItem, tmpLengthConversionFactor, tmpTemperatureInK);
+            }
+        }
+    }
+
+    /**
+     * Updates electrostatics value item
+     * 
+     * @param anElectrostaticsValueItem Electrostatics value item
+     * @param aLengthConversionFactor Length conversion factor from DPD length 
+     * @param aTemperatureInK Temperature in K
+     * unit to physical length unit Angstrom
+     */
+    private void updateElectrostatics(ValueItem anElectrostaticsValueItem, double aLengthConversionFactor, double aTemperatureInK) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (anElectrostaticsValueItem == null || !anElectrostaticsValueItem.getName().equals("Electrostatics")) {
+            return;
+        }
+        if (aTemperatureInK < 0.0) {
+            return;
+        }
+        if (aLengthConversionFactor <= 0.0) {
+            return;
+        }
+        // </editor-fold>
+        double tmpElectrostaticsCouplingConstant = this.jobUtilityMethods.getElectrostaticsCouplingConstant(aLengthConversionFactor, aTemperatureInK);
+        // Set electrostatics coupling constant
+        anElectrostaticsValueItem.getTypeFormat(0, 5).setDefaultValue(String.valueOf(tmpElectrostaticsCouplingConstant));
+        anElectrostaticsValueItem.setValue(String.valueOf(tmpElectrostaticsCouplingConstant), 0, 5);
+        // Set electrostatics decay length
+        anElectrostaticsValueItem.getTypeFormat(0, 7).setDefaultValue(String.valueOf(tmpElectrostaticsCouplingConstant));
+        anElectrostaticsValueItem.setValue(String.valueOf(tmpElectrostaticsCouplingConstant), 0, 7);
     }
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="-- TimeStepNumber and TimeStepLength as update receiver">

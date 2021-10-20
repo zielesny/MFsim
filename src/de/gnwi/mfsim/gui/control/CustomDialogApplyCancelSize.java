@@ -203,6 +203,11 @@ public class CustomDialogApplyCancelSize extends JDialog {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Exposed methods">
+    /**
+     * CenterDialogButton
+     * 
+     * @return CenterDialogButton
+     */
     public JButton getCenterDialogButton() {
         if (this.centerDialogButton != null) {
             return centerDialogButton;
@@ -212,6 +217,11 @@ public class CustomDialogApplyCancelSize extends JDialog {
         }
     }
 
+    /**
+     * MinimizeDialogSizeButton
+     * 
+     * @return MinimizeDialogSizeButton
+     */
     public JButton getMinimizeDialogSizeButton() {
         if (this.minimizeDialogSizeButton != null) {
             return minimizeDialogSizeButton;
@@ -221,6 +231,11 @@ public class CustomDialogApplyCancelSize extends JDialog {
         }
     }
 
+    /**
+     * MaximizeDialogSizeButton
+     * 
+     * @return MaximizeDialogSizeButton
+     */
     public JButton getMaximizeDialogSizeButton() {
         if (this.maximizeDialogSizeButton != null) {
             return maximizeDialogSizeButton;
@@ -230,6 +245,11 @@ public class CustomDialogApplyCancelSize extends JDialog {
         }
     }
 
+    /**
+     * CustomDialogSizeButton
+     * 
+     * @return CustomDialogSizeButton
+     */
     public JButton getCustomDialogSizeButton() {
         if (this.customDialogSizeButton != null) {
             return customDialogSizeButton;
@@ -239,6 +259,11 @@ public class CustomDialogApplyCancelSize extends JDialog {
         }
     }
 
+    /**
+     * CustomDialogPreferencesButton
+     * 
+     * @return CustomDialogPreferencesButton
+     */
     public JButton getCustomDialogPreferencesButton() {
         if (this.setCustomDialogPreferencesButton != null) {
             return setCustomDialogPreferencesButton;
@@ -248,6 +273,11 @@ public class CustomDialogApplyCancelSize extends JDialog {
         }
     }
 
+    /**
+     * ApplyButton
+     * 
+     * @return ApplyButton
+     */
     protected JButton getApplyButton() {
         if (this.applyButton != null) {
             return this.applyButton;
@@ -257,6 +287,11 @@ public class CustomDialogApplyCancelSize extends JDialog {
         }
     }
 
+    /**
+     * CancelButton
+     * 
+     * @return CancelButton
+     */
     protected JButton getCancelButton() {
         return cancelButton;
     }

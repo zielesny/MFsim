@@ -1,0 +1,27 @@
+# Particle set for MFsim
+
+[Title]
+H2O
+[/Title]
+
+[Version]
+1.0.0.0
+[/Version]
+
+[Particle description]
+# Particle Name  Mass[DPD] Charge Mass[g/mol] Volume[A^3] Graphics-Radius Standard-Color
+H2O        Water 1         0      18.02       30.0        0.5             cyan
+H2OP       Water 1         1      18.02       30.0        0.5             red
+H2ON       Water 1         -1     18.02       30.0        0.5             blue
+[/Particle description]
+
+[Particle interactions]
+# Repulsion parameters a(ij) for different temperatures (in K)
+Pair      300
+H2O_H2O   25.0
+H2O_H2OP  25.0
+H2O_H2ON  25.0
+H2OP_H2OP 25.0
+H2OP_H2ON 25.0
+H2ON_H2ON 25.0
+[/Particle interactions]

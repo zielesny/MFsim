@@ -1418,7 +1418,7 @@ public class GraphicalParticlePositionInfo implements ValueItemUpdateNotifierInt
 
     /**
      * Returns symmetry index for array (see code).
-     * NOTE: No checks are performed.
+     * (No checks are performed)
      * 
      * @param anArray Array
      * @return Symmetry index for array
@@ -1429,7 +1429,7 @@ public class GraphicalParticlePositionInfo implements ValueItemUpdateNotifierInt
     
     /**
      * Returns symmetry index for array (see code).
-     * NOTE: No checks are performed.
+     * (No checks are performed)
      * 
      * @param anArray Array
      * @return Symmetry index for array
@@ -1460,7 +1460,7 @@ public class GraphicalParticlePositionInfo implements ValueItemUpdateNotifierInt
     
     /**
      * Returns selected molecule.
-     * NOTE: No checks are performed.
+     * (No checks are performed)
      * 
      * @return Selected molecule or null if none could be created
      * @return 

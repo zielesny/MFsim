@@ -29,9 +29,13 @@ import java.util.Arrays;
  * @author Ziv Yaniv
  */
 public class Frame implements Serializable {
+    /**
+     * Small angle
+     */
+    public static final double SMALL_ANGLE = 0.008726535498373935;
+
     private double[][] rotation;
     private double[] translation;            //0.5 degrees
-    public static final double SMALL_ANGLE = 0.008726535498373935;
 
     /**
      * Construct the identity transformation.

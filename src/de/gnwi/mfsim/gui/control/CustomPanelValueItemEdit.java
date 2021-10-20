@@ -1070,210 +1070,470 @@ public class CustomPanelValueItemEdit extends JPanel {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * CollapseTreeButton
+     * 
+     * @return CollapseTreeButton
+     */
     public JButton getCollapseTreeButton() {
         return collapseTreeButton;
     }
 
+    /**
+     * ExpandTreeButton
+     * 
+     * @return ExpandTreeButton
+     */
     public JButton getExpandTreeButton() {
         return expandTreeButton;
     }
 
+    /**
+     * ValueTextField
+     * 
+     * @return ValueTextField
+     */
     public JTextField getValueTextField() {
         return valueTextField;
     }
 
+    /**
+     * TextTextField
+     * 
+     * @return TextTextField
+     */
     public JTextField getTextTextField() {
         return textTextField;
     }
 
+    /**
+     * FeatureOverviewTree
+     * 
+     * @return FeatureOverviewTree
+     */
     public JTree getFeatureOverviewTree() {
         return featureOverviewTree;
     }
 
+    /**
+     * SelectedFeatureCardsPanel
+     * 
+     * @return SelectedFeatureCardsPanel
+     */
     public JPanel getSelectedFeatureCardsPanel() {
         return selectedFeatureCardsPanel;
     }
 
+    /**
+     * TimestampTextField
+     * 
+     * @return TimestampTextField
+     */
     public JTextField getTimestampTextField() {
         return this.timestampTextField;
     }
 
+    /**
+     * TimestampNowButton
+     * 
+     * @return TimestampNowButton
+     */
     public JButton getTimestampNowButton() {
         return this.timestampNowButton;
     }
 
+    /**
+     * DirectoryTextField
+     * 
+     * @return DirectoryTextField
+     */
     public JTextField getDirectoryTextField() {
         return directoryTextField;
     }
 
+    /**
+     * DirectoryBrowseButton
+     * 
+     * @return DirectoryBrowseButton
+     */
     public JButton getDirectoryBrowseButton() {
         return directoryBrowseButton;
     }
 
+    /**
+     * ActivityCheckBox
+     * 
+     * @return ActivityCheckBox
+     */
     public JCheckBox getActivityCheckBox() {
         return activityCheckBox;
     }
 
+    /**
+     * SelectedFeatureInfoPanel
+     * 
+     * @return SelectedFeatureInfoPanel
+     */
     public JPanel getSelectedFeatureInfoPanel() {
         return selectedFeatureInfoPanel;
     }
 
+    /**
+     * SelectedFeaturePanel
+     * 
+     * @return SelectedFeaturePanel
+     */
     public JPanel getSelectedFeaturePanel() {
         return selectedFeaturePanel;
     }
 
+    /**
+     * SelectedFeatureTabbedPanel
+     * 
+     * @return SelectedFeatureTabbedPanel
+     */
     public JTabbedPane getSelectedFeatureTabbedPanel() {
         return selectedFeatureTabbedPanel;
     }
 
+    /**
+     * FeatureOverviewPanel
+     * 
+     * @return FeatureOverviewPanel
+     */
     public JPanel getFeatureOverviewPanel() {
         return featureOverviewPanel;
     }
 
+    /**
+     * ValueNameLabel
+     * 
+     * @return ValueNameLabel
+     */
     public JLabel getValueNameLabel() {
         return valueNameLabel;
     }
 
+    /**
+     * TextNameLabel
+     * 
+     * @return TextNameLabel
+     */
     public JLabel getTextNameLabel() {
         return textNameLabel;
     }
 
+    /**
+     * DirectoryNameLabel
+     * 
+     * @return DirectoryNameLabel
+     */
     public JLabel getDirectoryNameLabel() {
         return directoryNameLabel;
     }
 
+    /**
+     * TimestampNameLabel
+     * 
+     * @return TimestampNameLabel
+     */
     public JLabel getTimestampNameLabel() {
         return timestampNameLabel;
     }
 
+    /**
+     * MatrixNameLabel
+     * 
+     * @return MatrixNameLabel
+     */
     public JLabel getMatrixNameLabel() {
         return matrixNameLabel;
     }
 
+    /**
+     * SelectionTextNameLabel
+     * 
+     * @return SelectionTextNameLabel
+     */
     public JLabel getSelectionTextNameLabel() {
         return selectionTextNameLabel;
     }
 
+    /**
+     * SelectionTextComboBox
+     * 
+     * @return SelectionTextComboBox
+     */
     public JComboBox getSelectionTextComboBox() {
         return selectionTextComboBox;
     }
 
+    /**
+     * SelectedFeatureSelectionTextPanel
+     * 
+     * @return SelectedFeatureSelectionTextPanel
+     */
     public JPanel getSelectedFeatureSelectionTextPanel() {
         return selectedFeatureSelectionTextPanel;
     }
 
+    /**
+     * MatrixDiagramButton
+     * 
+     * @return MatrixDiagramButton
+     */
     public JButton getMatrixDiagramButton() {
         return matrixDiagramButton;
     }
 
+    /**
+     * SelectedFeatureNumericValueInfoLabel
+     * 
+     * @return SelectedFeatureNumericValueInfoLabel
+     */
     public JLabel getSelectedFeatureNumericValueInfoLabel() {
         return selectedFeatureNumericValueInfoLabel;
     }
 
+    /**
+     * SelectedFeatureFlexibleMatrixPanel
+     * 
+     * @return SelectedFeatureFlexibleMatrixPanel
+     */
     public CustomPanelValueItemFlexibleMatrix getSelectedFeatureFlexibleMatrixPanel() {
         return selectedFeatureFlexibleMatrixPanel;
     }
 
+    /**
+     * SelectedFeatureSelectionTextInfoLabel
+     * 
+     * @return SelectedFeatureSelectionTextInfoLabel
+     */
     public JLabel getSelectedFeatureSelectionTextInfoLabel() {
         return selectedFeatureSelectionTextInfoLabel;
     }
 
+    /**
+     * SelectedFeatureDescriptionPanel
+     * 
+     * @return SelectedFeatureDescriptionPanel
+     */
     public CustomPanelDescription getSelectedFeatureDescriptionPanel() {
         return selectedFeatureDescriptionPanel;
     }
 
+    /**
+     * SelectedFeatureHintPanel
+     * 
+     * @return SelectedFeatureHintPanel
+     */
     public CustomPanelDescription getSelectedFeatureHintPanel() {
         return selectedFeatureHintPanel;
     }
 
+    /**
+     * SelectedFeatureErrorPanel
+     * 
+     * @return SelectedFeatureErrorPanel
+     */
     public CustomPanelDescription getSelectedFeatureErrorPanel() {
         return selectedFeatureErrorPanel;
     }
 
+    /**
+     * SelectValueItemStatusComboBox
+     * 
+     * @return SelectValueItemStatusComboBox
+     */
     public JComboBox getSelectValueItemStatusComboBox() {
         return selectValueItemStatusComboBox;
     }
 
+    /**
+     * SelectErrorStatusButton
+     * 
+     * @return SelectErrorStatusButton
+     */
     public JButton getSelectErrorStatusButton() {
         return selectErrorStatusButton;
     }
 
+    /**
+     * SelectHintStatusButton
+     * 
+     * @return SelectHintStatusButton
+     */
     public JButton getSelectHintStatusButton() {
         return selectHintStatusButton;
     }
 
+    /**
+     * SelectValueItemStatusPanel
+     * 
+     * @return SelectValueItemStatusPanel
+     */
     public JPanel getSelectValueItemStatusPanel() {
         return selectValueItemStatusPanel;
     }
 
+    /**
+     * CompartmentNameLabel
+     * 
+     * @return CompartmentNameLabel
+     */
     public JLabel getCompartmentNameLabel() {
         return compartmentNameLabel;
     }
 
+    /**
+     * CompartmentImagePanel
+     * 
+     * @return CompartmentImagePanel
+     */
     public CustomPanelImage getCompartmentImagePanel() {
         return compartmentImagePanel;
     }
 
+    /**
+     * CompartmentEditButton
+     * 
+     * @return CompartmentEditButton
+     */
     public JButton getCompartmentEditButton() {
         return compartmentEditButton;
     }
 
+    /**
+     * CompartmentViewButton
+     * 
+     * @return CompartmentViewButton
+     */
     public JButton getCompartmentViewButton() {
         return compartmentViewButton;
     }
 
+    /**
+     * CompartmentRemoveButton
+     * 
+     * @return CompartmentRemoveButton
+     */
     public JButton getCompartmentRemoveButton() {
         return compartmentRemoveButton;
     }
 
+    /**
+     * TextShowContentLabel
+     * 
+     * @return TextShowContentLabel
+     */
     public JLabel getTextShowContentLabel() {
         return textShowContentLabel;
     }
 
+    /**
+     * TextShowNameLabel
+     * 
+     * @return TextShowNameLabel
+     */
     public JLabel getTextShowNameLabel() {
         return textShowNameLabel;
     }
 
+    /**
+     * FileNameLabel
+     * 
+     * @return FileNameLabel
+     */
     public JLabel getFileNameLabel() {
         return fileNameLabel;
     }
 
+    /**
+     * FileTextField
+     * 
+     * @return FileTextField
+     */
     public JTextField getFileTextField() {
         return fileTextField;
     }
 
+    /**
+     * FileBrowseButton
+     * 
+     * @return FileBrowseButton
+     */
     public JButton getFileBrowseButton() {
         return fileBrowseButton;
     }
 
+    /**
+     * SelectSimulationBoxDisplayComboBox
+     * 
+     * @return SelectSimulationBoxDisplayComboBox
+     */
     public JComboBox getSelectSimulationBoxDisplayComboBox() {
         return selectSimulationBoxDisplayComboBox;
     }
 
+    /**
+     * SetCurrentTableDataSchemaButton
+     * 
+     * @return SetCurrentTableDataSchemaButton
+     */
     public JButton getSetCurrentTableDataSchemaButton() {
         return setCurrentTableDataSchemaButton;
     }
 
+    /**
+     * TableDataSchemaComboBox
+     * 
+     * @return TableDataSchemaComboBox
+     */
     public JComboBox getTableDataSchemaComboBox() {
         return tableDataSchemaComboBox;
     }
 
+    /**
+     * ApplyTableDataSchemaButton
+     * 
+     * @return ApplyTableDataSchemaButton
+     */
     public JButton getApplyTableDataSchemaButton() {
         return applyTableDataSchemaButton;
     }
 
+    /**
+     * RemoveTableDataSchemaButton
+     * 
+     * @return RemoveTableDataSchemaButton
+     */
     public JButton getRemoveTableDataSchemaButton() {
         return removeTableDataSchemaButton;
     }
 
+    /**
+     * ShowTableDataSchemaButton
+     * 
+     * @return ShowTableDataSchemaButton
+     */
     public JButton getShowTableDataSchemaButton() {
         return showTableDataSchemaButton;
     }
 
+    /**
+     * TableDataSchemaPanel
+     * 
+     * @return TableDataSchemaPanel
+     */
     public JPanel getTableDataSchemaPanel() {
         return tableDataSchemaPanel;
     }
 
+    /**
+     * ShowBoxPropertiesButton
+     * 
+     * @return ShowBoxPropertiesButton
+     */
     public JButton getShowBoxPropertiesButton() {
         return showBoxPropertiesButton;
     }

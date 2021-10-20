@@ -5,7 +5,7 @@ MFsim is an open Java all-in-one rich-client computing environment for mesoscopi
 
 MFsim uses several open libraries (see *MFSimVersionHistory.txt* for details and references below) and is published as open source under the GNU General Public License version 3 (see *LICENSE*).
 
-A more detailed description is provided in the scientific literature (see references below).
+MFsim has been described in the scientific literature and used for a biomolecular DPD study of cyclotide/membrane interactions (see references below).
 
 ### Content
 
@@ -18,11 +18,12 @@ A more detailed description is provided in the scientific literature (see refere
 - The **2020 Cyclotide-membrane interaction study** and **2021 Cyclotide-membrane interaction study** subfolders contains supplementary information for cyclotide/membrane interaction simulations (see corresponding *README* files in each subfolder).
 
 ### Installer for Windows OS
-* A convenient [Windows OS installer executable for MFsim](https://w-hs.sciebo.de/s/ubxWgAohkqj2Q6A) is available. Download the installer executable (via [link](https://w-hs.sciebo.de/s/ubxWgAohkqj2Q6A)), start and follow the instructions to install MFsim. Note, that the installation includes a full Java Runtime Environment (JRE). After installation, create a shortcut to an appropriate MFsim start batch file on your Windows desktop (e.g. for MFsim to use up to 16 gigabyte of RAM copy a shortcut to batch file *Start_MFsim_64bit_16GB.bat* which is located in the MFsim program folder *C:\Program Files\GNWI\MFsim 2.4.0.0*). To start MFsim double click the created shortcut. MFsim can be uninstalled by the provided *Uninstall.exe* executable in the MFsim program folder or standard Windows functions.
+* A convenient [Windows OS installer executable for MFsim](https://w-hs.sciebo.de/s/1yhM7ieF8NNp9xD) is available. Download the installer executable (via [link](https://w-hs.sciebo.de/s/1yhM7ieF8NNp9xD)), start and follow the instructions to install MFsim. Note, that the installation includes a full Java Runtime Environment (JRE). After installation, create a shortcut to an appropriate MFsim start batch file on your Windows desktop (e.g. for MFsim to use up to 16 gigabyte of RAM copy a shortcut to batch file *Start_MFsim_64bit_16GB.bat* which is located in the MFsim program folder *C:\Program Files\GNWI\MFsim 2.4.0.0*). To start MFsim double click the created shortcut. MFsim can be uninstalled by the provided *Uninstall.exe* executable in the MFsim program folder or standard Windows functions.
 
 ### References
 
 - [K. van den Broek, M. Daniel, M. Epple, J.-M. Hein, H. Kuhn, S. Neumann, A. Truszkowski and A. Zielesny, _MFsim - an open Java all-in-one rich-client simulation environment for mesoscopic simulation_, Journal of Cheminformatics (2020), 12:29](https://doi.org/10.1186/s13321-020-00432-9)
+- [K. van den Broek, M. Epple, L. S. Kersten, H. Kuhn and A. Zielesny, _Quantitative Estimation of Cyclotide-Induced Bilayer Membrane Disruption by Lipid Extraction with Mesoscopic Simulation_, Journal of Chemical Information an Modeling (2021), 61, 3027-3040](https://doi.org/10.1021/acs.jcim.1c00332) ([Link to ChemRxiv preprint](https://doi.org/10.26434/chemrxiv.14135783.v1))
 
 MFsim is an integration project of the open molecular fragment cheminformatics roadmap
 
@@ -40,7 +41,7 @@ and the Jdpd simulation kernel for Molecular Fragment (Dissipative Particle) Dyn
 
 Additionally used open projects:
 
-- [Apache Commons Lang](https://commons.apache.org/proper/commons-lang/), [Apache Commons RNG](http://commons.apache.org/proper/commons-rng/), [BioJava](http://biojava.org/), [GraphStream](http://graphstream-project.org/), [Java Matrix Package](http://math.nist.gov/javanumerics/jama/), [JCommon](http://www.jfree.org/jcommon/), [JDOM](http://www.jdom.org/), [JFreeChart](http://www.jfree.org/jfreechart/), [Jmol](http://jmol.sourceforge.net/), [3D Vector Math Package](https://mvnrepository.com/artifact/javax.vecmath/vecmath), [FFmpeg (Static) Version](https://ffmpeg.org)
+- [Apache Commons Lang](https://commons.apache.org/proper/commons-lang/), [Apache Commons RNG](http://commons.apache.org/proper/commons-rng/), [Apache Commons Math](https://commons.apache.org/proper/commons-math/), [BioJava](http://biojava.org/), [GraphStream](http://graphstream-project.org/), [Java Matrix Package](http://math.nist.gov/javanumerics/jama/), [JCommon](http://www.jfree.org/jcommon/), [JDOM](http://www.jdom.org/), [JFreeChart](http://www.jfree.org/jfreechart/), [Jmol](http://jmol.sourceforge.net/), [3D Vector Math Package](https://mvnrepository.com/artifact/javax.vecmath/vecmath), [FFmpeg (Static) Version](https://ffmpeg.org)
 
 ### Acknowledgements
 

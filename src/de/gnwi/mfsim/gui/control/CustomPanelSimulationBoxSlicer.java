@@ -41,9 +41,9 @@ public class CustomPanelSimulationBoxSlicer extends JPanel {
     // <editor-fold defaultstate="collapsed" desc="Private class variables">
     private JButton boxWaitButton;
     private JButton boxMoveButton;
-    private JButton spinAroundXButton;
-    private JButton spinAroundYButton;
-    private JButton spinAroundZButton;
+    private JButton flyButton;
+    private JButton spinHorizontalButton;
+    private JButton spinVerticalButton;
     private JButton createMovieButton;
     private JButton editMoveAndSpinSettingsButton;
     private JButton redrawButton;
@@ -152,20 +152,10 @@ public class CustomPanelSimulationBoxSlicer extends JPanel {
                 this.redrawButton.setToolTipText(GuiMessage.get("CustomPanelSimulationBoxSlicer.redrawButton.toolTipText")); 
                 this.redrawButton.setText(GuiMessage.get("CustomPanelSimulationBoxSlicer.redrawButton.text")); 
                 this.simulationBoxPanel.add(this.redrawButton);
-                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.EAST, this.redrawButton, 250, SpringLayout.WEST, this.simulationBoxPanel);
-                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.WEST, this.redrawButton, 190, SpringLayout.WEST, this.simulationBoxPanel);
                 this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.SOUTH, this.redrawButton, -10, SpringLayout.SOUTH, this.simulationBoxPanel);
                 this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.NORTH, this.redrawButton, -45, SpringLayout.SOUTH, this.simulationBoxPanel);
-            }
-            {
-                this.createMovieButton = new JButton();
-                this.createMovieButton.setToolTipText(GuiMessage.get("CustomPanelSimulationBoxSlicer.createMovieButton.toolTipText")); 
-                this.createMovieButton.setText(GuiMessage.get("CustomPanelSimulationBoxSlicer.createMovieButton.text")); 
-                this.simulationBoxPanel.add(this.createMovieButton);
-                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.EAST, this.createMovieButton, -455, SpringLayout.EAST, this.simulationBoxPanel);
-                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.WEST, this.createMovieButton, -515, SpringLayout.EAST, this.simulationBoxPanel);
-                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.SOUTH, this.createMovieButton, -10, SpringLayout.SOUTH, this.simulationBoxPanel);
-                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.NORTH, this.createMovieButton, -45, SpringLayout.SOUTH, this.simulationBoxPanel);
+                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.EAST, this.redrawButton, 250, SpringLayout.WEST, this.simulationBoxPanel);
+                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.WEST, this.redrawButton, 190, SpringLayout.WEST, this.simulationBoxPanel);
             }
             {
                 this.editMoveAndSpinSettingsButton = new JButton();
@@ -173,10 +163,20 @@ public class CustomPanelSimulationBoxSlicer extends JPanel {
                 this.editMoveAndSpinSettingsButton.setToolTipText(GuiMessage.get("CustomPanelSimulationBoxSlicer.editMoveAndSpinSettingsButton.toolTipText")); 
                 this.editMoveAndSpinSettingsButton.setText(GuiMessage.get("CustomPanelSimulationBoxSlicer.editMoveAndSpinSettingsButton.text")); 
                 this.simulationBoxPanel.add(this.editMoveAndSpinSettingsButton);
-                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.EAST, this.editMoveAndSpinSettingsButton, -395, SpringLayout.EAST, this.simulationBoxPanel);
-                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.WEST, this.editMoveAndSpinSettingsButton, -455, SpringLayout.EAST, this.simulationBoxPanel);
+                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.EAST, this.editMoveAndSpinSettingsButton, -455, SpringLayout.EAST, this.simulationBoxPanel);
+                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.WEST, this.editMoveAndSpinSettingsButton, -515, SpringLayout.EAST, this.simulationBoxPanel);
                 this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.SOUTH, this.editMoveAndSpinSettingsButton, -10, SpringLayout.SOUTH, this.simulationBoxPanel);
                 this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.NORTH, this.editMoveAndSpinSettingsButton, -45, SpringLayout.SOUTH, this.simulationBoxPanel);
+            }
+            {
+                this.createMovieButton = new JButton();
+                this.createMovieButton.setToolTipText(GuiMessage.get("CustomPanelSimulationBoxSlicer.createMovieButton.toolTipText")); 
+                this.createMovieButton.setText(GuiMessage.get("CustomPanelSimulationBoxSlicer.createMovieButton.text")); 
+                this.simulationBoxPanel.add(this.createMovieButton);
+                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.EAST, this.createMovieButton, -385, SpringLayout.EAST, this.simulationBoxPanel);
+                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.WEST, this.createMovieButton, -445, SpringLayout.EAST, this.simulationBoxPanel);
+                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.SOUTH, this.createMovieButton, -10, SpringLayout.SOUTH, this.simulationBoxPanel);
+                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.NORTH, this.createMovieButton, -45, SpringLayout.SOUTH, this.simulationBoxPanel);
             }
             {
                 this.boxWaitButton = new JButton();
@@ -184,8 +184,8 @@ public class CustomPanelSimulationBoxSlicer extends JPanel {
                 this.boxWaitButton.setMnemonic(KeyEvent.VK_W);
                 this.boxWaitButton.setText(GuiMessage.get("CustomPanelSimulationBoxSlicer.boxWaitButton.text")); 
                 this.simulationBoxPanel.add(this.boxWaitButton);
-                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.EAST, this.boxWaitButton, -335, SpringLayout.EAST, this.simulationBoxPanel);
-                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.WEST, this.boxWaitButton, -395, SpringLayout.EAST, this.simulationBoxPanel);
+                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.EAST, this.boxWaitButton, -325, SpringLayout.EAST, this.simulationBoxPanel);
+                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.WEST, this.boxWaitButton, -385, SpringLayout.EAST, this.simulationBoxPanel);
                 this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.SOUTH, this.boxWaitButton, -10, SpringLayout.SOUTH, this.simulationBoxPanel);
                 this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.NORTH, this.boxWaitButton, -45, SpringLayout.SOUTH, this.simulationBoxPanel);
             }
@@ -195,43 +195,43 @@ public class CustomPanelSimulationBoxSlicer extends JPanel {
                 this.boxMoveButton.setToolTipText(GuiMessage.get("CustomPanelSimulationBoxSlicer.boxMoveButton.toolTipText")); 
                 this.boxMoveButton.setText(GuiMessage.get("CustomPanelSimulationBoxSlicer.boxMoveButton.text")); 
                 this.simulationBoxPanel.add(this.boxMoveButton);
-                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.EAST, this.boxMoveButton, -275, SpringLayout.EAST, this.simulationBoxPanel);
-                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.WEST, this.boxMoveButton, -335, SpringLayout.EAST, this.simulationBoxPanel);
+                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.EAST, this.boxMoveButton, -265, SpringLayout.EAST, this.simulationBoxPanel);
+                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.WEST, this.boxMoveButton, -325, SpringLayout.EAST, this.simulationBoxPanel);
                 this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.SOUTH, this.boxMoveButton, -10, SpringLayout.SOUTH, this.simulationBoxPanel);
                 this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.NORTH, this.boxMoveButton, -45, SpringLayout.SOUTH, this.simulationBoxPanel);
             }
             {
-                this.spinAroundXButton = new JButton();
-                this.spinAroundXButton.setMnemonic(KeyEvent.VK_X);
-                this.spinAroundXButton.setToolTipText(GuiMessage.get("CustomPanelSimulationBoxSlicer.spinAroundXButton.toolTipText")); 
-                this.spinAroundXButton.setText(GuiMessage.get("CustomPanelSimulationBoxSlicer.spinAroundXButton.text")); 
-                this.simulationBoxPanel.add(this.spinAroundXButton);
-                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.EAST, this.spinAroundXButton, -195, SpringLayout.EAST, this.simulationBoxPanel);
-                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.WEST, this.spinAroundXButton, -255, SpringLayout.EAST, this.simulationBoxPanel);
-                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.SOUTH, this.spinAroundXButton, -10, SpringLayout.SOUTH, this.simulationBoxPanel);
-                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.NORTH, this.spinAroundXButton, -45, SpringLayout.SOUTH, this.simulationBoxPanel);
+                this.flyButton = new JButton();
+                this.flyButton.setMnemonic(KeyEvent.VK_F);
+                this.flyButton.setToolTipText(GuiMessage.get("CustomPanelSimulationBoxSlicer.flyButton.toolTipText")); 
+                this.flyButton.setText(GuiMessage.get("CustomPanelSimulationBoxSlicer.flyButton.text")); 
+                this.simulationBoxPanel.add(this.flyButton);
+                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.EAST, this.flyButton, -195, SpringLayout.EAST, this.simulationBoxPanel);
+                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.WEST, this.flyButton, -255, SpringLayout.EAST, this.simulationBoxPanel);
+                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.SOUTH, this.flyButton, -10, SpringLayout.SOUTH, this.simulationBoxPanel);
+                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.NORTH, this.flyButton, -45, SpringLayout.SOUTH, this.simulationBoxPanel);
             }
             {
-                this.spinAroundYButton = new JButton();
-                this.spinAroundYButton.setMnemonic(KeyEvent.VK_Y);
-                this.spinAroundYButton.setToolTipText(GuiMessage.get("CustomPanelSimulationBoxSlicer.spinAroundYButton.toolTipText")); 
-                this.spinAroundYButton.setText(GuiMessage.get("CustomPanelSimulationBoxSlicer.spinAroundYButton.text")); 
-                this.simulationBoxPanel.add(this.spinAroundYButton);
-                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.EAST, this.spinAroundYButton, -135, SpringLayout.EAST, this.simulationBoxPanel);
-                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.WEST, this.spinAroundYButton, -195, SpringLayout.EAST, this.simulationBoxPanel);
-                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.SOUTH, this.spinAroundYButton, -10, SpringLayout.SOUTH, this.simulationBoxPanel);
-                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.NORTH, this.spinAroundYButton, -45, SpringLayout.SOUTH, this.simulationBoxPanel);
+                this.spinHorizontalButton = new JButton();
+                this.spinHorizontalButton.setMnemonic(KeyEvent.VK_H);
+                this.spinHorizontalButton.setToolTipText(GuiMessage.get("CustomPanelSimulationBoxSlicer.spinHorizontalButton.toolTipText")); 
+                this.spinHorizontalButton.setText(GuiMessage.get("CustomPanelSimulationBoxSlicer.spinHorizontalButton.text")); 
+                this.simulationBoxPanel.add(this.spinHorizontalButton);
+                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.EAST, this.spinHorizontalButton, -135, SpringLayout.EAST, this.simulationBoxPanel);
+                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.WEST, this.spinHorizontalButton, -195, SpringLayout.EAST, this.simulationBoxPanel);
+                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.SOUTH, this.spinHorizontalButton, -10, SpringLayout.SOUTH, this.simulationBoxPanel);
+                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.NORTH, this.spinHorizontalButton, -45, SpringLayout.SOUTH, this.simulationBoxPanel);
             }
             {
-                this.spinAroundZButton = new JButton();
-                this.spinAroundZButton.setMnemonic(KeyEvent.VK_Z);
-                this.spinAroundZButton.setToolTipText(GuiMessage.get("CustomPanelSimulationBoxSlicer.spinAroundZButton.toolTipText")); 
-                this.spinAroundZButton.setText(GuiMessage.get("CustomPanelSimulationBoxSlicer.spinAroundZButton.text")); 
-                this.simulationBoxPanel.add(this.spinAroundZButton);
-                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.EAST, this.spinAroundZButton, -75, SpringLayout.EAST, this.simulationBoxPanel);
-                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.WEST, this.spinAroundZButton, -135, SpringLayout.EAST, this.simulationBoxPanel);
-                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.SOUTH, this.spinAroundZButton, -10, SpringLayout.SOUTH, this.simulationBoxPanel);
-                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.NORTH, this.spinAroundZButton, -45, SpringLayout.SOUTH, this.simulationBoxPanel);
+                this.spinVerticalButton = new JButton();
+                this.spinVerticalButton.setMnemonic(KeyEvent.VK_V);
+                this.spinVerticalButton.setToolTipText(GuiMessage.get("CustomPanelSimulationBoxSlicer.spinVerticalButton.toolTipText")); 
+                this.spinVerticalButton.setText(GuiMessage.get("CustomPanelSimulationBoxSlicer.spinVerticalButton.text")); 
+                this.simulationBoxPanel.add(this.spinVerticalButton);
+                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.EAST, this.spinVerticalButton, -75, SpringLayout.EAST, this.simulationBoxPanel);
+                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.WEST, this.spinVerticalButton, -135, SpringLayout.EAST, this.simulationBoxPanel);
+                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.SOUTH, this.spinVerticalButton, -10, SpringLayout.SOUTH, this.simulationBoxPanel);
+                this.simulationBoxPanelSpringLayout.putConstraint(SpringLayout.NORTH, this.spinVerticalButton, -45, SpringLayout.SOUTH, this.simulationBoxPanel);
             }
             {
                 this.playAnimationButton = new JButton();
@@ -292,66 +292,146 @@ public class CustomPanelSimulationBoxSlicer extends JPanel {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * CoordinatesLabel
+     * 
+     * @return CoordinatesLabel
+     */
     public JLabel getCoordinatesLabel() {
         return coordinatesLabel;
     }
 
+    /**
+     * ThirdDimensionSlider
+     * 
+     * @return ThirdDimensionSlider
+     */
     public JSlider getThirdDimensionSlider() {
         return thirdDimensionSlider;
     }
 
+    /**
+     * SlicerImagePanel
+     * 
+     * @return SlicerImagePanel
+     */
     public CustomPanelSlicerImage getSlicerImagePanel() {
         return this.slicerImagePanel;
     }
 
+    /**
+     * InfoLabel
+     * 
+     * @return InfoLabel
+     */
     public JLabel getInfoLabel() {
         return infoLabel;
     }
 
+    /**
+     * PlayAnimationButton
+     * 
+     * @return PlayAnimationButton
+     */
     public JButton getPlayAnimationButton() {
         return playAnimationButton;
     }
 
+    /**
+     * SaveGraphicsButton
+     * 
+     * @return SaveGraphicsButton
+     */
     public JButton getSaveGraphicsButton() {
         return saveGraphicsButton;
     }
 
+    /**
+     * CopyGraphicsButton
+     * 
+     * @return CopyGraphicsButton
+     */
     public JButton getCopyGraphicsButton() {
         return copyGraphicsButton;
     }
 
+    /**
+     * ViewFullBoxButton
+     * 
+     * @return ViewFullBoxButton
+     */
     public JButton getViewFullBoxButton() {
         return viewFullBoxButton;
     }
 
+    /**
+     * RedrawButton
+     * 
+     * @return RedrawButton
+     */
     public JButton getRedrawButton() {
         return redrawButton;
     }
 
-    public JButton getSpinAroundXButton() {
-        return spinAroundXButton;
+    /**
+     * FlyButton
+     * 
+     * @return FlyButton
+     */
+    public JButton getFlyButton() {
+        return flyButton;
     }
 
-    public JButton getSpinAroundYButton() {
-        return spinAroundYButton;
+    /**
+     * SpinHorizontalButton
+     * 
+     * @return SpinHorizontalButton
+     */
+    public JButton getSpinHorizontalButton() {
+        return spinHorizontalButton;
     }
 
-    public JButton getSpinAroundZButton() {
-        return spinAroundZButton;
+    /**
+     * SpinVerticalButton
+     * 
+     * @return SpinVerticalButton
+     */
+    public JButton getSpinVerticalButton() {
+        return spinVerticalButton;
     }
 
+    /**
+     * EditMoveAndSpinSettingsButton
+     * 
+     * @return EditMoveAndSpinSettingsButton
+     */
     public JButton getEditMoveAndSpinSettingsButton() {
         return editMoveAndSpinSettingsButton;
     }
 
+    /**
+     * CreateMovieButton
+     * 
+     * @return CreateMovieButton
+     */
     public JButton getCreateMovieButton() {
         return createMovieButton;
     }
 
+    /**
+     * BoxMoveButton
+     * 
+     * @return BoxMoveButton
+     */
     public JButton getBoxMoveButton() {
         return boxMoveButton;
     }
 
+    /**
+     * BoxWaitButton
+     * 
+     * @return BoxWaitButton
+     */
     public JButton getBoxWaitButton() {
         return boxWaitButton;
     }

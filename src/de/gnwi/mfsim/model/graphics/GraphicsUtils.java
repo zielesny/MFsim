@@ -539,12 +539,10 @@ public final class GraphicsUtils {
      * @return True: Two points are on a plane, false: Otherwise
      */
     public static boolean isInPlane(IPointInSpace aFirstPoint, IPointInSpace aSecondPoint) {
-
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aFirstPoint == null || aSecondPoint == null) {
             return false;
         }
-
         // </editor-fold>
         return aFirstPoint.getX() == aSecondPoint.getX() || aFirstPoint.getY() == aSecondPoint.getY() || aFirstPoint.getZ() == aSecondPoint.getZ();
     }

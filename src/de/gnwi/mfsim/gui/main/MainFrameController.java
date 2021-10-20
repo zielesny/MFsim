@@ -250,7 +250,6 @@ public class MainFrameController implements PropertyChangeListener {
             ModelUtils.appendToLogfile(true, anException);
             // <editor-fold defaultstate="collapsed" desc="Message CommandExecutionFailed">
             JOptionPane.showMessageDialog(null, String.format(GuiMessage.get("Error.CommandExecutionFailed"), "propertyChange()", "MainFrameController"), GuiMessage.get("Error.ErrorNotificationTitle"), JOptionPane.ERROR_MESSAGE);
-
             // </editor-fold>
         }
     }
@@ -998,6 +997,7 @@ public class MainFrameController implements PropertyChangeListener {
                 "\n\n" +
                 "using" + "\n" +
                 "- Apache Commons Lang Version 3.4" + "\n" +
+                "- Apache Commons Math Version 3.6.1" + "\n" +
                 "- Apache Commons RNG Version 1.3" + "\n" +
                 "- BioJava Version 3.0.8" + "\n" +
                 "- FFmpeg (Static) Version 3.2.4" + "\n" +
@@ -1005,7 +1005,7 @@ public class MainFrameController implements PropertyChangeListener {
                 "- Jama Version 1.0.3" + "\n" +
                 "- JCommon Version 1.0.9" + "\n" +
                 "- JDOM Version 2.0.6" + "\n" +
-                "- Jdpd Version 1.4.0.0" + "\n" +
+                "- Jdpd Version 1.5.0.0" + "\n" +
                 "- JFreeChart Version 1.0.5" + "\n" +
                 "- Jmol Version 14.2.7" + "\n" +
                 "- SPICES Version 1.0.0.0" + "\n" +
@@ -1049,6 +1049,9 @@ public class MainFrameController implements PropertyChangeListener {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Main tab change related command methods">
+    /**
+     * Main tab change reaction
+     */
     public void reactOnMainTabChange() {
         try {
             MouseCursorManagement.getInstance().setWaitCursor();
@@ -1135,8 +1138,11 @@ public class MainFrameController implements PropertyChangeListener {
         try {
             int tmpSelectedIndex = this.mainFrame.getJobInputsSelectionPanel().getList().getSelectedIndex();
             if (tmpSelectedIndex >= 0) {
-                String tmpArchiveFilePathname = GuiUtils.selectSingleFileForSave(GuiMessage.get("Chooser.selectSingleJobArchiveChooser"),
-                        GuiDefinitions.JOB_INPUT_ARCHIVE_FILE_EXTENSION);
+                String tmpArchiveFilePathname = 
+                    GuiUtils.selectSingleFileForSave(
+                        GuiMessage.get("Chooser.selectSingleJobArchiveChooser"),
+                        GuiDefinitions.JOB_INPUT_ARCHIVE_FILE_EXTENSION
+                    );
                 if (tmpArchiveFilePathname != null) {
                     try {
                         // <editor-fold defaultstate="collapsed" desc="Move job input to archive file">
@@ -1145,9 +1151,14 @@ public class MainFrameController implements PropertyChangeListener {
                         String tmpFileExclusionRegexPatternString = null;
                         // Compression is used
                         boolean tmpIsUncompressed = false;
-                        ArchiveTask tmpArchiveTask = new ArchiveTask(tmpJobInputToBeArchived.getJobInputPath(), tmpArchiveFilePathname, tmpFileExclusionRegexPatternString, tmpIsUncompressed);
+                        ArchiveTask tmpArchiveTask = 
+                            new ArchiveTask(
+                                tmpJobInputToBeArchived.getJobInputPath(), 
+                                tmpArchiveFilePathname, 
+                                tmpFileExclusionRegexPatternString, 
+                                tmpIsUncompressed
+                            );
                         DialogProgress.hasCanceled(GuiMessage.get("Archiving"), tmpArchiveTask);
-
                         // </editor-fold>
                     } catch (Exception anExeption) {
                         // <editor-fold defaultstate="collapsed" desc="Show error message">
@@ -2927,6 +2938,9 @@ public class MainFrameController implements PropertyChangeListener {
         this.jobUpdateUtils.updateMoleculeBackboneForcesWithBehaviour(tmpJobInput);
         this.jobUpdateUtils.updateProteinBackboneForcesWithBehaviour(tmpJobInput);
         this.jobUpdateUtils.insertGeometryRandomSeedValueItem(tmpJobInput);
+        this.jobUpdateUtils.updateInitialPotentialEnergyMinimizationStepNumber(tmpJobInput);
+        this.jobUpdateUtils.updateElectrostatics(tmpJobInput);
+        this.jobUpdateUtils.addMoleculeCharge(tmpJobInput);
     }
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- Preference change related methods">

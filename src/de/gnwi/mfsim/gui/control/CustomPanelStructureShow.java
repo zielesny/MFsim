@@ -266,50 +266,110 @@ public class CustomPanelStructureShow extends JPanel {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * StructureTextArea
+     * 
+     * @return StructureTextArea
+     */
     public JTextArea getStructureTextArea() {
         return structureTextArea;
     }
 
+    /**
+     * GraphStreamGraph
+     * 
+     * @return GraphStreamGraph
+     */
     public SingleGraph getGraphStreamGraph() {
         return this.graph;
     }
 
+    /**
+     * GraphStreamGraphViewer
+     * 
+     * @return GraphStreamGraphViewer
+     */
     public Viewer getGraphStreamGraphViewer() {
         return this.graphViewer;
     }
 
+    /**
+     * GraphStreamViewPanel
+     * 
+     * @return GraphStreamViewPanel
+     */
     public ViewPanel getGraphStreamViewPanel() {
         return graphStreamViewPanel;
     }
 
+    /**
+     * GraphicsSaveButton
+     * 
+     * @return GraphicsSaveButton
+     */
     public JButton getGraphicsSaveButton() {
         return graphicsSaveButton;
     }
 
+    /**
+     * GraphicsCopyButton
+     * 
+     * @return GraphicsCopyButton
+     */
     public JButton getGraphicsCopyButton() {
         return graphicsCopyButton;
     }
 
+    /**
+     * GraphicsResetButton
+     * 
+     * @return GraphicsResetButton
+     */
     public JButton getGraphicsResetButton() {
         return graphicsResetButton;
     }
 
+    /**
+     * ReducedCheckBox
+     * 
+     * @return ReducedCheckBox
+     */
     public JCheckBox getReducedCheckBox() {
         return reducedCheckBox;
     }
 
+    /**
+     * ParticlesInfoList
+     * 
+     * @return ParticlesInfoList
+     */
     public JList getParticlesInfoList() {
         return particlesInfoList;
     }
 
+    /**
+     * ParticleImagePanel
+     * 
+     * @return ParticleImagePanel
+     */
     public CustomPanelImage getParticleImagePanel() {
         return particleImagePanel;
     }
 
+    /**
+     * StructureTooComplexLabel
+     * 
+     * @return StructureTooComplexLabel
+     */
     public JLabel getStructureTooComplexLabel() {
         return structureTooComplexLabel;
     }
 
+    /**
+     * SelectPartComboBox
+     * 
+     * @return SelectPartComboBox
+     */
     public JComboBox getSelectPartComboBox() {
         return selectPartComboBox;
     }

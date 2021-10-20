@@ -91,7 +91,7 @@ public class GraphicalParticlePositionArrayList {
     // <editor-fold defaultstate="collapsed" desc="Public methods">
     /**
      * Adds GraphicalParticlePosition instance
-     * NOTE: No checks are performed.
+     * (No checks are performed)
      * 
      * @param aGraphicalParticlePosition GraphicalParticlePosition instance
      */
@@ -104,7 +104,7 @@ public class GraphicalParticlePositionArrayList {
 
     /**
      * Adds graphical particle position
-     * NOTE: No checks are performed.
+     * (No checks are performed)
      * 
      * @param aGraphicalParticle Graphical particle
      * @param aXCoordinate X coordinate of point in space, not allowed to be negative
@@ -148,7 +148,7 @@ public class GraphicalParticlePositionArrayList {
 
     /**
      * Adds graphical particle position
-     * NOTE: No checks are performed.
+     * (No checks are performed)
      * 
      * @param aGraphicalParticle Graphical particle
      * @param aXCoordinate X coordinate of point in space, not allowed to be negative
@@ -293,7 +293,7 @@ public class GraphicalParticlePositionArrayList {
     
     /**
      * Consolidates arrays
-     * NOTE: NO checks are performed.
+     * (No checks are performed)
      */
     private void consolidate() {
         if (!this.isConsolidated) {
@@ -315,7 +315,7 @@ public class GraphicalParticlePositionArrayList {
 
     /**
      * Consolidates GraphicalParticlePosition arrays
-     * NOTE: No checks are performed.
+     * (No checks are performed)
      * 
      * @param tmpNewArraySize New array size
      * @param anArrayList Array list with arrays to consolidate

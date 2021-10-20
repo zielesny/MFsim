@@ -319,62 +319,137 @@ public class CustomPanelDistributionMovie extends JPanel{
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * ImagePanel
+     * 
+     * @return ImagePanel
+     */
     public CustomPanelImage getImagePanel() {
         return this.imagePanel;
     }
     
+    /**
+     * ProgressLabel
+     * 
+     * @return ProgressLabel
+     */
     public JLabel getProgressLabel() {
         return this.progressLabel;
     }
 
+    /**
+     * CopyGraphicsButton
+     * 
+     * @return CopyGraphicsButton
+     */
     public JButton getCopyGraphicsButton() {
         return this.copyGraphicsButton;
     }
 
+    /**
+     * ZoomButton
+     * 
+     * @return ZoomButton
+     */
     public JButton getZoomButton() {
         return this.zoomButton;
     }
 
+    /**
+     * RestoreButton
+     * 
+     * @return RestoreButton
+     */
     public JButton getRestoreButton() {
         return this.restoreButton;
     }
     
+    /**
+     * CreatMovieButton
+     * 
+     * @return CreatMovieButton
+     */
     public JButton getCreatMovieButton() {
         return this.createMovieButton;
     }
     
+    /**
+     * FirstMovieSettingsButton
+     * 
+     * @return FirstMovieSettingsButton
+     */
     public JButton getFirstMovieSettingsButton() {
         return this.firstMovieSettingsButton;
     }
     
+    /**
+     * PlayAnimationButton
+     * 
+     * @return PlayAnimationButton
+     */
     public JButton getPlayAnimationButton() {
         return this.playAnimationButton;
     }
 
+    /**
+     * SaveGraphicsButton
+     * 
+     * @return SaveGraphicsButton
+     */
     public JButton getSaveGraphicsButton() {
         return this.saveGraphicsButton;
     }
     
+    /**
+     * SecondMovieSettingsButton
+     * 
+     * @return SecondMovieSettingsButton
+     */
     public JButton getSecondMovieSettingsButton() {
         return this.secondMovieSettingsButton;
     }
     
+    /**
+     * VaryingStatisticsCheckBox
+     * 
+     * @return VaryingStatisticsCheckBox
+     */
     public JCheckBox getVaryingStatisticsCheckBox() {
         return this.varyingStatisticsCheckBox;
     }
     
+    /**
+     * InformationLabel
+     * 
+     * @return InformationLabel
+     */
     public JLabel getInformationLabel() {
         return this.informationLabel;
     }
     
+    /**
+     * AnimationRadioButton
+     * 
+     * @return AnimationRadioButton
+     */
     public JRadioButton getAnimationRadioButton() {
         return this.animationRadioButton;
     }
     
+    /**
+     * MovieRadioButton
+     * 
+     * @return MovieRadioButton
+     */
     public JRadioButton getMovieRadioButton() {
         return this.movieRadioButton;
     }
     
+    /**
+     * DomainSlider
+     * 
+     * @return DomainSlider
+     */
     public JSlider getDomainSlider() {
         return this.domainSlider;
     }

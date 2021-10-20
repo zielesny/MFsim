@@ -99,6 +99,11 @@ public class DialogTableDataSchemataManage extends CustomDialogApplyCancelSize {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * CustomTableDataSchemataManagePanel
+     * 
+     * @return CustomTableDataSchemataManagePanel
+     */
     public CustomPanelTableDataSchemataManage getCustomTableDataSchemataManagePanel() {
         return customTableDataSchemataManagePanel;
     }

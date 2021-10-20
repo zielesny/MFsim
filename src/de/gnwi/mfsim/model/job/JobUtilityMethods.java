@@ -62,7 +62,8 @@ import java.util.zip.GZIPInputStream;
 import org.apache.commons.lang3.StringUtils;
 import de.gnwi.mfsim.model.graphics.particle.IGraphicalParticle;
 import de.gnwi.mfsim.model.preference.ModelDefinitions;
-
+import de.gnwi.jdpd.interfaces.IRandom;
+import de.gnwi.mfsim.model.particle.StandardParticleInteractionData;
 
 /**
  * Job utility methods to be instantiated
@@ -603,7 +604,6 @@ public class JobUtilityMethods {
         if (aJobInputValueItemContainer == null) {
             return -1.0;
         }
-
         // </editor-fold>
         double tmpTimeConversionFactor = this.getTimeConversionFactorFromDpdToPhysicalTime(aJobInputValueItemContainer);
         double tmpTimeStepLength = aJobInputValueItemContainer.getValueItem("TimeStepLength").getValueAsDouble(0, 0);
@@ -612,6 +612,129 @@ public class JobUtilityMethods {
             tmpStepInNanoseconds = tmpTimeStepLength * tmpTimeConversionFactor;
         }
         return tmpStepInNanoseconds;
+    }
+    // </editor-fold>
+    // <editor-fold defaultstate="collapsed" desc="- Electrostatics related methods">
+    /**
+     * Returns dimensionless electrostatics coupling constant.
+     *
+     * @param aJobInputValueItemContainer JobInput value item container
+     * @return Dimensionless electrostatics coupling constant or "-1.0" if constant 
+     * can not be calculated.
+     */
+    public double getElectrostaticsCouplingConstant(ValueItemContainer aJobInputValueItemContainer) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aJobInputValueItemContainer == null) {
+            return -1.0;
+        }
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Get necessary value items">
+        ValueItem tmpParticleTableValueItem = aJobInputValueItemContainer.getValueItem("ParticleTable");
+        ValueItem tmpMonomerTableValueItem = aJobInputValueItemContainer.getValueItem("MonomerTable");
+        ValueItem tmpMoleculeTableValueItem = aJobInputValueItemContainer.getValueItem("MoleculeTable");
+        ValueItem tmpQuantityValueItem = aJobInputValueItemContainer.getValueItem("Quantity");
+        ValueItem tmpDensityValueItem = aJobInputValueItemContainer.getValueItem("Density");
+        ValueItem tmpTemperatureValueItem = aJobInputValueItemContainer.getValueItem("Temperature");
+        if (tmpParticleTableValueItem == null || 
+            tmpMonomerTableValueItem == null || 
+            tmpMoleculeTableValueItem == null || 
+            tmpQuantityValueItem == null || 
+            tmpDensityValueItem == null || 
+            tmpTemperatureValueItem == null
+        ) {
+            return -1.0;
+        }
+        // </editor-fold>
+        return this.getElectrostaticsCouplingConstant(
+            tmpParticleTableValueItem,
+            tmpMonomerTableValueItem,
+            tmpMoleculeTableValueItem,
+            tmpQuantityValueItem,
+            tmpDensityValueItem,
+            tmpTemperatureValueItem
+        );
+    }
+    
+    /**
+     * Returns dimensionless electrostatics coupling constant.
+     *
+     * @param aParticleTableValueItem ParticleTable value item (is NOT
+     * changed)
+     * @param aMonomerTableValueItem MonomerTable value item (is NOT changed)
+     * @param aMoleculeTableValueItem MoleculeTable value item (is NOT changed)
+     * @param aQuantityValueItem Quantity value item (is NOT changed)
+     * @param aDensityValueItem Density value item (is NOT changed)
+     * @param aTemperatureValueItem Temperature value item (is NOT changed)
+     * @return Dimensionless electrostatics coupling constant or "-1.0" if constant 
+     * can not be calculated.
+     */
+    public double getElectrostaticsCouplingConstant(
+        ValueItem aParticleTableValueItem,
+        ValueItem aMonomerTableValueItem,
+        ValueItem aMoleculeTableValueItem,
+        ValueItem aQuantityValueItem,
+        ValueItem aDensityValueItem,
+        ValueItem aTemperatureValueItem) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aParticleTableValueItem == null || !aParticleTableValueItem.getName().equals("ParticleTable")) {
+            return -1.0;
+        }
+        if (aMonomerTableValueItem == null || !aMonomerTableValueItem.getName().equals("MonomerTable")) {
+            return -1.0;
+        }
+        if (aMoleculeTableValueItem == null || !aMoleculeTableValueItem.getName().equals("MoleculeTable")) {
+            return -1.0;
+        }
+        if (aQuantityValueItem == null || !aQuantityValueItem.getName().equals("Quantity")) {
+            return -1.0;
+        }
+        if (aDensityValueItem == null || !aDensityValueItem.getName().equals("Density")) {
+            return -1.0;
+        }
+        if (aTemperatureValueItem == null || !aTemperatureValueItem.getName().equals("Temperature")) {
+            return -1.0;
+        }
+        // </editor-fold>
+        double tmpRcutoffInAngstrom = 
+            this.getLengthConversionFactorFromDpdToPhysicalLength(
+                aParticleTableValueItem,
+                aMonomerTableValueItem,
+                aMoleculeTableValueItem,
+                aQuantityValueItem,
+                aDensityValueItem
+            );
+        if (tmpRcutoffInAngstrom == -1.0) {
+            return -1.0;
+        }
+        // Note: aTemperatureValueItem.getValueAsDouble() returns temperature
+        // in K
+        double tmpTemperatureInK = aTemperatureValueItem.getValueAsDouble();
+        return this.getElectrostaticsCouplingConstant(tmpRcutoffInAngstrom, tmpTemperatureInK);
+    }
+
+    /**
+     * Returns dimensionless electrostatics coupling constant.
+     * (No checks are performed)
+     *
+     * @param aRcutoffInAngstrom Length conversion factor from DPD to physical
+     * length unit in Angstrom
+     * @param aTemperatureInK Temperature in K
+     * @return Dimensionless electrostatics coupling constant or "-1.0" if constant 
+     * can not be calculated.
+     */
+    public double getElectrostaticsCouplingConstant(
+        double aRcutoffInAngstrom,
+        double aTemperatureInK
+    ) {
+        // Dimensionless relative permittivity of water:
+        // C. G. Malmberg and A. A. Maryott, 
+        // Dielectric Constant of Water from 0 to 100 C, 
+        // Journal of Research of the National Bureau of Standards 
+        // Vol. 56, No. I, 
+        // January 1956, Research Paper
+        double tmpRelativePermittivityOfWater = 295.87696 + aTemperatureInK * (-1.229097 + aTemperatureInK * (0.0020952245 - 0.00000141 * aTemperatureInK));
+        // e^2 / (4 * Pi * k * Epsilon0) = 167100.946898
+        return 167100.946898 / (tmpRelativePermittivityOfWater * aRcutoffInAngstrom * aTemperatureInK);
     }
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- MoleculeTable/MonomerTable value item related methods">
@@ -664,14 +787,16 @@ public class JobUtilityMethods {
         ValueItem tmpMoleculeTableValueItem = aJobInputValueItemContainer.getValueItem("MoleculeTable");
         ValueItem tmpQuantityValueItem = aJobInputValueItemContainer.getValueItem("Quantity");
         ValueItem tmpDensityValueItem = aJobInputValueItemContainer.getValueItem("Density");
+        // NOTE: tmpMoleculeChargeValueItem may be null for legacy reasons
+        ValueItem tmpMoleculeChargeValueItem = aJobInputValueItemContainer.getValueItem("MoleculeCharge");
         if (tmpParticleTableValueItem == null
-                || tmpMonomerTableValueItem == null
-                || tmpMoleculeTableValueItem == null
-                || tmpQuantityValueItem == null
-                || tmpDensityValueItem == null) {
+            || tmpMonomerTableValueItem == null
+            || tmpMoleculeTableValueItem == null
+            || tmpQuantityValueItem == null
+            || tmpDensityValueItem == null
+        ) {
             return null;
         }
-
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Create box properties summary value item">
         ValueItem tmpBoxSummaryValueItem = new ValueItem();
@@ -679,12 +804,18 @@ public class JobUtilityMethods {
         tmpBoxSummaryValueItem.setName("BOX_PROPERTIES_SUMMARY");
         tmpBoxSummaryValueItem.setDisplayName(ModelMessage.get("BoxPropertiesSummary.DisplayName"));
         tmpBoxSummaryValueItem.setBasicType(ValueItemEnumBasicType.MATRIX);
-        tmpBoxSummaryValueItem.setMatrixColumnNames(new String[]{
-            ModelMessage.get("BoxPropertiesSummary.ColumnBoxProperty"),
-            ModelMessage.get("BoxPropertiesSummary.ColumnBoxPropertyValue")});
-        tmpBoxSummaryValueItem.setMatrixColumnWidths(new String[]{
-            ModelDefinitions.CELL_WIDTH_TEXT_400, // ColumnBoxProperty
-            ModelDefinitions.CELL_WIDTH_NUMERIC_120});
+        tmpBoxSummaryValueItem.setMatrixColumnNames(
+            new String[] {
+                ModelMessage.get("BoxPropertiesSummary.ColumnBoxProperty"),
+                ModelMessage.get("BoxPropertiesSummary.ColumnBoxPropertyValue")
+            }
+        );
+        tmpBoxSummaryValueItem.setMatrixColumnWidths(
+            new String[] {
+                ModelDefinitions.CELL_WIDTH_TEXT_400,    // ColumnBoxProperty
+                ModelDefinitions.CELL_WIDTH_NUMERIC_120  // ColumnBoxPropertyValue
+            }
+        );
         tmpBoxSummaryValueItem.setVerticalPosition(1);
         tmpBoxSummaryValueItem.setDescription(ModelMessage.get("BoxPropertiesSummary.Description"));
         this.setBoxSummaryValueItem(
@@ -692,6 +823,7 @@ public class JobUtilityMethods {
             tmpParticleTableValueItem,
             tmpMonomerTableValueItem,
             tmpMoleculeTableValueItem,
+            tmpMoleculeChargeValueItem,
             tmpQuantityValueItem,
             tmpDensityValueItem
         );
@@ -833,8 +965,12 @@ public class JobUtilityMethods {
         }
 
         // </editor-fold>
-        return this.createMoleculeInfoValueItem(aValueItemContainer.getValueItem("MonomerTable"), aValueItemContainer.getValueItem("MoleculeTable"), aValueItemContainer.getValueItem("Density"),
-                aValueItemContainer.getValueItem("Quantity"));
+        return this.createMoleculeInfoValueItem(
+            aValueItemContainer.getValueItem("MonomerTable"), 
+            aValueItemContainer.getValueItem("MoleculeTable"), 
+            aValueItemContainer.getValueItem("Density"),
+            aValueItemContainer.getValueItem("Quantity")
+        );
     }
 
     /**
@@ -848,7 +984,12 @@ public class JobUtilityMethods {
      * @return Molecule info value item for compartment container and simulation
      * box or null if molecule info value item could not be created
      */
-    public ValueItem createMoleculeInfoValueItem(ValueItem aMonomerTableValueItem, ValueItem aMoleculeTableValueItem, ValueItem aDensityValueItem, ValueItem aQuantityValueItem) {
+    public ValueItem createMoleculeInfoValueItem(
+        ValueItem aMonomerTableValueItem, 
+        ValueItem aMoleculeTableValueItem, 
+        ValueItem aDensityValueItem, 
+        ValueItem aQuantityValueItem
+    ) {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aMonomerTableValueItem == null || !aMonomerTableValueItem.getName().equals("MonomerTable")) {
             return null;
@@ -898,30 +1039,26 @@ public class JobUtilityMethods {
 
                 // </editor-fold>
                 // <editor-fold defaultstate="collapsed" desc="Column 1 - Molecular structure and possible protein data">
-                ValueItemMatrixElement tmpMolecularStructureValueItemMatrixElement
-                        = new ValueItemMatrixElement(tmpSpices.getInputStructure(), tmpDataTypeFormatMolecularStructure);
+                ValueItemMatrixElement tmpMolecularStructureValueItemMatrixElement = 
+                    new ValueItemMatrixElement(tmpSpices.getInputStructure(), tmpDataTypeFormatMolecularStructure);
                 // Column 1: Structure with possible protein data
                 if (tmpMoleculesWithoutMonomerShortcutsValueItem.getValueItemMatrixElement(i, 1).hasProteinData()) {
                     tmpMolecularStructureValueItemMatrixElement.setProteinData(tmpMoleculesWithoutMonomerShortcutsValueItem.getValueItemMatrixElement(i, 1).getProteinData());
                 }
                 tmpRow[1] = tmpMolecularStructureValueItemMatrixElement;
-
                 // </editor-fold>
                 // <editor-fold defaultstate="collapsed" desc="Column 2 - Quantity">
                 // Row i of aQuantityValueItem corresponds to row i of
                 // tmpMoleculesWithoutMonomerShortcutsValueItem
                 tmpRow[2] = new ValueItemMatrixElement(aQuantityValueItem.getValue(i, 1), tmpDataTypeFormatInteger);
-
                 // </editor-fold>
                 // <editor-fold defaultstate="collapsed" desc="Column 3 - Total Number of Particles">
                 tmpRow[3] = new ValueItemMatrixElement(String.valueOf(tmpSpices.getTotalNumberOfParticles()), tmpDataTypeFormatInteger);
-
                 // </editor-fold>
                 // <editor-fold defaultstate="collapsed" desc="Column 4 - Molecule graphics color">
                 ValueItemDataTypeFormat tmpDataTypeFormatColor = tmpMoleculesWithoutMonomerShortcutsValueItem.getTypeFormat(i, 2).getClone();
                 tmpDataTypeFormatColor.setEditable(false);
                 tmpRow[4] = new ValueItemMatrixElement(tmpMoleculesWithoutMonomerShortcutsValueItem.getValue(i, 2), tmpDataTypeFormatColor);
-
                 // </editor-fold>
                 tmpMatrix[i] = tmpRow;
                 SpicesPool.getInstance().setSpicesForReuse(tmpSpices);
@@ -1347,9 +1484,10 @@ public class JobUtilityMethods {
         }
         GraphicalParticleInfo tmpGraphicalParticleInfo = new GraphicalParticleInfo(tmpMoleculeToParticlesMap, aJobInputValueItemContainer.hasValueItemWithCompartments());
         return tmpGraphicalParticleInfo.addMoleculeDisplaySettingsValueItems(
-                aJobInputValueItemContainer,
-                aVerticalPosition,
-                aRootNodeNames);
+            aJobInputValueItemContainer,
+            aVerticalPosition,
+            aRootNodeNames
+        );
     }
 
     /**
@@ -3958,6 +4096,37 @@ public class JobUtilityMethods {
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- Miscellaneous methods">
     /**
+     * Returns net charge of whole simulation setup
+     *
+     * @param aMoleculeInfoValueItem Molecule info value item (is NOT changed)
+     * @param aMoleculeChargeValueItem Molecule charge value item (is NOT changed)
+     * @return Net charge of whole simulation setup or Double.NaN if net charge
+     * could not be calculated
+     */
+    public double getNetChargeOfSimulation(ValueItem aMoleculeInfoValueItem, ValueItem aMoleculeChargeValueItem) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (!this.isMoleculeInfoValueItem(aMoleculeInfoValueItem)) {
+            return Double.NaN;
+        }
+        if (aMoleculeChargeValueItem == null || !aMoleculeChargeValueItem.getName().equals("MoleculeCharge")) {
+            return Double.NaN;
+        }
+        // </editor-fold>
+        double tmpNetChargeOfSimulation = 0.0;
+        // Loop over all different molecules
+        for (int i = 0; i < aMoleculeInfoValueItem.getMatrixRowCount(); i++) {
+            if (!aMoleculeInfoValueItem.getValue(i, 0).equals(aMoleculeChargeValueItem.getValue(i, 0))) {
+                return Double.NaN;
+            } else {
+                int tmpNumberOfMolecules = aMoleculeInfoValueItem.getValueAsInt(i, 2);
+                double tmpNetChargeOfMolecule = aMoleculeChargeValueItem.getValueAsDouble(i, 3);
+                tmpNetChargeOfSimulation += tmpNetChargeOfMolecule * tmpNumberOfMolecules;
+            }
+        }
+        return tmpNetChargeOfSimulation;
+    }
+    
+    /**
      * Returns if simulation box has periodic boundary in x-direction
      *
      * @param aValueItemContainer Value item container
@@ -4882,10 +5051,10 @@ public class JobUtilityMethods {
 
     /**
      * Writes JDPD positions and bonds file. A molecule file contains
- the x,y,z positions of all particles of this molecule type based on
- bulk/compartments. IMPORTANT: Do NOT set
- Preferences.getInstance().setDefaultDeterministicRandomSeed(): This
- is done at correct point in calling method!
+     * the x,y,z positions of all particles of this molecule type based on
+     * bulk/compartments. IMPORTANT: Do NOT set
+     * Preferences.getInstance().setDefaultDeterministicRandomSeed(): This
+     * is done at correct point in calling method!
      *
      * @param aJobInputValueItemContainer Job input value item container
      * @param aMoleculeName Name of molecule
@@ -4925,8 +5094,8 @@ public class JobUtilityMethods {
         }
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Set random number generator and seed">
-        long tmpRandomSeed = tmpCompartmentContainer.getGeometryRandomSeed();
-        Random tmpRandomNumberGenerator = this.miscUtilityMethods.getRandomNumberGenerator(tmpRandomSeed);
+        int tmpRandomSeed = tmpCompartmentContainer.getGeometryRandomSeed();
+        IRandom tmpRandomNumberGenerator = this.miscUtilityMethods.getRandomNumberGenerator(tmpRandomSeed);
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Delete aJdpdPositionsBondsFilePathname if necessary">
         if (!this.fileUtilityMethods.deleteSingleFile(aJdpdPositionsBondsFilePathname)) {
@@ -6689,14 +6858,14 @@ public class JobUtilityMethods {
     // <editor-fold defaultstate="collapsed" desc="- Box properties summary related methods">
     /**
      * Set box properties summary in box properties summary value item.
-     * NOTE: No checks are performed.
+     * (No checks are performed)
      *
-     * @param aBoxSummaryValueItem Box properties summary value item (is
-     * changed)
-     * @param aParticleTableValueItem ParticleTable value item (is NOT
-     * changed)
+     * @param aBoxSummaryValueItem Box properties summary value item (is changed)
+     * @param aParticleTableValueItem ParticleTable value item (is NOT changed)
      * @param aMonomerTableValueItem MonomerTable value item (is NOT changed)
      * @param aMoleculeTableValueItem MoleculeTable value item (is NOT changed)
+     * @param aMoleculeChargeValueItem MoleculeCharge value item (is NOT changed 
+     * and may be null for legacy reasons)
      * @param aQuantityValueItem Quantity value item (is NOT changed)
      * @param aDensityValueItem Density value item (is NOT changed)
      */
@@ -6705,6 +6874,7 @@ public class JobUtilityMethods {
         ValueItem aParticleTableValueItem,
         ValueItem aMonomerTableValueItem,
         ValueItem aMoleculeTableValueItem,
+        ValueItem aMoleculeChargeValueItem,
         ValueItem aQuantityValueItem,
         ValueItem aDensityValueItem
     ) {
@@ -6712,7 +6882,7 @@ public class JobUtilityMethods {
         // Box properties summary has property-value pairs only
         ValueItemDataTypeFormat tmpDataTypeFormatProperty = new ValueItemDataTypeFormat(ValueItemEnumDataType.TEXT, false);
         ValueItemDataTypeFormat tmpDataTypeFormatDoubleValue = new ValueItemDataTypeFormat(ModelDefinitions.INTERACTION_NUMBER_OF_DECIMALS, false);
-        ValueItemDataTypeFormat tmpDataTypeFormatIntegerValue = new ValueItemDataTypeFormat(ValueItemEnumDataType.NUMERIC, false);
+        ValueItemDataTypeFormat tmpDataTypeFormatValue = new ValueItemDataTypeFormat(ValueItemEnumDataType.NUMERIC, false);
         LinkedList<ValueItemMatrixElement[]> tmpRowList = new LinkedList<ValueItemMatrixElement[]>();
         // Total number of molecules and particles in simulation box
         ValueItem tmpMoleculeInfoValueItem = this.createMoleculeInfoValueItem(aMonomerTableValueItem, aMoleculeTableValueItem, aDensityValueItem, aQuantityValueItem);
@@ -6721,7 +6891,7 @@ public class JobUtilityMethods {
                 int tmpTotalNumberOfMolecules = this.getTotalNumberOfMoleculesInSimulation(tmpMoleculeInfoValueItem);
                 ValueItemMatrixElement[] tmpRow = new ValueItemMatrixElement[2];
                 tmpRow[0] = new ValueItemMatrixElement(ModelMessage.get("BoxPropertiesSummary.TotalNumberOfMolecules"), tmpDataTypeFormatProperty);
-                tmpRow[1] = new ValueItemMatrixElement(String.valueOf(tmpTotalNumberOfMolecules), tmpDataTypeFormatIntegerValue);
+                tmpRow[1] = new ValueItemMatrixElement(String.valueOf(tmpTotalNumberOfMolecules), tmpDataTypeFormatValue);
                 tmpRowList.add(tmpRow);
             } catch (Exception anException) {
                 ModelUtils.appendToLogfile(true, anException);
@@ -6731,7 +6901,24 @@ public class JobUtilityMethods {
                 int tmpTotalNumberOfParticles = this.getTotalNumberOfParticlesInSimulation(tmpMoleculeInfoValueItem);
                 ValueItemMatrixElement[] tmpRow = new ValueItemMatrixElement[2];
                 tmpRow[0] = new ValueItemMatrixElement(ModelMessage.get("BoxPropertiesSummary.TotalNumberOfParticles"), tmpDataTypeFormatProperty);
-                tmpRow[1] = new ValueItemMatrixElement(String.valueOf(tmpTotalNumberOfParticles), tmpDataTypeFormatIntegerValue);
+                tmpRow[1] = new ValueItemMatrixElement(String.valueOf(tmpTotalNumberOfParticles), tmpDataTypeFormatValue);
+                tmpRowList.add(tmpRow);
+            } catch (Exception anException) {
+                ModelUtils.appendToLogfile(true, anException);
+                // Do nothing!
+            }
+        }
+        // Net charge of simulation
+        if (tmpMoleculeInfoValueItem != null) {
+            try {
+                ValueItemMatrixElement[] tmpRow = new ValueItemMatrixElement[2];
+                tmpRow[0] = new ValueItemMatrixElement(ModelMessage.get("BoxPropertiesSummary.NetChargeOfSimulation"), tmpDataTypeFormatProperty);
+                if (aMoleculeChargeValueItem == null) {
+                    tmpRow[1] = new ValueItemMatrixElement(ModelMessage.get("BoxPropertiesSummary.NotAvailable"), new ValueItemDataTypeFormat(false));
+                } else {
+                    double tmpNetChargeOfSimulation = this.getNetChargeOfSimulation(tmpMoleculeInfoValueItem, aMoleculeChargeValueItem);
+                    tmpRow[1] = new ValueItemMatrixElement(String.valueOf(tmpNetChargeOfSimulation), tmpDataTypeFormatValue);
+                }
                 tmpRowList.add(tmpRow);
             } catch (Exception anException) {
                 ModelUtils.appendToLogfile(true, anException);
@@ -6833,42 +7020,42 @@ public class JobUtilityMethods {
     // <editor-fold defaultstate="collapsed" desc="- Simulation box length related methods">
     /**
      * Returns x-length of simulation box in DPD units.
-     * NOTE: No checks are performed.
+     * (No checks are performed)
      * 
      * @param aJobInputValueItemContainer Value item container of corresponding
      * Job Input
      * @return x-length of simulation box in DPD units.
      */
     private double getSimulationBoxLengthX(ValueItemContainer aJobInputValueItemContainer){
-        // NOTE: No checks are performed.
+        // (No checks are performed)
         ValueItem tmpBoxSizeValueItem = aJobInputValueItemContainer.getValueItem("BoxSize");
         return tmpBoxSizeValueItem.getValueAsDouble(0, 0);
     }
 
     /**
      * Returns y-length of simulation box in DPD units.
-     * NOTE: No checks are performed.
+     * (No checks are performed)
      * 
      * @param aJobInputValueItemContainer Value item container of corresponding
      * Job Input
      * @return y-length of simulation box in DPD units.
      */
     private double getSimulationBoxLengthY(ValueItemContainer aJobInputValueItemContainer){
-        // NOTE: No checks are performed.
+        // (No checks are performed)
         ValueItem tmpBoxSizeValueItem = aJobInputValueItemContainer.getValueItem("BoxSize");
         return tmpBoxSizeValueItem.getValueAsDouble(0, 1);
     }
 
     /**
      * Returns z-length of simulation box in DPD units.
-     * NOTE: No checks are performed.
+     * (No checks are performed)
      * 
      * @param aJobInputValueItemContainer Value item container of corresponding
      * Job Input
      * @return z-length of simulation box in DPD units.
      */
     private double getSimulationBoxLengthZ(ValueItemContainer aJobInputValueItemContainer){
-        // NOTE: No checks are performed.
+        // (No checks are performed)
         ValueItem tmpBoxSizeValueItem = aJobInputValueItemContainer.getValueItem("BoxSize");
         return tmpBoxSizeValueItem.getValueAsDouble(0, 2);
     }
