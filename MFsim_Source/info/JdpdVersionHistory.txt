@@ -1,6 +1,6 @@
 /**
  * Jdpd - Molecular Fragment Dissipative Particle Dynamics (DPD) Simulation
- * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/Jdpd>  
  * 
@@ -17,6 +17,44 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+--------------------------------------------------------------------------------
+Jdpd 1.6.0.0 (Jdpd.jar)
+--------------------------------------------------------------------------------
+for Java 11 or higher
+
+Dependencies:
+  - commons-math3-3.6.1.jar
+      Apache Commons Math 3.6.1 (https://commons.apache.org/proper/commons-math/)
+      Version 3.6.1
+  - commons-rng-client-api-1.4.jar
+    commons-rng-core-1.4.jar
+    commons-rng-sampling-1.4.jar
+    commons-rng-simple-1.4.jar
+      Apache Commons RNG 1.4 (http://commons.apache.org/proper/commons-rng/)
+      Version 1.4
+      
+Unit tests: 
+  - Package src.de.gnwi.jdpd.tests
+  
+Simulation input file description:  
+  - File Input.txt in package src.de.gnwi.jdpd.tests.test_Water_GWMVV              
+--------------------------------------------------------------------------------
+- Removed problems:
+  - A restart of a job with a continued radius of gyration calculation led to an 
+    illegal file output so that the radius of gyration data of the restarted 
+    job result could not be evaluated. This problem is removed.
+  - PrintWriters are consequently flushed to avoid problems with generated file 
+    output.
+  - Method finish() in class FileOutput is reengineered with safeguards to avoid 
+    very rare problems with the final particle positions file output.
+
+- Improvements:
+  - Random number generation is now based on Apache Commons RNG 1.4.
+  - Exclusive or inclusive spheres for molecules may now be defined (with a 
+    maximum time step for the sphere to be applied). Job definitions of older 
+    versions are still compatible.
+
 
 --------------------------------------------------------------------------------
 Jdpd 1.5.0.0 (Jdpd.jar)

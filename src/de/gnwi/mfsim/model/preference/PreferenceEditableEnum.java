@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -180,10 +180,6 @@ public enum PreferenceEditableEnum {
      * PreferenceBasic: this.isJobResultArchiveFileUncompressed
      */
     IS_JOB_RESULT_ARCHIVE_FILE_UNCOMPRESSED,
-    /**
-     * PreferenceBasic: this.isDeterministicRandom
-     */
-    IS_DETERMINISTIC_RANDOM,
     /**
      * PreferenceBasic: this.isJdpdLogLevelExceptions
      */
@@ -434,7 +430,6 @@ public enum PreferenceEditableEnum {
                     PreferenceEditableEnum.IS_JOB_RESULT_ARCHIVE_PROCESS_PARALLEL_IN_BACKGROUND);
             PreferenceEditableEnum.representationToPreferenceEditableEnumMap.put(PreferenceEditableEnum.IS_JOB_RESULT_ARCHIVE_FILE_UNCOMPRESSED.name(),
                     PreferenceEditableEnum.IS_JOB_RESULT_ARCHIVE_FILE_UNCOMPRESSED);
-            PreferenceEditableEnum.representationToPreferenceEditableEnumMap.put(PreferenceEditableEnum.IS_DETERMINISTIC_RANDOM.name(), PreferenceEditableEnum.IS_DETERMINISTIC_RANDOM);
             PreferenceEditableEnum.representationToPreferenceEditableEnumMap.put(PreferenceEditableEnum.IS_JDPD_LOG_LEVEL_EXCEPTIONS.name(), PreferenceEditableEnum.IS_JDPD_LOG_LEVEL_EXCEPTIONS);
             PreferenceEditableEnum.representationToPreferenceEditableEnumMap.put(PreferenceEditableEnum.IS_CONSTANT_COMPARTMENT_BODY_VOLUME.name(), PreferenceEditableEnum.IS_CONSTANT_COMPARTMENT_BODY_VOLUME);
             PreferenceEditableEnum.representationToPreferenceEditableEnumMap.put(PreferenceEditableEnum.IS_SIMULATION_BOX_SLICER.name(), PreferenceEditableEnum.IS_SIMULATION_BOX_SLICER);

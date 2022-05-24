@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="MFsim.build" default="test" basedir=".">
+
+    <target name="initProperties" description="Initialize properties">
+
+        <!-- Source directories -->
+        <property name="src-MFsim" location="../../../../Code/MFsim/dist" />
+        <property name="src-startUpFiles" location="../../../../Deployment/MFsim/Input/files_for_distribution/startup_files" />
+        <property name="src-particles" location="../../../../Deployment/MFsim/Input/files_for_distribution/particles" />
+        <property name="src-winUtils" location="../../../../Deployment/MFsim/Input/files_for_distribution/winUtils" />
+        <property name="src-tutorials" location="../../../../Deployment/MFsim/Input/files_for_distribution/tutorials" />
+        <property name="src-java" location="../../../../Deployment/Input/java" />
+        <property name="src-jar-libs" location="../../../../Code/jar-libs" />
+
+        <!-- Destination directories for deployment -->
+        <property name="dest" location="../../../../Deployment/MFsim/Output/deploy_unobfuscated" />
+
+        <property name="dest-Linux" location="../../../../Deployment/MFsim/Output/deploy_unobfuscated/MFsim_Linux" />
+        <property name="dest-Linux-info" location="../../../../Deployment/MFsim/Output/deploy_unobfuscated/MFsim_Linux/MFsim_Source/info" />
+        <property name="dest-particles-Linux" location="../../../../Deployment/MFsim/Output/deploy_unobfuscated/MFsim_Linux/MFsim_Source/particles" />
+        <property name="dest-winUtils-Linux" location="../../../../Deployment/MFsim/Output/deploy_unobfuscated/MFsim_Linux/MFsim_Source/winUtils" />
+        <property name="dest-tutorials-Linux" location="../../../../Deployment/MFsim/Output/deploy_unobfuscated/MFsim_Linux/MFsim_Source/tutorials" />
+        <property name="dest-libraries-Linux" location="../../../../Deployment/MFsim/Output/deploy_unobfuscated/MFsim_Linux/MFsim_Source/libraries" />
+
+        <property name="dest-Windows" location="../../../../Deployment/MFsim/Output/deploy_unobfuscated/MFsim_Windows" />
+        <property name="dest-Windows-info" location="../../../../Deployment/MFsim/Output/deploy_unobfuscated/MFsim_Windows/MFsim_Source/info" />
+        <property name="dest-particles-Windows" location="../../../../Deployment/MFsim/Output/deploy_unobfuscated/MFsim_Windows/MFsim_Source/particles" />
+        <property name="dest-winUtils-Windows" location="../../../../Deployment/MFsim/Output/deploy_unobfuscated/MFsim_Windows/MFsim_Source/winUtils" />
+        <property name="dest-tutorials-Windows" location="../../../../Deployment/MFsim/Output/deploy_unobfuscated/MFsim_Windows/MFsim_Source/tutorials" />
+        <property name="dest-libraries-Windows" location="../../../../Deployment/MFsim/Output/deploy_unobfuscated/MFsim_Windows/MFsim_Source/libraries" />
+
+        <!-- Test directory -->
+        <property name="dest-test" location="../../../../Deployment/MFsim/Output/test" />
+
+    </target>
+
+    <target name="deploy_unobfuscated" depends="initProperties" description="Create deploy_unobfuscated">
+
+        <!-- Delete old deploy_unobfuscated directory -->
+        <delete dir="${dest}" />
+
+        <!-- Create new directories -->
+        <mkdir dir="${dest-Linux-info}" />
+        <mkdir dir="${dest-libraries-Linux}" />
+        <mkdir dir="${dest-particles-Linux}" />
+        <mkdir dir="${dest-winUtils-Linux}" />
+        <mkdir dir="${dest-tutorials-Linux}" />
+
+        <mkdir dir="${dest-Windows-info}" />
+        <mkdir dir="${dest-libraries-Windows}" />
+        <mkdir dir="${dest-particles-Windows}" />
+        <mkdir dir="${dest-winUtils-Windows}" />
+        <mkdir dir="${dest-tutorials-Windows}" />
+
+        <!-- Copy new start-up, info and installation info files -->
+        <copy todir="${dest-Linux}">
+            <fileset dir="${src-startUpFiles}" includes="Start_MFsim_64bit.sh" />
+        </copy>
+        <copy todir="${dest-Linux-info}">
+            <fileset dir="${src-startUpFiles}" includes="*.txt" />
+        </copy>
+
+        <copy todir="${dest-Windows}">
+            <fileset dir="${src-startUpFiles}" includes="*.bat" />
+        </copy>
+        <copy todir="${dest-Windows-info}">
+            <fileset dir="${src-startUpFiles}" includes="*.txt" />
+        </copy>
+        <copy todir="${dest-Windows}">
+            <fileset dir="${src-java}" />
+        </copy>
+
+        <!-- Copy new particle and windows utilities related files -->
+        <copy todir="${dest-particles-Linux}">
+            <fileset dir="${src-particles}" />
+        </copy>
+        <copy todir="${dest-winUtils-Linux}">
+            <fileset dir="${src-winUtils}" />
+        </copy>
+
+        <copy todir="${dest-particles-Windows}">
+            <fileset dir="${src-particles}" />
+        </copy>
+        <copy todir="${dest-winUtils-Windows}">
+            <fileset dir="${src-winUtils}" />
+        </copy>
+
+        <!-- Copy new tutorials related files -->
+        <copy todir="${dest-tutorials-Linux}">
+            <fileset dir="${src-tutorials}" />
+        </copy>
+
+        <copy todir="${dest-tutorials-Windows}">
+            <fileset dir="${src-tutorials}" />
+        </copy>
+
+        <!-- Copy splash-screen and jar to Linux directory -->
+        <copy todir="${dest-libraries-Linux}">
+            <fileset dir="${src-MFsim}" />
+            <fileset dir="${src-jar-libs}" includes="*.jpg" />
+        </copy>
+
+        <!-- Copy splash-screen and jar to Windows directory -->
+        <copy todir="${dest-libraries-Windows}">
+            <fileset dir="${src-MFsim}" />
+            <fileset dir="${src-jar-libs}" includes="*.jpg" />
+        </copy>
+
+    </target>
+
+    <target name="test" depends="deploy_unobfuscated" description="Create test">
+
+        <!-- Delete files and MFsim_Source directory in test directory but NOT DPD data directory -->
+        <delete dir="${dest-test}/MFsim_Source" />
+        <delete>
+            <fileset dir="${dest-test}">
+                <include name="*" />
+            </fileset>
+        </delete>
+
+        <!-- Copy Windows deployment to test directory -->
+        <copy todir="${dest-test}">
+            <fileset dir="${dest-Windows}" />
+        </copy>
+
+    </target>
+
+</project>

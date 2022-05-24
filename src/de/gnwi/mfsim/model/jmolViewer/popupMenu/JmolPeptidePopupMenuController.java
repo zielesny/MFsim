@@ -4,7 +4,7 @@
  */
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -59,13 +59,18 @@ public class JmolPeptidePopupMenuController {
                 } else {
                     owner.executeCommand(JmolDpdPeptideCommands.HideMolecule);
                 }
-            } else if (e.getSource().equals(view.getHydrogensMenuItem())) {
-                if (view.getHydrogensMenuItem().isSelected()) {
-                    owner.setShowHydrogens(true);
-                } else {
-                    owner.setShowHydrogens(false);
-                }
             }
+            // Note: "Show hydrogens" is deactivated since no hydrogens are added 
+            //       with "pdbAddHydrogens" in 
+            //       Jmol3dPeptideController.showProteinFromMasterdata()
+            // Old code:
+            // } else if (e.getSource().equals(view.getHydrogensMenuItem())) {
+            //     if (view.getHydrogensMenuItem().isSelected()) {
+            //         owner.setShowHydrogens(true);
+            //     } else {
+            //        owner.setShowHydrogens(false);
+            //     }
+            // }
             if (view.getMoleculeMenuItem().isSelected()) {
                 if (view.getNormalMenuItem().isSelected()) {
                     owner.executeCommand(JmolDpdPeptideCommands.ColorNormal);
@@ -98,7 +103,11 @@ public class JmolPeptidePopupMenuController {
         this.view.getPolarityMenuItem().addActionListener(this.popupMenuListener);
         this.view.getBackboneMenuItem().addActionListener(this.popupMenuListener);
         this.view.getcAlphaMenuItem().addActionListener(this.popupMenuListener);
-        this.view.getHydrogensMenuItem().addActionListener(this.popupMenuListener);
+        // Note: "Show hydrogens" is deactivated since no hydrogens are added 
+        //       with "pdbAddHydrogens" in 
+        //       Jmol3dPeptideController.showProteinFromMasterdata()
+        // Old code:
+        // this.view.getHydrogensMenuItem().addActionListener(this.popupMenuListener);
     }
 
     /**

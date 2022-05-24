@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -52,6 +52,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import javax.swing.JOptionPane;
 import de.gnwi.mfsim.model.preference.ModelDefinitions;
+import de.gnwi.mfsim.model.valueItem.ValueItemEnumBasicType;
+import de.gnwi.mfsim.model.valueItem.ValueItemEnumDataType;
 import de.gnwi.spices.ParticleFrequency;
 
 /**
@@ -177,7 +179,8 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
             ValueItem tmpMoleculeParticlePairRdfCalculationValueItem = tmpMoleculeTableValueItem.getValueItemContainer().getValueItem("MoleculeParticlePairRdfCalculation");
             ValueItem tmpMoleculeParticlePairDistanceCalculationValueItem = tmpMoleculeTableValueItem.getValueItemContainer().getValueItem("MoleculeParticlePairDistanceCalculation");
             ValueItem tmpProteinDistanceForcesValueItem = tmpMoleculeTableValueItem.getValueItemContainer().getValueItem("ProteinDistanceForces");
-            ValueItem tmpBoundaryValueItem = tmpMoleculeTableValueItem.getValueItemContainer().getValueItem("MoleculeBoundary");
+            ValueItem tmpMoleculeBoundaryValueItem = tmpMoleculeTableValueItem.getValueItemContainer().getValueItem("MoleculeBoundary");
+            ValueItem tmpMoleculeSphereValueItem = tmpMoleculeTableValueItem.getValueItemContainer().getValueItem("MoleculeSphere");
             ValueItem tmpElectrostaticsValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("Electrostatics");
             ValueItem tmpTimeStepNumberValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("TimeStepNumber");
             ValueItem tmpTimeStepLengthValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("TimeStepLength");
@@ -212,7 +215,10 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
             this.updateMoleculeNameFixed(tmpMoleculeTableValueItem, tmpMoleculeTableValueItem.getValueItemContainer().getValueItem("MoleculeFixation"));
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="- Update receiver MoleculeBoundary">
-            this.updateBoundary(tmpBoundaryValueItem, tmpMoleculeTableValueItem, tmpBoxSizeValueItem);
+            this.updateMoleculeBoundary(tmpMoleculeBoundaryValueItem, tmpMoleculeTableValueItem, tmpBoxSizeValueItem);
+            // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="- Update receiver MoleculeSphere">
+            this.updateMoleculeSphere(tmpMoleculeSphereValueItem, tmpMoleculeTableValueItem, tmpBoxSizeValueItem);
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="- Update receiver MoleculeFixedVelocity">
             this.updateMoleculeNameFixed(tmpMoleculeTableValueItem, tmpMoleculeTableValueItem.getValueItemContainer().getValueItem("MoleculeFixedVelocity"));
@@ -441,7 +447,8 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
             ValueItem tmpMoleculeTableValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("MoleculeTable");
             ValueItem tmpConcentrationValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("Concentration");
             ValueItem tmpDensityValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("Density");
-            ValueItem tmpBoundaryValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("MoleculeBoundary");
+            ValueItem tmpMoleculeBoundaryValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("MoleculeBoundary");
+            ValueItem tmpMoleculeSphereValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("MoleculeSphere");
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="Update itself">
             // IMPORTANT: Update BoxSize FIRST!
@@ -480,7 +487,10 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
             this.updateCompartments(tmpCompartmentsValueItem);
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="Update receiver MoleculeBoundary">
-            this.updateBoundary(tmpBoundaryValueItem, tmpMoleculeTableValueItem, anUpdateNotifierValueItem);
+            this.updateMoleculeBoundary(tmpMoleculeBoundaryValueItem, tmpMoleculeTableValueItem, anUpdateNotifierValueItem);
+            // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="Update receiver MoleculeSphere">
+            this.updateMoleculeSphere(tmpMoleculeSphereValueItem, tmpMoleculeTableValueItem, anUpdateNotifierValueItem);
             // </editor-fold>
             return;
         }
@@ -494,7 +504,12 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Update notifier MoleculeBoundary">
         if (anUpdateNotifierValueItem.getName().equals("MoleculeBoundary")) {
-            this.updateBoundaryItself(anUpdateNotifierValueItem);
+            this.updateMoleculeBoundaryItself(anUpdateNotifierValueItem);
+        }
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Update notifier MoleculeSphere">
+        if (anUpdateNotifierValueItem.getName().equals("MoleculeSphere")) {
+            this.updateMoleculeSphereItself(anUpdateNotifierValueItem);
         }
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Update notifier Temperature">
@@ -717,7 +732,7 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
         if (tmpMoleculeBoundaryValueItem == null || tmpMoleculeBoundaryValueItem.getMatrixColumnCount() > 16) {
             return;
         }
-        ValueItem tmpUpdatedMoleculeAccelerationValueItem = JdpdValueItemDefinition.getInstance().getClonedJdpdInputFileValueItem("MoleculeBoundary");
+        ValueItem tmpUpdatedMoleculeBoundaryValueItem = JdpdValueItemDefinition.getInstance().getClonedJdpdInputFileValueItem("MoleculeBoundary");
         ValueItemMatrixElement[][] tmpMatrix = tmpMoleculeBoundaryValueItem.getMatrix();
         ValueItemMatrixElement[][] tmpUpdatedMatrix = new ValueItemMatrixElement[tmpMatrix.length][];
         ValueItemDataTypeFormat tmpMaxTimeStepTypeFormat = 
@@ -734,10 +749,66 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
             }
             tmpUpdatedMatrix[i][tmpMatrix[0].length] = new ValueItemMatrixElement(String.valueOf(Constants.MAXIMUM_NUMBER_OF_TIME_STEPS), tmpMaxTimeStepTypeFormat);
         }
-        tmpUpdatedMoleculeAccelerationValueItem.setMatrix(tmpUpdatedMatrix);
-        aJobInput.getValueItemContainer().replaceValueItemWithKeptVerticalPositionAndNodeNames(tmpUpdatedMoleculeAccelerationValueItem);
+        tmpUpdatedMoleculeBoundaryValueItem.setMatrix(tmpUpdatedMatrix);
+        aJobInput.getValueItemContainer().replaceValueItemWithKeptVerticalPositionAndNodeNames(tmpUpdatedMoleculeBoundaryValueItem);
     }
 
+    /**
+     * Updates value item "MoleculeBoundary" for with molecule name selection texts in specified job input
+     * 
+     * @param aJobInput Job input to be updated
+     */
+    public void updateMoleculeBoundaryForMoleculeNameSelectionTexts(JobInput aJobInput) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aJobInput == null) {
+            return;
+        }
+        // </editor-fold>
+        ValueItem tmpMoleculeBoundaryValueItem = aJobInput.getValueItemContainer().getValueItem("MoleculeBoundary");
+        if (tmpMoleculeBoundaryValueItem == null) {
+            return;
+        }
+        if (tmpMoleculeBoundaryValueItem.getMatrix()[0][0].getTypeFormat().getDataType() == ValueItemEnumDataType.SELECTION_TEXT) {
+            return;
+        }
+        ValueItem tmpMoleculeTableValueItem = aJobInput.getValueItemContainer().getValueItem("MoleculeTable");
+        if (tmpMoleculeTableValueItem == null) {
+            return;
+        }
+        
+        String tmpDefaultMoleculeName = tmpMoleculeBoundaryValueItem.getMatrix()[0][0].getTypeFormat().getDefaultValue();
+        boolean tmpHasDefaultMoleculeName = false;
+        String[] tmpMoleculeNames = new String[tmpMoleculeTableValueItem.getMatrixRowCount()];
+        for (int i = 0; i < tmpMoleculeTableValueItem.getMatrixRowCount(); i++) {
+            String tmpMoleculeName = tmpMoleculeTableValueItem.getValue(i, 0);
+            tmpMoleculeNames[i] = tmpMoleculeName;
+            if (tmpDefaultMoleculeName.equals(tmpMoleculeName)) {
+                tmpHasDefaultMoleculeName = true;
+            }
+        }        
+        ValueItemDataTypeFormat tmpMoleculeNameDataTypeFormat = null;
+        if (tmpHasDefaultMoleculeName) {
+            tmpMoleculeNameDataTypeFormat =
+                new ValueItemDataTypeFormat(
+                    tmpDefaultMoleculeName, 
+                    tmpMoleculeNames
+                );
+        } else {
+            tmpMoleculeNameDataTypeFormat =
+                new ValueItemDataTypeFormat(
+                    tmpMoleculeNames
+                );
+        }
+        
+        tmpMoleculeBoundaryValueItem.setBasicType(ValueItemEnumBasicType.FLEXIBLE_MATRIX);
+        for (int i = 0; i < tmpMoleculeBoundaryValueItem.getMatrixRowCount(); i++) {
+            String tmpMoleculeName = tmpMoleculeBoundaryValueItem.getValue(i, 0);
+            ValueItemMatrixElement tmpValueItemMatrixElement = tmpMoleculeBoundaryValueItem.getMatrix()[i][0];
+            tmpValueItemMatrixElement.setTypeFormat(tmpMoleculeNameDataTypeFormat);
+            tmpMoleculeBoundaryValueItem.setValue(tmpMoleculeName, i, 0);
+        }
+    }
+    
     /**
      * Updates value item "MoleculeFixedVelocity" for maximum time step in specified job input
      * 
@@ -933,6 +1004,28 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
             ValueItem tmpGeometryRandomSeedValueItem = JdpdValueItemDefinition.getInstance().getClonedJdpdInputFileValueItem("GeometryRandomSeed");
             aJobInput.getValueItemContainer().insertValueItemBefore(tmpGeometryRandomSeedValueItem, "Compartments");
             this.updateCompartmentContainerWithGeometryRandomSeed(aJobInput.getValueItemContainer().getValueItem("Compartments"), tmpGeometryRandomSeedValueItem.getValueAsLong());
+        }
+    }
+    
+    /**
+     * Inserts value item "MoleculeSphere" in specified job input if necessary
+     * 
+     * @param aJobInput Job input to be updated
+     */
+    public void insertMoleculeSphereValueItem(JobInput aJobInput) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aJobInput == null) {
+            return;
+        }
+        // </editor-fold>
+        if (!aJobInput.getValueItemContainer().hasValueItem("MoleculeSphere")) {
+            ValueItem tmpMoleculeSphereValueItem = JdpdValueItemDefinition.getInstance().getClonedJdpdInputFileValueItem("MoleculeSphere");
+            aJobInput.getValueItemContainer().insertValueItemBefore(tmpMoleculeSphereValueItem, "MoleculeFixedVelocity");
+            this.updateMoleculeSphere(
+                aJobInput.getValueItemContainer().getValueItem("MoleculeSphere"),
+                aJobInput.getValueItemContainer().getValueItem("MoleculeTable"),
+                aJobInput.getValueItemContainer().getValueItem("BoxSize")
+            );
         }
     }
     
@@ -2561,45 +2654,45 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
         }
     }
     // </editor-fold>
-    // <editor-fold defaultstate="collapsed" desc="-- Boundary as update receiver">
+    // <editor-fold defaultstate="collapsed" desc="-- MoleculeBoundary as update receiver">
     /**
-     * Update boundary value item itself (see code).
+     * Update molecule boundary value item itself (see code).
      * 
-     * @param aBoundaryValueItem Boundary value item (may be changed)
+     * @param aMoleculeBoundaryValueItem Molecule boundary value item (may be changed)
      */
-    private void updateBoundaryItself(ValueItem aBoundaryValueItem) {
+    private void updateMoleculeBoundaryItself(ValueItem aMoleculeBoundaryValueItem) {
         // <editor-fold defaultstate="collapsed" desc="Checks">
-        if (aBoundaryValueItem == null || !aBoundaryValueItem.getName().equals("MoleculeBoundary")) {
+        if (aMoleculeBoundaryValueItem == null || !aMoleculeBoundaryValueItem.getName().equals("MoleculeBoundary")) {
             return;
         }
         // </editor-fold>
-        double tmpLengthConversionFactor = this.jobUtilityMethods.getLengthConversionFactorFromDpdToPhysicalLength(aBoundaryValueItem.getValueItemContainer());
-        for (int i = 0; i < aBoundaryValueItem.getMatrixRowCount(); i++) {
-            aBoundaryValueItem.setValue(String.valueOf(aBoundaryValueItem.getValueAsDouble(i, 2) / tmpLengthConversionFactor), i, 3);
-            aBoundaryValueItem.setValue(String.valueOf(aBoundaryValueItem.getValueAsDouble(i, 4) / tmpLengthConversionFactor), i, 5);
+        double tmpLengthConversionFactor = this.jobUtilityMethods.getLengthConversionFactorFromDpdToPhysicalLength(aMoleculeBoundaryValueItem.getValueItemContainer());
+        for (int i = 0; i < aMoleculeBoundaryValueItem.getMatrixRowCount(); i++) {
+            aMoleculeBoundaryValueItem.setValue(String.valueOf(aMoleculeBoundaryValueItem.getValueAsDouble(i, 2) / tmpLengthConversionFactor), i, 3);
+            aMoleculeBoundaryValueItem.setValue(String.valueOf(aMoleculeBoundaryValueItem.getValueAsDouble(i, 4) / tmpLengthConversionFactor), i, 5);
             
-            aBoundaryValueItem.setValue(String.valueOf(aBoundaryValueItem.getValueAsDouble(i, 7) / tmpLengthConversionFactor), i, 8);
-            aBoundaryValueItem.setValue(String.valueOf(aBoundaryValueItem.getValueAsDouble(i, 9) / tmpLengthConversionFactor), i, 10);
+            aMoleculeBoundaryValueItem.setValue(String.valueOf(aMoleculeBoundaryValueItem.getValueAsDouble(i, 7) / tmpLengthConversionFactor), i, 8);
+            aMoleculeBoundaryValueItem.setValue(String.valueOf(aMoleculeBoundaryValueItem.getValueAsDouble(i, 9) / tmpLengthConversionFactor), i, 10);
             
-            aBoundaryValueItem.setValue(String.valueOf(aBoundaryValueItem.getValueAsDouble(i, 12) / tmpLengthConversionFactor), i, 13);
-            aBoundaryValueItem.setValue(String.valueOf(aBoundaryValueItem.getValueAsDouble(i, 14) / tmpLengthConversionFactor), i, 15);
+            aMoleculeBoundaryValueItem.setValue(String.valueOf(aMoleculeBoundaryValueItem.getValueAsDouble(i, 12) / tmpLengthConversionFactor), i, 13);
+            aMoleculeBoundaryValueItem.setValue(String.valueOf(aMoleculeBoundaryValueItem.getValueAsDouble(i, 14) / tmpLengthConversionFactor), i, 15);
         }
     }
     
     /**
-     * Updates boundary value item (see code)
+     * Updates molecule boundary value item (see code)
      *
-     * @param aBoundaryValueItem Boundary value item (may be changed)
-     * @param aMoleculeTableValueItem Value itemMoleculeTable (is NOT changed)
+     * @param aMoleculeBoundaryValueItem Molecule boundary value item (may be changed)
+     * @param aMoleculeTableValueItem Molecule table value item (is NOT changed)
      * @param aBoxSizeValueItem Box size value item (is NOT changed)
      */
-    private void updateBoundary(
-        ValueItem aBoundaryValueItem, 
+    private void updateMoleculeBoundary(
+        ValueItem aMoleculeBoundaryValueItem, 
         ValueItem aMoleculeTableValueItem, 
         ValueItem aBoxSizeValueItem
     ) {
         // <editor-fold defaultstate="collapsed" desc="Checks">
-        if (aBoundaryValueItem == null || !aBoundaryValueItem.getName().equals("MoleculeBoundary")) {
+        if (aMoleculeBoundaryValueItem == null || !aMoleculeBoundaryValueItem.getName().equals("MoleculeBoundary")) {
             return;
         }
         if (aMoleculeTableValueItem == null || !aMoleculeTableValueItem.getName().equals("MoleculeTable")) {
@@ -2609,8 +2702,31 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
             return;
         }
         // </editor-fold>
-        ValueItemMatrixElement[][] tmpMatrix = new ValueItemMatrixElement[aMoleculeTableValueItem.getMatrixRowCount()][];
+        String tmpDefaultMoleculeName = aMoleculeBoundaryValueItem.getMatrix()[0][0].getTypeFormat().getDefaultValue();
+        boolean tmpHasDefaultMoleculeName = false;
+        String[] tmpMoleculeNames = new String[aMoleculeTableValueItem.getMatrixRowCount()];
+        for (int i = 0; i < aMoleculeTableValueItem.getMatrixRowCount(); i++) {
+            String tmpMoleculeName = aMoleculeTableValueItem.getValue(i, 0);
+            tmpMoleculeNames[i] = tmpMoleculeName;
+            if (tmpDefaultMoleculeName.equals(tmpMoleculeName)) {
+                tmpHasDefaultMoleculeName = true;
+            }
+        }
+        
         // <editor-fold defaultstate="collapsed" desc="ValueItemDataTypeFormat">
+        ValueItemDataTypeFormat tmpMoleculeNameDataTypeFormat = null;
+        if (tmpHasDefaultMoleculeName) {
+            tmpMoleculeNameDataTypeFormat =
+                new ValueItemDataTypeFormat(
+                    tmpDefaultMoleculeName, 
+                    tmpMoleculeNames
+                );
+        } else {
+            tmpMoleculeNameDataTypeFormat =
+                new ValueItemDataTypeFormat(
+                    tmpMoleculeNames
+                );
+        }
         ValueItemDataTypeFormat tmpActivityDataTypeFormat =
             new ValueItemDataTypeFormat(
                 ModelMessage.get("JdpdInputFile.parameter.false"), 
@@ -2718,48 +2834,236 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
                 false,
                 false
             );
+        
+        ValueItemDataTypeFormat tmpMaxTimeStepDataTypeFormat = 
+            new ValueItemDataTypeFormat(
+                "1.0",
+                0,
+                1,
+                Constants.MAXIMUM_NUMBER_OF_TIME_STEPS
+            );
         // </editor-fold>
-        for (int i = 0; i < aMoleculeTableValueItem.getMatrixRowCount(); i++) {
-            ValueItemMatrixElement[] tmpRow = new ValueItemMatrixElement[16];
-            // Column 0: moleculeName
-            tmpRow[0] = new ValueItemMatrixElement(new ValueItemDataTypeFormat(aMoleculeTableValueItem.getValue(i, 0), false));
+        ValueItemMatrixElement[][] tmpMatrix = new ValueItemMatrixElement[1][];
+        ValueItemMatrixElement[] tmpRow = new ValueItemMatrixElement[17];
+        // Column 0: moleculeName
+        tmpRow[0] = new ValueItemMatrixElement(tmpMoleculeNameDataTypeFormat);
 
-            // Column 1: active
-            tmpRow[1] = new ValueItemMatrixElement(tmpActivityDataTypeFormat);
-            // Column 2: xMinAngstrom
-            tmpRow[2] = new ValueItemMatrixElement(tmpXminAngstromDataTypeFormat);
-            // Column 3: xMinDPD
-            tmpRow[3] = new ValueItemMatrixElement(tmpXminDpdDataTypeFormat);
-            // Column 4: xMaxAngstrom
-            tmpRow[4] = new ValueItemMatrixElement(tmpXmaxAngstromDataTypeFormat);
-            // Column 5: xMaxDPD
-            tmpRow[5] = new ValueItemMatrixElement(tmpXmaxDpdDataTypeFormat);
+        // Column 1: active
+        tmpRow[1] = new ValueItemMatrixElement(tmpActivityDataTypeFormat);
+        // Column 2: xMinAngstrom
+        tmpRow[2] = new ValueItemMatrixElement(tmpXminAngstromDataTypeFormat);
+        // Column 3: xMinDPD
+        tmpRow[3] = new ValueItemMatrixElement(tmpXminDpdDataTypeFormat);
+        // Column 4: xMaxAngstrom
+        tmpRow[4] = new ValueItemMatrixElement(tmpXmaxAngstromDataTypeFormat);
+        // Column 5: xMaxDPD
+        tmpRow[5] = new ValueItemMatrixElement(tmpXmaxDpdDataTypeFormat);
 
-            // Column 6: active
-            tmpRow[6] = new ValueItemMatrixElement(tmpActivityDataTypeFormat);
-            // Column 7: yMinAngstrom
-            tmpRow[7] = new ValueItemMatrixElement(tmpYminAngstromDataTypeFormat);
-            // Column 8: yMinDPD
-            tmpRow[8] = new ValueItemMatrixElement(tmpYminDpdDataTypeFormat);
-            // Column 9: yMaxAngstrom
-            tmpRow[9] = new ValueItemMatrixElement(tmpYmaxAngstromDataTypeFormat);
-            // Column 10: yMaxDPD
-            tmpRow[10] = new ValueItemMatrixElement(tmpYmaxDpdDataTypeFormat);
+        // Column 6: active
+        tmpRow[6] = new ValueItemMatrixElement(tmpActivityDataTypeFormat);
+        // Column 7: yMinAngstrom
+        tmpRow[7] = new ValueItemMatrixElement(tmpYminAngstromDataTypeFormat);
+        // Column 8: yMinDPD
+        tmpRow[8] = new ValueItemMatrixElement(tmpYminDpdDataTypeFormat);
+        // Column 9: yMaxAngstrom
+        tmpRow[9] = new ValueItemMatrixElement(tmpYmaxAngstromDataTypeFormat);
+        // Column 10: yMaxDPD
+        tmpRow[10] = new ValueItemMatrixElement(tmpYmaxDpdDataTypeFormat);
 
-            // Column 11: active
-            tmpRow[11] = new ValueItemMatrixElement(tmpActivityDataTypeFormat);
-            // Column 12: yMinAngstrom
-            tmpRow[12] = new ValueItemMatrixElement(tmpZminAngstromDataTypeFormat);
-            // Column 13: yMinDPD
-            tmpRow[13] = new ValueItemMatrixElement(tmpZminDpdDataTypeFormat);
-            // Column 14: yMaxAngstrom
-            tmpRow[14] = new ValueItemMatrixElement(tmpZmaxAngstromDataTypeFormat);
-            // Column 15: yMaxDPD
-            tmpRow[15] = new ValueItemMatrixElement(tmpZmaxDpdDataTypeFormat);
-            
-            tmpMatrix[i] = tmpRow;
+        // Column 11: active
+        tmpRow[11] = new ValueItemMatrixElement(tmpActivityDataTypeFormat);
+        // Column 12: yMinAngstrom
+        tmpRow[12] = new ValueItemMatrixElement(tmpZminAngstromDataTypeFormat);
+        // Column 13: yMinDPD
+        tmpRow[13] = new ValueItemMatrixElement(tmpZminDpdDataTypeFormat);
+        // Column 14: yMaxAngstrom
+        tmpRow[14] = new ValueItemMatrixElement(tmpZmaxAngstromDataTypeFormat);
+        // Column 15: yMaxDPD
+        tmpRow[15] = new ValueItemMatrixElement(tmpZmaxDpdDataTypeFormat);
+
+        // Column 16: MaxTimeStep
+        tmpRow[16] = new ValueItemMatrixElement(tmpMaxTimeStepDataTypeFormat);
+        
+        tmpMatrix[0] = tmpRow;
+        aMoleculeBoundaryValueItem.setMatrix(tmpMatrix);
+    }
+    // </editor-fold>
+    // <editor-fold defaultstate="collapsed" desc="-- MoleculeSphere as update receiver">
+    /**
+     * Update molecule sphere value item itself (see code).
+     * 
+     * @param aMoleculeSphereValueItem Molecule sphere value item (may be changed)
+     */
+    private void updateMoleculeSphereItself(ValueItem aMoleculeSphereValueItem) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aMoleculeSphereValueItem == null || !aMoleculeSphereValueItem.getName().equals("MoleculeSphere")) {
+            return;
         }
-        aBoundaryValueItem.setMatrix(tmpMatrix);
+        // </editor-fold>
+        double tmpLengthConversionFactor = this.jobUtilityMethods.getLengthConversionFactorFromDpdToPhysicalLength(aMoleculeSphereValueItem.getValueItemContainer());
+        for (int i = 0; i < aMoleculeSphereValueItem.getMatrixRowCount(); i++) {
+            aMoleculeSphereValueItem.setValue(String.valueOf(aMoleculeSphereValueItem.getValueAsDouble(i, 2) / tmpLengthConversionFactor), i, 3);
+            aMoleculeSphereValueItem.setValue(String.valueOf(aMoleculeSphereValueItem.getValueAsDouble(i, 4) / tmpLengthConversionFactor), i, 5);
+            aMoleculeSphereValueItem.setValue(String.valueOf(aMoleculeSphereValueItem.getValueAsDouble(i, 6) / tmpLengthConversionFactor), i, 7);
+            aMoleculeSphereValueItem.setValue(String.valueOf(aMoleculeSphereValueItem.getValueAsDouble(i, 8) / tmpLengthConversionFactor), i, 9);
+        }
+    }
+    
+    /**
+     * Updates molecule sphere value item (see code)
+     *
+     * @param aMoleculeSphereValueItem Molecule sphere value item (may be changed)
+     * @param aMoleculeTableValueItem Molecule table value item (is NOT changed)
+     * @param aBoxSizeValueItem Box size value item (is NOT changed)
+     */
+    private void updateMoleculeSphere(
+        ValueItem aMoleculeSphereValueItem, 
+        ValueItem aMoleculeTableValueItem, 
+        ValueItem aBoxSizeValueItem
+    ) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aMoleculeSphereValueItem == null || !aMoleculeSphereValueItem.getName().equals("MoleculeSphere")) {
+            return;
+        }
+        if (aMoleculeTableValueItem == null || !aMoleculeTableValueItem.getName().equals("MoleculeTable")) {
+            return;
+        }
+        if (aBoxSizeValueItem == null || !aBoxSizeValueItem.getName().equals("BoxSize")) {
+            return;
+        }
+        // </editor-fold>
+        String tmpDefaultMoleculeName = aMoleculeSphereValueItem.getMatrix()[0][0].getTypeFormat().getDefaultValue();
+        boolean tmpHasDefaultMoleculeName = false;
+        String[] tmpMoleculeNames = new String[aMoleculeTableValueItem.getMatrixRowCount()];
+        for (int i = 0; i < aMoleculeTableValueItem.getMatrixRowCount(); i++) {
+            String tmpMoleculeName = aMoleculeTableValueItem.getValue(i, 0);
+            tmpMoleculeNames[i] = tmpMoleculeName;
+            if (tmpDefaultMoleculeName.equals(tmpMoleculeName)) {
+                tmpHasDefaultMoleculeName = true;
+            }
+        }
+        
+        // <editor-fold defaultstate="collapsed" desc="ValueItemDataTypeFormat">
+        ValueItemDataTypeFormat tmpMoleculeNameDataTypeFormat = null;
+        if (tmpHasDefaultMoleculeName) {
+            tmpMoleculeNameDataTypeFormat =
+                new ValueItemDataTypeFormat(
+                    tmpDefaultMoleculeName, 
+                    tmpMoleculeNames
+                );
+        } else {
+            tmpMoleculeNameDataTypeFormat =
+                new ValueItemDataTypeFormat(
+                    tmpMoleculeNames
+                );
+        }
+        ValueItemDataTypeFormat tmpIsExclusiveSphereDataTypeFormat =
+            new ValueItemDataTypeFormat(
+                ModelMessage.get("JdpdInputFile.parameter.true"), 
+                new String[] { 
+                    ModelMessage.get("JdpdInputFile.parameter.true"),
+                    ModelMessage.get("JdpdInputFile.parameter.false")
+                }
+            );
+        ValueItemDataTypeFormat tmpSphereCenterXAngstromDataTypeFormat = 
+            new ValueItemDataTypeFormat(
+                String.valueOf(aBoxSizeValueItem.getValueAsDouble(0, 4) / 2.0),
+                ModelDefinitions.BOX_SIZE_NUMBER_OF_DECIMALS,
+                0.0,
+                aBoxSizeValueItem.getValueAsDouble(0, 4)
+            );
+        ValueItemDataTypeFormat tmpSphereCenterXDPDDataTypeFormat = 
+            new ValueItemDataTypeFormat(
+                String.valueOf(aBoxSizeValueItem.getValueAsDouble(0, 0) / 2.0),
+                ModelDefinitions.BOX_SIZE_NUMBER_OF_DECIMALS,
+                0.0,
+                aBoxSizeValueItem.getValueAsDouble(0, 0),
+                false,
+                false
+            );
+        ValueItemDataTypeFormat tmpSphereCenterYAngstromDataTypeFormat = 
+            new ValueItemDataTypeFormat(
+                String.valueOf(aBoxSizeValueItem.getValueAsDouble(0, 6) / 2.0),
+                ModelDefinitions.BOX_SIZE_NUMBER_OF_DECIMALS,
+                0.0,
+                aBoxSizeValueItem.getValueAsDouble(0, 6)
+            );
+        ValueItemDataTypeFormat tmpSphereCenterYDPDDataTypeFormat = 
+            new ValueItemDataTypeFormat(
+                String.valueOf(aBoxSizeValueItem.getValueAsDouble(0, 1) / 2.0),
+                ModelDefinitions.BOX_SIZE_NUMBER_OF_DECIMALS,
+                0.0,
+                aBoxSizeValueItem.getValueAsDouble(0, 1),
+                false,
+                false
+            );
+        ValueItemDataTypeFormat tmpSphereCenterZAngstromDataTypeFormat = 
+            new ValueItemDataTypeFormat(
+                String.valueOf(aBoxSizeValueItem.getValueAsDouble(0, 8) / 2.0),
+                ModelDefinitions.BOX_SIZE_NUMBER_OF_DECIMALS,
+                0.0,
+                aBoxSizeValueItem.getValueAsDouble(0, 8)
+            );
+        ValueItemDataTypeFormat tmpSphereCenterZDPDDataTypeFormat = 
+            new ValueItemDataTypeFormat(
+                String.valueOf(aBoxSizeValueItem.getValueAsDouble(0, 2) / 2.0),
+                ModelDefinitions.BOX_SIZE_NUMBER_OF_DECIMALS,
+                0.0,
+                aBoxSizeValueItem.getValueAsDouble(0, 2),
+                false,
+                false
+            );
+        ValueItemDataTypeFormat tmpSphereRadiusAngstromDataTypeFormat = 
+            new ValueItemDataTypeFormat(
+                "0.0",
+                ModelDefinitions.BOX_SIZE_NUMBER_OF_DECIMALS,
+                0.0,
+                Double.POSITIVE_INFINITY
+            );
+        ValueItemDataTypeFormat tmpSphereRadiusDPDDataTypeFormat = 
+            new ValueItemDataTypeFormat(
+                "0.0",
+                ModelDefinitions.BOX_SIZE_NUMBER_OF_DECIMALS,
+                0.0,
+                Double.POSITIVE_INFINITY,
+                false,
+                false
+            );
+        ValueItemDataTypeFormat tmpMaxTimeStepDataTypeFormat = 
+            new ValueItemDataTypeFormat(
+                "1.0",
+                0,
+                1,
+                Constants.MAXIMUM_NUMBER_OF_TIME_STEPS
+            );
+        // </editor-fold>
+        ValueItemMatrixElement[][] tmpMatrix = new ValueItemMatrixElement[1][];
+        ValueItemMatrixElement[] tmpRow = new ValueItemMatrixElement[11];
+        // Column 0: moleculeName
+        tmpRow[0] = new ValueItemMatrixElement(tmpMoleculeNameDataTypeFormat);
+        // Column 1: IsExclusiveSphere
+        tmpRow[1] = new ValueItemMatrixElement(tmpIsExclusiveSphereDataTypeFormat);
+        // Column 2: SphereCenterXAngstrom
+        tmpRow[2] = new ValueItemMatrixElement(tmpSphereCenterXAngstromDataTypeFormat);
+        // Column 3: SphereCenterXDPD
+        tmpRow[3] = new ValueItemMatrixElement(tmpSphereCenterXDPDDataTypeFormat);
+        // Column 4: SphereCenterYAngstrom
+        tmpRow[4] = new ValueItemMatrixElement(tmpSphereCenterYAngstromDataTypeFormat);
+        // Column 5: SphereCenterYDPD
+        tmpRow[5] = new ValueItemMatrixElement(tmpSphereCenterYDPDDataTypeFormat);
+        // Column 6: SphereCenterZAngstrom
+        tmpRow[6] = new ValueItemMatrixElement(tmpSphereCenterZAngstromDataTypeFormat);
+        // Column 7: SphereCenterZDPD
+        tmpRow[7] = new ValueItemMatrixElement(tmpSphereCenterZDPDDataTypeFormat);
+        // Column 8: SphereRadiusAngstrom
+        tmpRow[8] = new ValueItemMatrixElement(tmpSphereRadiusAngstromDataTypeFormat);
+        // Column 9: SphereRadiusDPD
+        tmpRow[9] = new ValueItemMatrixElement(tmpSphereRadiusDPDDataTypeFormat);
+        // Column 10: MaxTimeStep
+        tmpRow[10] = new ValueItemMatrixElement(tmpMaxTimeStepDataTypeFormat);
+
+        tmpMatrix[0] = tmpRow;
+        aMoleculeSphereValueItem.setMatrix(tmpMatrix);
     }
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="-- Bonds12Table as update receiver">

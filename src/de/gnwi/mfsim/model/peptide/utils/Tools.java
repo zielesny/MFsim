@@ -4,7 +4,7 @@
  */
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -27,10 +27,14 @@ import de.gnwi.mfsim.model.peptide.utils.configuration.Point3D;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import de.gnwi.jdpd.interfaces.IRandom;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.regex.Pattern;
 import javax.vecmath.Matrix3d;
 import javax.vecmath.Matrix4d;
@@ -73,15 +77,20 @@ public class Tools {
      * @throws IOException IOException
      */
     public static String readFile(String path) throws IOException {
-        FileInputStream stream = new FileInputStream(new File(path));
-        try {
-            FileChannel fc = stream.getChannel();
-            MappedByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
-            /* Instead of using default, pass in a decoder. */
-            return Charset.defaultCharset().decode(bb).toString();
-        } finally {
-            stream.close();
-        }
+        // Alternative code:
+        Path tmpProteinFilePath = Paths.get(path);
+        String tmpFileContent = Files.readString(tmpProteinFilePath, StandardCharsets.UTF_8);
+        return tmpFileContent;
+        // Old code:
+        // FileInputStream stream = new FileInputStream(new File(path));
+        // try {
+        //     FileChannel fc = stream.getChannel();
+        //     MappedByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
+        //     // Instead of using default, pass in a decoder.
+        //     return Charset.defaultCharset().decode(bb).toString();
+        // } finally {
+        //     stream.close();
+        // }
     }
 
     /**

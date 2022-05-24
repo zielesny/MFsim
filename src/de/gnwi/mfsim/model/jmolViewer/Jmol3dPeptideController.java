@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -118,7 +118,10 @@ public class Jmol3dPeptideController extends Jmol3dController {
         this.isBiologicalAssembly = !aMasterdata.getBiologicalAssembly().equals("Asymmetric Unit");
         this.numberOfModels = aMasterdata.getNumberOfModelsInAssembly();
         StringBuilder tmpScript = new StringBuilder();
-        tmpScript.append("reset All;set refreshing false;set pdbAddHydrogens true;");
+        // NOTE: "set pdbAddHydrogens true;" causes problems with proteins like 3bmp.pdb which contain H2O molecules etc.
+        tmpScript.append("reset All;set refreshing false;");
+        // Old code:
+        // tmpScript.append("reset All;set refreshing false;set pdbAddHydrogens true;");
         tmpScript.append("load data \"PDB\"\n");
         tmpScript.append(aMasterdata.getOriginalPdb());
         tmpScript.append("end \"PDB\"");

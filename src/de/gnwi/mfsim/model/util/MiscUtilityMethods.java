@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -19,7 +19,6 @@
  */
 package de.gnwi.mfsim.model.util;
 
-import de.gnwi.mfsim.model.preference.Preferences;
 import java.util.Comparator;
 import java.util.LinkedList;
 import de.gnwi.mfsim.model.preference.ModelDefinitions;
@@ -460,11 +459,7 @@ public class MiscUtilityMethods {
      * @return Random number generator
      */
     public ApacheCommonsRandom getRandomNumberGenerator(int aRandomSeed) {
-        if (Preferences.getInstance().isDeterministicRandom()) {
-            return new ApacheCommonsRandom(RandomSource.XO_SHI_RO_256_SS, aRandomSeed);
-        } else {
-            return new ApacheCommonsRandom(RandomSource.XO_SHI_RO_256_SS);
-        }
+        return new ApacheCommonsRandom(RandomSource.XO_SHI_RO_256_SS, aRandomSeed);
     }
     // </editor-fold>
     // </editor-fold>

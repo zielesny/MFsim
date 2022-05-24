@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -827,42 +827,42 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                                                             BodyXyLayerSingleSurfaceEnum tmpSingleSurface = BodyXyLayerSingleSurfaceEnum.XY_TOP;
                                                             tmpOffsetZ = tmpXyLayerCenterZCoordinate - tmpHalfZLength;
                                                             tmpXyLayer.fillRandomPointsOnSingleSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpSingleSurface, tmpRandomNumberGenerator);
-                                                            for (int j = tmpQuantityInVolume; j < tmpQuantityOnSurface; j++) {
+                                                            for (int j = tmpQuantityInVolume; j < tmpQuantityInVolume + tmpQuantityOnSurface; j++) {
                                                                 tmpLastParticleCoordinates[j] = new GraphicalParticlePosition(tmpFirstParticleCoordinates[j].getX(), tmpFirstParticleCoordinates[j].getY(), tmpOffsetZ);
                                                             }
                                                         } else if (this.graphicsUtilityMethods.isSingleSurfaceXyBottomGeometryInXyLayer(tmpChemicalCompositionValueItem, i)) {
                                                             BodyXyLayerSingleSurfaceEnum tmpSingleSurface = BodyXyLayerSingleSurfaceEnum.XY_BOTTOM;
                                                             tmpOffsetZ = tmpXyLayerCenterZCoordinate + tmpHalfZLength;
                                                             tmpXyLayer.fillRandomPointsOnSingleSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpSingleSurface, tmpRandomNumberGenerator);
-                                                            for (int j = tmpQuantityInVolume; j < tmpQuantityOnSurface; j++) {
+                                                            for (int j = tmpQuantityInVolume; j < tmpQuantityInVolume + tmpQuantityOnSurface; j++) {
                                                                 tmpLastParticleCoordinates[j] = new GraphicalParticlePosition(tmpFirstParticleCoordinates[j].getX(), tmpFirstParticleCoordinates[j].getY(), tmpOffsetZ);
                                                             }
                                                         } else if (this.graphicsUtilityMethods.isSingleSurfaceYzLeftGeometryInXyLayer(tmpChemicalCompositionValueItem, i)) {
                                                             BodyXyLayerSingleSurfaceEnum tmpSingleSurface = BodyXyLayerSingleSurfaceEnum.YZ_LEFT;
                                                             tmpOffsetX = tmpXyLayerCenterXCoordinate + tmpHalfXLength;
                                                             tmpXyLayer.fillRandomPointsOnSingleSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpSingleSurface, tmpRandomNumberGenerator);
-                                                            for (int j = tmpQuantityInVolume; j < tmpQuantityOnSurface; j++) {
+                                                            for (int j = tmpQuantityInVolume; j < tmpQuantityInVolume + tmpQuantityOnSurface; j++) {
                                                                 tmpLastParticleCoordinates[j] = new GraphicalParticlePosition(tmpOffsetX, tmpFirstParticleCoordinates[j].getY(), tmpFirstParticleCoordinates[j].getZ());
                                                             }
                                                         } else if (this.graphicsUtilityMethods.isSingleSurfaceYzRightGeometryInXyLayer(tmpChemicalCompositionValueItem, i)) {
                                                             BodyXyLayerSingleSurfaceEnum tmpSingleSurface = BodyXyLayerSingleSurfaceEnum.YZ_RIGHT;
                                                             tmpOffsetX = tmpXyLayerCenterXCoordinate - tmpHalfXLength;
                                                             tmpXyLayer.fillRandomPointsOnSingleSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpSingleSurface, tmpRandomNumberGenerator);
-                                                            for (int j = tmpQuantityInVolume; j < tmpQuantityOnSurface; j++) {
+                                                            for (int j = tmpQuantityInVolume; j < tmpQuantityInVolume + tmpQuantityOnSurface; j++) {
                                                                 tmpLastParticleCoordinates[j] = new GraphicalParticlePosition(tmpOffsetX, tmpFirstParticleCoordinates[j].getY(), tmpFirstParticleCoordinates[j].getZ());
                                                             }
                                                         } else if (this.graphicsUtilityMethods.isSingleSurfaceXzFrontGeometryInXyLayer(tmpChemicalCompositionValueItem, i)) {
                                                             BodyXyLayerSingleSurfaceEnum tmpSingleSurface = BodyXyLayerSingleSurfaceEnum.XZ_FRONT;
                                                             tmpOffsetY = tmpXyLayerCenterYCoordinate + tmpHalfYLength;
                                                             tmpXyLayer.fillRandomPointsOnSingleSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpSingleSurface, tmpRandomNumberGenerator);
-                                                            for (int j = tmpQuantityInVolume; j < tmpQuantityOnSurface; j++) {
+                                                            for (int j = tmpQuantityInVolume; j < tmpQuantityInVolume + tmpQuantityOnSurface; j++) {
                                                                 tmpLastParticleCoordinates[j] = new GraphicalParticlePosition(tmpFirstParticleCoordinates[j].getX(), tmpOffsetY, tmpFirstParticleCoordinates[j].getZ());
                                                             }
                                                         } else if (this.graphicsUtilityMethods.isSingleSurfaceXzBackGeometryInXyLayer(tmpChemicalCompositionValueItem, i)) {
                                                             BodyXyLayerSingleSurfaceEnum tmpSingleSurface = BodyXyLayerSingleSurfaceEnum.XZ_BACK;
                                                             tmpOffsetY = tmpXyLayerCenterYCoordinate - tmpHalfYLength;
                                                             tmpXyLayer.fillRandomPointsOnSingleSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpSingleSurface, tmpRandomNumberGenerator);
-                                                            for (int j = tmpQuantityInVolume; j < tmpQuantityOnSurface; j++) {
+                                                            for (int j = tmpQuantityInVolume; j < tmpQuantityInVolume + tmpQuantityOnSurface; j++) {
                                                                 tmpLastParticleCoordinates[j] = new GraphicalParticlePosition(tmpFirstParticleCoordinates[j].getX(), tmpOffsetY, tmpFirstParticleCoordinates[j].getZ());
                                                             }
                                                         }
@@ -871,17 +871,17 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                                                         // <editor-fold defaultstate="collapsed" desc="xy top and bottom surface geometry">
                                                         if (this.graphicsUtilityMethods.isXyTopBottomGeometryInXyLayer(tmpChemicalCompositionValueItem, i)) {
                                                             tmpXyLayer.fillRandomPointsOnTopBottomSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpRandomNumberGenerator);
-                                                            for (int j = tmpQuantityInVolume; j < tmpQuantityOnSurface; j++) {
+                                                            for (int j = tmpQuantityInVolume; j < tmpQuantityInVolume + tmpQuantityOnSurface; j++) {
                                                                 tmpLastParticleCoordinates[j] = new GraphicalParticlePosition(tmpFirstParticleCoordinates[j].getX(), tmpFirstParticleCoordinates[j].getY(), tmpOffsetZ);
                                                             }
                                                         } else if (this.graphicsUtilityMethods.isYzLeftRightGeometryInXyLayer(tmpChemicalCompositionValueItem, i)) {
                                                             tmpXyLayer.fillRandomPointsOnLeftRightSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpRandomNumberGenerator);
-                                                            for (int j = tmpQuantityInVolume; j < tmpQuantityOnSurface; j++) {
+                                                            for (int j = tmpQuantityInVolume; j < tmpQuantityInVolume + tmpQuantityOnSurface; j++) {
                                                                 tmpLastParticleCoordinates[j] = new GraphicalParticlePosition(tmpOffsetX, tmpFirstParticleCoordinates[j].getY(), tmpFirstParticleCoordinates[j].getZ());
                                                             }
                                                         } else if (this.graphicsUtilityMethods.isXzFrontBackGeometryInXyLayer(tmpChemicalCompositionValueItem, i)) {
                                                             tmpXyLayer.fillRandomPointsOnFrontBackSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpRandomNumberGenerator);
-                                                            for (int j = tmpQuantityInVolume; j < tmpQuantityOnSurface; j++) {
+                                                            for (int j = tmpQuantityInVolume; j < tmpQuantityInVolume + tmpQuantityOnSurface; j++) {
                                                                 tmpLastParticleCoordinates[j] = new GraphicalParticlePosition(tmpFirstParticleCoordinates[j].getX(), tmpOffsetY, tmpFirstParticleCoordinates[j].getZ());
                                                             }
                                                         }

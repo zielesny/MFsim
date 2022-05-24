@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -82,6 +82,7 @@ public class Main {
             UIManager.put("FileChooser.openDialogTitleText", GuiMessage.get("FileChooser.openDialogTitleText"));
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="Check Java version">
+            // NOTE: This comparison is error prone for higher Java versions - but works when compared to Java 1.8!
             if (ModelDefinitions.JAVA_VERSION.compareTo(ModelDefinitions.MINIMUM_JAVA_VERSION) < 0) {
                 // <editor-fold defaultstate="collapsed" desc="Insufficient Java version">
                 JOptionPane.showMessageDialog(null, 

@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -440,11 +440,6 @@ public final class Preferences {
      * file is compressed)
      */
     private boolean isJobResultArchiveFileUncompressed;
-
-    /**
-     * True: Random number generator with defined seed is used, false: Otherwise
-     */
-    private boolean isDeterministicRandom;
 
     /**
      * True: Jdpd log level EXCEPTIONS is used, false: All available Jdpd log 
@@ -1103,22 +1098,6 @@ public final class Preferences {
         tmpValueItem.setVerticalPosition(tmpVerticalPosition++);
         tmpValueItemContainer.addValueItem(tmpValueItem);
         // </editor-fold>
-        // <editor-fold defaultstate="collapsed" desc="- Deterministic random">
-        tmpValueItem = new ValueItem();
-        tmpValueItem.setNodeNames(tmpNodeNames);
-        tmpValueItem.setDefaultTypeFormat(new ValueItemDataTypeFormat(ModelMessage.get("Preferences.Miscellaneous.IsDeterministicRandom.Deterministic"), new String[]{
-            ModelMessage.get("Preferences.Miscellaneous.IsDeterministicRandom.Deterministic"), ModelMessage.get("Preferences.Miscellaneous.IsDeterministicRandom.Random")}));
-        tmpValueItem.setName(PreferenceEditableEnum.IS_DETERMINISTIC_RANDOM.name());
-        tmpValueItem.setDescription(ModelMessage.get("Preferences.Miscellaneous.IsDeterministicRandom.Description"));
-        tmpValueItem.setDisplayName(ModelMessage.get("Preferences.Miscellaneous.IsDeterministicRandom"));
-        if (this.isDeterministicRandom) {
-            tmpValueItem.setValue(ModelMessage.get("Preferences.Miscellaneous.IsDeterministicRandom.Deterministic"));
-        } else {
-            tmpValueItem.setValue(ModelMessage.get("Preferences.Miscellaneous.IsDeterministicRandom.Random"));
-        }
-        tmpValueItem.setVerticalPosition(tmpVerticalPosition++);
-        tmpValueItemContainer.addValueItem(tmpValueItem);
-        // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="- Jdpd log level exceptions">
         tmpValueItem = new ValueItem();
         tmpValueItem.setNodeNames(tmpNodeNames);
@@ -1710,11 +1689,6 @@ public final class Preferences {
                     break;
                 case IS_JOB_RESULT_ARCHIVE_FILE_UNCOMPRESSED:
                     if (this.setJobResultArchiveFileUncompressed(tmpSingleValueItem.getValue().equals(ModelMessage.get("Preferences.JobResultArchives.IsJobResultArchiveFileCompression.False")))) {
-                        tmpHasChanged = true;
-                    }
-                    break;
-                case IS_DETERMINISTIC_RANDOM:
-                    if (this.setDeterministicRandom(tmpSingleValueItem.getValue().equals(ModelMessage.get("Preferences.Miscellaneous.IsDeterministicRandom.Deterministic")))) {
                         tmpHasChanged = true;
                     }
                     break;
@@ -2335,8 +2309,6 @@ public final class Preferences {
             tmpRoot.addContent(new Element(PreferenceXmlName.IS_JOB_RESULT_ARCHIVE_PROCESS_PARALLEL_IN_BACKGROUND).addContent(Boolean.toString(this.isJobResultArchiveProcessParallelInBackground)));
             // this.isJobResultArchiveFileUncompressed
             tmpRoot.addContent(new Element(PreferenceXmlName.IS_JOB_RESULT_ARCHIVE_FILE_UNCOMPRESSED).addContent(Boolean.toString(this.isJobResultArchiveFileUncompressed)));
-            // this.isDeterministicRandom
-            tmpRoot.addContent(new Element(PreferenceXmlName.IS_DETERMINISTIC_RANDOM).addContent(Boolean.toString(this.isDeterministicRandom)));
             // this.isJdpdLogLevelExceptions
             tmpRoot.addContent(new Element(PreferenceXmlName.IS_JDPD_LOG_LEVEL_EXCEPTIONS).addContent(Boolean.toString(this.isJdpdLogLevelExceptions)));
             // this.isConstantCompartmentBodyVolume
@@ -4096,41 +4068,6 @@ public final class Preferences {
         }
     }
 
-    // </editor-fold>
-    // <editor-fold defaultstate="collapsed" desc="- DeterministicRandom">
-    /**
-     * True: Random number generator with defined seed is used, false: Otherwise
-     *
-     * @return True: Random number generator with defined seed is used, false:
-     * Otherwise
-     */
-    public boolean isDeterministicRandom() {
-        return this.isDeterministicRandom;
-    }
-
-    /**
-     * Default deterministic random flag
-     *
-     * @return Default deterministic random flag
-     */
-    public boolean getDefaultDeterministicRandom() {
-        return ModelDefinitions.IS_DETERMINISTIC_RANDOM_DEFAULT;
-    }
-
-    /**
-     * True: Random number generator with defined seed is used, false: Otherwise
-     *
-     * @param aValue Value
-     * @return True: Value changed, false: Otherwise
-     */
-    public boolean setDeterministicRandom(boolean aValue) {
-        if (this.isDeterministicRandom != aValue) {
-            this.isDeterministicRandom = aValue;
-            return true;
-        } else {
-            return false;
-        }
-    }
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- JdpdLogLevelExceptions">
     /**
@@ -11010,9 +10947,6 @@ public final class Preferences {
         // <editor-fold defaultstate="collapsed" desc="isJobResultArchiveFileUncompressed">
         this.isJobResultArchiveFileUncompressed = this.getDefaultJobResultArchiveFileUncompressed();
         // </editor-fold>
-        // <editor-fold defaultstate="collapsed" desc="this.isDeterministicRandom">
-        this.isDeterministicRandom = this.getDefaultDeterministicRandom();
-        // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="this.isJdpdLogLevelExceptions">
         this.isJdpdLogLevelExceptions = this.getDefaultJdpdLogLevelExceptions();
         // </editor-fold>
@@ -11755,12 +11689,6 @@ public final class Preferences {
                 this.isJobResultArchiveFileUncompressed = Boolean.parseBoolean(tmpCurrentElement.getText());
             }
 
-            // </editor-fold>
-            // <editor-fold defaultstate="collapsed" desc="this.isDeterministicRandom">
-            tmpCurrentElement = anElement.getChild(PreferenceXmlName.IS_DETERMINISTIC_RANDOM);
-            if (tmpCurrentElement != null) {
-                this.isDeterministicRandom = Boolean.parseBoolean(tmpCurrentElement.getText());
-            }
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="this.isJdpdLogLevelExceptions">
             tmpCurrentElement = anElement.getChild(PreferenceXmlName.IS_JDPD_LOG_LEVEL_EXCEPTIONS);

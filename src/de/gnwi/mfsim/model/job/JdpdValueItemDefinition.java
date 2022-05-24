@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -302,7 +302,7 @@ public class JdpdValueItemDefinition {
             // </editor-fold>
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="- Box size related definitions">
-            double tmpDefaultBoxSize = 20.0;
+            double tmpDefaultBoxSizeInDPD = 20.0;
             double tmpBoxSizeMinimum = 0.1;
             double tmpBoxSizeMaximum = Double.POSITIVE_INFINITY;
             // </editor-fold>
@@ -650,7 +650,7 @@ public class JdpdValueItemDefinition {
                 );
             tmpValueItem.setDefaultTypeFormats(new ValueItemDataTypeFormat[] {
                     new ValueItemDataTypeFormat(
-                        String.valueOf(tmpDefaultBoxSize), 
+                        String.valueOf(tmpDefaultBoxSizeInDPD), 
                         ModelDefinitions.BOX_SIZE_NUMBER_OF_DECIMALS, 
                         tmpBoxSizeMinimum, 
                         tmpBoxSizeMaximum, 
@@ -658,7 +658,7 @@ public class JdpdValueItemDefinition {
                         false
                     ), // x-length_DPD
                     new ValueItemDataTypeFormat(
-                        String.valueOf(tmpDefaultBoxSize), 
+                        String.valueOf(tmpDefaultBoxSizeInDPD), 
                         ModelDefinitions.BOX_SIZE_NUMBER_OF_DECIMALS, 
                         tmpBoxSizeMinimum, 
                         tmpBoxSizeMaximum, 
@@ -666,7 +666,7 @@ public class JdpdValueItemDefinition {
                         false
                     ), // y-length_DPD
                     new ValueItemDataTypeFormat(
-                        String.valueOf(tmpDefaultBoxSize), 
+                        String.valueOf(tmpDefaultBoxSizeInDPD), 
                         ModelDefinitions.BOX_SIZE_NUMBER_OF_DECIMALS, 
                         tmpBoxSizeMinimum, 
                         tmpBoxSizeMaximum, 
@@ -681,7 +681,7 @@ public class JdpdValueItemDefinition {
                         }
                     ), // State_x
                     new ValueItemDataTypeFormat(
-                        String.valueOf(tmpDefaultBoxSize * tmpLengthConversionFactor), 
+                        String.valueOf(tmpDefaultBoxSizeInDPD * tmpLengthConversionFactor), 
                         ModelDefinitions.BOX_SIZE_NUMBER_OF_DECIMALS, 
                         tmpBoxSizeMinimum, 
                         tmpBoxSizeMaximum
@@ -694,7 +694,7 @@ public class JdpdValueItemDefinition {
                         }
                     ), // State_y
                     new ValueItemDataTypeFormat(
-                        String.valueOf(tmpDefaultBoxSize * tmpLengthConversionFactor), 
+                        String.valueOf(tmpDefaultBoxSizeInDPD * tmpLengthConversionFactor), 
                         ModelDefinitions.BOX_SIZE_NUMBER_OF_DECIMALS, 
                         tmpBoxSizeMinimum, 
                         tmpBoxSizeMaximum
@@ -707,7 +707,7 @@ public class JdpdValueItemDefinition {
                         }
                     ), // State_z
                     new ValueItemDataTypeFormat(
-                        String.valueOf(tmpDefaultBoxSize * tmpLengthConversionFactor), 
+                        String.valueOf(tmpDefaultBoxSizeInDPD * tmpLengthConversionFactor), 
                         ModelDefinitions.BOX_SIZE_NUMBER_OF_DECIMALS, 
                         tmpBoxSizeMinimum, 
                         tmpBoxSizeMaximum
@@ -871,8 +871,9 @@ public class JdpdValueItemDefinition {
             this.valueItemNameMapForJobRestartEdit.put(tmpValueItem.getName(), tmpValueItem.getName());
             tmpValueItem.setUpdateNotifier(true);
             tmpValueItem.setDisplayName(ModelMessage.get("JdpdInputFile.valueItem.displayName.MoleculeBoundary"));
-            tmpValueItem.setBasicType(ValueItemEnumBasicType.MATRIX);
-            tmpValueItem.setMatrixColumnNames(new String[] { 
+            tmpValueItem.setBasicType(ValueItemEnumBasicType.FLEXIBLE_MATRIX);
+            tmpValueItem.setMatrixColumnNames(
+                new String[] { 
                     ModelMessage.get("JdpdInputFile.parameter.moleculeName"), 
                     ModelMessage.get("JdpdInputFile.parameter.isXboundary"),
                     ModelMessage.get("JdpdInputFile.parameter.xMinAngstrom"), 
@@ -892,8 +893,9 @@ public class JdpdValueItemDefinition {
                     ModelMessage.get("JdpdInputFile.parameter.MaxTimeStep")
                 }
             );
-            tmpValueItem.setMatrixColumnWidths(new String[] { 
-                    ModelDefinitions.CELL_WIDTH_TEXT_150,   // moleculeName
+            tmpValueItem.setMatrixColumnWidths(
+                new String[] { 
+                    ModelDefinitions.CELL_WIDTH_TEXT_150,    // moleculeName
                     ModelDefinitions.CELL_WIDTH_NUMERIC_100, // ActiveState
                     ModelDefinitions.CELL_WIDTH_NUMERIC_100, // xMinAngstrom
                     ModelDefinitions.CELL_WIDTH_NUMERIC_100, // xMinDPD
@@ -912,10 +914,11 @@ public class JdpdValueItemDefinition {
                     ModelDefinitions.CELL_WIDTH_NUMERIC_140  // MaxTimeStep
             }); 
             double tmpBoundaryMinimum = 0.0;
-            tmpValueItem.setDefaultTypeFormats(new ValueItemDataTypeFormat[] { 
+            tmpValueItem.setDefaultTypeFormats(
+                new ValueItemDataTypeFormat[] { 
                     new ValueItemDataTypeFormat(
                         tmpDefaultMoleculeName, 
-                        false
+                        new String[] {tmpDefaultMoleculeName}
                     ), // moleculeName
                     new ValueItemDataTypeFormat(
                         ModelMessage.get("JdpdInputFile.parameter.false"), 
@@ -928,27 +931,27 @@ public class JdpdValueItemDefinition {
                         String.valueOf(tmpBoundaryMinimum),
                         ModelDefinitions.BOX_SIZE_NUMBER_OF_DECIMALS,
                         tmpBoundaryMinimum,
-                        tmpDefaultBoxSize * tmpLengthConversionFactor
+                        tmpDefaultBoxSizeInDPD * tmpLengthConversionFactor
                     ), // xMinAngstrom
                     new ValueItemDataTypeFormat(
                         String.valueOf(tmpBoundaryMinimum),
                         ModelDefinitions.BOX_SIZE_NUMBER_OF_DECIMALS,
                         tmpBoundaryMinimum,
-                        tmpDefaultBoxSize,
+                        tmpDefaultBoxSizeInDPD,
                         false,
                         false
                     ), // xMinDPD
                     new ValueItemDataTypeFormat(
-                        String.valueOf(tmpDefaultBoxSize * tmpLengthConversionFactor),
+                        String.valueOf(tmpDefaultBoxSizeInDPD * tmpLengthConversionFactor),
                         ModelDefinitions.BOX_SIZE_NUMBER_OF_DECIMALS,
                         tmpBoundaryMinimum,
-                        tmpDefaultBoxSize * tmpLengthConversionFactor
+                        tmpDefaultBoxSizeInDPD * tmpLengthConversionFactor
                     ), // xMaxAngstrom
                     new ValueItemDataTypeFormat(
-                        String.valueOf(tmpDefaultBoxSize),
+                        String.valueOf(tmpDefaultBoxSizeInDPD),
                         ModelDefinitions.BOX_SIZE_NUMBER_OF_DECIMALS,
                         tmpBoundaryMinimum,
-                        tmpDefaultBoxSize,
+                        tmpDefaultBoxSizeInDPD,
                         false,
                         false
                     ), // xMaxDPD
@@ -963,27 +966,27 @@ public class JdpdValueItemDefinition {
                         String.valueOf(tmpBoundaryMinimum),
                         ModelDefinitions.BOX_SIZE_NUMBER_OF_DECIMALS,
                         tmpBoundaryMinimum,
-                        tmpDefaultBoxSize * tmpLengthConversionFactor
+                        tmpDefaultBoxSizeInDPD * tmpLengthConversionFactor
                     ), // yMinAngstrom
                     new ValueItemDataTypeFormat(
                         String.valueOf(tmpBoundaryMinimum),
                         ModelDefinitions.BOX_SIZE_NUMBER_OF_DECIMALS,
                         tmpBoundaryMinimum,
-                        tmpDefaultBoxSize,
+                        tmpDefaultBoxSizeInDPD,
                         false,
                         false
                     ), // yMinDPD
                     new ValueItemDataTypeFormat(
-                        String.valueOf(tmpDefaultBoxSize * tmpLengthConversionFactor),
+                        String.valueOf(tmpDefaultBoxSizeInDPD * tmpLengthConversionFactor),
                         ModelDefinitions.BOX_SIZE_NUMBER_OF_DECIMALS,
                         tmpBoundaryMinimum,
-                        tmpDefaultBoxSize * tmpLengthConversionFactor
+                        tmpDefaultBoxSizeInDPD * tmpLengthConversionFactor
                     ), // yMaxAngstrom
                     new ValueItemDataTypeFormat(
-                        String.valueOf(tmpDefaultBoxSize),
+                        String.valueOf(tmpDefaultBoxSizeInDPD),
                         ModelDefinitions.BOX_SIZE_NUMBER_OF_DECIMALS,
                         tmpBoundaryMinimum,
-                        tmpDefaultBoxSize,
+                        tmpDefaultBoxSizeInDPD,
                         false,
                         false
                     ), // yMaxDPD
@@ -998,27 +1001,27 @@ public class JdpdValueItemDefinition {
                         String.valueOf(tmpBoundaryMinimum),
                         ModelDefinitions.BOX_SIZE_NUMBER_OF_DECIMALS,
                         tmpBoundaryMinimum,
-                        tmpDefaultBoxSize * tmpLengthConversionFactor
+                        tmpDefaultBoxSizeInDPD * tmpLengthConversionFactor
                     ), // zMinAngstrom
                     new ValueItemDataTypeFormat(
                         String.valueOf(tmpBoundaryMinimum),
                         ModelDefinitions.BOX_SIZE_NUMBER_OF_DECIMALS,
                         tmpBoundaryMinimum,
-                        tmpDefaultBoxSize,
+                        tmpDefaultBoxSizeInDPD,
                         false,
                         false
                     ), // zMinDPD
                     new ValueItemDataTypeFormat(
-                        String.valueOf(tmpDefaultBoxSize * tmpLengthConversionFactor),
+                        String.valueOf(tmpDefaultBoxSizeInDPD * tmpLengthConversionFactor),
                         ModelDefinitions.BOX_SIZE_NUMBER_OF_DECIMALS,
                         tmpBoundaryMinimum,
-                        tmpDefaultBoxSize * tmpLengthConversionFactor
+                        tmpDefaultBoxSizeInDPD * tmpLengthConversionFactor
                     ), // zMaxAngstrom
                     new ValueItemDataTypeFormat(
-                        String.valueOf(tmpDefaultBoxSize),
+                        String.valueOf(tmpDefaultBoxSizeInDPD),
                         ModelDefinitions.BOX_SIZE_NUMBER_OF_DECIMALS,
                         tmpBoundaryMinimum,
-                        tmpDefaultBoxSize,
+                        tmpDefaultBoxSizeInDPD,
                         false,
                         false
                     ), // zMaxDPD
@@ -1055,6 +1058,145 @@ public class JdpdValueItemDefinition {
             tmpValueItem.setJdpdInput(true);
             tmpValueItem.setVerticalPosition(tmpVerticalPosition++);
             tmpValueItem.setDescription(ModelMessage.get("JdpdInputFile.valueItem.description.MoleculeBoundary"));
+            this.nameToValueItemMap.put(tmpValueItem.getName(), tmpValueItem);
+            this.jobInputValueItemContainer.addValueItem(tmpValueItem);
+            // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="- MoleculeSphere">
+            tmpValueItem = new ValueItem();
+            tmpValueItem.setNodeNames(tmpNodeNames);
+            tmpValueItem.setName("MoleculeSphere");
+            this.valueItemNameMapForJobRestartEdit.put(tmpValueItem.getName(), tmpValueItem.getName());
+            tmpValueItem.setUpdateNotifier(true);
+            tmpValueItem.setDisplayName(ModelMessage.get("JdpdInputFile.valueItem.displayName.MoleculeSphere"));
+            tmpValueItem.setBasicType(ValueItemEnumBasicType.FLEXIBLE_MATRIX);
+            tmpValueItem.setMatrixColumnNames(
+                new String[] { 
+                    ModelMessage.get("JdpdInputFile.parameter.moleculeName"), 
+                    ModelMessage.get("JdpdInputFile.parameter.IsExclusiveSphere"),
+                    ModelMessage.get("JdpdInputFile.parameter.SphereCenterXAngstrom"), 
+                    ModelMessage.get("JdpdInputFile.parameter.SphereCenterXDPD"), 
+                    ModelMessage.get("JdpdInputFile.parameter.SphereCenterYAngstrom"), 
+                    ModelMessage.get("JdpdInputFile.parameter.SphereCenterYDPD"), 
+                    ModelMessage.get("JdpdInputFile.parameter.SphereCenterZAngstrom"), 
+                    ModelMessage.get("JdpdInputFile.parameter.SphereCenterZDPD"), 
+                    ModelMessage.get("JdpdInputFile.parameter.SphereRadiusAngstrom"), 
+                    ModelMessage.get("JdpdInputFile.parameter.SphereRadiusDPD"), 
+                    ModelMessage.get("JdpdInputFile.parameter.MaxTimeStep")
+                }
+            );
+            tmpValueItem.setMatrixColumnWidths(
+                new String[] { 
+                    ModelDefinitions.CELL_WIDTH_TEXT_150,    // moleculeName
+                    ModelDefinitions.CELL_WIDTH_NUMERIC_100, // IsExclusiveSphere
+                    ModelDefinitions.CELL_WIDTH_NUMERIC_100, // SphereCenterXAngstrom
+                    ModelDefinitions.CELL_WIDTH_NUMERIC_100, // SphereCenterXDPD
+                    ModelDefinitions.CELL_WIDTH_NUMERIC_100, // SphereCenterYAngstrom
+                    ModelDefinitions.CELL_WIDTH_NUMERIC_100, // SphereCenterYDPD
+                    ModelDefinitions.CELL_WIDTH_NUMERIC_100, // SphereCenterZAngstrom
+                    ModelDefinitions.CELL_WIDTH_NUMERIC_100, // SphereCenterZDPD
+                    ModelDefinitions.CELL_WIDTH_NUMERIC_100, // SphereRadiusAngstrom
+                    ModelDefinitions.CELL_WIDTH_NUMERIC_100, // SphereRadiusDPD
+                    ModelDefinitions.CELL_WIDTH_NUMERIC_140  // MaxTimeStep
+            });
+            double tmpHalfDefaultBoxSizeInDPD = tmpDefaultBoxSizeInDPD / 2.0;
+            double tmpDefaultBoxSizeInAngstrom = tmpDefaultBoxSizeInDPD * tmpLengthConversionFactor;
+            double tmpHalfDefaultBoxSizeInAngstrom = tmpDefaultBoxSizeInAngstrom / 2.0;
+            tmpValueItem.setDefaultTypeFormats(
+                new ValueItemDataTypeFormat[] { 
+                    new ValueItemDataTypeFormat(
+                        tmpDefaultMoleculeName, 
+                        new String[] {tmpDefaultMoleculeName}
+                    ), // moleculeName
+                    new ValueItemDataTypeFormat(
+                        ModelMessage.get("JdpdInputFile.parameter.true"), 
+                        new String[] { 
+                            ModelMessage.get("JdpdInputFile.parameter.true"),
+                            ModelMessage.get("JdpdInputFile.parameter.false")
+                        }
+                    ), // IsExclusiveSphere
+                    new ValueItemDataTypeFormat(
+                        String.valueOf(tmpHalfDefaultBoxSizeInAngstrom),
+                        ModelDefinitions.BOX_SIZE_NUMBER_OF_DECIMALS,
+                        0.0,
+                        tmpDefaultBoxSizeInAngstrom
+                    ), // SphereCenterXAngstrom
+                    new ValueItemDataTypeFormat(
+                        String.valueOf(tmpHalfDefaultBoxSizeInDPD),
+                        ModelDefinitions.BOX_SIZE_NUMBER_OF_DECIMALS,
+                        0.0,
+                        tmpDefaultBoxSizeInDPD,
+                        false,
+                        false
+                    ), // SphereCenterXDPD
+                    new ValueItemDataTypeFormat(
+                        String.valueOf(tmpHalfDefaultBoxSizeInAngstrom),
+                        ModelDefinitions.BOX_SIZE_NUMBER_OF_DECIMALS,
+                        0.0,
+                        tmpDefaultBoxSizeInAngstrom
+                    ), // SphereCenterYAngstrom
+                    new ValueItemDataTypeFormat(
+                        String.valueOf(tmpHalfDefaultBoxSizeInDPD),
+                        ModelDefinitions.BOX_SIZE_NUMBER_OF_DECIMALS,
+                        0.0,
+                        tmpDefaultBoxSizeInDPD,
+                        false,
+                        false
+                    ), // SphereCenterYDPD
+                    new ValueItemDataTypeFormat(
+                        String.valueOf(tmpHalfDefaultBoxSizeInAngstrom),
+                        ModelDefinitions.BOX_SIZE_NUMBER_OF_DECIMALS,
+                        0.0,
+                        tmpDefaultBoxSizeInAngstrom
+                    ), // SphereCenterZAngstrom
+                    new ValueItemDataTypeFormat(
+                        String.valueOf(tmpHalfDefaultBoxSizeInDPD),
+                        ModelDefinitions.BOX_SIZE_NUMBER_OF_DECIMALS,
+                        0.0,
+                        tmpDefaultBoxSizeInDPD,
+                        false,
+                        false
+                    ), // SphereCenterZDPD
+                    new ValueItemDataTypeFormat(
+                        "0.0",
+                        ModelDefinitions.BOX_SIZE_NUMBER_OF_DECIMALS,
+                        0.0,
+                        Double.POSITIVE_INFINITY
+                    ), // SphereRadiusAngstrom
+                    new ValueItemDataTypeFormat(
+                        "0.0",
+                        ModelDefinitions.BOX_SIZE_NUMBER_OF_DECIMALS,
+                        0.0,
+                        Double.POSITIVE_INFINITY,
+                        false,
+                        false
+                    ), // SphereRadiusDPD
+                    new ValueItemDataTypeFormat(
+                        "1.0",
+                        0,
+                        1,
+                        Constants.MAXIMUM_NUMBER_OF_TIME_STEPS
+                    ) // MaxTimeStep
+                }
+            );
+            tmpValueItem.setMatrixOutputOmitColumns(
+                new boolean[]{
+                    false, // moleculeName
+                    false, // IsExclusiveSphere
+                    true,  // SphereCenterXAngstrom
+                    false, // SphereCenterXDPD
+                    true,  // SphereCenterYAngstrom
+                    false, // SphereCenterYDPD
+                    true,  // SphereCenterZAngstrom
+                    false, // SphereCenterZDPD
+                    true,  // SphereRadiusAngstrom
+                    false, // SphereRadiusDPD
+                    false  // MaxTimeStep
+                }
+            );
+            tmpValueItem.setBlockName(ModelDefinitions.JDPD_INPUT_BLOCK_2);
+            tmpValueItem.setJdpdInput(true);
+            tmpValueItem.setVerticalPosition(tmpVerticalPosition++);
+            tmpValueItem.setDescription(ModelMessage.get("JdpdInputFile.valueItem.description.MoleculeSphere"));
             this.nameToValueItemMap.put(tmpValueItem.getName(), tmpValueItem);
             this.jobInputValueItemContainer.addValueItem(tmpValueItem);
             // </editor-fold>
@@ -1900,7 +2042,6 @@ public class JdpdValueItemDefinition {
             tmpValueItem = new ValueItem();
             tmpValueItem.setNodeNames(tmpNodeNames);
             tmpValueItem.setName("IsInitialPotentialEnergyMinimizationStepOutput");
-            this.valueItemNameMapForJobRestartEdit.put(tmpValueItem.getName(), tmpValueItem.getName());
             tmpValueItem.setDisplayName(ModelMessage.get("JdpdInputFile.valueItem.displayName.IsInitialPotentialEnergyMinimizationStepOutput"));
             tmpValueItem.setDefaultTypeFormat(new ValueItemDataTypeFormat(ModelMessage.get("JdpdInputFile.parameter.false"), new String[] {ModelMessage.get("JdpdInputFile.parameter.true"),
                 ModelMessage.get("JdpdInputFile.parameter.false")}));
@@ -1977,7 +2118,6 @@ public class JdpdValueItemDefinition {
             tmpValueItem = new ValueItem();
             tmpValueItem.setNodeNames(tmpNodeNames);
             tmpValueItem.setName("InitialVelocityScalingSteps");
-            this.valueItemNameMapForJobRestartEdit.put(tmpValueItem.getName(), tmpValueItem.getName());
             tmpValueItem.setDisplayName(ModelMessage.get("JdpdInputFile.valueItem.displayName.InitialVelocityScalingSteps"));
             tmpValueItem.setDefaultTypeFormat(new ValueItemDataTypeFormat("100", 0, 0, Constants.MAXIMUM_NUMBER_OF_TIME_STEPS));
             tmpValueItem.setBlockName(ModelDefinitions.JDPD_INPUT_BLOCK_4);

@@ -1,0 +1,65 @@
+#
+# Particle set for MFsim
+#
+# History of changes from ParticleSet_CiEj_B_Range20_V01.txt:
+# 
+# 1. Rescale settings:
+#    Temperature factor     = 0.08333333
+#    Lower repulsion range  = 15.0
+#    Charge offset          = 1.0
+#
+#    Temperature         = 298.0
+#    - a(ii) old         = 24.833333
+#    - a(ii) new         = 24.833333333333332
+#    - a(ii) shift       = 3.3333333249174757E-7
+#    - a(ij) shifted min = 4.833333333333332
+#    - a(ij) shifted max = 63.937814333333336
+#    - Scaling factor    = 0.75
+#    - a(ij) scaled  min = 9.833333333333332
+#    - a(ij) scaled  max = 54.16169408333334
+
+[Title]
+CiEj Surfactants
+[/Title]
+
+[Version]
+1.0.0.0
+[/Version]
+
+[Particle description]
+# Particle descriptions for MFsim
+# Particle Name          Mass[DPD] Charge Mass[g/mol] Volume[A^3] Graphics-Radius Standard-Color
+Et         Ethane        1         0      30.07       55.214      0.5             green
+EtOH       Ethanol       1         0      46.07       61.292      0.5             orange
+MeOH       Methanol      1         0      32.03       46.444      0.5             orange
+H2O        Water         1         0      18.02       30.000      0.5             cyan
+Me2O       Dimethylether 1         0      46.07       61.647      0.5             orange
+Me         Methane       1         0      16.04       40.189      0.5             green
+[/Particle description]
+
+[Particle interactions]
+# Particle interactions a(ij) for different temperatures (in K) for MFsim
+Pair      298
+Et_Et     24.833333
+Et_EtOH   31.549752
+Et_MeOH   36.475126
+Et_H2O    54.161694
+Et_Me2O   23.042289
+Et_Me     27.072141
+EtOH_EtOH 24.833333
+EtOH_MeOH 19.236319
+EtOH_H2O  12.072140
+EtOH_Me2O 18.340797
+EtOH_Me   29.758707
+MeOH_MeOH 24.833333
+MeOH_H2O  9.833333
+MeOH_Me2O 20.579603
+MeOH_Me   30.766171
+H2O_H2O   24.833333
+H2O_Me2O  19.348259
+H2O_Me    42.296021
+Me2O_Me2O 24.833333
+Me2O_Me   28.639304
+Me_Me     24.833333
+[/Particle interactions]
+

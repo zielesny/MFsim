@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -99,11 +99,6 @@ public interface PreferenceXmlName {
      * Name of Job Result archive file compression flag
      */
     String IS_JOB_RESULT_ARCHIVE_FILE_UNCOMPRESSED = "IsJobResultArchiveFileUncompressed";
-
-    /**
-     * Name of deterministic random flag
-     */
-    String IS_DETERMINISTIC_RANDOM = "IsDeterministicRandom";
 
     /**
      * Name of Jdpd exceptions log level flag

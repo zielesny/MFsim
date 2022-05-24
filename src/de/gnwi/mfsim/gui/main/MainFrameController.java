@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -998,14 +998,14 @@ public class MainFrameController implements PropertyChangeListener {
                 "using" + "\n" +
                 "- Apache Commons Lang Version 3.4" + "\n" +
                 "- Apache Commons Math Version 3.6.1" + "\n" +
-                "- Apache Commons RNG Version 1.3" + "\n" +
+                "- Apache Commons RNG Version 1.4" + "\n" +
                 "- BioJava Version 3.0.8" + "\n" +
                 "- FFmpeg (Static) Version 3.2.4" + "\n" +
                 "- GraphStream Version 1.3" + "\n" +
                 "- Jama Version 1.0.3" + "\n" +
                 "- JCommon Version 1.0.9" + "\n" +
                 "- JDOM Version 2.0.6" + "\n" +
-                "- Jdpd Version 1.5.0.0" + "\n" +
+                "- Jdpd Version 1.6.0.0" + "\n" +
                 "- JFreeChart Version 1.0.5" + "\n" +
                 "- Jmol Version 14.2.7" + "\n" +
                 "- SPICES Version 1.0.0.0" + "\n" +
@@ -2929,6 +2929,7 @@ public class MainFrameController implements PropertyChangeListener {
             return;
         }
         // </editor-fold>
+        // Do NOT change the order of following methods!
         this.jobUpdateUtils.updateMoleculeAccelerationForMaxTimeStep(tmpJobInput);
         this.jobUpdateUtils.updateMoleculeFixationForMaxTimeStep(tmpJobInput);
         this.jobUpdateUtils.updateMoleculeBoundaryForMaxTimeStep(tmpJobInput);
@@ -2941,6 +2942,8 @@ public class MainFrameController implements PropertyChangeListener {
         this.jobUpdateUtils.updateInitialPotentialEnergyMinimizationStepNumber(tmpJobInput);
         this.jobUpdateUtils.updateElectrostatics(tmpJobInput);
         this.jobUpdateUtils.addMoleculeCharge(tmpJobInput);
+        this.jobUpdateUtils.updateMoleculeBoundaryForMoleculeNameSelectionTexts(tmpJobInput);
+        this.jobUpdateUtils.insertMoleculeSphereValueItem(tmpJobInput);
     }
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- Preference change related methods">
@@ -3321,6 +3324,8 @@ public class MainFrameController implements PropertyChangeListener {
                 this.removeFinishedJobs();
                 // Shutdown this.jobResultExecutorService
                 this.shutdownJobResultExecutorService();
+                // Update display
+                this.updateJobExecutionQueueDisplay();
             }
         } finally {
             MouseCursorManagement.getInstance().setDefaultCursor();

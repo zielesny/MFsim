@@ -1,0 +1,55 @@
+#
+# Particle set for MFsim
+#
+# History of changes from ParticleSet_CiEj_B_Range20_V01.txt:
+# 
+# Settings for morph operation:
+# Source particle = Me2O
+# Target particle = MeOH
+# Percentage      = 80.0
+
+[Title]
+CiEj Surfactants
+[/Title]
+
+[Version]
+1.0.0.0
+[/Version]
+
+[Particle description]
+# Particle descriptions for MFsim
+# Particle Name          Mass[DPD] Charge Mass[g/mol] Volume[A^3] Graphics-Radius Standard-Color
+Et         Ethane        1         0      30.07       55.214      0.5             green
+EtOH       Ethanol       1         0      46.07       61.292      0.5             orange
+MeOH       Methanol      1         0      32.03       46.444      0.5             orange
+H2O        Water         1         0      18.02       30.000      0.5             cyan
+Me2O       Dimethylether 1         0      46.07       61.647      0.5             orange
+Me         Methane       1         0      16.04       40.189      0.5             green
+[/Particle description]
+
+[Particle interactions]
+# Particle interactions a(ij) for different temperatures (in K) for MFsim
+Pair      298
+Et_Et     24.833333
+Et_EtOH   33.788558
+Et_MeOH   40.355723
+Et_H2O    63.937814
+Et_Me2O 36.773633
+Et_Me     27.818410
+EtOH_EtOH 24.833333
+EtOH_MeOH 17.370647
+EtOH_H2O  7.818408
+EtOH_Me2O 17.131841
+EtOH_Me   31.400498
+MeOH_MeOH 24.833333
+MeOH_H2O  4.833333
+MeOH_Me2O 23.699005
+MeOH_Me   32.743783
+H2O_H2O   24.833333
+H2O_Me2O 7.370646
+H2O_Me    48.116917
+Me2O_Me2O 24.833333
+Me2O_Me 32.176618
+Me_Me     24.833333
+[/Particle interactions]
+

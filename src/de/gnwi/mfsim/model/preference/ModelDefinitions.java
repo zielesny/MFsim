@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2021  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -44,7 +44,7 @@ public interface ModelDefinitions {
     /**
      * Version of application. NOTE: MUST match version pattern below!
      */
-    String APPLICATION_VERSION = "2.4.0.0";
+    String APPLICATION_VERSION = "2.5.0.0";
 
     /**
      * Minimum job input application version. NOTE: MUST match version pattern below!
@@ -1227,12 +1227,6 @@ public interface ModelDefinitions {
      * Default value for deterministic random seed
      */
     long DETERMINISTIC_RANDOM_SEED_DEFAULT = 1L;
-
-    /**
-     * Default deterministic random flag. True: Random number generator with
-     * defined seed is used, false: Otherwise
-     */
-    boolean IS_DETERMINISTIC_RANDOM_DEFAULT = true;
 
     /**
      * Default Jdpd log level exceptions flag.

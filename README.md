@@ -10,15 +10,16 @@ MFsim has been described in the scientific literature and used for a biomolecula
 ### Content
 
 - **MFSimVersionHistory.txt** shows the version history of MFsim.
-- The **src** subfolder contains all (Netbeans) source code packages including Unit tests.
+- The **src** subfolder contains all (Netbeans) source code packages.
+- The **test** subfolder contains Unit tests.
 - The **lib** subfolder comprises the open Java libraries used by MFsim (see *MFSimVersionHistory.txt* for details).
 - The **javadoc** subfolder provides the source code Javadoc HTML documentations.
 - The **MFsim_Source** subfolder is a complete MFsim installation with all Java bytecode libraries including *MFsim.jar* and splash image *MFsimSplash.jpg* (in subfolder *lib*), MFsim version history (in subfolder *info*), particle set files (in subfolder *particles*), tutorial PDF documents (in subfolder *tutorials*) and utility programs (in subfolder *winUtils* for Windows OS only). *MFsim.jar* may be started with an appropriate batch file of the operating system.
 - The **tutorials** subfolder offers MFsim tutorials (see corresponding *README*).
-- The **2020 Cyclotide-membrane interaction study** and **2021 Cyclotide-membrane interaction study** subfolders contains supplementary information for cyclotide/membrane interaction simulations (see corresponding *README* files in each subfolder).
+- The subfolders **2020 Cyclotide-membrane interaction study**, **2021 Cyclotide-membrane interaction study**, **2022 C10E4-water bilayer formation study** and **2022 Cyclotide-membrane electrostatics study**  contain supplementary information for specific studies performed with MFsim/Jdpd (see corresponding *README* files in each subfolder).
 
 ### Installer for Windows OS
-* A convenient [Windows OS installer executable for MFsim](https://w-hs.sciebo.de/s/1yhM7ieF8NNp9xD) is available. Download the installer executable (via [link](https://w-hs.sciebo.de/s/1yhM7ieF8NNp9xD)), start and follow the instructions to install MFsim. Note, that the installation includes a full Java Runtime Environment (JRE). After installation, create a shortcut to an appropriate MFsim start batch file on your Windows desktop (e.g. for MFsim to use up to 16 gigabyte of RAM copy a shortcut to batch file *Start_MFsim_64bit_16GB.bat* which is located in the MFsim program folder *C:\Program Files\GNWI\MFsim 2.4.0.0*). To start MFsim double click the created shortcut. MFsim can be uninstalled by the provided *Uninstall.exe* executable in the MFsim program folder or standard Windows functions.
+* A convenient [Windows OS installer executable for MFsim](https://w-hs.sciebo.de/s/DVVqGn3rtAnhoUs) is available. Download the installer executable (via [link](https://w-hs.sciebo.de/s/DVVqGn3rtAnhoUs)), start and follow the instructions to install MFsim. Note, that the installation includes a full Java Runtime Environment (JRE). After installation, create a shortcut to an appropriate MFsim start batch file on your Windows desktop (e.g. for MFsim to use up to 16 gigabyte of RAM copy a shortcut to batch file *Start_MFsim_64bit_16GB.bat* which is located in the MFsim program folder *C:\Program Files\GNWI\MFsim 2.4.0.0*). To start MFsim double click the created shortcut. MFsim can be uninstalled by the provided *Uninstall.exe* executable in the MFsim program folder or standard Windows functions.
 
 ### References
 
