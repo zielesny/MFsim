@@ -5,7 +5,7 @@ MFsim is an open Java all-in-one rich-client computing environment for mesoscopi
 
 MFsim uses several open libraries (see *MFSimVersionHistory.txt* for details and references below) and is published as open source under the GNU General Public License version 3 (see *LICENSE*).
 
-MFsim has been described in the scientific literature and used for a biomolecular DPD study of cyclotide/membrane interactions (see references below).
+MFsim has been described in the scientific literature and used for biomolecular DPD studies of cyclotide/membrane interactions (see references below).
 
 ### Content
 
@@ -23,14 +23,18 @@ MFsim has been described in the scientific literature and used for a biomolecula
 
 ### References
 
+Software:
 - [K. van den Broek, M. Daniel, M. Epple, J.-M. Hein, H. Kuhn, S. Neumann, A. Truszkowski and A. Zielesny, _MFsim - an open Java all-in-one rich-client simulation environment for mesoscopic simulation_, Journal of Cheminformatics (2020), 12:29](https://doi.org/10.1186/s13321-020-00432-9)
+
+Applications:
+- [F. Bänsch, C. Steinbeck and A. Zielesny, _Notes on the Treatment of Charged Particles for Studying Cyclotide/Membrane Interactions with Dissipative Particle Dynamics_, Membranes (2022), 12(6):619](https://doi.org/10.3390/membranes12060619)
 - [K. van den Broek, M. Epple, L. S. Kersten, H. Kuhn and A. Zielesny, _Quantitative Estimation of Cyclotide-Induced Bilayer Membrane Disruption by Lipid Extraction with Mesoscopic Simulation_, Journal of Chemical Information an Modeling (2021), 61, 3027-3040](https://doi.org/10.1021/acs.jcim.1c00332) ([Link to ChemRxiv preprint](https://doi.org/10.26434/chemrxiv.14135783.v1))
 
 MFsim is an integration project of the open molecular fragment cheminformatics roadmap
 
 - [A. Truszkowski, M. Daniel, H. Kuhn, S. Neumann, C. Steinbeck, A. Zielesny and M. Epple, _A molecular fragment cheminformatics roadmap for mesoscopic simulation_, Journal of Cheminformatics (2014), 6:45](https://doi.org/10.1186/s13321-014-0045-3)
 
-based on two already published constructive projects along this road: The SPICES molecular structure line notation
+based on two constructive projects along this road: The SPICES molecular structure line notation
 
 - [K. van den Broek, M. Daniel, M. Epple, H. Kuhn, J. Schaub and A. Zielesny, _SPICES: a particle-based molecular structure line notation and support library for mesoscopic simulation_, Journal of Cheminformatics (2018), 10:35](https://doi.org/10.1186/s13321-018-0294-7)
 - [SPICES repository on GitHub](https://github.com/zielesny/SPICES)
