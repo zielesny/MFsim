@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -54,6 +54,8 @@ import javax.swing.SpringLayout;
 import javax.swing.Timer;
 import de.gnwi.mfsim.gui.preference.GuiDefinitions;
 import de.gnwi.mfsim.model.graphics.IImageProvider;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * Controller class for CustomPanelValueItemMatrixDiagram
@@ -1058,6 +1060,13 @@ public class CustomPanelValueItemMatrixDiagramController implements IImageProvid
                         );
                         // </editor-fold>
                     }
+                }
+
+            });
+            this.customPanelValueItemMatrixDiagram.getInformationLabel().addMouseListener(new MouseAdapter() {
+                
+                public void mouseClicked(MouseEvent e) {
+                    GuiUtils.copyTextToClipboard(customPanelValueItemMatrixDiagram.getInformationLabel().getText());
                 }
 
             });

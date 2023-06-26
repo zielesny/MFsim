@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -40,54 +40,105 @@ import de.gnwi.mfsim.gui.preference.GuiDefinitions;
 public class CustomPanelDistributionMovie extends JPanel{
 
     // <editor-fold defaultstate="collapsed" desc="Private class variables">
+    /**
+     * GUI element
+     */
     private SpringLayout springLayout;
-    
+    /**
+     * GUI element
+     */
     private JPanel mainPanel;
-    
+    /**
+     * GUI element
+     */
     private SpringLayout mainPanelSpringLayout;
-
+    /**
+     * GUI element
+     */
     private JSlider domainSlider;
-    
+    /**
+     * GUI element
+     */
     private JButton playAnimationButton;
-
+    /**
+     * GUI element
+     */
     private JPanel imageAndInformationPanel;
-
+    /**
+     * GUI element
+     */
     private SpringLayout imageAndInformationPanelSpringLayout;
-    
+    /**
+     * GUI element
+     */
     private CustomPanelImage imagePanel;
-    
+    /**
+     * GUI element
+     */
     private JLabel informationLabel;
-
+    /**
+     * GUI element
+     */
     private JPanel movieSettingsPanel;
-    
+    /**
+     * GUI element
+     */
     private SpringLayout movieSettingsPanelSpringLayout;
-
+    /**
+     * GUI element
+     */
     private JButton copyGraphicsButton;
-
+    /**
+     * GUI element
+     */
     private JButton saveGraphicsButton;
-    
+    /**
+     * GUI element
+     */
     private JButton zoomButton;
-    
+    /**
+     * GUI element
+     */
     private JButton restoreButton;
-    
+    /**
+     * GUI element
+     */
     private JCheckBox varyingStatisticsCheckBox;
-    
+    /**
+     * GUI element
+     */
     private JButton createMovieButton;
-    
+    /**
+     * GUI element
+     */
     private JRadioButton animationRadioButton;
-    
+    /**
+     * GUI element
+     */
     private JRadioButton movieRadioButton;
-    
+    /**
+     * GUI element
+     */
     private ButtonGroup movieAnimationButtonGroup = new ButtonGroup();
-    
+    /**
+     * GUI element
+     */
     private JButton firstMovieSettingsButton;
-    
+    /**
+     * GUI element
+     */
     private JButton secondMovieSettingsButton;
-    
+    /**
+     * GUI element
+     */
     private JPanel loadingPanel;
-    
+    /**
+     * GUI element
+     */
     private SpringLayout loadingPanelSpringLayout;
-    
+    /**
+     * GUI element
+     */
     private JLabel progressLabel;
     // </editor-fold>
     //

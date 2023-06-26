@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -43,47 +43,173 @@ import de.gnwi.mfsim.gui.preference.GuiDefinitions;
 public class CustomPanelStructureEdit extends JPanel {
 
     // <editor-fold defaultstate="collapsed" desc="Private class variables">
+    /**
+     * GUI element
+     */
     private JComboBox selectPartComboBox;
+    /**
+     * GUI element
+     */
     private JLabel structureTooComplexLabel;
+    /**
+     * GUI element
+     */
     private JButton peptidesButton;
+    /**
+     * GUI element
+     */
     private CustomPanelImage particleImagePanel;
+    /**
+     * GUI element
+     */
     private JButton undoButton;
+    /**
+     * GUI element
+     */
     private JPanel molecularStructurePanel;
+    /**
+     * GUI element
+     */
     private SpringLayout molecularStructurePanelSpringLayout;
+    /**
+     * GUI element
+     */
     private JPanel particlesPanel;
+    /**
+     * GUI element
+     */
     private SpringLayout particlesPanelSpringLayout;
+    /**
+     * GUI element
+     */
     private JButton appendParticleButton;
+    /**
+     * GUI element
+     */
     private JButton clearStructureButton;
+    /**
+     * GUI element
+     */
     private JPanel descriptionsPanel;
+    /**
+     * GUI element
+     */
     private SpringLayout descriptionsPanelSpringLayout;
+    /**
+     * GUI element
+     */
     private JScrollPane previousDefinitionsScrollPanel;
+    /**
+     * GUI element
+     */
     private JScrollPane structureScrollPanel;
+    /**
+     * GUI element
+     */
     private SpringLayout selectPanelSpringLayout;
+    /**
+     * GUI element
+     */
     private JPanel structureInfoActionPanel;
+    /**
+     * GUI element
+     */
     private JPanel structureInfoActionSubPanel;
+    /**
+     * GUI element
+     */
     private JPanel selectPanel;
+    /**
+     * GUI element
+     */
     private JCheckBox reducedCheckBox;
+    /**
+     * GUI element
+     */
     private JButton clearPreviousDefinitionsButton;
+    /**
+     * GUI element
+     */
     private JButton removePreviousDefinitionButton;
+    /**
+     * GUI element
+     */
     private JButton usePreviousDefinitionButton;
+    /**
+     * GUI element
+     */
     private JList previousDefinitionsList;
+    /**
+     * GUI element
+     */
     private SpringLayout previousDefinitionsPanelSpringLayout;
+    /**
+     * GUI element
+     */
     private JPanel previousDefinitionsPanel;
+    /**
+     * GUI element
+     */
     private JButton graphicsResetButton;
+    /**
+     * GUI element
+     */
     private JButton graphicsCopyButton;
+    /**
+     * GUI element
+     */
     private JButton graphicsSaveButton;
+    /**
+     * GUI element
+     */
     private SingleGraph graph;
+    /**
+     * GUI element
+     */
     private Viewer graphViewer;
+    /**
+     * GUI element
+     */
     private ViewPanel graphStreamViewPanel;
+    /**
+     * GUI element
+     */
     private SpringLayout graphicsPanelSpringLayout;
+    /**
+     * GUI element
+     */
     private JPanel graphicsPanel;
+    /**
+     * GUI element
+     */
     private JTabbedPane infoTabbedPanel;
+    /**
+     * GUI element
+     */
     private JTextArea descriptionTextArea;
+    /**
+     * GUI element
+     */
     private JList particlesInfoList;
+    /**
+     * GUI element
+     */
     private JScrollPane descriptionScrollPanel;
+    /**
+     * GUI element
+     */
     private JScrollPane particlesInfoScrollPanel;
+    /**
+     * GUI element
+     */
     private JLabel structureInfoLabel;
+    /**
+     * GUI element
+     */
     private JTextArea structureTextArea;
+    /**
+     * GUI element
+     */
     private SpringLayout springLayout;
     // </editor-fold>
     //

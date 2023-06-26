@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -19,15 +19,7 @@
  */
 package de.gnwi.mfsim.model.job;
 
-import de.gnwi.jdpd.DpdSimulationTask;
-import de.gnwi.jdpd.interfaces.ILogger;
 import de.gnwi.jdpd.interfaces.IProgressMonitor;
-import de.gnwi.jdpd.parameters.ParallelizationInfo;
-import de.gnwi.jdpd.parameters.RestartInfo;
-import de.gnwi.jdpd.samples.FileInput;
-import de.gnwi.jdpd.samples.FileOutput;
-import de.gnwi.jdpd.samples.ProgressMonitor;
-import de.gnwi.jdpd.samples.logger.FileLogger;
 import de.gnwi.jdpd.utilities.FileOutputStrings;
 import de.gnwi.jdpd.utilities.Strings;
 import de.gnwi.mfsim.model.util.DirectoryInformation;
@@ -102,7 +94,7 @@ public class JobResultExecutionTask implements Callable<Boolean> {
     /**
      * DpdSimulationTask callable
      */
-    private DpdSimulationTask dpdSimulationTask;
+    private de.gnwi.jdpd.interfaces.IDpdSimulationTask dpdSimulationTask;
     
     /**
      * Future for DpdSimulationTask
@@ -112,7 +104,7 @@ public class JobResultExecutionTask implements Callable<Boolean> {
     /**
      * Progress monitor
      */
-    private ProgressMonitor progressMonitor;
+    private de.gnwi.jdpd.interfaces.IProgressMonitor progressMonitor;
     
     /**
      * Executor service
@@ -122,7 +114,7 @@ public class JobResultExecutionTask implements Callable<Boolean> {
     /**
      * Parallelisation info
      */
-    private ParallelizationInfo parallelizationInfo;
+    private de.gnwi.jdpd.parameters.ParallelizationInfo parallelizationInfo;
     
     /**
      * Progress value
@@ -534,17 +526,26 @@ public class JobResultExecutionTask implements Callable<Boolean> {
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="12. Start job">
             try {
-                // Executor service
+                // <editor-fold defaultstate="collapsed" desc="- Init executor service">
                 this.executorService = Executors.newSingleThreadExecutor();
-                // Progress monitor
-                this.progressMonitor = new ProgressMonitor();
-                // File logger
-                String tmpJdpdLogFilePathname = this.getJdpdLogFilePathname(this.jobResult.getJobResultPath());
-                int[] tmpLogLevels;
-                if (Preferences.getInstance().isJdpdLogLevelExceptions()) {
-                    tmpLogLevels = new int[] { ILogger.EXCEPTION };
+                // </editor-fold>
+                // <editor-fold defaultstate="collapsed" desc="- Init Progress monitor">
+                // NOTE: The same IProgressMonitor interface is used in Jdpd and JdpdSP
+                if (Preferences.getInstance().isJdpdKernelDoublePrecision()) {
+                    // Jdpd kernel with double precision
+                    this.progressMonitor = new de.gnwi.jdpd.samples.ProgressMonitor();
                 } else {
-                    tmpLogLevels = ILogger.ALL_LOGLEVELS;
+                    // Jdpd kernel with single precision
+                    this.progressMonitor = new de.gnwi.jdpdsp.samples.ProgressMonitor();
+                }
+                // </editor-fold>
+                // <editor-fold defaultstate="collapsed" desc="- Init log levels">
+                // NOTE: The same ILogLevel interface is used in Jdpd and JdpdSP
+                int[] tmpLogLevels;
+                if (Preferences.getInstance().isJdpdLogLevelException()) {
+                    tmpLogLevels = new int[] { de.gnwi.jdpd.interfaces.ILogLevel.EXCEPTION };
+                } else {
+                    tmpLogLevels = de.gnwi.jdpd.interfaces.ILogLevel.ALL_LOGLEVELS;
                     // Debug code:
                     //    tmpLogLevels = new int[] 
                     //        { 
@@ -554,13 +555,36 @@ public class JobResultExecutionTask implements Callable<Boolean> {
                     //            ILogger.PARTICLE
                     //        };
                 }
-                FileLogger tmpFileLogger = new FileLogger(tmpJdpdLogFilePathname, tmpLogLevels);
-                // File input
+                // </editor-fold>
+                // <editor-fold defaultstate="collapsed" desc="- Init file logger">
+                String tmpJdpdLogFilePathname = this.getJdpdLogFilePathname(this.jobResult.getJobResultPath());
+                de.gnwi.jdpd.samples.logger.FileLogger tmpFileLogger = null;
+                de.gnwi.jdpdsp.samples.logger.FileLogger tmpFileLoggerSP = null;
+                if (Preferences.getInstance().isJdpdKernelDoublePrecision()) {
+                    // Jdpd kernel will be used
+                    tmpFileLogger = new de.gnwi.jdpd.samples.logger.FileLogger(tmpJdpdLogFilePathname, tmpLogLevels);
+                } else {
+                    // JdpdSP kernel will be used
+                    tmpFileLoggerSP = new de.gnwi.jdpdsp.samples.logger.FileLogger(tmpJdpdLogFilePathname, tmpLogLevels);
+                }
+                // </editor-fold>
+                // <editor-fold defaultstate="collapsed" desc="- Init file input">
                 String tmpJdpdInputFilePathname = this.getJdpdInputFilePathname(this.jobResult.getJobResultPath());
-                FileInput tmpFileInput = new FileInput(tmpJdpdInputFilePathname, tmpFileLogger);
-                // Set safeguard parameter for unphysical start geometries
-                tmpFileInput.setMaximumNumberOfPositionCorrectionTrials(Preferences.getInstance().getMaximumNumberOfPositionCorrectionTrials());
-                // File output
+                de.gnwi.jdpd.samples.FileInput tmpFileInput = null;
+                de.gnwi.jdpdsp.samples.FileInput tmpFileInputSP = null;
+                if (Preferences.getInstance().isJdpdKernelDoublePrecision()) {
+                    // Jdpd kernel will be used
+                    tmpFileInput = new de.gnwi.jdpd.samples.FileInput(tmpJdpdInputFilePathname, tmpFileLogger);
+                    // Set safeguard parameter for unphysical start geometries
+                    tmpFileInput.setMaximumNumberOfPositionCorrectionTrials(Preferences.getInstance().getMaximumNumberOfPositionCorrectionTrials());
+                } else {
+                    // JdpdSP kernel will be used
+                    tmpFileInputSP = new de.gnwi.jdpdsp.samples.FileInput(tmpJdpdInputFilePathname, tmpFileLoggerSP);
+                    // Set safeguard parameter for unphysical start geometries
+                    tmpFileInputSP.setMaximumNumberOfPositionCorrectionTrials(Preferences.getInstance().getMaximumNumberOfPositionCorrectionTrials());
+                }
+                // </editor-fold>
+                // <editor-fold defaultstate="collapsed" desc="- Init file output">
                 String tmpOutputDirectoryPath = this.jobResult.getJobResultPath();
                 String tmpPropertiesDirectoryPath = this.jobResult.getJobResultPath();
                 String tmpRadiusOfGyrationDirectoryPath = this.jobUtilityMethods.getJobResultRadiusOfGyrationPath(this.jobResult.getJobResultPath());
@@ -573,45 +597,100 @@ public class JobResultExecutionTask implements Callable<Boolean> {
                 if (Preferences.getInstance().getNumberOfAfterDecimalDigitsForParticlePositions() < ModelDefinitions.MAXIMUM_NUMBER_OF_AFTER_DECIMAL_SEPARATOR_DIGITS_FOR_PARTICLE_POSITIONS) {
                     tmpNumberOfAfterDecimalDigitsForParticlePositions = Preferences.getInstance().getNumberOfAfterDecimalDigitsForParticlePositions();
                 }
-                FileOutput tmpFileOutput = 
-                    new FileOutput(
-                        tmpOutputDirectoryPath,
-                        tmpPropertiesDirectoryPath,
-                        tmpRadiusOfGyrationDirectoryPath,
-                        tmpNearestNeighborDirectoryPath,
-                        tmpSimulationStepParticlePositionsDirectoryPath,
-                        tmpMinimizationStepParticlePositionsDirectoryPath,
-                        tmpFileOutputParallelTaskNumber,
-                        tmpNumberOfAfterDecimalDigitsForParticlePositions
-                    );
-                // IMPORTANT: Set tmpFileOutput to this.jobResult
-                this.jobResult.setJdpdFileOutput(tmpFileOutput);
-                // DpdSimulationTask
-                RestartInfo tmpRestartInfo = null;
-                if (this.jobResult.isRestarted()) {
-                    int tmpAdditionalTimeStepNumber = this.jobResult.getAdditionalStepsForRestart();
-                    String tmpRestartInfoFilePathname = this.getJdpdRestartInfoFilePathname(this.jobResult.getJobResultPath());
-                    tmpRestartInfo = new RestartInfo(tmpAdditionalTimeStepNumber, tmpRestartInfoFilePathname);
+                de.gnwi.jdpd.samples.FileOutput tmpFileOutput = null;
+                de.gnwi.jdpdsp.samples.FileOutput tmpFileOutputSP = null;
+                if (Preferences.getInstance().isJdpdKernelDoublePrecision()) {
+                    // Jdpd kernel will be used
+                    tmpFileOutput = 
+                        new de.gnwi.jdpd.samples.FileOutput(
+                            tmpOutputDirectoryPath,
+                            tmpPropertiesDirectoryPath,
+                            tmpRadiusOfGyrationDirectoryPath,
+                            tmpNearestNeighborDirectoryPath,
+                            tmpSimulationStepParticlePositionsDirectoryPath,
+                            tmpMinimizationStepParticlePositionsDirectoryPath,
+                            tmpFileOutputParallelTaskNumber,
+                            tmpNumberOfAfterDecimalDigitsForParticlePositions
+                        );
+                    // IMPORTANT: Set tmpFileOutput to this.jobResult
+                    this.jobResult.setJdpdFileOutput((de.gnwi.jdpd.interfaces.IOutputWriter) tmpFileOutput);
+                } else {
+                    // JdpdSP kernel will be used
+                    tmpFileOutputSP = 
+                        new de.gnwi.jdpdsp.samples.FileOutput(
+                            tmpOutputDirectoryPath,
+                            tmpPropertiesDirectoryPath,
+                            tmpRadiusOfGyrationDirectoryPath,
+                            tmpNearestNeighborDirectoryPath,
+                            tmpSimulationStepParticlePositionsDirectoryPath,
+                            tmpMinimizationStepParticlePositionsDirectoryPath,
+                            tmpFileOutputParallelTaskNumber,
+                            tmpNumberOfAfterDecimalDigitsForParticlePositions
+                        );
+                    // IMPORTANT: Set tmpFileOutput to this.jobResult
+                    this.jobResult.setJdpdFileOutput((de.gnwi.jdpd.interfaces.IOutputWriter) tmpFileOutputSP);
                 }
+                // </editor-fold>
+                // <editor-fold defaultstate="collapsed" desc="- Init restart info">
+                de.gnwi.jdpd.parameters.RestartInfo tmpRestartInfo = null;
+                de.gnwi.jdpdsp.parameters.RestartInfo tmpRestartInfoSP = null;
+                if (Preferences.getInstance().isJdpdKernelDoublePrecision()) {
+                    // Jdpd kernel will be used
+                    if (this.jobResult.isRestarted()) {
+                        int tmpAdditionalTimeStepNumber = this.jobResult.getAdditionalStepsForRestart();
+                        String tmpRestartInfoFilePathname = this.getJdpdRestartInfoFilePathname(this.jobResult.getJobResultPath());
+                        tmpRestartInfo = new de.gnwi.jdpd.parameters.RestartInfo(tmpAdditionalTimeStepNumber, tmpRestartInfoFilePathname);
+                    }
+                } else {
+                    // JdpdSP kernel will be used
+                    if (this.jobResult.isRestarted()) {
+                        int tmpAdditionalTimeStepNumber = this.jobResult.getAdditionalStepsForRestart();
+                        String tmpRestartInfoFilePathname = this.getJdpdRestartInfoFilePathname(this.jobResult.getJobResultPath());
+                        tmpRestartInfoSP = new de.gnwi.jdpdsp.parameters.RestartInfo(tmpAdditionalTimeStepNumber, tmpRestartInfoFilePathname);
+                    }
+                }
+                // </editor-fold>
+                // <editor-fold defaultstate="collapsed" desc="- Init parallelization info">
                 int tmpMinimumParallelTaskCellNumber = Preferences.getInstance().getNumberOfSimulationBoxCellsforParallelization();
                 int tmpMinimumParallelTaskHarmonicBondNumber = Preferences.getInstance().getNumberOfBondsforParallelization();
                 int tmpJdpdSimulatorParallelTaskNumber = Preferences.getInstance().getNumberOfParallelCalculators();
+                // NOTE: The same ParallelizationInfo class is used in Jdpd and JdpdSP
                 this.parallelizationInfo = 
-                    new ParallelizationInfo(
+                    new de.gnwi.jdpd.parameters.ParallelizationInfo(
                         tmpMinimumParallelTaskCellNumber, 
                         tmpMinimumParallelTaskHarmonicBondNumber, 
                         tmpJdpdSimulatorParallelTaskNumber
                     );
-                this.dpdSimulationTask = 
-                    new DpdSimulationTask(
-                        tmpRestartInfo, 
-                        tmpFileInput, 
-                        tmpFileOutput, 
-                        this.progressMonitor, 
-                        tmpFileLogger, 
-                        this.parallelizationInfo
-                    );
-                this.jdpdSimulatorFuture = this.executorService.submit(this.dpdSimulationTask);
+                // </editor-fold>
+                // <editor-fold defaultstate="collapsed" desc="- Submit DPD simulation task">
+                if (Preferences.getInstance().isJdpdKernelDoublePrecision()) {
+                    // Jdpd kernel will be used
+                    de.gnwi.jdpd.DpdSimulationTask tmpDpdSimulationTask =
+                        new de.gnwi.jdpd.DpdSimulationTask(
+                            tmpRestartInfo, 
+                            tmpFileInput, 
+                            tmpFileOutput, 
+                            this.progressMonitor, 
+                            tmpFileLogger, 
+                            this.parallelizationInfo
+                        );
+                    this.dpdSimulationTask = tmpDpdSimulationTask;
+                    this.jdpdSimulatorFuture = this.executorService.submit(tmpDpdSimulationTask);
+                } else {
+                    // JdpdSP kernel will be used
+                    de.gnwi.jdpdsp.DpdSimulationTaskSP tmpDpdSimulationTaskSP =
+                        new de.gnwi.jdpdsp.DpdSimulationTaskSP(
+                            tmpRestartInfoSP, 
+                            tmpFileInputSP, 
+                            tmpFileOutputSP, 
+                            this.progressMonitor, 
+                            tmpFileLoggerSP, 
+                            this.parallelizationInfo
+                        );
+                    this.dpdSimulationTask = tmpDpdSimulationTaskSP;
+                    this.jdpdSimulatorFuture = this.executorService.submit(tmpDpdSimulationTaskSP);
+                }
+                // </editor-fold>
             } catch (Exception anException) {
                 ModelUtils.appendToLogfile(true, "JobResultExecutionTask.startJob(): '13. Start job' throws exception.");
                 ModelUtils.appendToLogfile(true, anException);
@@ -656,26 +735,67 @@ public class JobResultExecutionTask implements Callable<Boolean> {
                     // </editor-fold>
                     // <editor-fold defaultstate="collapsed" desc="3. Create RDF">
                     // Delete possible existing RDF directories
-                    if (!this.fileUtilityMethods.deleteDirectory(this.jobUtilityMethods.getJobResultParticlePairRdfPath(this.jobResult.getJobResultPath()))) {
+                    if (!this.fileUtilityMethods.deleteDirectory(
+                            this.jobUtilityMethods.getJobResultParticlePairRdfPath(
+                                this.jobResult.getJobResultPath()
+                            )
+                        )
+                    ) {
                         return JobResultProcessingStatusEnum.JOB_FINISHED_WITH_FAILURE;
                     }
-                    if (!this.fileUtilityMethods.deleteDirectory(this.jobUtilityMethods.getJobResultMoleculeParticlePairRdfPath(this.jobResult.getJobResultPath()))) {
+                    if (!this.fileUtilityMethods.deleteDirectory(
+                            this.jobUtilityMethods.getJobResultMoleculeParticlePairRdfPath(
+                                this.jobResult.getJobResultPath()
+                            )
+                        )
+                    ) {
+                        return JobResultProcessingStatusEnum.JOB_FINISHED_WITH_FAILURE;
+                    }
+                    if (!this.fileUtilityMethods.deleteDirectory(
+                            this.jobUtilityMethods.getJobResultMoleculeCenterPairRdfPath(
+                                this.jobResult.getJobResultPath()
+                            )
+                        )
+                    ) {
                         return JobResultProcessingStatusEnum.JOB_FINISHED_WITH_FAILURE;
                     }
                     if (this.jobUtilityMethods.isParticlePairRdfCalculation(this.jobResult.getJobInput().getValueItemContainer())) {
                         // Create particle-pair RDF directory
                         ModelUtils.createDirectory(this.jobUtilityMethods.getJobResultParticlePairRdfPath(this.jobResult.getJobResultPath()));
-                        this.jobUtilityMethods.createDefinedParticlePairRadialDistributionFunctionFiles(this.jobUtilityMethods.getLatestJobResultParticlePositionsStepFilePathnames(this.jobResult.getJobResultPath(), Preferences.getInstance().getNumberOfStepsForRdfCalculation()),
-                                this.jobResult.getJobInput().getValueItemContainer(),
-                                this.jobResult.getJobResultPath());
+                        this.jobUtilityMethods.createDefinedParticlePairRadialDistributionFunctionFiles(
+                            this.jobUtilityMethods.getLatestJobResultParticlePositionsStepFilePathnames(
+                                this.jobResult.getJobResultPath(), 
+                                Preferences.getInstance().getNumberOfStepsForRdfCalculation()
+                            ),
+                            this.jobResult.getJobInput().getValueItemContainer(),
+                            this.jobResult.getJobResultPath()
+                        );
                     }
                     if (this.jobUtilityMethods.isMoleculeParticlePairRdfCalculation(this.jobResult.getJobInput().getValueItemContainer())) {
                         // Create molecule-particle RDF directory
                         ModelUtils.createDirectory(this.jobUtilityMethods.getJobResultMoleculeParticlePairRdfPath(this.jobResult.getJobResultPath()));
                         // NOTE: File JobResultParticlePositionsAfterSimulationFilePathname was created in step 3
-                        this.jobUtilityMethods.createDefinedMoleculeParticlePairRadialDistributionFunctionFiles(this.jobUtilityMethods.getLatestJobResultParticlePositionsStepFilePathnames(this.jobResult.getJobResultPath(), Preferences.getInstance().getNumberOfStepsForRdfCalculation()),
-                                this.jobResult.getJobInput().getValueItemContainer(),
-                                this.jobResult.getJobResultPath());
+                        this.jobUtilityMethods.createDefinedMoleculeParticlePairRadialDistributionFunctionFiles(
+                            this.jobUtilityMethods.getLatestJobResultParticlePositionsStepFilePathnames(
+                                this.jobResult.getJobResultPath(), 
+                                Preferences.getInstance().getNumberOfStepsForRdfCalculation()
+                            ),
+                            this.jobResult.getJobInput().getValueItemContainer(),
+                            this.jobResult.getJobResultPath()
+                        );
+                    }
+                    if (this.jobUtilityMethods.isMoleculeCenterPairRdfCalculation(this.jobResult.getJobInput().getValueItemContainer())) {
+                        // Create molecule-center RDF directory
+                        ModelUtils.createDirectory(this.jobUtilityMethods.getJobResultMoleculeCenterPairRdfPath(this.jobResult.getJobResultPath()));
+                        // NOTE: File JobResultParticlePositionsAfterSimulationFilePathname was created in step 3
+                        this.jobUtilityMethods.createDefinedMoleculeCenterPairRadialDistributionFunctionFiles(
+                            this.jobUtilityMethods.getLatestJobResultParticlePositionsStepFilePathnames(
+                                this.jobResult.getJobResultPath(), 
+                                Preferences.getInstance().getNumberOfStepsForRdfCalculation()
+                            ),
+                            this.jobResult.getJobInput().getValueItemContainer(),
+                            this.jobResult.getJobResultPath()
+                        );
                     }
                     // </editor-fold>
                     // <editor-fold defaultstate="collapsed" desc="4. Create particle-particle distances">
@@ -826,11 +946,12 @@ public class JobResultExecutionTask implements Callable<Boolean> {
             this.jobResult.setJobProcessingResult(aJobProcessingResult);
             this.jobResult.setTimestampExecutionEnd(tmpNewResultDirectoryInformation.getTimestamp());
             this.jobResult.setJobResultPath(tmpNewResultDirectoryInformation.getDirectoryPath());
-            this.jobResult.setMaximumUsedParallelTaskNumberInfoString(
+            this.jobResult.setJdpdKernelInfoString(
                 this.parallelizationInfo.getParallelTaskNumber(),
                 this.parallelizationInfo.getMaximumUsedParallelTaskNumber(),
                 this.parallelizationInfo.getMinimumParallelTaskCellNumber(),
-                this.parallelizationInfo.getMinimumParallelTaskHarmonicBondNumber()
+                this.parallelizationInfo.getMinimumParallelTaskHarmonicBondNumber(),
+                Preferences.getInstance().isJdpdKernelDoublePrecision()
             );
             this.jobResult.writeJobResultInformation();
             // </editor-fold>

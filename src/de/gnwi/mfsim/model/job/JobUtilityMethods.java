@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -57,13 +57,16 @@ import de.gnwi.mfsim.model.peptide.PdbToDpdPool;
 import java.awt.Color;
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
+import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import de.gnwi.mfsim.model.graphics.particle.IGraphicalParticle;
 import de.gnwi.mfsim.model.preference.ModelDefinitions;
 import de.gnwi.jdpd.interfaces.IRandom;
-import de.gnwi.mfsim.model.particle.StandardParticleInteractionData;
+import de.gnwi.mfsim.model.util.IdKeyValue;
+import de.gnwi.mfsim.model.util.IdKeyValueAccumulator;
 
 /**
  * Job utility methods to be instantiated
@@ -1259,7 +1262,6 @@ public class JobUtilityMethods {
         }
     }
     // </editor-fold>
-    //
     // <editor-fold defaultstate="collapsed" desc="-- Is-methods">
     /**
      * Checks if passed value item is a density info value item for compartment
@@ -2299,7 +2301,6 @@ public class JobUtilityMethods {
      * @throws IllegalArgumentException Thrown if aJobResultPath is invalid
      */
     public String getJobResultRdfFilePathname_Old(String aJobResultPath, String aFirstParticle, String aSecondParticle) {
-
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aJobResultPath == null || aJobResultPath.isEmpty()) {
             throw new IllegalArgumentException("aJobResultPath is null/empty.");
@@ -2326,7 +2327,6 @@ public class JobUtilityMethods {
      * @throws IllegalArgumentException Thrown if aJobResultPath is invalid
      */
     public String getJobResultParticlePairRdfFilePathname(String aJobResultPath, String aFirstParticle, String aSecondParticle, double aSegmentLength) {
-
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aJobResultPath == null || aJobResultPath.isEmpty()) {
             throw new IllegalArgumentException("aJobResultPath is null/empty.");
@@ -2353,7 +2353,6 @@ public class JobUtilityMethods {
      * @throws IllegalArgumentException Thrown if aJobResultPath is invalid
      */
     public String getJobResultMoleculeParticlePairRdfFilePathname(String aJobResultPath, String aFirstMoleculeParticle, String aSecondMoleculeParticle, double aSegmentLength) {
-
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aJobResultPath == null || aJobResultPath.isEmpty()) {
             throw new IllegalArgumentException("aJobResultPath is null/empty.");
@@ -2368,6 +2367,45 @@ public class JobUtilityMethods {
                 + FileOutputStrings.TEXT_FILE_ENDING;
     }
 
+    /**
+     * Return file pathname of molecule-center-pair RDF file for Job Result
+     * and the specified molecule particles
+     *
+     * @param aJobResultPath Path of JobResult
+     * @param aFirstMoleculeCenter First molecule center
+     * @param aSecondMoleculeCenter Second molecule center
+     * @param aSegmentLength Segment length
+     * @return File pathname of molecule-center-pair RDF file for Job
+     * Result and the specified molecule centers
+     * @throws IllegalArgumentException Thrown if aJobResultPath is invalid
+     */
+    public String getJobResultMoleculeCenterPairRdfFilePathname(
+        String aJobResultPath, 
+        String aFirstMoleculeCenter, 
+        String aSecondMoleculeCenter, 
+        double aSegmentLength
+    ) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aJobResultPath == null || aJobResultPath.isEmpty()) {
+            throw new IllegalArgumentException("aJobResultPath is null/empty.");
+        }
+        if (!(new File(aJobResultPath)).isDirectory()) {
+            throw new IllegalArgumentException("aJobResultPath is not an existing directory.");
+        }
+        // </editor-fold>
+        return aJobResultPath + 
+            File.separatorChar + 
+            ModelDefinitions.JOB_RESULT_MOLECULE_CENTER_PAIR_RDF_DIRECTORY + 
+            File.separatorChar + 
+            ModelDefinitions.JOB_RESULT_MOLECULE_CENTER_PAIR_RDF_FILE_PREFIX + 
+            aFirstMoleculeCenter + 
+            "_" + 
+            aSecondMoleculeCenter + 
+            "_" + 
+            String.valueOf(aSegmentLength) + 
+            FileOutputStrings.TEXT_FILE_ENDING;
+    }
+    
     /**
      * Return file pathname of particle-pair distance file for Job Result and
      * the specified particles
@@ -2498,7 +2536,6 @@ public class JobUtilityMethods {
      * @throws IllegalArgumentException Thrown if aJobResultPath is invalid
      */
     public String getJobResultMoleculeParticlePairRdfPath(String aJobResultPath) {
-
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aJobResultPath == null || aJobResultPath.isEmpty()) {
             throw new IllegalArgumentException("aJobResultPath is null/empty.");
@@ -2509,6 +2546,27 @@ public class JobUtilityMethods {
 
         // </editor-fold>
         return aJobResultPath + File.separatorChar + ModelDefinitions.JOB_RESULT_PARTICLE_IN_MOLECULE_PAIR_RDF_DIRECTORY;
+    }
+
+    /**
+     * Return directory path of molecule-center-pair RDF directory of Job
+     * Result
+     *
+     * @param aJobResultPath Path of JobResult
+     * @return Directory path of molecule-center-pair RDF directory of Job
+     * Result
+     * @throws IllegalArgumentException Thrown if aJobResultPath is invalid
+     */
+    public String getJobResultMoleculeCenterPairRdfPath(String aJobResultPath) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aJobResultPath == null || aJobResultPath.isEmpty()) {
+            throw new IllegalArgumentException("aJobResultPath is null/empty.");
+        }
+        if (!(new File(aJobResultPath)).isDirectory()) {
+            throw new IllegalArgumentException("aJobResultPath is not an existing directory.");
+        }
+        // </editor-fold>
+        return aJobResultPath + File.separatorChar + ModelDefinitions.JOB_RESULT_MOLECULE_CENTER_PAIR_RDF_DIRECTORY;
     }
 
     /**
@@ -2590,7 +2648,6 @@ public class JobUtilityMethods {
      * @throws IllegalArgumentException Thrown if aJobResultPath is invalid
      */
     public String[] getJobResultMoleculeParticlePairRdfFilePathnames(String aJobResultPath) {
-
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aJobResultPath == null || aJobResultPath.isEmpty()) {
             throw new IllegalArgumentException("aJobResultPath is null/empty.");
@@ -2602,7 +2659,32 @@ public class JobUtilityMethods {
         // </editor-fold>
         return this.fileUtilityMethods.getFilePathnamesWithPrefix(aJobResultPath + File.separatorChar + ModelDefinitions.JOB_RESULT_PARTICLE_IN_MOLECULE_PAIR_RDF_DIRECTORY,
                 ModelDefinitions.JOB_RESULT_PARTICLE_IN_MOLECULE_PAIR_RDF_FILE_PREFIX);
+    }
 
+    /**
+     * Returns array of all Job Result molecule-center-pair radial
+     * distribution function file pathnames.
+     *
+     * @param aJobResultPath Path of Job Result
+     * @return Array of all Job Result molecule-center-pair radial
+     * distribution function file pathnames
+     * @throws IllegalArgumentException Thrown if aJobResultPath is invalid
+     */
+    public String[] getJobResultMoleculeCenterPairRdfFilePathnames(String aJobResultPath) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aJobResultPath == null || aJobResultPath.isEmpty()) {
+            throw new IllegalArgumentException("aJobResultPath is null/empty.");
+        }
+        if (!(new File(aJobResultPath)).isDirectory()) {
+            throw new IllegalArgumentException("aJobResultPath is not an existing directory.");
+        }
+        // </editor-fold>
+        return this.fileUtilityMethods.getFilePathnamesWithPrefix(
+            aJobResultPath + 
+            File.separatorChar + 
+            ModelDefinitions.JOB_RESULT_MOLECULE_CENTER_PAIR_RDF_DIRECTORY,
+            ModelDefinitions.JOB_RESULT_MOLECULE_CENTER_PAIR_RDF_FILE_PREFIX
+        );
     }
 
     /**
@@ -3103,12 +3185,13 @@ public class JobUtilityMethods {
             return null;
         }
     }
+
     /**
-     * Returns molecule-particle list
+     * Returns sorted molecule-particle list
      *
      * @param aMonomerTableValueItem Monomers value item (is NOT changed)
      * @param aMoleculeTableValueItem Molecules value item (is NOT changed)
-     * @return Molecule-particle list or null if none could be created
+     * @return Sorted molecule-particle list or null if none could be created
      */
     public LinkedList<String> getSortedMoleculeParticleList(ValueItem aMonomerTableValueItem, ValueItem aMoleculeTableValueItem) {
         // <editor-fold defaultstate="collapsed" desc="Checks">
@@ -3147,6 +3230,33 @@ public class JobUtilityMethods {
             Collections.sort(tmpMoleculeParticleList);
             // </editor-fold>
             return tmpMoleculeParticleList;
+        } catch (Exception anException) {
+            ModelUtils.appendToLogfile(true, anException);
+            return null;
+        }
+    }
+
+    /**
+     * Returns sorted molecule name list
+     *
+     * @param aMoleculeTableValueItem Molecules value item (is NOT changed)
+     * @return Sorted molecule name list or null if none could be created
+     */
+    public LinkedList<String> getSortedMoleculeNameList(ValueItem aMoleculeTableValueItem) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aMoleculeTableValueItem == null || !aMoleculeTableValueItem.getName().equals("MoleculeTable")) {
+            return null;
+        }
+        // </editor-fold>
+        try {
+            // <editor-fold defaultstate="collapsed" desc="Create molecule-particle list">
+            LinkedList<String> tmpMoleculeNameList = new LinkedList<String>();
+            for (int i = 0; i < aMoleculeTableValueItem.getMatrixRowCount(); i++) {
+                tmpMoleculeNameList.add(aMoleculeTableValueItem.getValue(i, 0));
+            }
+            Collections.sort(tmpMoleculeNameList);
+            // </editor-fold>
+            return tmpMoleculeNameList;
         } catch (Exception anException) {
             ModelUtils.appendToLogfile(true, anException);
             return null;
@@ -3199,9 +3309,30 @@ public class JobUtilityMethods {
     }
 
     /**
-     * Creates defined particle-pair radial distribution function files for
-     * simulation box. NOTE: Necessary RDF directory of JobResult MUST already
-     * be created!
+     * Returns if Job Input value item container defines
+     * molecule-center-pair RDF calculation
+     *
+     * @param aJobInputValueItemContainer Value item container of Job Input
+     * @return True: Job Input value item container defines
+     * molecule-center-pair RDF calculation, false: Otherwise
+     */
+    public boolean isMoleculeCenterPairRdfCalculation(ValueItemContainer aJobInputValueItemContainer) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aJobInputValueItemContainer == null) {
+            return false;
+        }
+        // </editor-fold>
+        ValueItem tmpMoleculeCenterPairRdfCalculationValueItem = aJobInputValueItemContainer.getValueItem("MoleculeCenterPairRdfCalculation");
+        if (tmpMoleculeCenterPairRdfCalculationValueItem == null) {
+            return false;
+        }
+        return tmpMoleculeCenterPairRdfCalculationValueItem.isActive();
+    }
+    
+    /**
+     * Creates defined particle-pair radial distribution function files by 
+     * sequential (!) processing of simulation steps. 
+     * NOTE: Necessary RDF directory of JobResult MUST already be created!
      *
      * @param aJobResultParticlePositionsFilePathnames Full pathnames of
      * graphical particle positions file of Job Result
@@ -3209,7 +3340,11 @@ public class JobUtilityMethods {
      * Job Input
      * @param aJobResultPath Path of JobResult
      */
-    public void createDefinedParticlePairRadialDistributionFunctionFiles(String[] aJobResultParticlePositionsFilePathnames, ValueItemContainer aJobInputValueItemContainer, String aJobResultPath) {
+    public void createDefinedParticlePairRadialDistributionFunctionFiles_Sequential(
+        String[] aJobResultParticlePositionsFilePathnames, 
+        ValueItemContainer aJobInputValueItemContainer, 
+        String aJobResultPath
+    ) {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aJobResultParticlePositionsFilePathnames == null || aJobResultParticlePositionsFilePathnames.length == 0) {
             return;
@@ -3255,9 +3390,16 @@ public class JobUtilityMethods {
                 return;
             }
             // NOTE: For RDF calculation PBC in all directions are necessary
-            DistanceDistributionUtils tmpDistanceDistributionUtils = new DistanceDistributionUtils(
+            DistanceDistributionUtils tmpDistanceDistributionUtils = 
+                new DistanceDistributionUtils(
                     ModelDefinitions.RDF_BASIC_SEGMENT_LENGTH,
-                    tmpBoxLengthX, tmpBoxLengthY, tmpBoxLengthZ);
+                    tmpBoxLengthX, 
+                    tmpBoxLengthY, 
+                    tmpBoxLengthZ,
+                    this.isPeriodicBoundaryX(aJobInputValueItemContainer),
+                    this.isPeriodicBoundaryY(aJobInputValueItemContainer),
+                    this.isPeriodicBoundaryZ(aJobInputValueItemContainer)
+                );
             for (String[] tmpSingleParticlePair : tmpParticlePairs) {
                 // <editor-fold defaultstate="collapsed" desc="Calculate distance bin frequencies">
                 // NOTE: tmpParticleDensities[i] corresponds to tmpParticles[i]
@@ -3278,7 +3420,6 @@ public class JobUtilityMethods {
                 if (tmpParticleParticleDistanceBinFrequencies == null) {
                     return;
                 }
-
                 // </editor-fold>
                 // <editor-fold defaultstate="collapsed" desc="Calculate RDF info">
                 String tmpVersion = "Version 1.0.0";
@@ -3289,10 +3430,10 @@ public class JobUtilityMethods {
                     LinkedList<String> tmpStringList = new LinkedList<String>();
                     String[] tmpStringArray = null;
                     boolean tmpIsArrayAvailable = tmpParticlePairRdfFilePathnameToStringArrayMap.containsKey(
-                            this.getJobResultParticlePairRdfFilePathname(aJobResultPath, tmpFirstParticle, tmpSecondParticle, tmpCurrentSegmentLength));
+                        this.getJobResultParticlePairRdfFilePathname(aJobResultPath, tmpFirstParticle, tmpSecondParticle, tmpCurrentSegmentLength));
                     if (tmpIsArrayAvailable) {
                         tmpStringArray = tmpParticlePairRdfFilePathnameToStringArrayMap.get(
-                                this.getJobResultParticlePairRdfFilePathname(aJobResultPath, tmpFirstParticle, tmpSecondParticle, tmpCurrentSegmentLength));
+                            this.getJobResultParticlePairRdfFilePathname(aJobResultPath, tmpFirstParticle, tmpSecondParticle, tmpCurrentSegmentLength));
                     } else {
                         tmpStringList.add(tmpVersion);
                         tmpStringList.add(tmpFirstParticle);
@@ -3335,32 +3476,36 @@ public class JobUtilityMethods {
                         }
                     }
                     if (tmpIsArrayAvailable) {
-                        tmpParticlePairRdfFilePathnameToStringArrayMap.remove(this.getJobResultParticlePairRdfFilePathname(aJobResultPath, tmpFirstParticle, tmpSecondParticle, tmpCurrentSegmentLength));
+                        tmpParticlePairRdfFilePathnameToStringArrayMap.remove(
+                            this.getJobResultParticlePairRdfFilePathname(aJobResultPath, tmpFirstParticle, tmpSecondParticle, tmpCurrentSegmentLength));
                         tmpParticlePairRdfFilePathnameToStringArrayMap.put(
-                                this.getJobResultParticlePairRdfFilePathname(aJobResultPath, tmpFirstParticle, tmpSecondParticle, tmpCurrentSegmentLength),
-                                tmpStringArray);
+                            this.getJobResultParticlePairRdfFilePathname(aJobResultPath, tmpFirstParticle, tmpSecondParticle, tmpCurrentSegmentLength),
+                            tmpStringArray);
                     } else {
                         tmpParticlePairRdfFilePathnameToStringArrayMap.put(
-                                this.getJobResultParticlePairRdfFilePathname(aJobResultPath, tmpFirstParticle, tmpSecondParticle, tmpCurrentSegmentLength),
-                                tmpStringList.toArray(new String[0]));
+                            this.getJobResultParticlePairRdfFilePathname(aJobResultPath, tmpFirstParticle, tmpSecondParticle, tmpCurrentSegmentLength),
+                            tmpStringList.toArray(new String[0]));
                     }
                 }
-
                 // </editor-fold>
             }
         }
         for (String tmpParticlePairRdfFilePathname : tmpParticlePairRdfFilePathnameToStringArrayMap.keySet()) {
             this.fileUtilityMethods.writeDefinedStringArrayToFile(
-                    tmpParticlePairRdfFilePathnameToStringArrayMap.get(tmpParticlePairRdfFilePathname),
-                    tmpParticlePairRdfFilePathname);
+                tmpParticlePairRdfFilePathnameToStringArrayMap.get(tmpParticlePairRdfFilePathname),
+                tmpParticlePairRdfFilePathname
+            );
         }
         // </editor-fold>
     }
 
     /**
-     * Creates defined molecule-particle-pair radial distribution function
-     * files for simulation box. NOTE: Necessary RDF directory of JobResult MUST
-     * already be created!
+     * Creates defined particle-pair radial distribution function files by 
+     * parallel (!) processing of simulation steps. 
+     * NOTE: Necessary RDF directory of JobResult MUST already be created!
+     * Note: See 
+     * createDefinedParticlePairRadialDistributionFunctionFiles_Sequential()
+     * for 1-to-1 comparison with (different) sequential implementation
      *
      * @param aJobResultParticlePositionsFilePathnames Full pathnames of
      * graphical particle positions file of Job Result
@@ -3368,7 +3513,225 @@ public class JobUtilityMethods {
      * Job Input
      * @param aJobResultPath Path of JobResult
      */
-    public void createDefinedMoleculeParticlePairRadialDistributionFunctionFiles(String[] aJobResultParticlePositionsFilePathnames, ValueItemContainer aJobInputValueItemContainer, String aJobResultPath) {
+    public void createDefinedParticlePairRadialDistributionFunctionFiles(
+        String[] aJobResultParticlePositionsFilePathnames, 
+        ValueItemContainer aJobInputValueItemContainer, 
+        String aJobResultPath
+    ) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aJobResultParticlePositionsFilePathnames == null || aJobResultParticlePositionsFilePathnames.length == 0) {
+            return;
+        }
+        if (aJobInputValueItemContainer == null) {
+            return;
+        }
+        // Get particle pairs for RDF calculation
+        String[][] tmpParticlePairs = this.getParticlePairsForRdfCalculation(aJobInputValueItemContainer);
+        if (tmpParticlePairs == null) {
+            return;
+        }
+        if (aJobResultPath == null || aJobResultPath.isEmpty()) {
+            return;
+        }
+        if (!(new File(aJobResultPath)).isDirectory()) {
+            return;
+        }
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Prepare calculations">
+        // Get length conversion factor for transformation of DPD units to Angstrom
+        double tmpLengthConversionFactor = this.getLengthConversionFactorFromDpdToPhysicalLength(aJobInputValueItemContainer);
+        // Get size of simulation box
+        BoxSizeInfo tmpBoxSizeInfo = this.getBoxSizeInfo(aJobInputValueItemContainer);
+        // Transform simulation box volume to Angstrom^3: (xLength * tmpLengthConversionFactor) * (yLength * tmpLengthConversionFactor) * (zLength * tmpLengthConversionFactor)
+        double tmpSimulationBoxVolume = tmpBoxSizeInfo.getVolume() * tmpLengthConversionFactor * tmpLengthConversionFactor * tmpLengthConversionFactor;
+        double tmpBoxLengthX = tmpBoxSizeInfo.getXLength() * tmpLengthConversionFactor;
+        double tmpBoxLengthY = tmpBoxSizeInfo.getYLength() * tmpLengthConversionFactor;
+        double tmpBoxLengthZ = tmpBoxSizeInfo.getZLength() * tmpLengthConversionFactor;
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Write RDF files for aJobResultParticlePositionsFilePathnames">
+        ConcurrentLinkedQueue<IdKeyValue> tmpIdKeyValueList = new ConcurrentLinkedQueue<>();
+        Stream<String> tmpJobResultParticlePositionsFilePathnameStream = Arrays.stream(aJobResultParticlePositionsFilePathnames);
+        // Calculate particle-particle distances for RDF in parallel
+        tmpJobResultParticlePositionsFilePathnameStream.parallel().forEach(tmpJobResultParticlePositionsFilePathname -> {
+            if (!(
+                    tmpJobResultParticlePositionsFilePathname == null || 
+                    tmpJobResultParticlePositionsFilePathname.isEmpty() || 
+                    !(new File(tmpJobResultParticlePositionsFilePathname)).isFile()
+                )
+            ) {
+                // Get particle positions (NOTE: Particle positions are already in Angstrom)
+                HashMap<String, LinkedList<PointInSpace>> tmpParticleToPositionsMap = 
+                    this.readParticlePositions(
+                        tmpJobResultParticlePositionsFilePathname, 
+                        aJobInputValueItemContainer
+                    );
+                if (tmpParticleToPositionsMap != null) {
+                    // NOTE: For RDF calculation PBC in all directions are necessary
+                    DistanceDistributionUtils tmpDistanceDistributionUtils = 
+                        new DistanceDistributionUtils(
+                            ModelDefinitions.RDF_BASIC_SEGMENT_LENGTH,
+                            tmpBoxLengthX, 
+                            tmpBoxLengthY, 
+                            tmpBoxLengthZ,
+                            this.isPeriodicBoundaryX(aJobInputValueItemContainer),
+                            this.isPeriodicBoundaryY(aJobInputValueItemContainer),
+                            this.isPeriodicBoundaryZ(aJobInputValueItemContainer)
+                        );
+                    for (String[] tmpSingleParticlePair : tmpParticlePairs) {
+                        // <editor-fold defaultstate="collapsed" desc="Calculate distance bin frequencies and RDF info">
+                        // NOTE: tmpParticleDensities[i] corresponds to tmpSingleParticlePair[i]
+                        double[] tmpParticleDensities = new double[tmpSingleParticlePair.length];
+                        for (int i = 0; i < tmpSingleParticlePair.length; i++) {
+                            int tmpNumber = 
+                                this.getTotalNumberOfParticlesOfSpecifiedTypeInSimulation(
+                                    tmpSingleParticlePair[i], 
+                                    aJobInputValueItemContainer
+                                );
+                            tmpParticleDensities[i] = (double) tmpNumber / tmpSimulationBoxVolume;
+                        }
+                        double[] tmpParticleParticleDistanceBinFrequencies = null;
+                        if (tmpSingleParticlePair[0].equals(tmpSingleParticlePair[1])) {
+                            PointInSpace[] tmpParticlePositions = tmpParticleToPositionsMap.get(tmpSingleParticlePair[0]).toArray(new PointInSpace[0]);
+                            tmpParticleParticleDistanceBinFrequencies = tmpDistanceDistributionUtils.getEqualParticlePairDistanceBinFrequencies(tmpParticlePositions);
+                        } else {
+                            PointInSpace[] tmpParticlePositionsA = tmpParticleToPositionsMap.get(tmpSingleParticlePair[0]).toArray(new PointInSpace[0]);
+                            PointInSpace[] tmpParticlePositionsB = tmpParticleToPositionsMap.get(tmpSingleParticlePair[1]).toArray(new PointInSpace[0]);
+                            tmpParticleParticleDistanceBinFrequencies = 
+                                tmpDistanceDistributionUtils.getDifferentParticlePairDistanceBinFrequencies(
+                                    tmpParticlePositionsA, 
+                                    tmpParticlePositionsB
+                                );
+                        }
+                        if (tmpParticleParticleDistanceBinFrequencies != null) {
+                            // <editor-fold defaultstate="collapsed" desc="Calculate RDF info">
+                            String tmpVersion = "Version 1.0.0";
+                            for (double tmpCurrentSegmentLength : ModelDefinitions.RDF_SEGMENT_LENGTHS) {
+                                String tmpFirstParticle = tmpSingleParticlePair[0];
+                                String tmpSecondParticle = tmpSingleParticlePair[1];
+
+                                IdKeyValue tmpIdKeyValue = 
+                                    new IdKeyValue(
+                                        new String[] {
+                                            this.getJobResultParticlePairRdfFilePathname(
+                                                aJobResultPath, 
+                                                tmpFirstParticle, 
+                                                tmpSecondParticle, 
+                                                tmpCurrentSegmentLength
+                                            ),
+                                            tmpFirstParticle, 
+                                            tmpSecondParticle, 
+                                            String.valueOf(tmpCurrentSegmentLength)
+                                        }
+                                    );
+
+                                double tmpSecondParticleMeanDensity = tmpParticleDensities[1];
+
+                                // Use integer arithmetics to avoid roundoff errors!
+                                int tmpBasicMultiple = (int) ModelUtils.roundDoubleValue(tmpCurrentSegmentLength / ModelDefinitions.RDF_BASIC_SEGMENT_LENGTH, 0);
+                                int tmpStartMultiple = 0;
+                                int tmpEndMultiple = tmpBasicMultiple;
+                                double tmpCurrentFrequency = 0.0;
+                                for (int k = 0; k < tmpParticleParticleDistanceBinFrequencies.length; k++) {
+                                    if (k < tmpEndMultiple) {
+                                        tmpCurrentFrequency += tmpParticleParticleDistanceBinFrequencies[k];
+                                    } else {
+                                        double tmpStartSegmentLength = (double) tmpStartMultiple * ModelDefinitions.RDF_BASIC_SEGMENT_LENGTH;
+                                        double tmpEndSegmentLength = (double) k * ModelDefinitions.RDF_BASIC_SEGMENT_LENGTH;
+                                        // double tmpVolumeOfSegment = FOUR_PI_DIVIDED_BY_THREE * (Math.pow(tmpEndSegmentLength, 3.0) - Math.pow(tmpStartSegmentLength, 3.0));
+                                        double tmpVolumeOfSegment = FOUR_PI_DIVIDED_BY_THREE * (tmpEndSegmentLength * tmpEndSegmentLength * tmpEndSegmentLength - tmpStartSegmentLength * tmpStartSegmentLength * tmpStartSegmentLength);
+                                        double tmpRdfValue = (tmpCurrentFrequency / tmpVolumeOfSegment) / tmpSecondParticleMeanDensity;
+
+                                        tmpIdKeyValue.add(
+                                            tmpStartSegmentLength + (tmpEndSegmentLength - tmpStartSegmentLength) / 2.0,
+                                            tmpRdfValue
+                                        );
+
+                                        tmpCurrentFrequency = tmpParticleParticleDistanceBinFrequencies[k];
+                                        tmpStartMultiple = k;
+                                        tmpEndMultiple += tmpBasicMultiple;
+                                    }
+                                }
+                                tmpIdKeyValueList.add(tmpIdKeyValue);
+                            }
+                            // </editor-fold>
+                        }
+                        // </editor-fold>
+                    }
+                }
+            }
+        });
+        // Accumulate IdKeyValue items
+        TreeMap<String, IdKeyValueAccumulator> tmpIdToAccumulatorMap = new TreeMap<>();
+        for (IdKeyValue tmpIdKeyValue : tmpIdKeyValueList) {
+            if (!tmpIdToAccumulatorMap.containsKey(tmpIdKeyValue.getId())) {
+                tmpIdToAccumulatorMap.put(tmpIdKeyValue.getId(), new IdKeyValueAccumulator(tmpIdKeyValue.getIdParts()));
+            }
+            IdKeyValueAccumulator tmpAccumulator = tmpIdToAccumulatorMap.get(tmpIdKeyValue.getId());
+            boolean tmpIsKey = false;
+            double tmpKey = 0.0;
+            double tmpValue;
+            for (double tmpItem : tmpIdKeyValue.getKeyValueList()) {
+                if (!tmpIsKey) {
+                    tmpKey = tmpItem;
+                    tmpIsKey = true;
+                } else {
+                    tmpValue = tmpItem;
+                    tmpAccumulator.add(tmpKey, tmpValue);
+                    tmpIsKey = false;
+                }
+            }
+        }
+        // Write consolidated RDF files
+        String tmpVersion = "Version 1.0.0";
+        for (IdKeyValueAccumulator tmpAccumulator : tmpIdToAccumulatorMap.values()) {
+            String tmpJobResultParticlePairRdfFilePathname = tmpAccumulator.getIdParts()[0];
+            LinkedList<String> tmpStringList = new LinkedList<>();
+            tmpStringList.add(tmpVersion);
+            // tmpFirstParticle
+            tmpStringList.add(tmpAccumulator.getIdParts()[1]);
+            // tmpSecondParticle, 
+            tmpStringList.add(tmpAccumulator.getIdParts()[2]);
+            // String.valueOf(tmpCurrentSegmentLength)
+            tmpStringList.add(tmpAccumulator.getIdParts()[3]);
+            
+            TreeMap<Double, LinkedList<Double>> tmpKeyToValuesMap = tmpAccumulator.getKeyToValuesMap();
+            for (double tmpkey : tmpKeyToValuesMap.keySet()) {
+                tmpStringList.add(String.valueOf(tmpkey));
+                LinkedList<Double> tmpValues= tmpKeyToValuesMap.get(tmpkey);
+                // Roughly 20 characters for a double value with separator
+                StringBuilder tmpBuffer = new StringBuilder(tmpValues.size() * 20);
+                for (Double tmpValue : tmpValues) {
+                    if (!tmpBuffer.isEmpty()) {
+                        tmpBuffer.append(ModelDefinitions.GENERAL_SEPARATOR);
+                    }
+                    tmpBuffer.append(String.valueOf(tmpValue));
+                }
+                tmpStringList.add(tmpBuffer.toString());
+            }
+            this.fileUtilityMethods.writeDefinedStringArrayToFile(
+                tmpStringList.toArray(new String[0]),
+                tmpJobResultParticlePairRdfFilePathname
+            );
+        }
+        // </editor-fold>
+    }
+
+    /**
+     * Creates defined molecule-particle-pair radial distribution function files 
+     * by sequential (!) processing of simulation steps. 
+     * NOTE: Necessary RDF directory of JobResult MUST already be created!
+     *
+     * @param aJobResultParticlePositionsFilePathnames Full pathnames of
+     * graphical particle positions file of Job Result
+     * @param aJobInputValueItemContainer Value item container of corresponding
+     * Job Input
+     * @param aJobResultPath Path of JobResult
+     */
+    public void createDefinedMoleculeParticlePairRadialDistributionFunctionFiles_Sequential(
+        String[] aJobResultParticlePositionsFilePathnames, 
+        ValueItemContainer aJobInputValueItemContainer, 
+        String aJobResultPath
+    ) {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aJobResultParticlePositionsFilePathnames == null || aJobResultParticlePositionsFilePathnames.length == 0) {
             return;
@@ -3411,9 +3774,16 @@ public class JobUtilityMethods {
                 return;
             }
             // NOTE: For RDF calculation PBC in all directions are necessary
-            DistanceDistributionUtils tmpDistanceDistributionUtils = new DistanceDistributionUtils(
-                    ModelDefinitions.RDF_BASIC_SEGMENT_LENGTH,
-                    tmpBoxLengthX, tmpBoxLengthY, tmpBoxLengthZ);
+            DistanceDistributionUtils tmpDistanceDistributionUtils = 
+                    new DistanceDistributionUtils(
+                        ModelDefinitions.RDF_BASIC_SEGMENT_LENGTH,
+                        tmpBoxLengthX, 
+                        tmpBoxLengthY, 
+                        tmpBoxLengthZ,
+                        this.isPeriodicBoundaryX(aJobInputValueItemContainer),
+                        this.isPeriodicBoundaryY(aJobInputValueItemContainer),
+                        this.isPeriodicBoundaryZ(aJobInputValueItemContainer)
+                    );
             for (String[] tmpSingleMoleculeParticlePair : tmpMoleculeParticlePairs) {
                 // <editor-fold defaultstate="collapsed" desc="Calculate distance bin frequencies">
                 // NOTE: tmpParticleDensities[i] corresponds to tmpParticles[i]
@@ -3448,10 +3818,10 @@ public class JobUtilityMethods {
                     LinkedList<String> tmpStringList = new LinkedList<String>();
                     String[] tmpStringArray = null;
                     boolean tmpIsArrayAvailable = tmpMoleculeParticlePairRdfFilePathnameToStringArrayMap.containsKey(
-                            this.getJobResultParticlePairRdfFilePathname(aJobResultPath, tmpFirstMoleculeParticle, tmpSecondMoleculeParticle, tmpCurrentSegmentLength));
+                        this.getJobResultMoleculeParticlePairRdfFilePathname(aJobResultPath, tmpFirstMoleculeParticle, tmpSecondMoleculeParticle, tmpCurrentSegmentLength));
                     if (tmpIsArrayAvailable) {
                         tmpStringArray = tmpMoleculeParticlePairRdfFilePathnameToStringArrayMap.get(
-                                this.getJobResultParticlePairRdfFilePathname(aJobResultPath, tmpFirstMoleculeParticle, tmpSecondMoleculeParticle, tmpCurrentSegmentLength));
+                            this.getJobResultMoleculeParticlePairRdfFilePathname(aJobResultPath, tmpFirstMoleculeParticle, tmpSecondMoleculeParticle, tmpCurrentSegmentLength));
                     } else {
                         tmpStringList.add(tmpVersion);
                         tmpStringList.add(tmpFirstMoleculeParticle);
@@ -3496,14 +3866,14 @@ public class JobUtilityMethods {
                     }
                     if (tmpIsArrayAvailable) {
                         tmpMoleculeParticlePairRdfFilePathnameToStringArrayMap.remove(
-                                this.getJobResultParticlePairRdfFilePathname(aJobResultPath, tmpFirstMoleculeParticle, tmpSecondMoleculeParticle, tmpCurrentSegmentLength));
+                            this.getJobResultMoleculeParticlePairRdfFilePathname(aJobResultPath, tmpFirstMoleculeParticle, tmpSecondMoleculeParticle, tmpCurrentSegmentLength));
                         tmpMoleculeParticlePairRdfFilePathnameToStringArrayMap.put(
-                                this.getJobResultParticlePairRdfFilePathname(aJobResultPath, tmpFirstMoleculeParticle, tmpSecondMoleculeParticle, tmpCurrentSegmentLength),
-                                tmpStringArray);
+                            this.getJobResultMoleculeParticlePairRdfFilePathname(aJobResultPath, tmpFirstMoleculeParticle, tmpSecondMoleculeParticle, tmpCurrentSegmentLength),
+                            tmpStringArray);
                     } else {
                         tmpMoleculeParticlePairRdfFilePathnameToStringArrayMap.put(
-                                this.getJobResultParticlePairRdfFilePathname(aJobResultPath, tmpFirstMoleculeParticle, tmpSecondMoleculeParticle, tmpCurrentSegmentLength),
-                                tmpStringList.toArray(new String[0]));
+                            this.getJobResultMoleculeParticlePairRdfFilePathname(aJobResultPath, tmpFirstMoleculeParticle, tmpSecondMoleculeParticle, tmpCurrentSegmentLength),
+                            tmpStringList.toArray(new String[0]));
                     }
                 }
 
@@ -3512,8 +3882,446 @@ public class JobUtilityMethods {
         }
         for (String tmpMoleculeParticlePairRdfFilePathname : tmpMoleculeParticlePairRdfFilePathnameToStringArrayMap.keySet()) {
             this.fileUtilityMethods.writeDefinedStringArrayToFile(
-                    tmpMoleculeParticlePairRdfFilePathnameToStringArrayMap.get(tmpMoleculeParticlePairRdfFilePathname),
-                    tmpMoleculeParticlePairRdfFilePathname);
+                tmpMoleculeParticlePairRdfFilePathnameToStringArrayMap.get(tmpMoleculeParticlePairRdfFilePathname),
+                tmpMoleculeParticlePairRdfFilePathname
+            );
+        }
+        // </editor-fold>
+    }
+
+    /**
+     * Creates defined molecule-particle-pair radial distribution function files 
+     * by parallel (!) processing of simulation steps. 
+     * NOTE: Necessary RDF directory of JobResult MUST already be created!
+     * Note: See 
+     * createDefinedMoleculeParticlePairRadialDistributionFunctionFiles_Sequential()
+     * for 1-to-1 comparison with (different) sequential implementation
+     *
+     * @param aJobResultParticlePositionsFilePathnames Full pathnames of
+     * graphical particle positions file of Job Result
+     * @param aJobInputValueItemContainer Value item container of corresponding
+     * Job Input
+     * @param aJobResultPath Path of JobResult
+     */
+    public void createDefinedMoleculeParticlePairRadialDistributionFunctionFiles(
+        String[] aJobResultParticlePositionsFilePathnames, 
+        ValueItemContainer aJobInputValueItemContainer, 
+        String aJobResultPath
+    ) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aJobResultParticlePositionsFilePathnames == null || aJobResultParticlePositionsFilePathnames.length == 0) {
+            return;
+        }
+        if (aJobInputValueItemContainer == null) {
+            return;
+        }
+        // Get molecule-particle pairs for RDF calculation
+        String[][] tmpMoleculeParticlePairs = this.getMoleculeParticlePairsForRdfCalculation(aJobInputValueItemContainer);
+        if (tmpMoleculeParticlePairs == null) {
+            return;
+        }
+        if (aJobResultPath == null || aJobResultPath.isEmpty()) {
+            return;
+        }
+        if (!(new File(aJobResultPath)).isDirectory()) {
+            return;
+        }
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Prepare calculations">
+        // Get length conversion factor for transformation of DPD units to Angstrom
+        double tmpLengthConversionFactor = this.getLengthConversionFactorFromDpdToPhysicalLength(aJobInputValueItemContainer);
+        // Get size of simulation box
+        BoxSizeInfo tmpBoxSizeInfo = this.getBoxSizeInfo(aJobInputValueItemContainer);
+        // Transform simulation box volume to Angstrom^3: (xLength * tmpLengthConversionFactor) * (yLength * tmpLengthConversionFactor) * (zLength * tmpLengthConversionFactor)
+        double tmpSimulationBoxVolume = tmpBoxSizeInfo.getVolume() * tmpLengthConversionFactor * tmpLengthConversionFactor * tmpLengthConversionFactor;
+        double tmpBoxLengthX = tmpBoxSizeInfo.getXLength() * tmpLengthConversionFactor;
+        double tmpBoxLengthY = tmpBoxSizeInfo.getYLength() * tmpLengthConversionFactor;
+        double tmpBoxLengthZ = tmpBoxSizeInfo.getZLength() * tmpLengthConversionFactor;
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Write RDF files for aJobResultParticlePositionsFilePathnames">
+        ConcurrentLinkedQueue<IdKeyValue> tmpIdKeyValueList = new ConcurrentLinkedQueue<>();
+        Stream<String> tmpJobResultParticlePositionsFilePathnameStream = Arrays.stream(aJobResultParticlePositionsFilePathnames);
+        // Calculate particle-particle distances for RDF in parallel
+        tmpJobResultParticlePositionsFilePathnameStream.parallel().forEach(tmpJobResultParticlePositionsFilePathname -> {
+            if (!(
+                    tmpJobResultParticlePositionsFilePathname == null || 
+                    tmpJobResultParticlePositionsFilePathname.isEmpty() || 
+                    !(new File(tmpJobResultParticlePositionsFilePathname)).isFile()
+                )
+            ) {
+                // Get particle positions (NOTE: Particle positions are already in Angstrom)
+                HashMap<String, LinkedList<PointInSpace>> tmpMoleculeParticleToPositionsMap = 
+                    this.readMoleculeParticlePositions(
+                        tmpJobResultParticlePositionsFilePathname, 
+                        aJobInputValueItemContainer
+                    );
+                if (tmpMoleculeParticleToPositionsMap != null) {
+                    // NOTE: For RDF calculation PBC in all directions are necessary
+                    DistanceDistributionUtils tmpDistanceDistributionUtils = 
+                        new DistanceDistributionUtils(
+                            ModelDefinitions.RDF_BASIC_SEGMENT_LENGTH,
+                            tmpBoxLengthX, 
+                            tmpBoxLengthY, 
+                            tmpBoxLengthZ,
+                            this.isPeriodicBoundaryX(aJobInputValueItemContainer),
+                            this.isPeriodicBoundaryY(aJobInputValueItemContainer),
+                            this.isPeriodicBoundaryZ(aJobInputValueItemContainer)
+                        );
+                    for (String[] tmpSingleMoleculeParticlePair : tmpMoleculeParticlePairs) {
+                        // <editor-fold defaultstate="collapsed" desc="Calculate distance bin frequencies and RDF info">
+                        // NOTE: tmpMoleculeParticleDensities[i] corresponds to tmpSingleMoleculeParticlePair[i]
+                        double[] tmpMoleculeParticleDensities = new double[tmpSingleMoleculeParticlePair.length];
+                        for (int i = 0; i < tmpSingleMoleculeParticlePair.length; i++) {
+                            String[] tmpMoleculeNameAndParticle = SpicesConstants.PARTICLE_SEPARATOR_PATTERN.split(tmpSingleMoleculeParticlePair[i]);
+                            String tmpMoleculeName = tmpMoleculeNameAndParticle[0];
+                            String tmpParticle = tmpMoleculeNameAndParticle[1];
+                            int tmpNumber = this.getTotalNumberOfMoleculeParticlesOfSpecifiedTypeInSimulation(tmpMoleculeName, tmpParticle, aJobInputValueItemContainer);
+                            tmpMoleculeParticleDensities[i] = (double) tmpNumber / tmpSimulationBoxVolume;
+                        }
+                        double[] tmpParticleParticleDistanceBinFrequencies = null;
+                        if (tmpSingleMoleculeParticlePair[0].equals(tmpSingleMoleculeParticlePair[1])) {
+                            PointInSpace[] tmpMoleculeParticlePositions = tmpMoleculeParticleToPositionsMap.get(tmpSingleMoleculeParticlePair[0]).toArray(new PointInSpace[0]);
+                            tmpParticleParticleDistanceBinFrequencies = tmpDistanceDistributionUtils.getEqualParticlePairDistanceBinFrequencies(tmpMoleculeParticlePositions);
+                        } else {
+                            PointInSpace[] tmpMoleculeParticlePositionsA = tmpMoleculeParticleToPositionsMap.get(tmpSingleMoleculeParticlePair[0]).toArray(new PointInSpace[0]);
+                            PointInSpace[] tmpMoleculeParticlePositionsB = tmpMoleculeParticleToPositionsMap.get(tmpSingleMoleculeParticlePair[1]).toArray(new PointInSpace[0]);
+                            tmpParticleParticleDistanceBinFrequencies = 
+                                tmpDistanceDistributionUtils.getDifferentParticlePairDistanceBinFrequencies(
+                                    tmpMoleculeParticlePositionsA, 
+                                    tmpMoleculeParticlePositionsB
+                                );
+                        }
+                        if (tmpParticleParticleDistanceBinFrequencies != null) {
+                            // <editor-fold defaultstate="collapsed" desc="Calculate RDF info">
+                            for (double tmpCurrentSegmentLength : ModelDefinitions.RDF_SEGMENT_LENGTHS) {
+                                String tmpFirstMoleculeParticle = tmpSingleMoleculeParticlePair[0];
+                                String tmpSecondMoleculeParticle = tmpSingleMoleculeParticlePair[1];
+
+                                IdKeyValue tmpIdKeyValue = 
+                                    new IdKeyValue(
+                                        new String[] {
+                                            this.getJobResultMoleculeParticlePairRdfFilePathname(
+                                                aJobResultPath, 
+                                                tmpFirstMoleculeParticle, 
+                                                tmpSecondMoleculeParticle, 
+                                                tmpCurrentSegmentLength
+                                            ),
+                                            tmpFirstMoleculeParticle, 
+                                            tmpSecondMoleculeParticle, 
+                                            String.valueOf(tmpCurrentSegmentLength)
+                                        }
+                                    );
+
+                                double tmpSecondMoleculeParticleMeanDensity = tmpMoleculeParticleDensities[1];
+
+                                // Use integer arithmetics to avoid roundoff errors!
+                                int tmpBasicMultiple = (int) ModelUtils.roundDoubleValue(tmpCurrentSegmentLength / ModelDefinitions.RDF_BASIC_SEGMENT_LENGTH, 0);
+                                int tmpStartMultiple = 0;
+                                int tmpEndMultiple = tmpBasicMultiple;
+                                double tmpCurrentFrequency = 0.0;
+                                for (int k = 0; k < tmpParticleParticleDistanceBinFrequencies.length; k++) {
+                                    if (k < tmpEndMultiple) {
+                                        tmpCurrentFrequency += tmpParticleParticleDistanceBinFrequencies[k];
+                                    } else {
+                                        double tmpStartSegmentLength = (double) tmpStartMultiple * ModelDefinitions.RDF_BASIC_SEGMENT_LENGTH;
+                                        double tmpEndSegmentLength = (double) k * ModelDefinitions.RDF_BASIC_SEGMENT_LENGTH;
+                                        // double tmpVolumeOfSegment = FOUR_PI_DIVIDED_BY_THREE * (Math.pow(tmpEndSegmentLength, 3.0) - Math.pow(tmpStartSegmentLength, 3.0));
+                                        double tmpVolumeOfSegment = FOUR_PI_DIVIDED_BY_THREE
+                                                * (tmpEndSegmentLength * tmpEndSegmentLength * tmpEndSegmentLength - tmpStartSegmentLength * tmpStartSegmentLength * tmpStartSegmentLength);
+                                        double tmpRdfValue = (tmpCurrentFrequency / tmpVolumeOfSegment) / tmpSecondMoleculeParticleMeanDensity;
+
+                                        tmpIdKeyValue.add(
+                                            tmpStartSegmentLength + (tmpEndSegmentLength - tmpStartSegmentLength) / 2.0,
+                                            tmpRdfValue
+                                        );
+                                        
+                                        tmpCurrentFrequency = tmpParticleParticleDistanceBinFrequencies[k];
+                                        tmpStartMultiple = k;
+                                        tmpEndMultiple += tmpBasicMultiple;
+                                    }
+                                }
+                                tmpIdKeyValueList.add(tmpIdKeyValue);
+                            }
+                            // </editor-fold>
+                        }
+                        // </editor-fold>
+                    }
+                }
+            }
+        });
+        // Accumulate IdKeyValue items
+        TreeMap<String, IdKeyValueAccumulator> tmpIdToAccumulatorMap = new TreeMap<>();
+        for (IdKeyValue tmpIdKeyValue : tmpIdKeyValueList) {
+            if (!tmpIdToAccumulatorMap.containsKey(tmpIdKeyValue.getId())) {
+                tmpIdToAccumulatorMap.put(tmpIdKeyValue.getId(), new IdKeyValueAccumulator(tmpIdKeyValue.getIdParts()));
+            }
+            IdKeyValueAccumulator tmpAccumulator = tmpIdToAccumulatorMap.get(tmpIdKeyValue.getId());
+            boolean tmpIsKey = false;
+            double tmpKey = 0.0;
+            double tmpValue;
+            for (double tmpItem : tmpIdKeyValue.getKeyValueList()) {
+                if (!tmpIsKey) {
+                    tmpKey = tmpItem;
+                    tmpIsKey = true;
+                } else {
+                    tmpValue = tmpItem;
+                    tmpAccumulator.add(tmpKey, tmpValue);
+                    tmpIsKey = false;
+                }
+            }
+        }
+        // Write consolidated RDF files
+        String tmpVersion = "Version 1.0.0";
+        for (IdKeyValueAccumulator tmpAccumulator : tmpIdToAccumulatorMap.values()) {
+            String tmpJobResultMoleculeParticlePairRdfFilePathname = tmpAccumulator.getIdParts()[0];
+            LinkedList<String> tmpStringList = new LinkedList<>();
+            tmpStringList.add(tmpVersion);
+            // tmpFirstParticle
+            tmpStringList.add(tmpAccumulator.getIdParts()[1]);
+            // tmpSecondParticle, 
+            tmpStringList.add(tmpAccumulator.getIdParts()[2]);
+            // String.valueOf(tmpCurrentSegmentLength)
+            tmpStringList.add(tmpAccumulator.getIdParts()[3]);
+            
+            TreeMap<Double, LinkedList<Double>> tmpKeyToValuesMap = tmpAccumulator.getKeyToValuesMap();
+            for (double tmpkey : tmpKeyToValuesMap.keySet()) {
+                tmpStringList.add(String.valueOf(tmpkey));
+                LinkedList<Double> tmpValues= tmpKeyToValuesMap.get(tmpkey);
+                // Roughly 20 characters for a double value with separator
+                StringBuilder tmpBuffer = new StringBuilder(tmpValues.size() * 20);
+                for (Double tmpValue : tmpValues) {
+                    if (!tmpBuffer.isEmpty()) {
+                        tmpBuffer.append(ModelDefinitions.GENERAL_SEPARATOR);
+                    }
+                    tmpBuffer.append(String.valueOf(tmpValue));
+                }
+                tmpStringList.add(tmpBuffer.toString());
+            }
+            this.fileUtilityMethods.writeDefinedStringArrayToFile(
+                tmpStringList.toArray(new String[0]),
+                tmpJobResultMoleculeParticlePairRdfFilePathname
+            );
+        }
+        // </editor-fold>
+    }
+
+    /**
+     * Creates defined molecule-center-pair radial distribution function files 
+     * by parallel (!) processing of simulation steps. 
+     * NOTE: Necessary RDF directory of JobResult MUST already be created!
+     *
+     * @param aJobResultParticlePositionsFilePathnames Full pathnames of
+     * graphical particle positions file of Job Result
+     * @param aJobInputValueItemContainer Value item container of corresponding
+     * Job Input
+     * @param aJobResultPath Path of JobResult
+     */
+    public void createDefinedMoleculeCenterPairRadialDistributionFunctionFiles(
+        String[] aJobResultParticlePositionsFilePathnames, 
+        ValueItemContainer aJobInputValueItemContainer, 
+        String aJobResultPath
+    ) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aJobResultParticlePositionsFilePathnames == null || aJobResultParticlePositionsFilePathnames.length == 0) {
+            return;
+        }
+        if (aJobInputValueItemContainer == null) {
+            return;
+        }
+        // Get molecule-particle pairs for RDF calculation
+        String[][] tmpMoleculeCenterPairs = this.getMoleculeCenterPairsForRdfCalculation(aJobInputValueItemContainer);
+        if (tmpMoleculeCenterPairs == null) {
+            return;
+        }
+        if (aJobResultPath == null || aJobResultPath.isEmpty()) {
+            return;
+        }
+        if (!(new File(aJobResultPath)).isDirectory()) {
+            return;
+        }
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Prepare calculations">
+        // Get length conversion factor for transformation of DPD units to Angstrom
+        double tmpLengthConversionFactor = this.getLengthConversionFactorFromDpdToPhysicalLength(aJobInputValueItemContainer);
+        // Get size of simulation box
+        BoxSizeInfo tmpBoxSizeInfo = this.getBoxSizeInfo(aJobInputValueItemContainer);
+        // Transform simulation box volume to Angstrom^3: (xLength * tmpLengthConversionFactor) * (yLength * tmpLengthConversionFactor) * (zLength * tmpLengthConversionFactor)
+        double tmpSimulationBoxVolume = tmpBoxSizeInfo.getVolume() * tmpLengthConversionFactor * tmpLengthConversionFactor * tmpLengthConversionFactor;
+        double tmpBoxLengthX = tmpBoxSizeInfo.getXLength() * tmpLengthConversionFactor;
+        double tmpBoxLengthY = tmpBoxSizeInfo.getYLength() * tmpLengthConversionFactor;
+        double tmpBoxLengthZ = tmpBoxSizeInfo.getZLength() * tmpLengthConversionFactor;
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Write RDF files for aJobResultParticlePositionsFilePathnames">
+        ConcurrentLinkedQueue<IdKeyValue> tmpIdKeyValueList = new ConcurrentLinkedQueue<>();
+        Stream<String> tmpJobResultParticlePositionsFilePathnameStream = Arrays.stream(aJobResultParticlePositionsFilePathnames);
+        // Calculate molecule-center-to-molecule-center distances for RDF in parallel
+        tmpJobResultParticlePositionsFilePathnameStream.parallel().forEach(tmpJobResultParticlePositionsFilePathname -> {
+            if (!(
+                    tmpJobResultParticlePositionsFilePathname == null || 
+                    tmpJobResultParticlePositionsFilePathname.isEmpty() || 
+                    !(new File(tmpJobResultParticlePositionsFilePathname)).isFile()
+                )
+            ) {
+                // Get molecule-center positions (NOTE: Molecule-center positions are already in Angstrom)
+                HashMap<String, LinkedList<PointInSpace>> tmpMoleculeCenterToPositionsMap = 
+                    this.readMoleculeCenterPositions(
+                        tmpJobResultParticlePositionsFilePathname, 
+                        aJobInputValueItemContainer
+                    );
+                if (tmpMoleculeCenterToPositionsMap != null) {
+                    // NOTE: For RDF calculation PBC in all directions are necessary
+                    DistanceDistributionUtils tmpDistanceDistributionUtils = 
+                        new DistanceDistributionUtils(
+                            ModelDefinitions.RDF_BASIC_SEGMENT_LENGTH,
+                            tmpBoxLengthX, 
+                            tmpBoxLengthY, 
+                            tmpBoxLengthZ,
+                            this.isPeriodicBoundaryX(aJobInputValueItemContainer),
+                            this.isPeriodicBoundaryY(aJobInputValueItemContainer),
+                            this.isPeriodicBoundaryZ(aJobInputValueItemContainer)
+                        );
+                    for (String[] tmpSingleMoleculeCenterPair : tmpMoleculeCenterPairs) {
+                        // <editor-fold defaultstate="collapsed" desc="Calculate distance bin frequencies and RDF info">
+                        // NOTE: tmpMoleculeCenterDensities[i] corresponds to tmpSingleMoleculeCenterPair[i]
+                        double[] tmpMoleculeCenterDensities = new double[tmpSingleMoleculeCenterPair.length];
+                        for (int i = 0; i < tmpSingleMoleculeCenterPair.length; i++) {
+                            String tmpMoleculeName = tmpSingleMoleculeCenterPair[i];
+                            int tmpNumber = 
+                                this.getTotalNumberOfMoleculesOfSpecifiedTypeInSimulation(
+                                    tmpMoleculeName, 
+                                    aJobInputValueItemContainer
+                                );
+                            tmpMoleculeCenterDensities[i] = (double) tmpNumber / tmpSimulationBoxVolume;
+                        }
+                        double[] tmpMoleculeCenterMoleculeCenterDistanceBinFrequencies = null;
+                        if (tmpSingleMoleculeCenterPair[0].equals(tmpSingleMoleculeCenterPair[1])) {
+                            PointInSpace[] tmpMoleculeCenterPositions = 
+                                tmpMoleculeCenterToPositionsMap.get(tmpSingleMoleculeCenterPair[0]).toArray(new PointInSpace[0]);
+                            tmpMoleculeCenterMoleculeCenterDistanceBinFrequencies = 
+                                tmpDistanceDistributionUtils.getEqualParticlePairDistanceBinFrequencies(
+                                    tmpMoleculeCenterPositions
+                                );
+                        } else {
+                            PointInSpace[] tmpMoleculeCenterPositionsA = 
+                                tmpMoleculeCenterToPositionsMap.get(tmpSingleMoleculeCenterPair[0]).toArray(new PointInSpace[0]);
+                            PointInSpace[] tmpMoleculeCenterPositionsB = 
+                                tmpMoleculeCenterToPositionsMap.get(tmpSingleMoleculeCenterPair[1]).toArray(new PointInSpace[0]);
+                            tmpMoleculeCenterMoleculeCenterDistanceBinFrequencies = 
+                                tmpDistanceDistributionUtils.getDifferentParticlePairDistanceBinFrequencies(
+                                    tmpMoleculeCenterPositionsA, 
+                                    tmpMoleculeCenterPositionsB
+                                );
+                        }
+                        if (tmpMoleculeCenterMoleculeCenterDistanceBinFrequencies != null) {
+                            // <editor-fold defaultstate="collapsed" desc="Calculate RDF info">
+                            for (double tmpCurrentSegmentLength : ModelDefinitions.RDF_SEGMENT_LENGTHS) {
+                                String tmpFirstMoleculeCenter = tmpSingleMoleculeCenterPair[0];
+                                String tmpSecondMoleculeCenter = tmpSingleMoleculeCenterPair[1];
+
+                                IdKeyValue tmpIdKeyValue = 
+                                    new IdKeyValue(
+                                        new String[] {
+                                            this.getJobResultMoleculeCenterPairRdfFilePathname(
+                                                aJobResultPath, 
+                                                tmpFirstMoleculeCenter, 
+                                                tmpSecondMoleculeCenter, 
+                                                tmpCurrentSegmentLength
+                                            ),
+                                            tmpFirstMoleculeCenter, 
+                                            tmpSecondMoleculeCenter, 
+                                            String.valueOf(tmpCurrentSegmentLength)
+                                        }
+                                    );
+
+                                double tmpSecondMoleculeCenterMeanDensity = tmpMoleculeCenterDensities[1];
+
+                                // Use integer arithmetics to avoid roundoff errors!
+                                int tmpBasicMultiple = (int) ModelUtils.roundDoubleValue(tmpCurrentSegmentLength / ModelDefinitions.RDF_BASIC_SEGMENT_LENGTH, 0);
+                                int tmpStartMultiple = 0;
+                                int tmpEndMultiple = tmpBasicMultiple;
+                                double tmpCurrentFrequency = 0.0;
+                                for (int k = 0; k < tmpMoleculeCenterMoleculeCenterDistanceBinFrequencies.length; k++) {
+                                    if (k < tmpEndMultiple) {
+                                        tmpCurrentFrequency += tmpMoleculeCenterMoleculeCenterDistanceBinFrequencies[k];
+                                    } else {
+                                        double tmpStartSegmentLength = (double) tmpStartMultiple * ModelDefinitions.RDF_BASIC_SEGMENT_LENGTH;
+                                        double tmpEndSegmentLength = (double) k * ModelDefinitions.RDF_BASIC_SEGMENT_LENGTH;
+                                        // double tmpVolumeOfSegment = FOUR_PI_DIVIDED_BY_THREE * (Math.pow(tmpEndSegmentLength, 3.0) - Math.pow(tmpStartSegmentLength, 3.0));
+                                        double tmpVolumeOfSegment = FOUR_PI_DIVIDED_BY_THREE
+                                                * (tmpEndSegmentLength * tmpEndSegmentLength * tmpEndSegmentLength - tmpStartSegmentLength * tmpStartSegmentLength * tmpStartSegmentLength);
+                                        double tmpRdfValue = (tmpCurrentFrequency / tmpVolumeOfSegment) / tmpSecondMoleculeCenterMeanDensity;
+
+                                        tmpIdKeyValue.add(
+                                            tmpStartSegmentLength + (tmpEndSegmentLength - tmpStartSegmentLength) / 2.0,
+                                            tmpRdfValue
+                                        );
+                                        
+                                        tmpCurrentFrequency = tmpMoleculeCenterMoleculeCenterDistanceBinFrequencies[k];
+                                        tmpStartMultiple = k;
+                                        tmpEndMultiple += tmpBasicMultiple;
+                                    }
+                                }
+                                tmpIdKeyValueList.add(tmpIdKeyValue);
+                            }
+                            // </editor-fold>
+                        }
+                        // </editor-fold>
+                    }
+                }
+            }
+        });
+        // Accumulate IdKeyValue items
+        TreeMap<String, IdKeyValueAccumulator> tmpIdToAccumulatorMap = new TreeMap<>();
+        for (IdKeyValue tmpIdKeyValue : tmpIdKeyValueList) {
+            if (!tmpIdToAccumulatorMap.containsKey(tmpIdKeyValue.getId())) {
+                tmpIdToAccumulatorMap.put(tmpIdKeyValue.getId(), new IdKeyValueAccumulator(tmpIdKeyValue.getIdParts()));
+            }
+            IdKeyValueAccumulator tmpAccumulator = tmpIdToAccumulatorMap.get(tmpIdKeyValue.getId());
+            boolean tmpIsKey = false;
+            double tmpKey = 0.0;
+            double tmpValue;
+            for (double tmpItem : tmpIdKeyValue.getKeyValueList()) {
+                if (!tmpIsKey) {
+                    tmpKey = tmpItem;
+                    tmpIsKey = true;
+                } else {
+                    tmpValue = tmpItem;
+                    tmpAccumulator.add(tmpKey, tmpValue);
+                    tmpIsKey = false;
+                }
+            }
+        }
+        // Write consolidated RDF files
+        String tmpVersion = "Version 1.0.0";
+        for (IdKeyValueAccumulator tmpAccumulator : tmpIdToAccumulatorMap.values()) {
+            String tmpJobResultMoleculeCenterPairRdfFilePathname = tmpAccumulator.getIdParts()[0];
+            LinkedList<String> tmpStringList = new LinkedList<>();
+            tmpStringList.add(tmpVersion);
+            // tmpFirstParticle
+            tmpStringList.add(tmpAccumulator.getIdParts()[1]);
+            // tmpSecondParticle, 
+            tmpStringList.add(tmpAccumulator.getIdParts()[2]);
+            // String.valueOf(tmpCurrentSegmentLength)
+            tmpStringList.add(tmpAccumulator.getIdParts()[3]);
+            
+            TreeMap<Double, LinkedList<Double>> tmpKeyToValuesMap = tmpAccumulator.getKeyToValuesMap();
+            for (double tmpkey : tmpKeyToValuesMap.keySet()) {
+                tmpStringList.add(String.valueOf(tmpkey));
+                LinkedList<Double> tmpValues= tmpKeyToValuesMap.get(tmpkey);
+                // Roughly 20 characters for a double value with separator
+                StringBuilder tmpBuffer = new StringBuilder(tmpValues.size() * 20);
+                for (Double tmpValue : tmpValues) {
+                    if (!tmpBuffer.isEmpty()) {
+                        tmpBuffer.append(ModelDefinitions.GENERAL_SEPARATOR);
+                    }
+                    tmpBuffer.append(String.valueOf(tmpValue));
+                }
+                tmpStringList.add(tmpBuffer.toString());
+            }
+            this.fileUtilityMethods.writeDefinedStringArrayToFile(
+                tmpStringList.toArray(new String[0]),
+                tmpJobResultMoleculeCenterPairRdfFilePathname
+            );
         }
         // </editor-fold>
     }
@@ -3614,7 +4422,6 @@ public class JobUtilityMethods {
         } else {
             return;
         }
-
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Calculate distances">
         HashMap<String, LinkedList<String>> tmpParticlePairToDistancesMap = new HashMap<String, LinkedList<String>>();
@@ -3652,7 +4459,6 @@ public class JobUtilityMethods {
                     tmpNewDistancesList.add(String.valueOf(tmpParticlePairAverageDistance.getAverageDistance()));
 
                     tmpParticlePairToDistancesMap.put(tmpParticlePairAverageDistance.getUnderscoreConcatenatedParticlePair(), tmpNewDistancesList);
-
                     // </editor-fold>
                 } else {
                     // <editor-fold defaultstate="collapsed" desc="Append to particle pair">
@@ -3660,7 +4466,6 @@ public class JobUtilityMethods {
 
                     tmpDistancesList.add(tmpStep);
                     tmpDistancesList.add(String.valueOf(tmpParticlePairAverageDistance.getAverageDistance()));
-
                     // </editor-fold>
                 }
             }
@@ -3676,10 +4481,10 @@ public class JobUtilityMethods {
             // IMPORTANT: Delete possible existing file (e.g. for job restart)
             this.fileUtilityMethods.deleteSingleFile(this.getJobResultParticlePairDistanceFilePathname(aJobResultPath, tmpParticlePair));
             this.fileUtilityMethods.writeDefinedStringArrayToFile(
-                    tmpDistancesList.toArray(new String[0]),
-                    this.getJobResultParticlePairDistanceFilePathname(aJobResultPath, tmpParticlePair));
+                tmpDistancesList.toArray(new String[0]),
+                this.getJobResultParticlePairDistanceFilePathname(aJobResultPath, tmpParticlePair)
+            );
         }
-
         // </editor-fold>
     }
 
@@ -4093,6 +4898,203 @@ public class JobUtilityMethods {
         }
         return tmpTotalNumberOfParticlesOfSimulation;
     }
+    
+    /**
+     * Returns the total number of particles of the single molecule in
+     * simulation which has the maximum total number of particles.
+     *
+     * @param aValueItemContainer ValueItemContainer instance with value items
+     * for MonomerTable, MoleculeTable, Density and Quantity (are not changed)
+     * @return Total number of particles of the single molecule in simulation
+     * which has the total maximum number of particles or -1 if this quantity
+     * could not be calculated
+     */
+    public int getMaximumNumberOfMoleculeParticles(ValueItemContainer aValueItemContainer) {
+        return this.getMaximumNumberOfMoleculeParticles(this.createMoleculeInfoValueItem(aValueItemContainer));
+    }
+
+    /**
+     * Returns the total number of particles of the single molecule in
+     * simulation which has the maximum total number of particles.
+     *
+     * @param aMoleculeInfoValueItem Molecule info value item (is NOT changed)
+     * @return Total number of particles of the single molecule in simulation
+     * which has the total maximum number of particles or -1 if this quantity
+     * could not be calculated
+     */
+    public int getMaximumNumberOfMoleculeParticles(ValueItem aMoleculeInfoValueItem) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (!this.isMoleculeInfoValueItem(aMoleculeInfoValueItem)) {
+            return -1;
+        }
+
+        // </editor-fold>
+        int tmpMaximumNumberOfMoleculeParticles = 0;
+        // Loop over all molecules
+        for (int i = 0; i < aMoleculeInfoValueItem.getMatrixRowCount(); i++) {
+            SpicesGraphics tmpSpices = SpicesPool.getInstance().getSpices(aMoleculeInfoValueItem.getValue(i, 1));
+            int tmpTotalNumberOfParticlesOfMolecule = tmpSpices.getTotalNumberOfParticles();
+            SpicesPool.getInstance().setSpicesForReuse(tmpSpices);
+            int tmpNumberOfMolecules = aMoleculeInfoValueItem.getValueAsInt(i, 2);
+            tmpMaximumNumberOfMoleculeParticles = Math.max(tmpMaximumNumberOfMoleculeParticles, tmpTotalNumberOfParticlesOfMolecule * tmpNumberOfMolecules);
+        }
+        return tmpMaximumNumberOfMoleculeParticles;
+    }
+
+    /**
+     * Returns total number of all particles of a specific molecule in
+     * simulation
+     *
+     * @param aMoleculeInfoValueItem Molecule info value item (is NOT changed)
+     * @param aMoleculeName Name of molecule
+     * @return Total number of particles of molecule or -1 if total number of
+     * particles can not be calculated
+     */
+    public int getTotalNumberOfParticlesOfMoleculeInSimulation(ValueItem aMoleculeInfoValueItem, String aMoleculeName) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (!this.isMoleculeInfoValueItem(aMoleculeInfoValueItem)) {
+            return -1;
+        }
+        if (aMoleculeName == null || aMoleculeName.isEmpty()) {
+            return -1;
+        }
+
+        // </editor-fold>
+        // Loop over all molecules
+        for (int i = 0; i < aMoleculeInfoValueItem.getMatrixRowCount(); i++) {
+            // aMoleculeInfoValueItem column 0: Molecule name
+            if (aMoleculeInfoValueItem.getValue(i, 0).equals(aMoleculeName)) {
+                // aMoleculeInfoValueItem column 1: Molecular structure
+                SpicesGraphics tmpSpices = SpicesPool.getInstance().getSpices(aMoleculeInfoValueItem.getValue(i, 1));
+                int tmpNumberOfParticlesPerMolecule = tmpSpices.getTotalNumberOfParticles();
+                SpicesPool.getInstance().setSpicesForReuse(tmpSpices);
+                // aMoleculeInfoValueItem column 2: Quantity
+                int tmpNumberOfMolecules = aMoleculeInfoValueItem.getValueAsInt(i, 2);
+                return tmpNumberOfParticlesPerMolecule * tmpNumberOfMolecules;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Returns number of particles per molecule of a specific molecule
+     *
+     * @param aMoleculeName Name of molecule
+     * @param aValueItemContainer ValueItemContainer instance with value items
+     * for MonomerTable, MoleculeTable, Density and Quantity (are not changed)
+     * @return Number of particles per molecule or -1 if number of particles can
+     * not be evaluated
+     */
+    public int getNumberOfParticlesPerMolecule(String aMoleculeName, ValueItemContainer aValueItemContainer) {
+        return this.getNumberOfParticlesPerMolecule(this.createMoleculeInfoValueItem(aValueItemContainer), aMoleculeName);
+    }
+    
+    /**
+     * Returns number of particles per molecule of a specific molecule
+     *
+     * @param aMoleculeInfoValueItem Molecule info value item (is NOT changed)
+     * @param aMoleculeName Name of molecule
+     * @return Number of particles per molecule or -1 if number of particles can
+     * not be evaluated
+     */
+    public int getNumberOfParticlesPerMolecule(ValueItem aMoleculeInfoValueItem, String aMoleculeName) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (!this.isMoleculeInfoValueItem(aMoleculeInfoValueItem)) {
+            return -1;
+        }
+        if (aMoleculeName == null || aMoleculeName.isEmpty()) {
+            return -1;
+        }
+        // </editor-fold>
+        // Loop over all molecules
+        for (int i = 0; i < aMoleculeInfoValueItem.getMatrixRowCount(); i++) {
+            // aMoleculeInfoValueItem column 0: Molecule name
+            if (aMoleculeInfoValueItem.getValue(i, 0).equals(aMoleculeName)) {
+                // aMoleculeInfoValueItem column 1: Molecular structure
+                SpicesGraphics tmpSpices = SpicesPool.getInstance().getSpices(aMoleculeInfoValueItem.getValue(i, 1));
+                int tmpNumberOfParticlesPerMolecule = tmpSpices.getTotalNumberOfParticles();
+                SpicesPool.getInstance().setSpicesForReuse(tmpSpices);
+                return tmpNumberOfParticlesPerMolecule;
+            }
+        }
+        return -1;
+    }
+    // </editor-fold>
+    // <editor-fold defaultstate="collapsed" desc="- Number of molecules related methods">
+    /**
+     * Returns number of molecules of specified type in simulation
+     *
+     * @param aMoleculeName Name of molecule
+     * @param aValueItemContainer ValueItemContainer instance with value items
+     * for MonomerTable, MoleculeTable, Density and Quantity (are not changed)
+     * @return Number of molecules of specified type or -1 if number can not be 
+     * calculated
+     */
+    public int getTotalNumberOfMoleculesOfSpecifiedTypeInSimulation(String aMoleculeName, ValueItemContainer aValueItemContainer) {
+        return this.getTotalNumberOfMoleculesOfSpecifiedTypeInSimulation(aMoleculeName, this.createMoleculeInfoValueItem(aValueItemContainer));
+    }
+
+    /**
+     * Returns number of molecules of specified type in simulation
+     *
+     * @param aMoleculeName Name of molecule
+     * @param aMoleculeInfoValueItem Molecule info value item (is NOT changed)
+     * @return Number of molecules of specified type or -1 if number can not be 
+     * calculated
+     */
+    public int getTotalNumberOfMoleculesOfSpecifiedTypeInSimulation(String aMoleculeName, ValueItem aMoleculeInfoValueItem) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aMoleculeName == null || aMoleculeName.isEmpty()) {
+            return -1;
+        }
+        if (!this.isMoleculeInfoValueItem(aMoleculeInfoValueItem)) {
+            return -1;
+        }
+        // </editor-fold>
+        int tmpNumberOfMoleculesInSimulation = -1;
+        // Loop over all molecules
+        for (int i = 0; i < aMoleculeInfoValueItem.getMatrixRowCount(); i++) {
+            String tmpMoleculeName = aMoleculeInfoValueItem.getValue(i, 0);
+            if (tmpMoleculeName.equals(aMoleculeName)) {
+                tmpNumberOfMoleculesInSimulation = aMoleculeInfoValueItem.getValueAsInt(i, 2);
+                break;
+            }
+        }
+        return tmpNumberOfMoleculesInSimulation;
+    }
+
+    /**
+     * Returns the total number of molecules in simulation
+     *
+     * @param aValueItemContainer ValueItemContainer instance with value items
+     * for MonomerTable, MoleculeTable, Density and Quantity (are not changed)
+     * @return Total number of molecules in simulation or -1 if this quantity
+     * could not be calculated
+     */
+    public int getTotalNumberOfMoleculesInSimulation(ValueItemContainer aValueItemContainer) {
+        return this.getTotalNumberOfMoleculesInSimulation(this.createMoleculeInfoValueItem(aValueItemContainer));
+    }
+    
+    /**
+     * Returns the total number of molecules in simulation
+     *
+     * @param aMoleculeInfoValueItem Molecule info value item (is NOT changed)
+     * @return Total number of molecules in simulation or -1 if this quantity
+     * could not be calculated
+     */
+    public int getTotalNumberOfMoleculesInSimulation(ValueItem aMoleculeInfoValueItem) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (!this.isMoleculeInfoValueItem(aMoleculeInfoValueItem)) {
+            return -1;
+        }
+        // </editor-fold>
+        int tmpTotalNumberOfMolecules = 0;
+        // Loop over all molecules
+        for (int i = 0; i < aMoleculeInfoValueItem.getMatrixRowCount(); i++) {
+            tmpTotalNumberOfMolecules += aMoleculeInfoValueItem.getValueAsInt(i, 2);
+        }
+        return tmpTotalNumberOfMolecules;
+    }
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- Miscellaneous methods">
     /**
@@ -4213,71 +5215,6 @@ public class JobUtilityMethods {
     }
 
     /**
-     * Returns the total number of molecules in simulation
-     *
-     * @param aMoleculeInfoValueItem Molecule info value item (is NOT changed)
-     * @return Total number of molecules in simulation or -1 if this quantity
-     * could not be calculated
-     */
-    public int getTotalNumberOfMoleculesInSimulation(ValueItem aMoleculeInfoValueItem) {
-
-        // <editor-fold defaultstate="collapsed" desc="Checks">
-        if (!this.isMoleculeInfoValueItem(aMoleculeInfoValueItem)) {
-            return -1;
-        }
-
-        // </editor-fold>
-        int tmpTotalNumberOfMolecules = 0;
-        // Loop over all molecules
-        for (int i = 0; i < aMoleculeInfoValueItem.getMatrixRowCount(); i++) {
-            tmpTotalNumberOfMolecules += aMoleculeInfoValueItem.getValueAsInt(i, 2);
-        }
-        return tmpTotalNumberOfMolecules;
-    }
-
-    /**
-     * Returns the total number of particles of the single molecule in
-     * simulation which has the maximum total number of particles.
-     *
-     * @param aValueItemContainer ValueItemContainer instance with value items
-     * for MonomerTable, MoleculeTable, Density and Quantity (are not changed)
-     * @return Total number of particles of the single molecule in simulation
-     * which has the total maximum number of particles or -1 if this quantity
-     * could not be calculated
-     */
-    public int getMaximumNumberOfMoleculeParticles(ValueItemContainer aValueItemContainer) {
-        return this.getMaximumNumberOfMoleculeParticles(this.createMoleculeInfoValueItem(aValueItemContainer));
-    }
-
-    /**
-     * Returns the total number of particles of the single molecule in
-     * simulation which has the maximum total number of particles.
-     *
-     * @param aMoleculeInfoValueItem Molecule info value item (is NOT changed)
-     * @return Total number of particles of the single molecule in simulation
-     * which has the total maximum number of particles or -1 if this quantity
-     * could not be calculated
-     */
-    public int getMaximumNumberOfMoleculeParticles(ValueItem aMoleculeInfoValueItem) {
-        // <editor-fold defaultstate="collapsed" desc="Checks">
-        if (!this.isMoleculeInfoValueItem(aMoleculeInfoValueItem)) {
-            return -1;
-        }
-
-        // </editor-fold>
-        int tmpMaximumNumberOfMoleculeParticles = 0;
-        // Loop over all molecules
-        for (int i = 0; i < aMoleculeInfoValueItem.getMatrixRowCount(); i++) {
-            SpicesGraphics tmpSpices = SpicesPool.getInstance().getSpices(aMoleculeInfoValueItem.getValue(i, 1));
-            int tmpTotalNumberOfParticlesOfMolecule = tmpSpices.getTotalNumberOfParticles();
-            SpicesPool.getInstance().setSpicesForReuse(tmpSpices);
-            int tmpNumberOfMolecules = aMoleculeInfoValueItem.getValueAsInt(i, 2);
-            tmpMaximumNumberOfMoleculeParticles = Math.max(tmpMaximumNumberOfMoleculeParticles, tmpTotalNumberOfParticlesOfMolecule * tmpNumberOfMolecules);
-        }
-        return tmpMaximumNumberOfMoleculeParticles;
-    }
-
-    /**
      * Returns maximum number of connections of a single particle in simulation
      *
      * @param aValueItemContainer ValueItemContainer instance with value items
@@ -4335,73 +5272,6 @@ public class JobUtilityMethods {
 
         // </editor-fold>
         return this.getRadiusOfParticlesInDpdBox(1, aDensityInfoValueItem.getValueAsDouble(), ModelDefinitions.NUMBER_OF_DECIMALS_FOR_GRAPHICS_COORDINATES);
-    }
-
-    /**
-     * Returns total number of all particles of a specific molecule in
-     * simulation
-     *
-     * @param aMoleculeInfoValueItem Molecule info value item (is NOT changed)
-     * @param aMoleculeName Name of molecule
-     * @return Total number of particles of molecule or -1 if total number of
-     * particles can not be calculated
-     */
-    public int getTotalNumberOfParticlesOfMoleculeInSimulation(ValueItem aMoleculeInfoValueItem, String aMoleculeName) {
-        // <editor-fold defaultstate="collapsed" desc="Checks">
-        if (!this.isMoleculeInfoValueItem(aMoleculeInfoValueItem)) {
-            return -1;
-        }
-        if (aMoleculeName == null || aMoleculeName.isEmpty()) {
-            return -1;
-        }
-
-        // </editor-fold>
-        // Loop over all molecules
-        for (int i = 0; i < aMoleculeInfoValueItem.getMatrixRowCount(); i++) {
-            // aMoleculeInfoValueItem column 0: Molecule name
-            if (aMoleculeInfoValueItem.getValue(i, 0).equals(aMoleculeName)) {
-                // aMoleculeInfoValueItem column 1: Molecular structure
-                SpicesGraphics tmpSpices = SpicesPool.getInstance().getSpices(aMoleculeInfoValueItem.getValue(i, 1));
-                int tmpNumberOfParticlesPerMolecule = tmpSpices.getTotalNumberOfParticles();
-                SpicesPool.getInstance().setSpicesForReuse(tmpSpices);
-                // aMoleculeInfoValueItem column 2: Quantity
-                int tmpNumberOfMolecules = aMoleculeInfoValueItem.getValueAsInt(i, 2);
-                return tmpNumberOfParticlesPerMolecule * tmpNumberOfMolecules;
-            }
-        }
-        return -1;
-    }
-
-    /**
-     * Returns number of particles per molecule of a specific molecule
-     *
-     * @param aMoleculeInfoValueItem Molecule info value item (is NOT changed)
-     * @param aMoleculeName Name of molecule
-     * @return Number of particles per molecule or -1 if number of particles can
-     * not be evaluated
-     */
-    public int getNumberOfParticlesPerMolecule(ValueItem aMoleculeInfoValueItem, String aMoleculeName) {
-        // <editor-fold defaultstate="collapsed" desc="Checks">
-        if (!this.isMoleculeInfoValueItem(aMoleculeInfoValueItem)) {
-            return -1;
-        }
-        if (aMoleculeName == null || aMoleculeName.isEmpty()) {
-            return -1;
-        }
-
-        // </editor-fold>
-        // Loop over all molecules
-        for (int i = 0; i < aMoleculeInfoValueItem.getMatrixRowCount(); i++) {
-            // aMoleculeInfoValueItem column 0: Molecule name
-            if (aMoleculeInfoValueItem.getValue(i, 0).equals(aMoleculeName)) {
-                // aMoleculeInfoValueItem column 1: Molecular structure
-                SpicesGraphics tmpSpices = SpicesPool.getInstance().getSpices(aMoleculeInfoValueItem.getValue(i, 1));
-                int tmpNumberOfParticlesPerMolecule = tmpSpices.getTotalNumberOfParticles();
-                SpicesPool.getInstance().setSpicesForReuse(tmpSpices);
-                return tmpNumberOfParticlesPerMolecule;
-            }
-        }
-        return -1;
     }
 
     /**
@@ -4518,7 +5388,7 @@ public class JobUtilityMethods {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Private methods">
-    // <editor-fold defaultstate="collapsed" desc="- Particle positions related methods">
+    // <editor-fold defaultstate="collapsed" desc="- Read particle positions related methods">
     /**
      * Reads GraphicalParticlePositionInfo instance from graphical particle 
      * positions file
@@ -4560,7 +5430,8 @@ public class JobUtilityMethods {
             double tmpBoxLengthY = this.getSimulationBoxLengthY(aJobInputValueItemContainer);
             double tmpBoxLengthZ = this.getSimulationBoxLengthZ(aJobInputValueItemContainer);
             double tmpLengthConversionFactor = this.getLengthConversionFactorFromDpdToPhysicalLength(aJobInputValueItemContainer);
-            HashMap<String, HashMap<String, IGraphicalParticle>> tmpMoleculeToParticlesMap = this.getMoleculeToParticlesMap(aJobInputValueItemContainer, tmpLengthConversionFactor);
+            HashMap<String, HashMap<String, IGraphicalParticle>> tmpMoleculeToParticlesMap = 
+                this.getMoleculeToParticlesMap(aJobInputValueItemContainer, tmpLengthConversionFactor);
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="Read particle positions">
             BufferedReader tmpBufferedReader = null;
@@ -4591,14 +5462,16 @@ public class JobUtilityMethods {
                         if (tmpMoleculeName == null) {
                             break;
                         }
-                        HashMap<String, IGraphicalParticle> tmpParticleToGraphicalParticleMap = tmpMoleculeToParticlesMap.get(tmpMoleculeName);
+                        HashMap<String, IGraphicalParticle> tmpParticleToGraphicalParticleMap = 
+                            tmpMoleculeToParticlesMap.get(tmpMoleculeName);
                         if (tmpParticleToGraphicalParticleMap == null) {
                             return null;
                         }
                         // </editor-fold>
                         // <editor-fold defaultstate="collapsed" desc="Particle">
                         tmpParticle = tmpBufferedReader.readLine();
-                        GraphicalParticle tmpGraphicalParticle = (GraphicalParticle) tmpParticleToGraphicalParticleMap.get(tmpParticle);
+                        GraphicalParticle tmpGraphicalParticle = 
+                            (GraphicalParticle) tmpParticleToGraphicalParticleMap.get(tmpParticle);
                         if (tmpGraphicalParticle == null) {
                             return null;
                         }
@@ -4736,7 +5609,9 @@ public class JobUtilityMethods {
             double tmpBoxLengthY = this.getSimulationBoxLengthY(aJobInputValueItemContainer);
             double tmpBoxLengthZ = this.getSimulationBoxLengthZ(aJobInputValueItemContainer);
             double tmpLengthConversionFactor = this.getLengthConversionFactorFromDpdToPhysicalLength(aJobInputValueItemContainer);
-            HashMap<String, LinkedList<PointInSpace>> tmpParticleToPositionsMap = new HashMap<String, LinkedList<PointInSpace>>();
+            // O(100) is reasonable capacity
+            HashMap<String, LinkedList<PointInSpace>> tmpParticleToPositionsMap = 
+                new HashMap<String, LinkedList<PointInSpace>>(100);
             LinkedList<PointInSpace> tmpPositionsList;
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="Read particle positions">
@@ -4887,8 +5762,11 @@ public class JobUtilityMethods {
             double tmpBoxLengthX = this.getSimulationBoxLengthX(aJobInputValueItemContainer);
             double tmpBoxLengthY = this.getSimulationBoxLengthY(aJobInputValueItemContainer);
             double tmpBoxLengthZ = this.getSimulationBoxLengthZ(aJobInputValueItemContainer);
-            double tmpLengthConversionFactor = this.getLengthConversionFactorFromDpdToPhysicalLength(aJobInputValueItemContainer);
-            HashMap<String, LinkedList<PointInSpace>> tmpMoleculeParticleToPositionsMap = new HashMap<String, LinkedList<PointInSpace>>();
+            double tmpLengthConversionFactor = 
+                this.getLengthConversionFactorFromDpdToPhysicalLength(aJobInputValueItemContainer);
+            // O(100) is reasonable capacity
+            HashMap<String, LinkedList<PointInSpace>> tmpMoleculeParticleToPositionsMap = 
+                new HashMap<String, LinkedList<PointInSpace>>(100);
             LinkedList<PointInSpace> tmpPositionsList;
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="Read molecule-particle positions">
@@ -4992,7 +5870,188 @@ public class JobUtilityMethods {
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="Return particle positions">
             return tmpMoleculeParticleToPositionsMap;
+            // </editor-fold>
+        } catch (Exception anException) {
+            ModelUtils.appendToLogfile(true, anException);
+            return null;
+        }
+    }
 
+    /**
+     * Returns hash map with molecule center positions (NOT center of mass) 
+     * from particle positions file converted to Angstrom. Hash map maps 
+     * molecule centers to list of all of its positions.
+     *
+     * @param aJobResultParticlePositionsFilePathname Full pathname of graphical
+     * particle positions file of Job Result
+     * @param aJobInputValueItemContainer Value item container of corresponding
+     * Job Input
+     * @return Hash map with molecule center positions (NOT center of mass) 
+     * from particle positions file converted to Angstrom or null if molecule
+     * center positions could not be evaluated
+     */
+    private HashMap<String, LinkedList<PointInSpace>> readMoleculeCenterPositions(
+        String aJobResultParticlePositionsFilePathname, 
+        ValueItemContainer aJobInputValueItemContainer
+    ) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aJobResultParticlePositionsFilePathname == null || 
+            aJobResultParticlePositionsFilePathname.isEmpty() || 
+            !(new File(aJobResultParticlePositionsFilePathname)).isFile()
+        ) {
+            return null;
+        }
+        if (aJobInputValueItemContainer == null) {
+            return null;
+        }
+        // </editor-fold>
+        try {
+            // <editor-fold defaultstate="collapsed" desc="Local variables">
+            String tmpParticle;
+            int tmpNumberOfParticlePositions;
+            double tmpX;
+            double tmpY;
+            double tmpZ;
+            double tmpXinDpd;
+            double tmpYinDpd;
+            double tmpZinDpd;
+            // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="Set necessary variables">
+            double tmpBoxLengthX = this.getSimulationBoxLengthX(aJobInputValueItemContainer);
+            double tmpBoxLengthY = this.getSimulationBoxLengthY(aJobInputValueItemContainer);
+            double tmpBoxLengthZ = this.getSimulationBoxLengthZ(aJobInputValueItemContainer);
+            double tmpLengthConversionFactor = 
+                this.getLengthConversionFactorFromDpdToPhysicalLength(aJobInputValueItemContainer);
+            // O(100) is reasonable capacity
+            HashMap<String, LinkedList<PointInSpace>> tmpMoleculeCenterToPositionsMap = new HashMap<>(100);
+            int tmpTotalNumberOfMoleculesInSimulation = 
+                this.getTotalNumberOfMoleculesInSimulation(aJobInputValueItemContainer);
+            // tmpMoleculeNames[i] corresponds to tmpMoleculeCenters[i]
+            String[] tmpMoleculeNames = new String[tmpTotalNumberOfMoleculesInSimulation];
+            PointInSpace[] tmpMoleculeCenters = new PointInSpace[tmpTotalNumberOfMoleculesInSimulation];
+            for (int k = 0; k < tmpMoleculeCenters.length; k++) {
+                tmpMoleculeCenters[k] = new PointInSpace(0.0, 0.0, 0.0);
+            }
+            // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="Read particle positions">
+            BufferedReader tmpBufferedReader = null;
+            try {
+                String tmpLine;
+                if (!(new File(aJobResultParticlePositionsFilePathname)).isFile()) {
+                    return null;
+                }
+                tmpBufferedReader = 
+                    new BufferedReader(
+                        new InputStreamReader(
+                            new GZIPInputStream(
+                                new FileInputStream(aJobResultParticlePositionsFilePathname), 
+                                ModelDefinitions.BUFFER_SIZE
+                            )
+                        )
+                    );
+                tmpLine = tmpBufferedReader.readLine();
+                if (tmpLine.equals("Version 1.0.0")) {
+                    // <editor-fold defaultstate="collapsed" desc="Version 1.0.0">
+                    // Ignore total number of particles in simulation
+                    tmpBufferedReader.readLine();
+                    while (true) {
+                        // <editor-fold defaultstate="collapsed" desc="Molecule">
+                        String tmpMoleculeName = tmpBufferedReader.readLine();
+                        if (tmpMoleculeName == null) {
+                            break;
+                        }
+                        // </editor-fold>
+                        // <editor-fold defaultstate="collapsed" desc="Particle">
+                        tmpParticle = tmpBufferedReader.readLine();
+                        // </editor-fold>
+                        // <editor-fold defaultstate="collapsed" desc="Number of positions">
+                        tmpNumberOfParticlePositions = Integer.valueOf(tmpBufferedReader.readLine());
+                        // </editor-fold>
+                        // <editor-fold defaultstate="collapsed" desc="Read particle positions">
+                        for (int k = 0; k < tmpNumberOfParticlePositions; k++) {
+                            tmpXinDpd = Double.valueOf(tmpBufferedReader.readLine());
+                            if (tmpXinDpd < 0.0) {
+                                tmpXinDpd = 0.0;
+                            }
+                            if (tmpXinDpd > tmpBoxLengthX) {
+                                tmpXinDpd = tmpBoxLengthX;
+                            }
+                            tmpX = tmpXinDpd * tmpLengthConversionFactor;                            
+
+                            tmpYinDpd = Double.valueOf(tmpBufferedReader.readLine());
+                            if (tmpYinDpd < 0.0) {
+                                tmpYinDpd = 0.0;
+                            }
+                            if (tmpYinDpd > tmpBoxLengthY) {
+                                tmpYinDpd = tmpBoxLengthY;
+                            }
+                            tmpY = tmpYinDpd * tmpLengthConversionFactor;                            
+
+                            tmpZinDpd = Double.valueOf(tmpBufferedReader.readLine());
+                            if (tmpZinDpd < 0.0) {
+                                tmpZinDpd = 0.0;
+                            }
+                            if (tmpZinDpd > tmpBoxLengthZ) {
+                                tmpZinDpd = tmpBoxLengthZ;
+                            }
+                            tmpZ = tmpZinDpd * tmpLengthConversionFactor;                            
+                            
+                            // Ignore particle index
+                            tmpBufferedReader.readLine();
+                            // Read molecule index
+                            int tmpMoleculeIndex = Integer.valueOf(tmpBufferedReader.readLine());
+
+                            tmpMoleculeCenters[tmpMoleculeIndex].add(tmpX, tmpY, tmpZ);
+                            tmpMoleculeNames[tmpMoleculeIndex] = tmpMoleculeName;
+                        }
+                        // </editor-fold>
+                    }
+                    // O(100) is reasonable capacity
+                    HashMap<String, Integer> tmpMoleculeNameToParticleCountMap = new HashMap<>(100);
+                    LinkedList<PointInSpace> tmpMoleculeCenterList = null;
+                    int tmpNumberOfParticlesPerMolecule = -1;
+                    for (int k = 0; k < tmpMoleculeNames.length; k++) {
+                        if (tmpMoleculeCenterToPositionsMap.containsKey(tmpMoleculeNames[k])) {
+                            tmpMoleculeCenterList = tmpMoleculeCenterToPositionsMap.get(tmpMoleculeNames[k]);
+                        } else {
+                            tmpMoleculeCenterList = new LinkedList<>();
+                            tmpMoleculeCenterToPositionsMap.put(tmpMoleculeNames[k], tmpMoleculeCenterList);
+                        }
+                        if (tmpMoleculeNameToParticleCountMap.containsKey(tmpMoleculeNames[k])) {
+                            tmpNumberOfParticlesPerMolecule = tmpMoleculeNameToParticleCountMap.get(tmpMoleculeNames[k]);
+                        } else {
+                            tmpNumberOfParticlesPerMolecule = 
+                                this.getNumberOfParticlesPerMolecule(
+                                    tmpMoleculeNames[k], 
+                                    aJobInputValueItemContainer
+                                );
+                            tmpMoleculeNameToParticleCountMap.put(tmpMoleculeNames[k], tmpNumberOfParticlesPerMolecule);
+                        }
+                        tmpMoleculeCenters[k].divide((double) tmpNumberOfParticlesPerMolecule);
+                        tmpMoleculeCenterList.add(tmpMoleculeCenters[k]);
+                    }
+                    // </editor-fold>
+                } else {
+                    // <editor-fold defaultstate="collapsed" desc="Unknown version">
+                    return null;
+                    // </editor-fold>
+                }
+            } catch (Exception anException) {
+                ModelUtils.appendToLogfile(true, anException);
+                return null;
+            } finally {
+                if (tmpBufferedReader != null) {
+                    try {
+                        tmpBufferedReader.close();
+                    } catch (IOException anException) {
+                        ModelUtils.appendToLogfile(true, anException);
+                        return null;
+                    }
+                }
+            }
+            // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="Return molecule center positions">
+            return tmpMoleculeCenterToPositionsMap;
             // </editor-fold>
         } catch (Exception anException) {
             ModelUtils.appendToLogfile(true, anException);
@@ -5094,6 +6153,9 @@ public class JobUtilityMethods {
         // <editor-fold defaultstate="collapsed" desc="Set random number generator and seed">
         int tmpRandomSeed = tmpCompartmentContainer.getGeometryRandomSeed();
         IRandom tmpRandomNumberGenerator = this.miscUtilityMethods.getRandomNumberGenerator(tmpRandomSeed);
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Set tmpIsMoleculeStartGeometryCompressedToSinglePoint">
+        boolean tmpIsMoleculeStartGeometryCompressedToSinglePoint = tmpCompartmentContainer.isMoleculeStartGeometryCompressedToSinglePoint();
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Delete aJdpdPositionsBondsFilePathname if necessary">
         if (!this.fileUtilityMethods.deleteSingleFile(aJdpdPositionsBondsFilePathname)) {
@@ -5294,28 +6356,44 @@ public class JobUtilityMethods {
                                                     );
                                                     tmpLastParticleCoordinates = tmpFirstParticleCoordinates;
                                                 } else {
-                                                    tmpSphere.fillRandomPointsInVolumeWithExcludingSpheres(
-                                                        tmpFirstParticleCoordinates, 
-                                                        tmpLastParticleCoordinates, 
-                                                        0, 
-                                                        tmpQuantityInVolume,
-                                                        tmpBondLength, 
-                                                        Preferences.getInstance().getNumberOfTrialsForCompartment(),
-                                                        tmpRandomNumberGenerator
-                                                    );
+                                                    if (tmpIsMoleculeStartGeometryCompressedToSinglePoint) {
+                                                        tmpLastParticleCoordinates = tmpFirstParticleCoordinates;
+                                                    } else {
+                                                        tmpSphere.fillRandomPointsInVolumeWithExcludingSpheres(
+                                                            tmpFirstParticleCoordinates, 
+                                                            tmpLastParticleCoordinates, 
+                                                            0, 
+                                                            tmpQuantityInVolume,
+                                                            tmpBondLength, 
+                                                            Preferences.getInstance().getNumberOfTrialsForCompartment(),
+                                                            tmpRandomNumberGenerator
+                                                        );
+                                                    }
                                                 }
                                             }
                                             if (tmpQuantityOnSurface > 0) {
-                                                if (this.graphicsUtilityMethods.isUpperSurfaceGeometryInSphere(tmpChemicalCompositionValueItem, i)) {
-                                                    tmpSphere.fillUpperRandomPointsOnSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpRandomNumberGenerator);
-                                                } else if (this.graphicsUtilityMethods.isMiddleSurfaceGeometryInSphere(tmpChemicalCompositionValueItem, i)) {
-                                                    tmpSphere.fillMiddleRandomPointsOnSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpRandomNumberGenerator);
-                                                } else {
+                                                if (this.graphicsUtilityMethods.isOutOfSurfaceGeometryInSphere(tmpChemicalCompositionValueItem, i)) {
                                                     tmpSphere.fillRandomPointsOnSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpRandomNumberGenerator);
+                                                    this.graphicsUtilityMethods.fillPointsOutsideSphereSurface(
+                                                        tmpFirstParticleCoordinates, 
+                                                        tmpLastParticleCoordinates, 
+                                                        tmpQuantityInVolume, 
+                                                        tmpQuantityOnSurface, 
+                                                        tmpSphere, 
+                                                        tmpCompartmentContainer.getCompartmentBox()
+                                                    );
+                                                } else {
+                                                    if (this.graphicsUtilityMethods.isUpperSurfaceGeometryInSphere(tmpChemicalCompositionValueItem, i)) {
+                                                        tmpSphere.fillUpperRandomPointsOnSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpRandomNumberGenerator);
+                                                    } else if (this.graphicsUtilityMethods.isMiddleSurfaceGeometryInSphere(tmpChemicalCompositionValueItem, i)) {
+                                                        tmpSphere.fillMiddleRandomPointsOnSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpRandomNumberGenerator);
+                                                    } else if (this.graphicsUtilityMethods.isWholeSurfaceGeometryInSphere(tmpChemicalCompositionValueItem, i)) {
+                                                        tmpSphere.fillRandomPointsOnSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpRandomNumberGenerator);
+                                                    }
+                                                    // Center of sphere
+                                                    PointInSpace tmpCenterOfSphere = tmpSphere.getBodyCenter();
+                                                    Arrays.fill(tmpLastParticleCoordinates, tmpQuantityInVolume, tmpQuantityInVolume + tmpQuantityOnSurface, tmpCenterOfSphere);
                                                 }
-                                                // Center of sphere
-                                                PointInSpace tmpCenterOfSphere = tmpSphere.getBodyCenter();
-                                                Arrays.fill(tmpLastParticleCoordinates, tmpQuantityInVolume, tmpQuantityInVolume + tmpQuantityOnSurface, tmpCenterOfSphere);
                                             }
                                             SpicesGraphics tmpSpices = SpicesPool.getInstance().getSpices(tmpMolecularStructureString);
                                             tmpSpices.setCoordinates(tmpLineNumber, tmpFirstParticleCoordinates, tmpLastParticleCoordinates, tmpBondLength);
@@ -5570,15 +6648,19 @@ public class JobUtilityMethods {
                                                         );
                                                         tmpLastParticleCoordinates = tmpFirstParticleCoordinates;
                                                     } else {
-                                                        tmpXyLayer.fillRandomPointsInVolumeWithExcludingSpheres(
-                                                            tmpFirstParticleCoordinates, 
-                                                            tmpLastParticleCoordinates, 
-                                                            0, 
-                                                            tmpQuantityInVolume,
-                                                            tmpBondLength, 
-                                                            Preferences.getInstance().getNumberOfTrialsForCompartment(),
-                                                            tmpRandomNumberGenerator
-                                                        );
+                                                        if (tmpIsMoleculeStartGeometryCompressedToSinglePoint) {
+                                                            tmpLastParticleCoordinates = tmpFirstParticleCoordinates;
+                                                        } else {
+                                                            tmpXyLayer.fillRandomPointsInVolumeWithExcludingSpheres(
+                                                                tmpFirstParticleCoordinates, 
+                                                                tmpLastParticleCoordinates, 
+                                                                0, 
+                                                                tmpQuantityInVolume,
+                                                                tmpBondLength, 
+                                                                Preferences.getInstance().getNumberOfTrialsForCompartment(),
+                                                                tmpRandomNumberGenerator
+                                                            );
+                                                        }
                                                     }
                                                 }
                                                 if (tmpQuantityOnSurface > 0) {
@@ -5827,14 +6909,18 @@ public class JobUtilityMethods {
                             if (tmpIsSingleParticleMolecule) {
                                 tmpLastParticleCoordinates = tmpFirstParticleCoordinates;
                             } else {
-                                tmpLastParticleCoordinates = new PointInSpace[tmpQuantity];
-                                tmpCompartmentContainer.getCompartmentBox().fillFreeVolumeRandomPoints(
-                                    tmpLastParticleCoordinates, 
-                                    0, 
-                                    tmpQuantity, 
-                                    Preferences.getInstance().getNumberOfTrialsForCompartment(),
-                                    tmpRandomNumberGenerator
-                                );
+                                if (tmpIsMoleculeStartGeometryCompressedToSinglePoint) {
+                                    tmpLastParticleCoordinates = tmpFirstParticleCoordinates;
+                                } else {
+                                    tmpLastParticleCoordinates = new PointInSpace[tmpQuantity];
+                                    tmpCompartmentContainer.getCompartmentBox().fillFreeVolumeRandomPoints(
+                                        tmpLastParticleCoordinates, 
+                                        0, 
+                                        tmpQuantity, 
+                                        Preferences.getInstance().getNumberOfTrialsForCompartment(),
+                                        tmpRandomNumberGenerator
+                                    );
+                                }
                             }
                             SpicesGraphics tmpSpices = SpicesPool.getInstance().getSpices(tmpMolecularStructureString);
                             tmpSpices.setCoordinates(tmpLineNumber, tmpFirstParticleCoordinates, tmpLastParticleCoordinates, tmpBondLength);
@@ -6515,7 +7601,6 @@ public class JobUtilityMethods {
     }
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- Radial Distribution Function (RDF) related methods">
-
     /**
      * Returns particle pairs from particle-pair RDF calculation value item of
      * Job Input value item container
@@ -6526,7 +7611,6 @@ public class JobUtilityMethods {
      * found
      */
     private String[][] getParticlePairsForRdfCalculation(ValueItemContainer aJobInputValueItemContainer) {
-
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aJobInputValueItemContainer == null) {
             return null;
@@ -6558,7 +7642,6 @@ public class JobUtilityMethods {
      * molecule-particle pairs could not be found
      */
     private String[][] getMoleculeParticlePairsForRdfCalculation(ValueItemContainer aJobInputValueItemContainer) {
-
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aJobInputValueItemContainer == null) {
             return null;
@@ -6580,9 +7663,43 @@ public class JobUtilityMethods {
             return null;
         }
     }
+
+    /**
+     * Returns molecule-center pairs from molecule-center-pair RDF
+     * calculation value item of Job Input value item container
+     *
+     * @param aJobInputValueItemContainer Value item container of Job Input
+     * @return Molecule-center pairs from molecule-center-pair RDF
+     * calculation value item of Job Input value item container or null if
+     * molecule-center pairs could not be found
+     */
+    private String[][] getMoleculeCenterPairsForRdfCalculation(ValueItemContainer aJobInputValueItemContainer) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aJobInputValueItemContainer == null) {
+            return null;
+        }
+        // </editor-fold>
+        ValueItem tmpMoleculeCenterPairRdfCalculationValueItem = aJobInputValueItemContainer.getValueItem("MoleculeCenterPairRdfCalculation");
+        if (tmpMoleculeCenterPairRdfCalculationValueItem == null || !tmpMoleculeCenterPairRdfCalculationValueItem.isActive()) {
+            return null;
+        }
+        LinkedList<String[]> tmpMoleculeCenterPairList = new LinkedList<String[]>();
+        for (int i = 0; i < tmpMoleculeCenterPairRdfCalculationValueItem.getMatrixRowCount(); i++) {
+            tmpMoleculeCenterPairList.add(
+                new String[] {
+                    tmpMoleculeCenterPairRdfCalculationValueItem.getValue(i, 0),
+                    tmpMoleculeCenterPairRdfCalculationValueItem.getValue(i, 1)
+                }
+            );
+        }
+        if (tmpMoleculeCenterPairList.size() > 0) {
+            return tmpMoleculeCenterPairList.toArray(new String[0][]);
+        } else {
+            return null;
+        }
+    }
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- Particle-particle distance related methods">
-
     /**
      * Returns defined particle-pair average distances for simulation box
      * described by aJobResultParticlePositionsFilePathname
@@ -6627,11 +7744,15 @@ public class JobUtilityMethods {
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Calculate average distance">
         LinkedList<ParticlePairAverageDistance> tmpParticlePairDistanceList = new LinkedList<ParticlePairAverageDistance>();
-        DistanceCalculationUtils tmpDistanceCalculationUtils = new DistanceCalculationUtils(
-                tmpBoxLengthX, tmpBoxLengthY, tmpBoxLengthZ,
+        DistanceCalculationUtils tmpDistanceCalculationUtils = 
+            new DistanceCalculationUtils(
+                tmpBoxLengthX, 
+                tmpBoxLengthY, 
+                tmpBoxLengthZ,
                 this.isPeriodicBoundaryX(aJobInputValueItemContainer),
                 this.isPeriodicBoundaryY(aJobInputValueItemContainer),
-                this.isPeriodicBoundaryZ(aJobInputValueItemContainer));
+                this.isPeriodicBoundaryZ(aJobInputValueItemContainer)
+            );
         for (String[] tmpSingleParticlePair : tmpParticlePairs) {
             double tmpParticlePairAverageDistance;
             if (tmpSingleParticlePair[0].equals(tmpSingleParticlePair[1])) {
@@ -6851,7 +7972,6 @@ public class JobUtilityMethods {
             return null;
         }
     }
-
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- Box properties summary related methods">
     /**
@@ -7467,6 +8587,27 @@ public class JobUtilityMethods {
             ModelUtils.appendToLogfile(true, anException);
             return -1;
         }
+    }
+    // </editor-fold>
+    // <editor-fold defaultstate="collapsed" desc="- Miscellaneous methods">
+    /**
+     * Returns center of points in aPointList
+     * 
+     * @param aPointList List of points
+     * @return Center of points in aPointList or null if center can not be 
+     * calculated
+     */
+    private PointInSpace getCenterPoint(LinkedList<PointInSpace> aPointList) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aPointList == null || aPointList.isEmpty()) {
+            return null;
+        }
+        // </editor-fold>
+        PointInSpace tmpCenterPoint = new PointInSpace(0.0, 0.0, 0.0);
+        for (PointInSpace tmpPoint : aPointList) {
+            tmpCenterPoint.add(tmpPoint);
+        }
+        return tmpCenterPoint;
     }
     // </editor-fold>
     // </editor-fold>

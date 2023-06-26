@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -42,14 +42,41 @@ import javax.swing.border.BevelBorder;
 public class CustomDialogApplyCancelSize extends JDialog {
 
     // <editor-fold defaultstate="collapsed" desc="Private class variables">
+    /**
+     * GUI element
+     */
     private JButton centerDialogButton;
+    /**
+     * GUI element
+     */
     private JButton minimizeDialogSizeButton;
+    /**
+     * GUI element
+     */
     private JButton maximizeDialogSizeButton;
+    /**
+     * GUI element
+     */
     private JButton customDialogSizeButton;
+    /**
+     * GUI element
+     */
     private JButton setCustomDialogPreferencesButton;
+    /**
+     * GUI element
+     */
     private JButton applyButton;
+    /**
+     * GUI element
+     */
     private JButton cancelButton;
+    /**
+     * GUI element
+     */
     private SpringLayout buttonPanelSpringLayout;
+    /**
+     * GUI element
+     */
     private JPanel buttonPanel;
     // </editor-fold>
     //

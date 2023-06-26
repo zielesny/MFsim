@@ -1,6 +1,6 @@
 /**
  * SPICES (Simplified Particle Input ConnEction Specification)
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -24,9 +24,6 @@ import de.gnwi.mfsim.model.graphics.particle.GraphicalParticlePosition;
 import de.gnwi.mfsim.model.graphics.particle.GraphicalParticleWrapper;
 import java.awt.Color;
 import java.util.HashMap;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
 import junit.framework.TestCase;
 import de.gnwi.mfsim.model.graphics.particle.IGraphicalParticle;
 

@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -112,7 +112,8 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
      *
      * @param aValueItemContainer ValueItemContainer instance with value items
      * for BoxSize, MonomerTable, MoleculeTable, Density, Quantity, 
-     * GeometryRandomSeed and ParticleTable (value items are not changed)
+     * GeometryRandomSeed, MoleculeStartGeometry and ParticleTable (value items 
+     * are not changed)
      * @throws IllegalArgumentException Thrown if an argument is illegal
      */
     public CompartmentContainer(ValueItemContainer aValueItemContainer) {
@@ -123,10 +124,15 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
         // <editor-fold defaultstate="collapsed" desc="Set value item container">
         this.valueItemContainer = new ValueItemContainer(this);
         // <editor-fold defaultstate="collapsed" desc="- Hidden value items (vertical positions 0 to 5)">
-        // <editor-fold defaultstate="collapsed" desc="-- tmpGeometryRandomSeedValueItem (vertical position 0)">
+        // <editor-fold defaultstate="collapsed" desc="-- tmpGeometryRandomSeedValueItem and tmpMoleculeStartGeometryValueItem (both vertical position 0)">
         this.valueItemContainer.addValueItem(
             this.getGeometryRandomSeedValueItem(
                 aValueItemContainer.getValueItem("GeometryRandomSeed").getValueAsLong()
+            )
+        );
+        this.valueItemContainer.addValueItem(
+            this.getMoleculeStartGeometryValueItem(
+                aValueItemContainer.getValueItem("MoleculeStartGeometry").getValue()
             )
         );
         // </editor-fold>
@@ -333,8 +339,8 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
                 tmpBulkValueItem.setValue(String.valueOf(tmpNewBulkValue), tmpChangedRow, 2);
                 // Set new number of molecules
                 int tmpSumOfMolecules = anUpdateNotifierValueItem.getValueAsInt(tmpChangedRow, 3) + tmpBulkValueItem.getValueAsInt(tmpChangedRow, 3);
-                double tmpBulkFraction = tmpBulkValueItem.getValueAsDouble(tmpChangedRow, 2)
-                        / (tmpBulkValueItem.getValueAsDouble(tmpChangedRow, 2) + anUpdateNotifierValueItem.getValueAsDouble(tmpChangedRow, 2));
+                double tmpBulkFraction = tmpBulkValueItem.getValueAsDouble(tmpChangedRow, 2) / (tmpBulkValueItem.getValueAsDouble(tmpChangedRow, 2)
+                    + anUpdateNotifierValueItem.getValueAsDouble(tmpChangedRow, 2));
                 int tmpBulkMolecules = (int) Math.floor(tmpBulkFraction * (double) tmpSumOfMolecules);
                 int tmpUpdateNotifierMolecules = tmpSumOfMolecules - tmpBulkMolecules;
                 tmpBulkValueItem.setValue(String.valueOf(tmpBulkMolecules), tmpChangedRow, 3);
@@ -378,27 +384,64 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
                     if (tmpBoxInfoValueItem == null) {
                         return;
                     }
-                    ValueItem tmpGeometryDataValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItemOfBlock(anUpdateNotifierValueItem.getBlockName(),
-                            ModelDefinitions.COMPARTMENT_XY_LAYER_GEOMETRY_DATA_PREFIX_NAME);
+                    ValueItem tmpGeometryDataValueItem = 
+                        anUpdateNotifierValueItem.getValueItemContainer().getValueItemOfBlock(
+                            anUpdateNotifierValueItem.getBlockName(),
+                            ModelDefinitions.COMPARTMENT_XY_LAYER_GEOMETRY_DATA_PREFIX_NAME
+                        );
                     int tmpTotalNumberOfParticles = 0;
                     for (int i = 0; i < anUpdateNotifierValueItem.getMatrixRowCount(); i++) {
                         // Number of molecules * Number of particles per molecule
                         tmpTotalNumberOfParticles += anUpdateNotifierValueItem.getValueAsInt(i, 3) * tmpMoleculeInfoValueItem.getValueAsInt(i, 3);
                     }
-                    // NOTE: Z-length is cut (!) after tmpNumberOfDecimals decimals so z-length is always a little smaller than in "reality": This avoids possible drawing problems.
-                    double tmpZLength = this.jobUtilityMethods.getZLengthOfBoxOfParticlesInDpdBox(tmpTotalNumberOfParticles, tmpDensityInfoValueItem.getValueAsDouble(),
-                            tmpGeometryDataValueItem.getValueAsDouble(0, 3), tmpGeometryDataValueItem.getValueAsDouble(0, 4), tmpGeometryDataValueItem.getTypeFormat(0, 3).getNumberOfDecimals());
+                    boolean tmpIsBulkEmpty = true;
+                    for (int i = 0; i < tmpBulkValueItem.getMatrixRowCount(); i++) {
+                        if (tmpBulkValueItem.getValueAsInt(i, 3) > 0) {
+                            tmpIsBulkEmpty = false;
+                            break;
+                        }
+                    }
+                    double tmpZLength;
+                    if (tmpIsBulkEmpty && this.compartmentBox.getBodies().size() == 1) {
+                        // Treament of special case that there is ONE xy-layer 
+                        // compartment that contains ALL of the molecules:
+                        // Then the z-length of the xy-layer compartment is equal 
+                        // to the z-length of the simulation box
+                        // IMPORTANT: Do NOT use pure this.compartmentBox.getZLength()
+                        // but reduce with ModelDefinitions.MINIMUM_COMPARTMENT_FACTOR
+                        // to avoid round-off errors in this.checkCompartmentGeometry()
+                        tmpZLength = this.compartmentBox.getZLength() * (1.0 - ModelDefinitions.MINIMUM_COMPARTMENT_FACTOR);
+                    } else {
+                        // NOTE: Z-length is cut (!) after tmpNumberOfDecimals 
+                        // decimals so z-length is always a little smaller than 
+                        // in "reality": This avoids possible drawing problems.
+                        tmpZLength = 
+                            this.jobUtilityMethods.getZLengthOfBoxOfParticlesInDpdBox(
+                                tmpTotalNumberOfParticles, tmpDensityInfoValueItem.getValueAsDouble(),
+                                tmpGeometryDataValueItem.getValueAsDouble(0, 3), 
+                                tmpGeometryDataValueItem.getValueAsDouble(0, 4), 
+                                tmpGeometryDataValueItem.getTypeFormat(0, 3).getNumberOfDecimals()
+                            );
+                    }
                     // Update geometry data AND display value item. NOTE: Geometry data value item is in DPD units ...
                     ValueItemMatrixElement[][] tmpMatrixOfGeometryDataValueItem = tmpGeometryDataValueItem.getMatrix();
-                    tmpMatrixOfGeometryDataValueItem[0][5].getTypeFormat().setMinimumValue(tmpBoxInfoValueItem.getValueAsDouble(0, 2) * ModelDefinitions.MINIMUM_COMPARTMENT_FACTOR);
+                    tmpMatrixOfGeometryDataValueItem[0][5].getTypeFormat().setMinimumValue(
+                        tmpBoxInfoValueItem.getValueAsDouble(0, 2) * ModelDefinitions.MINIMUM_COMPARTMENT_FACTOR
+                    );
                     tmpMatrixOfGeometryDataValueItem[0][5].getTypeFormat().setDefaultValue(String.valueOf(tmpZLength));
                     tmpGeometryDataValueItem.setValue(String.valueOf(tmpZLength), 0, 5);
                     // ... and geometry display value item in physical units (Angstrom)
                     ValueItemMatrixElement[][] tmpMatrixOfGeometryDisplayValueItem = tmpGeometryDataValueItem.getDisplayValueItem().getMatrix();
-                    tmpMatrixOfGeometryDisplayValueItem[0][5].getTypeFormat().setMinimumValue(tmpGeometryDataValueItem.getMatrix()[0][5].getTypeFormat().getMinimumValue() * this.getLengthConversionFactor());
+                    tmpMatrixOfGeometryDisplayValueItem[0][5].getTypeFormat().setMinimumValue(
+                        tmpGeometryDataValueItem.getMatrix()[0][5].getTypeFormat().getMinimumValue() * this.getLengthConversionFactor()
+                    );
                     // NOTE: Default value is NOT truly affected by roundoff errors 
                     tmpMatrixOfGeometryDisplayValueItem[0][5].getTypeFormat().setDefaultValue(String.valueOf(tmpZLength * this.getLengthConversionFactor()));
-                    tmpGeometryDataValueItem.getDisplayValueItem().setValue(String.valueOf(tmpGeometryDataValueItem.getValueAsDouble(0, 5) * this.getLengthConversionFactor()), 0, 5);
+                    tmpGeometryDataValueItem.getDisplayValueItem().setValue(String.valueOf(
+                        tmpGeometryDataValueItem.getValueAsDouble(0, 5) * this.getLengthConversionFactor()), 
+                        0, 
+                        5
+                    );
                     this.checkCompartmentGeometry(tmpGeometryDataValueItem);
                 }
                 // </editor-fold>
@@ -461,15 +504,12 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
                     ModelMessage.get("CompartmentContainer.parameter.Orientation.3DStructure"),
                     ModelMessage.get("CompartmentContainer.parameter.Orientation.3DRandom")
                 };
-            String[] tmpWholeSphereSurfaceArray = 
-                new String[]{
-                    ModelMessage.get("CompartmentContainer.parameter.Orientation.randomWholeSurfaceOfSphere")
-                };
-            String[] tmpWholeUpperMiddleSphereSurfaceArray = 
+            String[] tmpWholeOutUpperMiddleSphereSurfaceArray = 
                 new String[]{
                     ModelMessage.get("CompartmentContainer.parameter.Orientation.randomWholeSurfaceOfSphere"),
                     ModelMessage.get("CompartmentContainer.parameter.Orientation.randomUpperSurfaceOfSphere"),
-                    ModelMessage.get("CompartmentContainer.parameter.Orientation.randomMiddleSurfaceOfSphere")
+                    ModelMessage.get("CompartmentContainer.parameter.Orientation.randomMiddleSurfaceOfSphere"),
+                    ModelMessage.get("CompartmentContainer.parameter.Orientation.randomSurfaceOutOfSphere")
                 };
             // </editor-fold>
             if (tmpNumberOfVolumeMolecules == 0 && tmpNumberOfSurfaceMolecules == 0) {
@@ -567,7 +607,7 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
                                 new ValueItemMatrixElement(
                                     new ValueItemDataTypeFormat(
                                         ModelMessage.get("CompartmentContainer.parameter.Orientation.randomWholeSurfaceOfSphere"), 
-                                        tmpWholeUpperMiddleSphereSurfaceArray
+                                        tmpWholeOutUpperMiddleSphereSurfaceArray
                                     )
                                 );
                         }
@@ -1666,6 +1706,27 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
     public void setGeometryRandomSeed(long aSeedValue) {
         this.valueItemContainer.getValueItem(ModelDefinitions.COMPARTMENT_GEOMETRY_RANDOM_SEED_NAME).setValue(String.valueOf(aSeedValue));
     }
+    
+    /**
+     * Returns if molecule start geometry is compressed to single point
+     * 
+     * @return True: Molecule start geometry is compressed to single point, 
+     * false: Molecule start geometry is a linear tube
+     */
+    public boolean isMoleculeStartGeometryCompressedToSinglePoint() {
+        return this.valueItemContainer.getValueItem(ModelDefinitions.COMPARTMENT_MOLECULE_START_GEOMETRY_NAME).
+            getValue().equals(ModelMessage.get("JdpdInputFile.parameter.MoleculeStartGeometry.SinglePoint"));
+    }
+    
+    /**
+     * Sets molecule start geometry
+     * 
+     * @param aValue Value
+     */
+    public void setMoleculeStartGeometry (String aValue) {
+        // No checks are performed
+        this.valueItemContainer.getValueItem(ModelDefinitions.COMPARTMENT_MOLECULE_START_GEOMETRY_NAME).setValue(aValue);
+    }
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Private methods">
@@ -2682,6 +2743,23 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
     }
     
     /**
+     * Return molecule start geometry value item with vertical position 0
+     * 
+     * @param aValue Value
+     * @return Molecule start geometry value item
+     */
+    private ValueItem getMoleculeStartGeometryValueItem(String aValue) {
+        ValueItem tmpMoleculeStartGeometryValueItem = new ValueItem();
+        tmpMoleculeStartGeometryValueItem.setName(ModelDefinitions.COMPARTMENT_MOLECULE_START_GEOMETRY_NAME);
+        // IMPORTANT: tmpMoleculeStartGeometryValueItem is NOT displayed
+        tmpMoleculeStartGeometryValueItem.setDisplay(false);
+        tmpMoleculeStartGeometryValueItem.setVerticalPosition(0);
+        tmpMoleculeStartGeometryValueItem.setBlockName(ModelDefinitions.COMPARTMENT_BLOCK_HIDDEN);
+        tmpMoleculeStartGeometryValueItem.setValue(aValue);
+        return tmpMoleculeStartGeometryValueItem;
+    }
+    
+    /**
      * Updates geometry display value items with data from corresponding 
      * geometry data value items if necessary
      */
@@ -2902,6 +2980,12 @@ public class CompartmentContainer extends ChangeNotifier implements ChangeReceiv
                 if (!this.valueItemContainer.hasValueItem(ModelDefinitions.COMPARTMENT_GEOMETRY_RANDOM_SEED_NAME)) {
                     this.valueItemContainer.addValueItem(
                         this.getGeometryRandomSeedValueItem(ModelDefinitions.DETERMINISTIC_RANDOM_SEED_DEFAULT)
+                    );
+                }
+                // Add molecule start geometry value item for compatibility if not present with old setting
+                if (!this.valueItemContainer.hasValueItem(ModelDefinitions.COMPARTMENT_MOLECULE_START_GEOMETRY_NAME)) {
+                    this.valueItemContainer.addValueItem(
+                        this.getMoleculeStartGeometryValueItem(ModelMessage.get("JdpdInputFile.parameter.MoleculeStartGeometry.LinearTube"))
                     );
                 }
                 // Update geometry display value items if necessary

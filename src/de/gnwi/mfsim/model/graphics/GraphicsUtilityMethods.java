@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -47,6 +47,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import de.gnwi.jdpd.interfaces.IRandom;
+import de.gnwi.mfsim.model.graphics.compartment.CompartmentBox;
 import de.gnwi.spices.IPointInSpace;
 import java.util.ArrayList;
 import de.gnwi.mfsim.model.preference.ModelDefinitions;
@@ -1245,6 +1246,26 @@ public class GraphicsUtilityMethods {
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- Sphere geometry related methods">
     /**
+     * Checks if sphere whole surfaces geometry is defined in specified row
+     *
+     * @param aChemicalCompositionValueItem Chemical composition value item of
+     * sphere (is NOT changed)
+     * @param aRow Row
+     * @return True: Sphere whole surface geometry is defined, false: Otherwise
+     */
+    public boolean isWholeSurfaceGeometryInSphere(ValueItem aChemicalCompositionValueItem, int aRow) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aChemicalCompositionValueItem == null) {
+            return false;
+        }
+        if (aRow < 0 || aRow >= aChemicalCompositionValueItem.getMatrixRowCount()) {
+            return false;
+        }
+        // </editor-fold>
+        return aChemicalCompositionValueItem.getValue(aRow, 7).equals(ModelMessage.get("CompartmentContainer.parameter.Orientation.randomWholeSurfaceOfSphere"));
+    }
+
+    /**
      * Checks if sphere upper surfaces geometry is defined in specified row
      *
      * @param aChemicalCompositionValueItem Chemical composition value item of
@@ -1283,6 +1304,26 @@ public class GraphicsUtilityMethods {
         }
         // </editor-fold>
         return aChemicalCompositionValueItem.getValue(aRow, 7).equals(ModelMessage.get("CompartmentContainer.parameter.Orientation.randomMiddleSurfaceOfSphere"));
+    }
+    
+    /**
+     * Checks if sphere out of surfaces geometry is defined in specified row
+     *
+     * @param aChemicalCompositionValueItem Chemical composition value item of
+     * sphere (is NOT changed)
+     * @param aRow Row
+     * @return True: Sphere out of surface geometry is defined, false: Otherwise
+     */
+    public boolean isOutOfSurfaceGeometryInSphere(ValueItem aChemicalCompositionValueItem, int aRow) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aChemicalCompositionValueItem == null) {
+            return false;
+        }
+        if (aRow < 0 || aRow >= aChemicalCompositionValueItem.getMatrixRowCount()) {
+            return false;
+        }
+        // </editor-fold>
+        return aChemicalCompositionValueItem.getValue(aRow, 7).equals(ModelMessage.get("CompartmentContainer.parameter.Orientation.randomSurfaceOutOfSphere"));
     }
 
     /**
@@ -2815,6 +2856,111 @@ public class GraphicsUtilityMethods {
         }
     }
 
+    /**
+     * Fills aLastParticleCoordinates with points outside sphere surface.
+     *
+     * @param aFirstParticleCoordinates First particle coordinates (not changed)
+     * @param aLastParticleCoordinates Last particle coordinates (to be filled, 
+     * i.e. will be changed)
+     * @param aFirstIndex First index in aFirstParticleCoordinates/aLastParticleCoordinates
+     * @param aNumber Number of coordinates (not allowed to be less than 1)
+     * @param aSphere Sphere body
+     * @param aCompartmentBox Compartment box
+     * @throws IllegalArgumentException Thrown if argument is illegal
+     */
+    public void fillPointsOutsideSphereSurface(
+        IPointInSpace[] aFirstParticleCoordinates, 
+        IPointInSpace[] aLastParticleCoordinates, 
+        int aFirstIndex, 
+        int aNumber, 
+        BodySphere aSphere, 
+        CompartmentBox aCompartmentBox
+    ) throws IllegalArgumentException {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aNumber < 1) {
+            throw new IllegalArgumentException("aNumber is less than 1.");
+        }
+        if (aFirstIndex < 0) {
+            throw new IllegalArgumentException("aFirstIndex is less than 0.");
+        }
+        if (aFirstParticleCoordinates == null || aFirstParticleCoordinates.length == 0) {
+            throw new IllegalArgumentException("aFirstParticleCoordinates is null/empty.");
+        }
+        if (aFirstParticleCoordinates.length < aFirstIndex + aNumber) {
+            throw new IllegalArgumentException("aFirstParticleCoordinates is too small.");
+        }
+        if (aLastParticleCoordinates == null || aLastParticleCoordinates.length == 0) {
+            throw new IllegalArgumentException("aLastParticleCoordinates is null/empty.");
+        }
+        if (aLastParticleCoordinates.length < aFirstIndex + aNumber) {
+            throw new IllegalArgumentException("aLastParticleCoordinates is too small.");
+        }
+        if (aSphere == null) {
+            throw new IllegalArgumentException("aSphere is null.");
+        }
+        if (aCompartmentBox == null) {
+            throw new IllegalArgumentException("aCompartmentBox is null.");
+        }
+        // </editor-fold>
+        // Determine maximum distance of last particle coordinate from first particle coordinate
+        double tmpMinX = Math.min(aSphere.getBodyCenter().getX(), aCompartmentBox.getXLength() - aSphere.getBodyCenter().getX());
+        double tmpMinY = Math.min(aSphere.getBodyCenter().getY(), aCompartmentBox.getYLength() - aSphere.getBodyCenter().getY());
+        double tmpMinZ = Math.min(aSphere.getBodyCenter().getZ(), aCompartmentBox.getZLength() - aSphere.getBodyCenter().getZ());
+        double tmpMaxDistance;
+        if (tmpMinX <= tmpMinY && tmpMinX <= tmpMinZ) {
+            tmpMaxDistance = ModelDefinitions.DECREASE_FACTOR * 
+                Math.min(
+                    aSphere.getBodyCenter().getX() - aSphere.getRadius(), 
+                    aCompartmentBox.getXLength() - (aSphere.getBodyCenter().getX() + aSphere.getRadius())
+                );
+        } else if (tmpMinY <= tmpMinX && tmpMinY <= tmpMinZ) {
+            tmpMaxDistance = ModelDefinitions.DECREASE_FACTOR * 
+                Math.min(
+                    aSphere.getBodyCenter().getY() - aSphere.getRadius(), 
+                    aCompartmentBox.getYLength() - (aSphere.getBodyCenter().getY() + aSphere.getRadius())
+                );
+        } else {
+            tmpMaxDistance = ModelDefinitions.DECREASE_FACTOR * 
+                Math.min(
+                    aSphere.getBodyCenter().getZ() - aSphere.getRadius(), 
+                    aCompartmentBox.getZLength() - (aSphere.getBodyCenter().getZ() + aSphere.getRadius())
+                );
+        }
+        int tmpIndex = aFirstIndex;
+        // FIRST check if instance of GraphicalParticlePosition[]
+        if (aLastParticleCoordinates instanceof GraphicalParticlePosition[]) {
+            // <editor-fold defaultstate="collapsed" desc="A buffer is an instance of GraphicalParticlePosition[]">
+            for (int i = 0; i < aNumber; i++) {
+                double tmpVectorSphereToSurfaceX = aFirstParticleCoordinates[tmpIndex].getX() - aSphere.getBodyCenter().getX();
+                double tmpVectorSphereToSurfaceY = aFirstParticleCoordinates[tmpIndex].getY() - aSphere.getBodyCenter().getY();
+                double tmpVectorSphereToSurfaceZ = aFirstParticleCoordinates[tmpIndex].getZ() - aSphere.getBodyCenter().getZ();
+                aLastParticleCoordinates[tmpIndex] = 
+                    new GraphicalParticlePosition(
+                        aFirstParticleCoordinates[tmpIndex].getX() + tmpMaxDistance * tmpVectorSphereToSurfaceX,
+                        aFirstParticleCoordinates[tmpIndex].getY() + tmpMaxDistance * tmpVectorSphereToSurfaceY,
+                        aFirstParticleCoordinates[tmpIndex].getZ() + tmpMaxDistance * tmpVectorSphereToSurfaceZ
+                    );
+                tmpIndex++;
+            }
+            // </editor-fold>
+        } else if (aLastParticleCoordinates instanceof PointInSpace[]) {
+            // <editor-fold defaultstate="collapsed" desc="A buffer is an instance of PointInSpace[]">
+            for (int i = 0; i < aNumber; i++) {
+                double tmpVectorSphereToSurfaceX = aFirstParticleCoordinates[tmpIndex].getX() - aSphere.getBodyCenter().getX();
+                double tmpVectorSphereToSurfaceY = aFirstParticleCoordinates[tmpIndex].getY() - aSphere.getBodyCenter().getY();
+                double tmpVectorSphereToSurfaceZ = aFirstParticleCoordinates[tmpIndex].getZ() - aSphere.getBodyCenter().getZ();
+                aLastParticleCoordinates[tmpIndex] = 
+                    new PointInSpace(
+                        aFirstParticleCoordinates[tmpIndex].getX() + tmpMaxDistance * tmpVectorSphereToSurfaceX,
+                        aFirstParticleCoordinates[tmpIndex].getY() + tmpMaxDistance * tmpVectorSphereToSurfaceY,
+                        aFirstParticleCoordinates[tmpIndex].getZ() + tmpMaxDistance * tmpVectorSphereToSurfaceZ
+                    );
+                tmpIndex++;
+            }
+            // </editor-fold>
+        }
+    }
+    
     /**
      * Fills buffer with random points on sphere surface with z-height greater
      * than half of radius. Theory: See documentation document "Sphere Point

@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -101,9 +101,14 @@ public interface PreferenceXmlName {
     String IS_JOB_RESULT_ARCHIVE_FILE_UNCOMPRESSED = "IsJobResultArchiveFileUncompressed";
 
     /**
+     * Name of Jdpd kernel double precision flag
+     */
+    String IS_JDPD_KERNEL_DOUBLE_PRECISION = "isJdpdKernelDoublePrecision";
+    
+    /**
      * Name of Jdpd exceptions log level flag
      */
-    String IS_JDPD_LOG_LEVEL_EXCEPTIONS = "IsJdpdLogLevelExceptions";
+    String IS_JDPD_LOG_LEVEL_EXCEPTION = "IsJdpdLogLevelException";
     
     /**
      * Name of compartment constant body flag

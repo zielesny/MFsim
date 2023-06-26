@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -82,8 +82,6 @@ import org.jfree.data.xy.XYSeriesCollection;
 import de.gnwi.mfsim.gui.preference.GuiDefinitions;
 import de.gnwi.mfsim.model.preference.ModelDefinitions;
 import de.gnwi.mfsim.model.graphics.IImageProvider;
-import java.nio.file.Paths;
-import java.util.regex.Pattern;
 
 /**
  * Utility class with static utitlity methods for GUI
@@ -1959,7 +1957,6 @@ public final class GuiUtils {
         Clipboard tmpClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         tmpClipboard.setContents(tmpStringSelection, null);
     }
-
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="Protein edit and show related methods">
     /**

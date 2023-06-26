@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -39,26 +39,89 @@ import de.gnwi.mfsim.gui.preference.GuiDefinitions;
 public class CustomPanelSimulationBoxSlicer extends JPanel {
 
     // <editor-fold defaultstate="collapsed" desc="Private class variables">
+    /**
+     * GUI element
+     */
     private JButton boxWaitButton;
+    /**
+     * GUI element
+     */
     private JButton boxMoveButton;
+    /**
+     * GUI element
+     */
     private JButton flyButton;
+    /**
+     * GUI element
+     */
     private JButton spinHorizontalButton;
+    /**
+     * GUI element
+     */
     private JButton spinVerticalButton;
+    /**
+     * GUI element
+     */
     private JButton createMovieButton;
+    /**
+     * GUI element
+     */
     private JButton editMoveAndSpinSettingsButton;
+    /**
+     * GUI element
+     */
     private JButton redrawButton;
+    /**
+     * GUI element
+     */
     private JButton viewFullBoxButton;
+    /**
+     * GUI element
+     */
     private SpringLayout imageInformationPanelSpringLayout;
+    /**
+     * GUI element
+     */
     private JPanel imageInformationPanel;
+    /**
+     * GUI element
+     */
     private JButton copyGraphicsButton;
+    /**
+     * GUI element
+     */
     private JButton saveGraphicsButton;
+    /**
+     * GUI element
+     */
     private JButton playAnimationButton;
+    /**
+     * GUI element
+     */
     private JLabel infoLabel;
+    /**
+     * GUI element
+     */
     private SpringLayout simulationBoxPanelSpringLayout;
+    /**
+     * GUI element
+     */
     private JPanel simulationBoxPanel;
+    /**
+     * GUI element
+     */
     private JSlider thirdDimensionSlider;
+    /**
+     * GUI element
+     */
     private JLabel coordinatesLabel;
+    /**
+     * GUI element
+     */
     private CustomPanelSlicerImage slicerImagePanel;
+    /**
+     * GUI element
+     */
     private SpringLayout springLayout;
     // </editor-fold>
     //

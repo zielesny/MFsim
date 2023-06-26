@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -59,6 +59,8 @@ import de.gnwi.mfsim.model.util.ModelUtils;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import de.gnwi.mfsim.model.preference.ModelDefinitions;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * Controller class for CustomPanelValueItemShow
@@ -323,6 +325,13 @@ public class CustomPanelValueItemShowController {
                 }
 
             });
+            this.customValueItemShowPanel.getContentLabel().addMouseListener(new MouseAdapter() {
+                
+                public void mouseClicked(MouseEvent e) {
+                    GuiUtils.copyTextToClipboard(CustomPanelValueItemShowController.this.customValueItemShowPanel.getContentLabel().getText());
+                }
+
+            });            
             // </editor-fold>
             // ... then fill tree (otherwise the selection of the first row of the tree will not lead to correct display)
             // <editor-fold defaultstate="collapsed" desc="Fill tree with ACTIVE value items of container">

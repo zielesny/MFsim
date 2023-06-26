@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -84,13 +84,18 @@ public class DistanceCalculationUtils {
      * z-direction, false: Otherwise
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
-    public DistanceCalculationUtils(double aBoxLengthX, double aBoxLengthY, double aBoxLengthZ, boolean anIsPeriodicBoundaryX, boolean anIsPeriodicBoundaryY,
-            boolean anIsPeriodicBoundaryZ) {
+    public DistanceCalculationUtils(
+        double aBoxLengthX, 
+        double aBoxLengthY, 
+        double aBoxLengthZ, 
+        boolean anIsPeriodicBoundaryX, 
+        boolean anIsPeriodicBoundaryY,
+        boolean anIsPeriodicBoundaryZ
+    ) {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aBoxLengthX <= 0 || aBoxLengthY <= 0 || aBoxLengthZ <= 0) {
             throw new IllegalArgumentException("An argument is illegal");
         }
-
         // </editor-fold>
         this.boxLengthX = aBoxLengthX;
         this.boxLengthY = aBoxLengthY;
@@ -184,7 +189,6 @@ public class DistanceCalculationUtils {
         }
         return tmpAccumulatedDistance / (double) tmpNumberOfDistances;
     }
-
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Private methods">

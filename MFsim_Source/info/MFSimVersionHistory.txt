@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>  
  * 
@@ -17,6 +17,128 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+--------------------------------------------------------------------------------
+MFsim 2.6.0.0 (MFsim.jar)
+--------------------------------------------------------------------------------
+with Java runtime environment derived from JDK 17.0.0.35 with Hotspot JVM
+
+Minimum compatible MFsim Job Input version : 1.7.5.1
+Minimum compatible MFsim Job Result version: 1.1.0.4
+
+Dependencies:
+  - commons-lang3-3.4.jar
+      Apache Commons Lang (https://commons.apache.org/proper/commons-lang/):
+      Version 3.4
+  - commons-math3-3.6.1.jar
+      Apache Commons Math 3.6.1 (https://commons.apache.org/proper/commons-math/)
+      Version 3.6.1
+  - commons-rng-client-api-1.4.jar
+    commons-rng-core-1.4.jar
+    commons-rng-sampling-1.4.jar
+    commons-rng-simple-1.4.jar
+      Apache Commons RNG 1.4 (http://commons.apache.org/proper/commons-rng/)
+      Version 1.4
+  - biojava3-core-3.0.8.jar
+    biojava3-structure-3.0.8.jar
+      BioJava (http://biojava.org/)
+      Version 3.0.8
+  - gs-algo-1.3.jar
+    gs-core-1.3.jar
+    gs-ui-1.3.jar
+      GraphStream (http://graphstream-project.org/)
+      Version 1.3
+  - Jama-1.0.3.jar
+      Java Matrix Package (http://math.nist.gov/javanumerics/jama/)
+      Version 1.0.3
+  - jcommon-1.0.9.jar
+      JCommon (http://www.jfree.org/jcommon/):
+      Version 1.0.9
+  - Jdpd.jar/JdpdSP.jar
+      Version 1.6.1.0 (https://github.com/zielesny/Jdpd)
+  - jdom-2.0.6.jar
+      JDOM (http://www.jdom.org/)
+      Version 2.0.6
+  - jfreechart-1.0.5.jar
+      JFreeChart (http://www.jfree.org/jfreechart/):
+      Version 1.0.5
+  - Jmol.jar
+      Jmol (http://jmol.sourceforge.net/)
+      Version 14.2.7_2014.10.13
+  - Spices.jar
+      Version 1.0.0.0 (https://github.com/zielesny/SPICES)
+  - SpicesToGraphStream.jar
+      Version 1.0.0.0 (https://github.com/zielesny/SPICES)
+  - vecmath-1.5.2.jar
+      3D Vector Math Package
+      (https://mvnrepository.com/artifact/javax.vecmath/vecmath)
+      Version 1.5.2
+
+External Windows OS executables:    
+  - ffmpeg.exe
+      FFmpeg (Static) Version 3.2.4 (https://ffmpeg.org)
+
+--------------------------------------------------------------------------------
+- Improvements:
+  - Molecule-center RDF calculations are now available. Old Job Inputs are 
+    automatically updated with the new functionality.
+  - Particle and molecule-center based RDF calculations are parallelized if 
+    averaging over multiple simulation steps is specified, which leads to a 
+	considerably enhanced performance.
+  - Jdpd version 1.6.1.0 is supported. A single precision arithmetic version of 
+    the Jdpd kernel is implemented which consumes less ("half the") memory 
+	compared to the standard double precision arithmetic version. The arithmetic 
+	version can be defined via preference "Jdpd kernel/Jdpd arithmetic 
+	precision".
+  - Sphere compartments now contain an additional surface option for generating
+    initial molecule orientations: "Random surface out" with molecules that are 
+    oriented radially outside the sphere from its surface (and NOT inside as in 
+    "Random whole surface").
+  - Molecule start geometries with random distribution in a volume can now be 
+    defined to be "Single point" (i.e. all particles of the molecule have the 
+	same initial position) with the new setting "Molecule start geometry" in 
+	section "Simulation box" of a Job Input. This may lead to a more balanced 
+	random distribution of the molecules in a volume. The already available 
+	"Linear tube" start geometry is still available. Job definitions of older 
+	versions are still compatible and automatically updated for this new feature 
+	where the "Linear tube" setting is activated.
+  - Particle sets which are created or changed with MFsim are now always 
+    formatted in combination with sorted sections for alleviated comprehension.
+  - Particle set creation with repulsions between amino acid backbone particles 
+    set to a new a(ij) value (via an offset to the diagonal a(ii) values) 
+	for all temperatures is now available with menu entry 
+	"Particles/Particle/Backbone repulsion" (note that this is an expert 
+	function only)
+
+- Minor improvements:
+  - The feature descriptions of "Molecule sphere" and "Bonds to neighbour 
+    particles" are improved.
+  - Descriptions and MFsim version of edited/reused job inputs are automatically
+    updated to the latest version.
+  - The text of information labels can now be copied to the clipboard with a 
+    click on the label.
+  - Automatic animation start is deactivated (due to possible problems with 
+    Windows Remote Desktop usage of MFsim).
+  - Minor typo corrections.
+
+- Removed problems:
+  - RDF calculations with molecule-particles did not work at all due to a path 
+    error which is corrected (RDF calculations with particles instead of 
+	molecule-particles were not affected).
+  - All ParticleSet_AA particle sets contained a (small) error in the a(ij)
+    repulsion for amino acid backbone particles (Azolid_AzolidBB, 
+	MeAcNH_MeAcNHBB, HAc_HAcBB, MeNH2_MeNH2BB were not the correct a(ii)
+	values). This is corrected in new ParticleSet_MemProt particle sets.
+  - A subtle error during update of old molecule backbone forces for behaviour 
+    is removed.
+  - A subtle error is removed for a single xy-layer compartment in a simulation
+    box that contains all molecules of the simulation (before the problem 
+    removal, the compartment peered out-of-the-box due to round-off errors which 
+    is of course forbidden).
+  - RDF calculation now takes definitions of periodic boundary conditions into 
+    account (before periodic boundary conditions were assumed to be set in every 
+	direction).
+
 
 --------------------------------------------------------------------------------
 MFsim 2.5.0.0 (MFsim.jar)

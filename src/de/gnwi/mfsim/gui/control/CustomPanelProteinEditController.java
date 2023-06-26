@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -54,7 +54,6 @@ import de.gnwi.mfsim.model.util.ModelUtils;
 import de.gnwi.mfsim.gui.preference.GuiDefinitions;
 import de.gnwi.mfsim.model.valueItem.ValueItemMatrixElement;
 import de.gnwi.mfsim.model.valueItem.ValueItemUpdateNotifierInterface;
-import javax.swing.ComboBoxModel;
 
 /**
  * Controller class for CustomPanelProteinEdit

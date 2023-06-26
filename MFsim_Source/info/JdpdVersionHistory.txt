@@ -1,6 +1,6 @@
 /**
  * Jdpd - Molecular Fragment Dissipative Particle Dynamics (DPD) Simulation
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/Jdpd>  
  * 
@@ -17,6 +17,38 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+--------------------------------------------------------------------------------
+Jdpd 1.6.1.0 (Jdpd.jar)
+--------------------------------------------------------------------------------
+for Java 17 or higher
+
+Dependencies:
+  - commons-math3-3.6.1.jar
+      Apache Commons Math 3.6.1 (https://commons.apache.org/proper/commons-math/)
+      Version 3.6.1
+  - commons-rng-client-api-1.4.jar
+    commons-rng-core-1.4.jar
+    commons-rng-sampling-1.4.jar
+    commons-rng-simple-1.4.jar
+      Apache Commons RNG 1.4 (http://commons.apache.org/proper/commons-rng/)
+      Version 1.4
+      
+Unit tests: 
+  - Package src.de.gnwi.jdpd.tests
+  
+Simulation input file description:  
+  - File Input.txt in package src.de.gnwi.jdpd.tests.test_Water_GWMVV              
+--------------------------------------------------------------------------------
+- Minor improvements:
+  - The interfaces are refactored/extended to facilitate the single precision
+    arithmetic version of Jdpd (= JdpdSP) which depends on the double precision
+    version.
+
+- Removed problems:
+  - A severe (but very rare) error in the "tiny-offset" correction of particle 
+    positions is removed (class Utils in package de.gnwi.jdpd.utilities).
+
 
 --------------------------------------------------------------------------------
 Jdpd 1.6.0.0 (Jdpd.jar)

@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -644,7 +644,6 @@ public class CompartmentBox extends ChangeNotifier implements ChangeReceiverInte
         if (aBody == null) {
             throw new IllegalArgumentException("aBody was null");
         }
-
         // </editor-fold>
         // NOTE: tmpCorrectionFactor is necessary to avoid later out-of-box-errors due to roundoff-problems
         double tmpCorrectionFactor = 1.0 + ModelDefinitions.MINIMUM_COMPARTMENT_FACTOR;
@@ -735,77 +734,6 @@ public class CompartmentBox extends ChangeNotifier implements ChangeReceiverInte
     }
 
     /**
-     * This method tests if an BodyInterface object peers out of the simulation
-     * box
-     *
-     * @param aTestXCoordinate Test X coordinate
-     * @param aTestYCoordinate Test Y coordinate
-     * @param aTestZCoordinate Test Z coordinate
-     * @param aBody BodyInterface object which has to be tested
-     * @return true if aBody peers out of simulation box, false otherwise
-     * @throws IllegalArgumentException Thrown if body type is unknown
-     */
-    public boolean isOutOfBox(double aTestXCoordinate, double aTestYCoordinate, double aTestZCoordinate, BodyInterface aBody) throws IllegalArgumentException {
-        // <editor-fold defaultstate="collapsed" desc="Checks">
-        if (aTestXCoordinate < 0 || aTestYCoordinate < 0 || aTestZCoordinate < 0) {
-            return true;
-        }
-        if (aBody == null) {
-            throw new IllegalArgumentException("aBody was null");
-        }
-
-        // </editor-fold>
-        switch (aBody.getBodyType()) {
-
-            case SPHERE:
-                BodySphere tmpSphere = (BodySphere) aBody;
-                return aTestXCoordinate < tmpSphere.getRadius()
-                        || aTestYCoordinate < tmpSphere.getRadius()
-                        || aTestZCoordinate < tmpSphere.getRadius()
-                        || aTestXCoordinate + tmpSphere.getRadius() > this.boxSize.getX()
-                        || aTestYCoordinate + tmpSphere.getRadius() > this.boxSize.getY()
-                        || aTestZCoordinate + tmpSphere.getRadius() > this.boxSize.getZ();
-
-            case XY_LAYER:
-                BodyXyLayer tmpXyLayer = (BodyXyLayer) aBody;
-
-                // Debug:
-                // System.out.println("isOutOfBox: aTestXCoordinate != tmpXyLayer.getBodyCenter().getX() = " + String.valueOf(aTestXCoordinate != tmpXyLayer.getBodyCenter().getX()));
-                // System.out.println("isOutOfBox: aTestYCoordinate != tmpXyLayer.getBodyCenter().getY() = " + String.valueOf(aTestYCoordinate != tmpXyLayer.getBodyCenter().getY()));
-                // System.out.println("aTestZCoordinate = " + String.valueOf(aTestZCoordinate));
-                // System.out.println("isOutOfBox: aTestZCoordinate < tmpXyLayer.getZLength() / 2.0 = " + String.valueOf(aTestZCoordinate < tmpXyLayer.getZLength() / 2.0));
-                // System.out.println("isOutOfBox: aTestZCoordinate - tmpXyLayer.getZLength() / 2.0 = " + String.valueOf(aTestZCoordinate - tmpXyLayer.getZLength() / 2.0));
-                // System.out.println("isOutOfBox: aTestZCoordinate + tmpXyLayer.getZLength() / 2.0 > this.boxSize.getZ() = " + String.valueOf(aTestZCoordinate + tmpXyLayer.getZLength() / 2.0 > this.boxSize.getZ()));
-                // System.out.println("isOutOfBox: aTestZCoordinate + tmpXyLayer.getZLength() / 2.0 - this.boxSize.getZ() = " + String.valueOf(aTestZCoordinate + tmpXyLayer.getZLength() / 2.0 - this.boxSize.getZ()));
-                return aTestXCoordinate != tmpXyLayer.getBodyCenter().getX()
-                        || aTestYCoordinate != tmpXyLayer.getBodyCenter().getY()
-                        || aTestZCoordinate < tmpXyLayer.getZLength() / 2.0
-                        || aTestZCoordinate + tmpXyLayer.getZLength() / 2.0 > this.boxSize.getZ();
-
-            default:
-                throw new IllegalArgumentException("Body type is unknown.");
-        }
-    }
-
-    /**
-     * This method tests if an BodyInterface object peers out of the simulation
-     * box
-     *
-     * @param aBody BodyInterface object which has to be tested
-     * @return true if aBody peers out of simulation box, false otherwise
-     * @throws IllegalArgumentException Thrown if body type is unknown
-     */
-    public boolean isOutOfBox(BodyInterface aBody) throws IllegalArgumentException {
-        // <editor-fold defaultstate="collapsed" desc="Checks">
-        if (aBody == null) {
-            throw new IllegalArgumentException("aBody was null");
-        }
-
-        // </editor-fold>
-        return this.isOutOfBox(aBody.getBodyCenter().getX(), aBody.getBodyCenter().getY(), aBody.getBodyCenter().getZ(), aBody);
-    }
-
-    /**
      * This method tests if a BodyInterface object that corresponds to
      * aValueItem peers out of the simulation box
      *
@@ -818,11 +746,15 @@ public class CompartmentBox extends ChangeNotifier implements ChangeReceiverInte
         if (aValueItem == null) {
             return false;
         }
-
         // </editor-fold>
         BodyInterface tmpBody = this.getBody(aValueItem);
         if (tmpBody != null) {
-            return this.isOutOfBox(tmpBody);
+            return this.isOutOfBox(
+                tmpBody.getBodyCenter().getX(), 
+                tmpBody.getBodyCenter().getY(), 
+                tmpBody.getBodyCenter().getZ(), 
+                tmpBody
+            );
         } else {
             return false;
         }
@@ -1588,6 +1520,60 @@ public class CompartmentBox extends ChangeNotifier implements ChangeReceiverInte
                 aBody.setSelected(true);
             }
             this.selectedBody = aBody;
+        }
+    }
+    
+    /**
+     * This method tests if an BodyInterface object peers out of the simulation
+     * box
+     *
+     * @param aTestXCoordinate Test X coordinate
+     * @param aTestYCoordinate Test Y coordinate
+     * @param aTestZCoordinate Test Z coordinate
+     * @param aBody BodyInterface object which has to be tested
+     * @return true if aBody peers out of simulation box, false otherwise
+     * @throws IllegalArgumentException Thrown if body type is unknown
+     */
+    private boolean isOutOfBox(double aTestXCoordinate, double aTestYCoordinate, double aTestZCoordinate, BodyInterface aBody) throws IllegalArgumentException {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aTestXCoordinate < 0 || aTestYCoordinate < 0 || aTestZCoordinate < 0) {
+            return true;
+        }
+        if (aBody == null) {
+            throw new IllegalArgumentException("aBody was null");
+        }
+
+        // </editor-fold>
+        switch (aBody.getBodyType()) {
+
+            case SPHERE:
+                BodySphere tmpSphere = (BodySphere) aBody;
+                return aTestXCoordinate < tmpSphere.getRadius()
+                        || aTestYCoordinate < tmpSphere.getRadius()
+                        || aTestZCoordinate < tmpSphere.getRadius()
+                        || aTestXCoordinate + tmpSphere.getRadius() > this.boxSize.getX()
+                        || aTestYCoordinate + tmpSphere.getRadius() > this.boxSize.getY()
+                        || aTestZCoordinate + tmpSphere.getRadius() > this.boxSize.getZ();
+
+            case XY_LAYER:
+                BodyXyLayer tmpXyLayer = (BodyXyLayer) aBody;
+
+                // Debug:
+                // System.out.println("CompartmentBox.isOutOfBox()");
+                // System.out.println("isOutOfBox: aTestXCoordinate != tmpXyLayer.getBodyCenter().getX() = " + String.valueOf(aTestXCoordinate != tmpXyLayer.getBodyCenter().getX()));
+                // System.out.println("isOutOfBox: aTestYCoordinate != tmpXyLayer.getBodyCenter().getY() = " + String.valueOf(aTestYCoordinate != tmpXyLayer.getBodyCenter().getY()));
+                // System.out.println("aTestZCoordinate = " + String.valueOf(aTestZCoordinate));
+                // System.out.println("isOutOfBox: aTestZCoordinate < tmpXyLayer.getZLength() / 2.0 = " + String.valueOf(aTestZCoordinate < tmpXyLayer.getZLength() / 2.0));
+                // System.out.println("isOutOfBox: aTestZCoordinate - tmpXyLayer.getZLength() / 2.0 = " + String.valueOf(aTestZCoordinate - tmpXyLayer.getZLength() / 2.0));
+                // System.out.println("isOutOfBox: aTestZCoordinate + tmpXyLayer.getZLength() / 2.0 > this.boxSize.getZ() = " + String.valueOf(aTestZCoordinate + tmpXyLayer.getZLength() / 2.0 > this.boxSize.getZ()));
+                // System.out.println("isOutOfBox: aTestZCoordinate + tmpXyLayer.getZLength() / 2.0 - this.boxSize.getZ() = " + String.valueOf(aTestZCoordinate + tmpXyLayer.getZLength() / 2.0 - this.boxSize.getZ()));
+                return aTestXCoordinate != tmpXyLayer.getBodyCenter().getX()
+                        || aTestYCoordinate != tmpXyLayer.getBodyCenter().getY()
+                        || aTestZCoordinate < tmpXyLayer.getZLength() / 2.0
+                        || aTestZCoordinate + tmpXyLayer.getZLength() / 2.0 > this.boxSize.getZ();
+
+            default:
+                throw new IllegalArgumentException("Body type is unknown.");
         }
     }
     // </editor-fold>

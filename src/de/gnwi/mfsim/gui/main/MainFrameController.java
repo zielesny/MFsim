@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -623,8 +623,136 @@ public class MainFrameController implements PropertyChangeListener {
             MouseCursorManagement.getInstance().setDefaultCursor();
         }
     }
+
+    /**
+     * Display particle set formatting dialog
+     */
+    public void displayFormatParticleSetDialog() {
+        try {
+            MouseCursorManagement.getInstance().setWaitCursor();
+            ValueItemContainer tmpFormatParticleSetValueItemContainer = StandardParticleInteractionData.getInstance().getFormatParticleSetValueItemContainer();
+            MouseCursorManagement.getInstance().setDefaultCursor();
+            if (DialogValueItemEdit.hasChanged(GuiMessage.get("ParticleSetFormattingDialog.title"), tmpFormatParticleSetValueItemContainer)) {
+                MouseCursorManagement.getInstance().setWaitCursor();
+                StandardParticleInteractionData.getInstance().formatParticleSet(tmpFormatParticleSetValueItemContainer);
+            }
+        } catch (Exception anException) {
+            ModelUtils.appendToLogfile(true, anException);
+            MouseCursorManagement.getInstance().setDefaultCursor();
+            // <editor-fold defaultstate="collapsed" desc="Message CommandExecutionFailed">
+            JOptionPane.showMessageDialog(
+                null, 
+                String.format(GuiMessage.get("Error.CommandExecutionFailed"), 
+                "displayFormatParticleSetDialog()", 
+                "MainFrameController"),
+                GuiMessage.get("Error.ErrorNotificationTitle"), 
+                JOptionPane.ERROR_MESSAGE
+            );
+            // </editor-fold>
+        } finally {
+            MouseCursorManagement.getInstance().setDefaultCursor();
+        }
+    }
+    
+    /**
+     * Display rescale-Vmin dialog
+     */
+    public void displayRescaleVminDialog() {
+        try {
+            MouseCursorManagement.getInstance().setWaitCursor();
+            ValueItemContainer tmpVminRescaleValueItemContainer = StandardParticleInteractionData.getInstance().getValueItemContainerForVminRescale();
+            MouseCursorManagement.getInstance().setDefaultCursor();
+            if (DialogValueItemEdit.hasChanged(GuiMessage.get("VminRescaleDialog.title"), tmpVminRescaleValueItemContainer)) {
+                MouseCursorManagement.getInstance().setWaitCursor();
+                StandardParticleInteractionData.getInstance().rescaleVmin(tmpVminRescaleValueItemContainer);
+            }
+        } catch (Exception anException) {
+            ModelUtils.appendToLogfile(true, anException);
+            MouseCursorManagement.getInstance().setDefaultCursor();
+            // <editor-fold defaultstate="collapsed" desc="Message CommandExecutionFailed">
+            JOptionPane.showMessageDialog(
+                null, 
+                String.format(GuiMessage.get("Error.CommandExecutionFailed"), "displayRescaleVminDialog()", "MainFrameController"),
+                GuiMessage.get("Error.ErrorNotificationTitle"), 
+                JOptionPane.ERROR_MESSAGE
+            );
+            // </editor-fold>
+        } finally {
+            MouseCursorManagement.getInstance().setDefaultCursor();
+        }
+    }
+
+    /**
+     * Display rescale-repulsions dialog
+     * 
+     * @param isIndividualScaling True: Every temperature is individually 
+     * scaled, false: All temperatures are scaled with global scaling factor
+     */
+    public void displayRescaleRepulsionsDialog(boolean isIndividualScaling) {
+        try {
+            MouseCursorManagement.getInstance().setWaitCursor();
+            ValueItemContainer tmpRepulsionsRescaleValueItemContainer = StandardParticleInteractionData.getInstance().getValueItemContainerForRepulsionsRescale();
+            MouseCursorManagement.getInstance().setDefaultCursor();
+            if (DialogValueItemEdit.hasChanged(GuiMessage.get("RescaleRepulsionsDialog.title"), tmpRepulsionsRescaleValueItemContainer)) {
+                MouseCursorManagement.getInstance().setWaitCursor();
+                StandardParticleInteractionData.getInstance().rescaleRepulsions(tmpRepulsionsRescaleValueItemContainer, isIndividualScaling);
+            }
+        } catch (Exception anException) {
+            ModelUtils.appendToLogfile(true, anException);
+            MouseCursorManagement.getInstance().setDefaultCursor();
+            // <editor-fold defaultstate="collapsed" desc="Message CommandExecutionFailed">
+            JOptionPane.showMessageDialog(
+                null, 
+                String.format(GuiMessage.get("Error.CommandExecutionFailed"), "displayRescaleRepulsionsDialog()", "MainFrameController"),
+                GuiMessage.get("Error.ErrorNotificationTitle"), 
+                JOptionPane.ERROR_MESSAGE
+            );
+            // </editor-fold>
+        } finally {
+            MouseCursorManagement.getInstance().setDefaultCursor();
+        }
+    }
+
+    /**
+     * Display edit-particles dialog
+     */
+    public void displayEditParticlesDialog() {
+        try {
+            MouseCursorManagement.getInstance().setWaitCursor();
+            // Initialize change detection since particles value items directly operate on singleton StandardParticleInteractionData (this is necessary due to the size of particle interaction data
+            // which may be megabytes)
+            StandardParticleInteractionData.getInstance().initChangeDetection();
+            ValueItemContainer tmpParticlesValueItemContainer = StandardParticleInteractionData.getInstance().getParticlesValueItemContainerForEdit();
+            MouseCursorManagement.getInstance().setDefaultCursor();
+            if (DialogValueItemEdit.hasChanged(GuiMessage.get("ParticlesEditDialog.title"), tmpParticlesValueItemContainer)) {
+                // <editor-fold defaultstate="collapsed" desc="Make changed data of singleton StandardParticleInteractionData persistent">
+                MouseCursorManagement.getInstance().setWaitCursor();
+                // Reset job related value items to react on changes
+                JdpdValueItemDefinition.getInstance().reset();
+
+                // </editor-fold>
+            } else if (StandardParticleInteractionData.getInstance().hasChanged()) {
+                // <editor-fold defaultstate="collapsed" desc="Singleton StandardParticleInteractionData has changed data but dialog was closed by a cancel operation: Reset">
+                MouseCursorManagement.getInstance().setWaitCursor();
+                // Reset singleton StandardParticleInteractionData with persistent data
+                StandardParticleInteractionData.getInstance().reset();
+
+                // </editor-fold>
+            }
+        } catch (Exception anException) {
+            ModelUtils.appendToLogfile(true, anException);
+            MouseCursorManagement.getInstance().setDefaultCursor();
+            // <editor-fold defaultstate="collapsed" desc="Message CommandExecutionFailed">
+            JOptionPane.showMessageDialog(null, String.format(GuiMessage.get("Error.CommandExecutionFailed"), "displayEditParticlesDialog()", "MainFrameController"),
+                    GuiMessage.get("Error.ErrorNotificationTitle"), JOptionPane.ERROR_MESSAGE);
+
+            // </editor-fold>
+        } finally {
+            MouseCursorManagement.getInstance().setDefaultCursor();
+        }
+    }
     // </editor-fold>
-    // <editor-fold defaultstate="collapsed" desc="--- Particles">
+    // <editor-fold defaultstate="collapsed" desc="--- Particle">
     /**
      * Display duplicate-particles dialog
      */
@@ -702,65 +830,6 @@ public class MainFrameController implements PropertyChangeListener {
             MouseCursorManagement.getInstance().setDefaultCursor();
         }
     }
-
-    /**
-     * Display rescale-Vmin dialog
-     */
-    public void displayRescaleVminDialog() {
-        try {
-            MouseCursorManagement.getInstance().setWaitCursor();
-            ValueItemContainer tmpVminRescaleValueItemContainer = StandardParticleInteractionData.getInstance().getValueItemContainerForVminRescale();
-            MouseCursorManagement.getInstance().setDefaultCursor();
-            if (DialogValueItemEdit.hasChanged(GuiMessage.get("VminRescaleDialog.title"), tmpVminRescaleValueItemContainer)) {
-                MouseCursorManagement.getInstance().setWaitCursor();
-                StandardParticleInteractionData.getInstance().rescaleVmin(tmpVminRescaleValueItemContainer);
-            }
-        } catch (Exception anException) {
-            ModelUtils.appendToLogfile(true, anException);
-            MouseCursorManagement.getInstance().setDefaultCursor();
-            // <editor-fold defaultstate="collapsed" desc="Message CommandExecutionFailed">
-            JOptionPane.showMessageDialog(
-                null, 
-                String.format(GuiMessage.get("Error.CommandExecutionFailed"), "displayRescaleVminDialog()", "MainFrameController"),
-                GuiMessage.get("Error.ErrorNotificationTitle"), 
-                JOptionPane.ERROR_MESSAGE
-            );
-            // </editor-fold>
-        } finally {
-            MouseCursorManagement.getInstance().setDefaultCursor();
-        }
-    }
-
-    /**
-     * Display rescale-repulsions dialog
-     * 
-     * @param isIndividualScaling True: Every temperature is individually 
-     * scaled, false: All temperatures are scaled with global scaling factor
-     */
-    public void displayRescaleRepulsionsDialog(boolean isIndividualScaling) {
-        try {
-            MouseCursorManagement.getInstance().setWaitCursor();
-            ValueItemContainer tmpRepulsionsRescaleValueItemContainer = StandardParticleInteractionData.getInstance().getValueItemContainerForRepulsionsRescale();
-            MouseCursorManagement.getInstance().setDefaultCursor();
-            if (DialogValueItemEdit.hasChanged(GuiMessage.get("RescaleRepulsionsDialog.title"), tmpRepulsionsRescaleValueItemContainer)) {
-                MouseCursorManagement.getInstance().setWaitCursor();
-                StandardParticleInteractionData.getInstance().rescaleRepulsions(tmpRepulsionsRescaleValueItemContainer, isIndividualScaling);
-            }
-        } catch (Exception anException) {
-            ModelUtils.appendToLogfile(true, anException);
-            MouseCursorManagement.getInstance().setDefaultCursor();
-            // <editor-fold defaultstate="collapsed" desc="Message CommandExecutionFailed">
-            JOptionPane.showMessageDialog(
-                null, 
-                String.format(GuiMessage.get("Error.CommandExecutionFailed"), "displayRescaleRepulsionsDialog()", "MainFrameController"),
-                GuiMessage.get("Error.ErrorNotificationTitle"), 
-                JOptionPane.ERROR_MESSAGE
-            );
-            // </editor-fold>
-        } finally {
-            MouseCursorManagement.getInstance().setDefaultCursor();
-        }
-    }
     
     /**
      * Display increment-probe-particles dialog
@@ -799,40 +868,31 @@ public class MainFrameController implements PropertyChangeListener {
             MouseCursorManagement.getInstance().setDefaultCursor();
         }
     }
-
+    
     /**
-     * Display edit-particles dialog
+     * Display amino acid backbone repulsion dialog
      */
-    public void displayEditParticlesDialog() {
+    public void displayBackboneRepulsionDialog() {
         try {
             MouseCursorManagement.getInstance().setWaitCursor();
-            // Initialize change detection since particles value items directly operate on singleton StandardParticleInteractionData (this is necessary due to the size of particle interaction data
-            // which may be megabytes)
-            StandardParticleInteractionData.getInstance().initChangeDetection();
-            ValueItemContainer tmpParticlesValueItemContainer = StandardParticleInteractionData.getInstance().getParticlesValueItemContainerForEdit();
+            ValueItemContainer tmpBackboneRepulsionValueItemContainer = StandardParticleInteractionData.getInstance().getBackboneRepulsionValueItemContainer();
             MouseCursorManagement.getInstance().setDefaultCursor();
-            if (DialogValueItemEdit.hasChanged(GuiMessage.get("ParticlesEditDialog.title"), tmpParticlesValueItemContainer)) {
-                // <editor-fold defaultstate="collapsed" desc="Make changed data of singleton StandardParticleInteractionData persistent">
+            if (DialogValueItemEdit.hasChanged(GuiMessage.get("BackboneRepulsionDialog.title"), tmpBackboneRepulsionValueItemContainer)) {
                 MouseCursorManagement.getInstance().setWaitCursor();
-                // Reset job related value items to react on changes
-                JdpdValueItemDefinition.getInstance().reset();
-
-                // </editor-fold>
-            } else if (StandardParticleInteractionData.getInstance().hasChanged()) {
-                // <editor-fold defaultstate="collapsed" desc="Singleton StandardParticleInteractionData has changed data but dialog was closed by a cancel operation: Reset">
-                MouseCursorManagement.getInstance().setWaitCursor();
-                // Reset singleton StandardParticleInteractionData with persistent data
-                StandardParticleInteractionData.getInstance().reset();
-
-                // </editor-fold>
+                StandardParticleInteractionData.getInstance().setBackboneRepulsions(tmpBackboneRepulsionValueItemContainer);
             }
         } catch (Exception anException) {
             ModelUtils.appendToLogfile(true, anException);
             MouseCursorManagement.getInstance().setDefaultCursor();
             // <editor-fold defaultstate="collapsed" desc="Message CommandExecutionFailed">
-            JOptionPane.showMessageDialog(null, String.format(GuiMessage.get("Error.CommandExecutionFailed"), "displayEditParticlesDialog()", "MainFrameController"),
-                    GuiMessage.get("Error.ErrorNotificationTitle"), JOptionPane.ERROR_MESSAGE);
-
+            JOptionPane.showMessageDialog(
+                null, 
+                String.format(GuiMessage.get("Error.CommandExecutionFailed"), 
+                "displayBackboneRepulsionDialog()", 
+                "MainFrameController"),
+                GuiMessage.get("Error.ErrorNotificationTitle"), 
+                JOptionPane.ERROR_MESSAGE
+            );
             // </editor-fold>
         } finally {
             MouseCursorManagement.getInstance().setDefaultCursor();
@@ -1005,7 +1065,7 @@ public class MainFrameController implements PropertyChangeListener {
                 "- Jama Version 1.0.3" + "\n" +
                 "- JCommon Version 1.0.9" + "\n" +
                 "- JDOM Version 2.0.6" + "\n" +
-                "- Jdpd Version 1.6.0.0" + "\n" +
+                "- Jdpd/JdpdSP Version " + de.gnwi.jdpd.utilities.Strings.JDPD_VERSION + "\n" +
                 "- JFreeChart Version 1.0.5" + "\n" +
                 "- Jmol Version 14.2.7" + "\n" +
                 "- SPICES Version 1.0.0.0" + "\n" +
@@ -1044,7 +1104,6 @@ public class MainFrameController implements PropertyChangeListener {
     private void updateMFsimJobPathDisplay() {
         this.mainFrame.geMFsimJobMenu().setVisible(!Preferences.getInstance().getInternalMFsimJobPath().isEmpty());
     }
-
     // </editor-fold>
     // </editor-fold>
     //
@@ -2944,6 +3003,12 @@ public class MainFrameController implements PropertyChangeListener {
         this.jobUpdateUtils.addMoleculeCharge(tmpJobInput);
         this.jobUpdateUtils.updateMoleculeBoundaryForMoleculeNameSelectionTexts(tmpJobInput);
         this.jobUpdateUtils.insertMoleculeSphereValueItem(tmpJobInput);
+        this.jobUpdateUtils.insertMoleculeStartGeometryValueItem(tmpJobInput);
+        this.jobUpdateUtils.insertMoleculeCenterPairRdfCalculationValueItem(tmpJobInput);
+
+        this.jobUpdateUtils.updateDescriptions(tmpJobInput);
+
+        tmpJobInput.updateMFsimApplicationVersion();
     }
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- Preference change related methods">

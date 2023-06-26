@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -41,68 +41,133 @@ import de.gnwi.mfsim.gui.preference.GuiDefinitions;
 public class CustomPanelProteinShow extends JPanel {
 
     // <editor-fold defaultstate="collapsed" desc="Private class variables">
+    /**
+     * GUI element
+     */
     private JLabel bioAssemblyInfoLabel;
-
+    /**
+     * GUI element
+     */
     private JPanel proteinDefinitionActionSubPanel;
-
+    /**
+     * GUI element
+     */
     private FlowLayout proteinDefinitionActionSubPanelFlowLayout;
-
+    /**
+     * GUI element
+     */
     private JButton showChainButton;
-
+    /**
+     * GUI element
+     */
     private JButton showPhButton;
-
+    /**
+     * GUI element
+     */
     private JButton showProteinPropertiesButton;
-
+    /**
+     * GUI element
+     */
     private JButton showMutantButton;
-
+    /**
+     * GUI element
+     */
     private JButton graphicsPreferencesButton;
-
+    /**
+     * GUI element
+     */
     private JPanel proteinDefinitionActionPanel;
-
+    /**
+     * GUI element
+     */
     private JPanel proteinDefinitionPanel;
-
+    /**
+     * GUI element
+     */
     private SpringLayout proteinDefinitionPanelSpringLayout;
-
+    /**
+     * GUI element
+     */
     private SpringLayout springLayout;
-
+    /**
+     * GUI element
+     */
     private JLabel proteinDefinitionInfoLabel;
-
+    /**
+     * GUI element
+     */
     private JPanel proteinPropertyPanel;
-
+    /**
+     * GUI element
+     */
     private SpringLayout proteinPropertyPanelSpringLayout;
-
+    /**
+     * GUI element
+     */
     private JTabbedPane propertyTabbedPanel;
-
+    /**
+     * GUI element
+     */
     private JPanel propertySpicesPanel;
-
+    /**
+     * GUI element
+     */
     private SpringLayout propertySpicesPanelSpringLayout;
-
+    /**
+     * GUI element
+     */
     private JScrollPane propertySpicesScrollPanel;
-
+    /**
+     * GUI element
+     */
     private JTextArea propertySpicesTextArea;
-
+    /**
+     * GUI element
+     */
     private JPanel propertySequencesPanel;
-
+    /**
+     * GUI element
+     */
     private SpringLayout propertySequencesPanelSpringLayout;
-
+    /**
+     * GUI element
+     */
     private JScrollPane propertySequencesScrollPanel;
-
+    /**
+     * GUI element
+     */
     private JTextArea propertySequencesTextArea;
-
+    /**
+     * GUI element
+     */
     private JPanel property3dStructurePanel;
-
+    /**
+     * GUI element
+     */
     private SpringLayout property3dStructurePanelSpringLayout;
-
+    /**
+     * GUI element
+     */
     private Jmol3dPanel property3dStructureJmol3dPanel;
-
+    /**
+     * GUI element
+     */
     private JPanel propertyPdbFileContentPanel;
-
+    /**
+     * GUI element
+     */
     private SpringLayout propertyPdbFileContentPanelSpringLayout;
-
+    /**
+     * GUI element
+     */
     private JScrollPane propertyPdbFileContentScrollPanel;
-
+    /**
+     * GUI element
+     */
     private JTextArea propertyPdbFileContentTextArea;
-
+    /**
+     * GUI element
+     */
     private JButton showProteinRotationButton;
     // </editor-fold>
     //

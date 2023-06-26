@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -36,41 +36,149 @@ import de.gnwi.mfsim.gui.preference.GuiDefinitions;
 public class CustomPanelPeptideEdit extends JPanel {
 
     // <editor-fold defaultstate="collapsed" desc="Private class variables">
+    /**
+     * GUI element
+     */
     private JPanel peptideInfoActionPanel;
+    /**
+     * GUI element
+     */
     private JPanel peptideInfoActionSubPanel;
+    /**
+     * GUI element
+     */
     private JButton phButton;
+    /**
+     * GUI element
+     */
     private CustomPanelImage aminoAcidImagePanel;
+    /**
+     * GUI element
+     */
     private JButton undoButton;
+    /**
+     * GUI element
+     */
     private JPanel peptidePanel;
+    /**
+     * GUI element
+     */
     private SpringLayout peptidePanelSpringLayout;
+    /**
+     * GUI element
+     */
     private JPanel aminoAcidsPanel;
+    /**
+     * GUI element
+     */
     private SpringLayout aminoAcidsPanelSpringLayout;
+    /**
+     * GUI element
+     */
     private JButton appendAminoAcidButton;
+    /**
+     * GUI element
+     */
     private JButton clearPeptideButton;
+    /**
+     * GUI element
+     */
     private JButton dischargeButton;
+    /**
+     * GUI element
+     */
     private JPanel descriptionsPanel;
+    /**
+     * GUI element
+     */
     private SpringLayout descriptionsPanelSpringLayout;
+    /**
+     * GUI element
+     */
     private JPanel threeLetterCodePanel;
+    /**
+     * GUI element
+     */
     private SpringLayout threeLetterCodePanelSpringLayout;
+    /**
+     * GUI element
+     */
     private JScrollPane previousDefinitionsScrollPanel;
+    /**
+     * GUI element
+     */
     private JScrollPane peptideScrollPanel;
+    /**
+     * GUI element
+     */
     private SpringLayout selectPanelSpringLayout;
+    /**
+     * GUI element
+     */
     private JPanel selectPanel;
+    /**
+     * GUI element
+     */
     private JButton clearPreviousDefinitionsButton;
+    /**
+     * GUI element
+     */
     private JButton removePreviousDefinitionButton;
+    /**
+     * GUI element
+     */
     private JButton usePreviousDefinitionButton;
+    /**
+     * GUI element
+     */
     private JList previousDefinitionsList;
+    /**
+     * GUI element
+     */
     private SpringLayout previousDefinitionsPanelSpringLayout;
+    /**
+     * GUI element
+     */
     private JPanel previousDefinitionsPanel;
+    /**
+     * GUI element
+     */
     private JTabbedPane infoTabbedPanel;
+    /**
+     * GUI element
+     */
     private JTextArea descriptionTextArea;
+    /**
+     * GUI element
+     */
     private JTextArea threeLetterCodeTextArea;
+    /**
+     * GUI element
+     */
     private JList aminoAcidsInfoList;
+    /**
+     * GUI element
+     */
     private JScrollPane descriptionScrollPanel;
+    /**
+     * GUI element
+     */
     private JScrollPane threeLetterCodeScrollPanel;
+    /**
+     * GUI element
+     */
     private JScrollPane aminoAcidsInfoScrollPanel;
+    /**
+     * GUI element
+     */
     private JLabel peptideInfoLabel;
+    /**
+     * GUI element
+     */
     private JTextArea peptideTextArea;
+    /**
+     * GUI element
+     */
     private SpringLayout springLayout;
     // </editor-fold>
     //

@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -127,6 +127,27 @@ public class JdpdValueItemDefinition {
     }
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- Get/is methods">
+    /**
+     * Returns description of Jdpd input file value item with specified name
+     *
+     * @param aValueItemName Name of value item
+     * @return description of Jdpd input file value item with specified name or
+     * null if value item with specified name does not exist
+     */
+    public String getDescriptionOfJdpdInputFileValueItem(String aValueItemName) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aValueItemName == null || aValueItemName.isEmpty()) {
+            return null;
+        }
+        // </editor-fold>
+        ValueItem tmpValueItem = this.nameToValueItemMap.get(aValueItemName);
+        if (tmpValueItem != null) {
+            return tmpValueItem.getDescription();
+        } else {
+            return null;
+        }
+    }
+
     /**
      * Returns clone of Jdpd input file value item with specified name
      *
@@ -752,6 +773,31 @@ public class JdpdValueItemDefinition {
                 ModelUtils.exitApplication(-1);
                 // </editor-fold>
             }
+            // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="- MoleculeStartGeometry (NOTE: No Jdpd input)">
+            tmpValueItem = new ValueItem();
+            tmpValueItem.setNodeNames(tmpNodeNames);
+            tmpValueItem.setName("MoleculeStartGeometry");
+            tmpValueItem.setDisplayName(ModelMessage.get("JdpdInputFile.valueItem.displayName.MoleculeStartGeometry"));
+            tmpValueItem.setDefaultTypeFormat(
+                new ValueItemDataTypeFormat(
+                    ModelMessage.get("JdpdInputFile.parameter.MoleculeStartGeometry.SinglePoint"), 
+                    new String[] {
+                        ModelMessage.get("JdpdInputFile.parameter.MoleculeStartGeometry.SinglePoint"),
+                        ModelMessage.get("JdpdInputFile.parameter.MoleculeStartGeometry.LinearTube")
+                    }
+                )
+            );
+            // Note: A change of the molecule start geometry must be transferred
+            // to a corresponding change of the molecule start geometry of the 
+            // compartment container, so update notification must be activated
+            tmpValueItem.setUpdateNotifier(true);
+            tmpValueItem.setBlockName(ModelDefinitions.JDPD_INPUT_BLOCK_2);
+            // NOTE: No Jdpd input
+            tmpValueItem.setVerticalPosition(tmpVerticalPosition++);
+            tmpValueItem.setDescription(ModelMessage.get("JdpdInputFile.valueItem.description.MoleculeStartGeometry"));
+            this.nameToValueItemMap.put(tmpValueItem.getName(), tmpValueItem);
+            this.jobInputValueItemContainer.addValueItem(tmpValueItem);
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="- GeometryRandomSeed (NOTE: No Jdpd input)">
             tmpValueItem = new ValueItem();
@@ -1380,6 +1426,40 @@ public class JdpdValueItemDefinition {
             this.nameToValueItemMap.put(tmpValueItem.getName(), tmpValueItem);
             this.jobInputValueItemContainer.addValueItem(tmpValueItem);
             // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="- MoleculeCenterPairRdfCalculation (NOTE: No Jdpd input)">
+            tmpValueItem = new ValueItem();
+            tmpValueItem.setNodeNames(tmpNodeNames);
+            tmpValueItem.setName("MoleculeCenterPairRdfCalculation");
+            this.valueItemNameMapForJobRestartEdit.put(tmpValueItem.getName(), tmpValueItem.getName());
+            tmpValueItem.setDisplayName(ModelMessage.get("JdpdInputFile.valueItem.displayName.MoleculeCenterPairRdfCalculation"));
+            tmpValueItem.setBasicType(ValueItemEnumBasicType.FLEXIBLE_MATRIX);
+            tmpValueItem.setEssential(false);
+            tmpValueItem.setActivity(false);
+            tmpValueItem.setMatrixColumnNames(
+                new String[] {
+                    ModelMessage.get("JdpdInputFile.parameter.moleculeName1"),
+                    ModelMessage.get("JdpdInputFile.parameter.moleculeName2")
+                }
+            );
+            tmpValueItem.setMatrixColumnWidths(
+                new String[] {
+                    ModelDefinitions.CELL_WIDTH_TEXT_150, // molecule_1
+                    ModelDefinitions.CELL_WIDTH_TEXT_150  // molecule_2
+                }
+            );
+            tmpValueItem.setDefaultTypeFormats(
+                new ValueItemDataTypeFormat[]{
+                    new ValueItemDataTypeFormat(new String[]{tmpDefaultMoleculeName}), // molecule_1
+                    new ValueItemDataTypeFormat(new String[]{tmpDefaultMoleculeName})  // molecule_2
+                }
+            );
+            tmpValueItem.setBlockName(ModelDefinitions.JDPD_INPUT_BLOCK_2);
+            // NOTE: No Jdpd input
+            tmpValueItem.setVerticalPosition(tmpVerticalPosition++);
+            tmpValueItem.setDescription(ModelMessage.get("JdpdInputFile.valueItem.description.MoleculeCenterPairRdfCalculation"));
+            this.nameToValueItemMap.put(tmpValueItem.getName(), tmpValueItem);
+            this.jobInputValueItemContainer.addValueItem(tmpValueItem);
+            // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="- ParticlePairDistanceCalculation (NOTE: No Jdpd input)">
             tmpValueItem = new ValueItem();
             tmpValueItem.setNodeNames(tmpNodeNames);
@@ -1613,8 +1693,8 @@ public class JdpdValueItemDefinition {
                     ModelDefinitions.CELL_WIDTH_TEXT_150, // moleculeName
                     ModelDefinitions.CELL_WIDTH_TEXT_100, // backboneAttribute1
                     ModelDefinitions.CELL_WIDTH_TEXT_100, // backboneAttribute2
-                    ModelDefinitions.CELL_WIDTH_TEXT_100, // backboneDistanceAngstrom
-                    ModelDefinitions.CELL_WIDTH_TEXT_100, // backboneDistanceDpd
+                    ModelDefinitions.CELL_WIDTH_TEXT_120, // backboneDistanceAngstrom
+                    ModelDefinitions.CELL_WIDTH_TEXT_120, // backboneDistanceDpd
                     ModelDefinitions.CELL_WIDTH_TEXT_100, // backboneForceConstant
                     ModelDefinitions.CELL_WIDTH_TEXT_150  // backboneBehaviour
                 }

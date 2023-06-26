@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -42,78 +42,153 @@ import de.gnwi.mfsim.gui.preference.GuiDefinitions;
 public class CustomPanelValueItemMatrixDiagram extends JPanel{
 
     // <editor-fold defaultstate="collapsed" desc="Private class variables">
+    /**
+     * GUI element
+     */
     private SpringLayout springLayout;
-
+    /**
+     * GUI element
+     */
     private JSlider domainSlider;
-    
+    /**
+     * GUI element
+     */
     private JButton playAnimationButton;
-    
+    /**
+     * GUI element
+     */
     private JRadioButton chartSettingsRadioButton;
-    
+    /**
+     * GUI element
+     */
     private JRadioButton movieSettingsRadioButton;
-    
+    /**
+     * GUI element
+     */
     private ButtonGroup changeSettingsButtonGroup = new ButtonGroup();
-
+    /**
+     * GUI element
+     */
     private JPanel imageAndInformationPanel;
-
+    /**
+     * GUI element
+     */
     private SpringLayout imageAndInformationPanelSpringLayout;
-    
+    /**
+     * GUI element
+     */
     private CustomPanelImage imagePanel;
-    
+    /**
+     * GUI element
+     */
     private JLabel informationLabel;
-
+    /**
+     * GUI element
+     */
     private JPanel chartSettingsPanel;
-    
+    /**
+     * GUI element
+     */
     private SpringLayout chartSettingsPanelSpringLayout;
-    
+    /**
+     * GUI element
+     */
     private JButton restoreButton;
-
+    /**
+     * GUI element
+     */
     private JButton zoomButton;
-
+    /**
+     * GUI element
+     */
     private JButton discardButton;
-    
+    /**
+     * GUI element
+     */
     private JButton defaultButton;
-
+    /**
+     * GUI element
+     */
     private JButton copyGraphicsButton;
-
+    /**
+     * GUI element
+     */
     private JButton saveGraphicsButton;
-
+    /**
+     * GUI element
+     */
     private JButton resetAverageButton;
-    
+    /**
+     * GUI element
+     */
     private JCheckBox outlineCheckBox;
-
+    /**
+     * GUI element
+     */
     private JCheckBox whiteCheckBox;
-
+    /**
+     * GUI element
+     */
     private JCheckBox shapesCheckBox;
-
+    /**
+     * GUI element
+     */
     private JCheckBox thickCheckBox;
-    
+    /**
+     * GUI element
+     */
     private JCheckBox invertedCheckBox;
-    
+    /**
+     * GUI element
+     */
     private JCheckBox trendLineCheckBox;
-    
+    /**
+     * GUI element
+     */
     private JCheckBox markLastPointCheckBox;
-    
+    /**
+     * GUI element
+     */
     private JComboBox averageComboBox;
-
+    /**
+     * GUI element
+     */
     private JPanel movieSettingsPanel;
-    
+    /**
+     * GUI element
+     */
     private SpringLayout movieSettingsPanelSpringLayout;
-    
+    /**
+     * GUI element
+     */
     private JButton createMovieButton;
-    
+    /**
+     * GUI element
+     */
     private JCheckBox reducedStatisticsCheckBox;
-    
+    /**
+     * GUI element
+     */
     private JCheckBox reducedTrendLineCheckBox;
-    
+    /**
+     * GUI element
+     */
     private JRadioButton animationRadioButton;
-    
+    /**
+     * GUI element
+     */
     private JRadioButton movieRadioButton;
-    
+    /**
+     * GUI element
+     */
     private ButtonGroup movieAnimationButtonGroup = new ButtonGroup();
-    
+    /**
+     * GUI element
+     */
     private JButton firstMovieSettingsButton;
-    
+    /**
+     * GUI element
+     */
     private JButton secondMovieSettingsButton;
     // </editor-fold>
     //
@@ -411,6 +486,7 @@ public class CustomPanelValueItemMatrixDiagram extends JPanel{
                 this.informationLabel.setOpaque(true);
                 this.informationLabel.setHorizontalAlignment(SwingConstants.CENTER);
                 this.informationLabel.setText(GuiMessage.get("CustomPanelValueItemMatrixDiagram.informationLabel.text"));
+                this.informationLabel.setToolTipText(GuiMessage.get("CustomPanelValueItemMatrixDiagram.informationLabel.toolTipText"));
                 this.informationLabel.setForeground(GuiDefinitions.PANEL_TITLE_COLOR);
                 this.imageAndInformationPanel.add(this.informationLabel);
                 this.imageAndInformationPanelSpringLayout.putConstraint(SpringLayout.SOUTH, this.informationLabel, -5, SpringLayout.SOUTH, this.imageAndInformationPanel);

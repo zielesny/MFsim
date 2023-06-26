@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -38,106 +38,206 @@ import de.gnwi.mfsim.gui.preference.GuiDefinitions;
 public class CustomPanelSlicer extends JPanel {
 
     // <editor-fold defaultstate="collapsed" desc="Private class variables">
+    /**
+     * GUI element
+     */
     private JButton particleShiftRemoveButton;
-    
+    /**
+     * GUI element
+     */
     private JPanel fogSettingsPanel;
-
+    /**
+     * GUI element
+     */
     private SpringLayout fogSettingsPanelSpringLayout;
-
+    /**
+     * GUI element
+     */
     private JButton fog5Button;
-
+    /**
+     * GUI element
+     */
     private JButton fog4Button;
-
+    /**
+     * GUI element
+     */
     private JButton fog3Button;
-
+    /**
+     * GUI element
+     */
     private JButton fog2Button;
-
+    /**
+     * GUI element
+     */
     private JButton fog1Button;
-
+    /**
+     * GUI element
+     */
     private JButton fog0Button;
-
+    /**
+     * GUI element
+     */
     private JButton setFirstSliceButton;
-
+    /**
+     * GUI element
+     */
     private JButton zoomFrequencyDistributionsButton;
-
+    /**
+     * GUI element
+     */
     private JButton zoomOutButton;
-
+    /**
+     * GUI element
+     */
     private JButton zoomInBoxVolumeShapeButton;
-
+    /**
+     * GUI element
+     */
     private JButton zoomInEllipsoidVolumeShapeButton;
-
+    /**
+     * GUI element
+     */
     private JButton setZoomButton;
-
+    /**
+     * GUI element
+     */
     private JButton volumeBinsSettingsButton;
-        
+    /**
+     * GUI element
+     */
     private SpringLayout zoomPanelSpringLayout;
-
+    /**
+     * GUI element
+     */
     private JPanel zoomPanel;
-
+    /**
+     * GUI element
+     */
     private JButton fitMagnificationButton;
-
+    /**
+     * GUI element
+     */
     private JButton originalDisplayButton;
-
+    /**
+     * GUI element
+     */
     private JButton boxFrameButton;
-
+    /**
+     * GUI element
+     */
     private CustomPanelSimulationBoxSlicer simulationBoxPanel;
-
+    /**
+     * GUI element
+     */
     private JButton secondSettingsButton;
-
+    /**
+     * GUI element
+     */
     private JButton firstSettingsButton;
-
+    /**
+     * GUI element
+     */
     private SpringLayout settingsButtonPanelSpringLayout;
-
+    /**
+     * GUI element
+     */
     private JPanel settingsButtonPanel;
-
+    /**
+     * GUI element
+     */
     private JRadioButton movieRadioButton;
-
+    /**
+     * GUI element
+     */
     private JRadioButton selectionRadioButton;
-    
+    /**
+     * GUI element
+     */
     private JRadioButton animationRadioButton;
-
+    /**
+     * GUI element
+     */
     private JRadioButton graphicsRadioButton;
-
+    /**
+     * GUI element
+     */
     private JRadioButton moleculesRadioButton;
-
+    /**
+     * GUI element
+     */
     private JRadioButton rotationAndShiftRadioButton;
-
+    /**
+     * GUI element
+     */
     private ButtonGroup settingsButtonGroup = new ButtonGroup();
-
+    /**
+     * GUI element
+     */
     private SpringLayout settingsPanelSpringLayout;
-
+    /**
+     * GUI element
+     */
     private SpringLayout boxSettingsPanelSpringLayout;
-
+    /**
+     * GUI element
+     */
     private JPanel settingsPanel;
-
+    /**
+     * GUI element
+     */
     private JPanel boxSettingsPanel;
-
+    /**
+     * GUI element
+     */
     private CustomPanelImage boxViewImagePanel;
-
+    /**
+     * GUI element
+     */
     private JRadioButton xyBottomRadioButton;
-
+    /**
+     * GUI element
+     */
     private JRadioButton xyTopRadioButton;
-
+    /**
+     * GUI element
+     */
     private JRadioButton yzRightRadioButton;
-
+    /**
+     * GUI element
+     */
     private JRadioButton yzLeftRadioButton;
-
+    /**
+     * GUI element
+     */
     private ButtonGroup boxViewButtonGroup = new ButtonGroup();
-
+    /**
+     * GUI element
+     */
     private JRadioButton xzBackRadioButton;
-
+    /**
+     * GUI element
+     */
     private JRadioButton xzFrontRadioButton;
-
+    /**
+     * GUI element
+     */
     private SpringLayout boxViewPanelSpringLayout;
-
+    /**
+     * GUI element
+     */
     private JPanel boxViewPanel;
-
+    /**
+     * GUI element
+     */
     private SpringLayout springLayout;
-
+    /**
+     * GUI element
+     */
     private JButton noRotationAndShiftButton;
-
+    /**
+     * GUI element
+     */
     private JButton noMagnificationButton;
-
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Serial version UID">

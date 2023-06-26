@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -565,9 +565,9 @@ public class PixelGraphicsFactory implements IGraphicsFactory {
                 tmpBlue = tmpPixel & 0xFF; // blue: 0-255
 
                 // NOTE: This code would be always correct for rounding values but too slow!
-                // tmpRed = tmpRed - Math.round(tmpCorrectedAttenuation * (float) (tmpRed - this.backgroundRed));
-                // tmpGreen = tmpGreen - Math.round(tmpCorrectedAttenuation * (float) (tmpGreen - this.backgroundGreen));
-                // tmpBlue = tmpBlue - Math.round(tmpCorrectedAttenuation * (float) (tmpBlue - this.backgroundBlue));
+                // tmpRed = tmpRed - Math.round(tmpCorrectedAttenuation * (double) (tmpRed - this.backgroundRed));
+                // tmpGreen = tmpGreen - Math.round(tmpCorrectedAttenuation * (double) (tmpGreen - this.backgroundGreen));
+                // tmpBlue = tmpBlue - Math.round(tmpCorrectedAttenuation * (double) (tmpBlue - this.backgroundBlue));
                 // NOTE: This faster work-around does no correct rounding but works for black and white background color!
                 tmpRed = tmpRed + 1 - (int) (tmpCorrectedAttenuation * (double) (tmpRed - this.backgroundRed));
                 if (tmpRed > 255) {

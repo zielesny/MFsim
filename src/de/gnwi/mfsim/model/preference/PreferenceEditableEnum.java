@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -29,16 +29,6 @@ import de.gnwi.mfsim.model.preference.ModelDefinitions;
  */
 public enum PreferenceEditableEnum {
 
-    // <editor-fold defaultstate="collapsed" desc="Definitions">
-    /**
-     * PreferenceBasic: this.jpegImageQuality
-     */// <editor-fold defaultstate="collapsed" desc="Definitions">
-    /**
-     * PreferenceBasic: this.jpegImageQuality
-     */// <editor-fold defaultstate="collapsed" desc="Definitions">
-    /**
-     * PreferenceBasic: this.jpegImageQuality
-     */// <editor-fold defaultstate="collapsed" desc="Definitions">
     /**
      * PreferenceBasic: this.jpegImageQuality
      */
@@ -181,9 +171,13 @@ public enum PreferenceEditableEnum {
      */
     IS_JOB_RESULT_ARCHIVE_FILE_UNCOMPRESSED,
     /**
-     * PreferenceBasic: this.isJdpdLogLevelExceptions
+     * PreferenceBasic: this.isJdpdKernelDoublePrecision
      */
-    IS_JDPD_LOG_LEVEL_EXCEPTIONS,
+    IS_JDPD_KERNEL_DOUBLE_PRECISION,
+    /**
+     * PreferenceBasic: this.isJdpdLogLevelException
+     */
+    IS_JDPD_LOG_LEVEL_EXCEPTION,
     /**
      * PreferenceBasic: this.isConstantCompartmentBodyVolume
      */
@@ -430,7 +424,8 @@ public enum PreferenceEditableEnum {
                     PreferenceEditableEnum.IS_JOB_RESULT_ARCHIVE_PROCESS_PARALLEL_IN_BACKGROUND);
             PreferenceEditableEnum.representationToPreferenceEditableEnumMap.put(PreferenceEditableEnum.IS_JOB_RESULT_ARCHIVE_FILE_UNCOMPRESSED.name(),
                     PreferenceEditableEnum.IS_JOB_RESULT_ARCHIVE_FILE_UNCOMPRESSED);
-            PreferenceEditableEnum.representationToPreferenceEditableEnumMap.put(PreferenceEditableEnum.IS_JDPD_LOG_LEVEL_EXCEPTIONS.name(), PreferenceEditableEnum.IS_JDPD_LOG_LEVEL_EXCEPTIONS);
+            PreferenceEditableEnum.representationToPreferenceEditableEnumMap.put(PreferenceEditableEnum.IS_JDPD_KERNEL_DOUBLE_PRECISION.name(), PreferenceEditableEnum.IS_JDPD_KERNEL_DOUBLE_PRECISION);
+            PreferenceEditableEnum.representationToPreferenceEditableEnumMap.put(PreferenceEditableEnum.IS_JDPD_LOG_LEVEL_EXCEPTION.name(), PreferenceEditableEnum.IS_JDPD_LOG_LEVEL_EXCEPTION);
             PreferenceEditableEnum.representationToPreferenceEditableEnumMap.put(PreferenceEditableEnum.IS_CONSTANT_COMPARTMENT_BODY_VOLUME.name(), PreferenceEditableEnum.IS_CONSTANT_COMPARTMENT_BODY_VOLUME);
             PreferenceEditableEnum.representationToPreferenceEditableEnumMap.put(PreferenceEditableEnum.IS_SIMULATION_BOX_SLICER.name(), PreferenceEditableEnum.IS_SIMULATION_BOX_SLICER);
             PreferenceEditableEnum.representationToPreferenceEditableEnumMap.put(PreferenceEditableEnum.IS_MOLECULE_DISPLAY_WITH_STANDARD_PARTICLE_SIZE.name(),

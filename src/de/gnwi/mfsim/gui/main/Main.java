@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -33,6 +33,11 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import de.gnwi.mfsim.gui.preference.GuiDefinitions;
 import de.gnwi.mfsim.model.preference.ModelDefinitions;
 
+/**
+ * MFsim entry class with main method.
+ * 
+ * @author Achim Zielesny
+ */
 public class Main {
 
     /**

@@ -5,11 +5,11 @@ MFsim is an open Java all-in-one rich-client computing environment for mesoscopi
 
 MFsim uses several open libraries (see *MFSimVersionHistory.txt* for details and references below) and is published as open source under the GNU General Public License version 3 (see *LICENSE*).
 
-MFsim has been described in the scientific literature and used for biomolecular DPD studies of cyclotide/membrane interactions (see references below).
+MFsim has been described in the scientific literature and used for DPD studies (see references below).
 
 ### Content
 
-- **MFSimVersionHistory.txt** shows the version history of MFsim.
+- **MFSimVersionHistory.txt** shows the detailed version history of MFsim.
 - The **src** subfolder contains all (Netbeans) source code packages.
 - The **test** subfolder contains Unit tests.
 - The **lib** subfolder comprises the open Java libraries used by MFsim (see *MFSimVersionHistory.txt* for details).
@@ -19,7 +19,7 @@ MFsim has been described in the scientific literature and used for biomolecular 
 - The subfolders **2020 Cyclotide-membrane interaction study**, **2021 Cyclotide-membrane interaction study**, **2022 C10E4-water bilayer formation study** and **2022 Cyclotide-membrane electrostatics study**  contain supplementary information for specific studies performed with MFsim/Jdpd (see corresponding *README* files in each subfolder).
 
 ### Installer for Windows OS
-* A convenient [Windows OS installer executable for MFsim](https://w-hs.sciebo.de/s/XZ3dqhLqOwwRcNe) is available. Download the installer executable (Version 2.5.0.0 via [link](https://w-hs.sciebo.de/s/XZ3dqhLqOwwRcNe) and preliminary version 2.6.0.0 via [link](https://w-hs.sciebo.de/s/mRuDO6Fg4xxFWAC)), start and follow the instructions to install MFsim. Note, that the installation includes a full Java Runtime Environment (JRE). After installation, create a shortcut to an appropriate MFsim start batch file on your Windows desktop (e.g. for MFsim to use up to 16 gigabyte of RAM copy a shortcut to batch file *Start_MFsim_64bit_16GB.bat* which is located in the MFsim program folder *C:\Program Files\GNWI\MFsim 2.4.0.0*). To start MFsim double click the created shortcut. MFsim can be uninstalled by the provided *Uninstall.exe* executable in the MFsim program folder or standard Windows functions.
+* A convenient [Windows OS installer executable for MFsim](https://w-hs.sciebo.de/s/mzpipFMfICu7eim) is available. Download the installer executable (Version 2.6.0.0 via [link](https://w-hs.sciebo.de/s/mzpipFMfICu7eim)), start and follow the instructions to install MFsim. Note, that the installation includes a full Java Runtime Environment (JRE). After installation, create a shortcut to an appropriate MFsim start batch file on your Windows desktop (e.g. for MFsim to use up to 16 gigabyte of RAM copy a shortcut to batch file *Start_MFsim_64bit_16GB.bat* which is located in the MFsim program folder *C:\Program Files\GNWI\MFsim 2.6.0.0*). To start MFsim double click the created shortcut. MFsim can be uninstalled by the provided *Uninstall.exe* executable in the MFsim program folder or standard Windows functions.
 
 ### References
 
@@ -27,6 +27,7 @@ Software:
 - [K. van den Broek, M. Daniel, M. Epple, J.-M. Hein, H. Kuhn, S. Neumann, A. Truszkowski and A. Zielesny, _MFsim - an open Java all-in-one rich-client simulation environment for mesoscopic simulation_, Journal of Cheminformatics (2020), 12:29](https://doi.org/10.1186/s13321-020-00432-9)
 
 Applications:
+- [F. Bänsch, C. Steinbeck and A. Zielesny, _Notes on molecular fragmentation and parameter settings for a dissipative particle dynamics study of a C10E4/water mixture with lamellar bilayer formation_, Journal of Cheminformatics (2023), 15:23](https://doi.org/10.1186/s13321-023-00697-w)
 - [F. Bänsch, C. Steinbeck and A. Zielesny, _Notes on the Treatment of Charged Particles for Studying Cyclotide/Membrane Interactions with Dissipative Particle Dynamics_, Membranes (2022), 12(6):619](https://doi.org/10.3390/membranes12060619)
 - [K. van den Broek, M. Epple, L. S. Kersten, H. Kuhn and A. Zielesny, _Quantitative Estimation of Cyclotide-Induced Bilayer Membrane Disruption by Lipid Extraction with Mesoscopic Simulation_, Journal of Chemical Information an Modeling (2021), 61, 3027-3040](https://doi.org/10.1021/acs.jcim.1c00332) ([Link to ChemRxiv preprint](https://doi.org/10.26434/chemrxiv.14135783.v1))
 

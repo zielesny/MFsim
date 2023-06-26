@@ -4,7 +4,7 @@
  */
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -37,17 +37,46 @@ public class JmolPeptidePopupMenuView extends JPopupMenu {
     // Note: "Show hydrogens" is deactivated since no hydrogens are added 
     //       with "pdbAddHydrogens" in 
     //       Jmol3dPeptideController.showProteinFromMasterdata()
-    
+
+    /**
+     * GUI element
+     */
     JCheckBoxMenuItem axesMenuItem = new JCheckBoxMenuItem("Show axes");
+    /**
+     * GUI element
+     */
     JCheckBoxMenuItem cartoonMenuItem = new JCheckBoxMenuItem("Show cartoon");
+    /**
+     * GUI element
+     */
     JCheckBoxMenuItem moleculeMenuItem = new JCheckBoxMenuItem("Show molecule");
+
     // JCheckBoxMenuItem hydrogensMenuItem = new JCheckBoxMenuItem("Show hydrogens");
+
+    /**
+     * GUI element
+     */
     JRadioButtonMenuItem normalMenuItem = new JRadioButtonMenuItem("Normal");
+    /**
+     * GUI element
+     */
     JRadioButtonMenuItem polarityMenuItem = new JRadioButtonMenuItem("Polarity");
+    /**
+     * GUI element
+     */
     JRadioButtonMenuItem chargeMenuItem = new JRadioButtonMenuItem("Charge");
+    /**
+     * GUI element
+     */
     JRadioButtonMenuItem backboneMenuItem = new JRadioButtonMenuItem("Backbone");
+    /**
+     * GUI element
+     */
     JRadioButtonMenuItem cAlphaMenuItem = new JRadioButtonMenuItem("C-alpha atoms");
-    
+
+    /**
+     * JmolPeptidePopupMenuView
+     */    
     public JmolPeptidePopupMenuView() {
         this.normalMenuItem.setSelected(true);
         this.moleculeMenuItem.setSelected(true);
@@ -70,34 +99,74 @@ public class JmolPeptidePopupMenuView extends JPopupMenu {
         // this.add(this.hydrogensMenuItem);
     }
 
+    /**
+     * JmolPeptidePopupMenuView
+     * 
+     * @return Menu item
+     */    
     public JCheckBoxMenuItem getAxesMenuItem() {
         return axesMenuItem;
     }
 
+    /**
+     * JmolPeptidePopupMenuView
+     * 
+     * @return Menu item
+     */    
     public JCheckBoxMenuItem getCartoonMenuItem() {
         return cartoonMenuItem;
     }
 
+    /**
+     * JmolPeptidePopupMenuView
+     * 
+     * @return Menu item
+     */    
     public JCheckBoxMenuItem getMoleculeMenuItem() {
         return moleculeMenuItem;
     }
 
+    /**
+     * JmolPeptidePopupMenuView
+     * 
+     * @return Menu item
+     */    
     public JRadioButtonMenuItem getNormalMenuItem() {
         return normalMenuItem;
     }
 
+    /**
+     * JmolPeptidePopupMenuView
+     * 
+     * @return Menu item
+     */    
     public JRadioButtonMenuItem getPolarityMenuItem() {
         return polarityMenuItem;
     }
 
+    /**
+     * JmolPeptidePopupMenuView
+     * 
+     * @return Menu item
+     */    
     public JRadioButtonMenuItem getChargeMenuItem() {
         return chargeMenuItem;
     }
 
+    /**
+     * JmolPeptidePopupMenuView
+     * 
+     * @return Menu item
+     */    
     public JRadioButtonMenuItem getBackboneMenuItem() {
         return backboneMenuItem;
     }
 
+    /**
+     * JmolPeptidePopupMenuView
+     * 
+     * @return Menu item
+     */    
     public JRadioButtonMenuItem getcAlphaMenuItem() {
         return cAlphaMenuItem;
     }

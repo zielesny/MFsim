@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -32,18 +32,33 @@ import javax.swing.SpringLayout;
 public class CustomPanelCompartment extends JPanel {
 
     // <editor-fold defaultstate="collapsed" desc="Private class variables">
+    /**
+     * GUI element
+     */
     private CustomPanelCompartmentGraphics compartmentGraphicsPanel;
-
+    /**
+     * GUI element
+     */
     private CustomPanelCompartmentEdit compartmentEditPanel;
-
+    /**
+     * GUI element
+     */
     private SpringLayout graphicsPanelSpringLayout;
-
+    /**
+     * GUI element
+     */
     private SpringLayout parameterPanelSpringLayout;
-
+    /**
+     * GUI element
+     */
     private JPanel graphicsPanel;
-
+    /**
+     * GUI element
+     */
     private JPanel parameterPanel;
-
+    /**
+     * GUI element
+     */
     private JTabbedPane mainTabbedPanel;
     // </editor-fold>
     //

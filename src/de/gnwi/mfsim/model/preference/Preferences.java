@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -442,10 +442,16 @@ public final class Preferences {
     private boolean isJobResultArchiveFileUncompressed;
 
     /**
-     * True: Jdpd log level EXCEPTIONS is used, false: All available Jdpd log 
+     * True: Jdpd kernel with double precision arithmetic is used, false: JdpdSP
+     * kernel with single precision (float) is used
+     */
+    private boolean isJdpdKernelDoublePrecision;
+
+    /**
+     * True: Jdpd log level EXCEPTION is used, false: All available Jdpd log 
      * levels are used
      */
-    private boolean isJdpdLogLevelExceptions;
+    private boolean isJdpdLogLevelException;
 
     /**
      * True: Compartment body volume is constant/preserved, false: Otherwise
@@ -993,6 +999,53 @@ public final class Preferences {
 
         // </editor-fold>
         // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Jdpd kernel settings">
+        tmpNodeNames = new String[]{ModelMessage.get("Preferences.Root"), ModelMessage.get("Preferences.JdpdKernel")};
+        // <editor-fold defaultstate="collapsed" desc="- Jdpd kernel double precision">
+        tmpValueItem = new ValueItem();
+        tmpValueItem.setNodeNames(tmpNodeNames);
+        tmpValueItem.setDefaultTypeFormat(new ValueItemDataTypeFormat(
+                ModelMessage.get("Preferences.JdpdKernel.JdpdKernelDoublePrecision.True"), 
+                new String[] {
+                    ModelMessage.get("Preferences.JdpdKernel.JdpdKernelDoublePrecision.True"), 
+                    ModelMessage.get("Preferences.JdpdKernel.JdpdKernelDoublePrecision.False")
+                }
+            )
+        );
+        tmpValueItem.setName(PreferenceEditableEnum.IS_JDPD_KERNEL_DOUBLE_PRECISION.name());
+        tmpValueItem.setDescription(ModelMessage.get("Preferences.JdpdKernel.JdpdKernelDoublePrecision.Description"));
+        tmpValueItem.setDisplayName(ModelMessage.get("Preferences.JdpdKernel.JdpdKernelDoublePrecision"));
+        if (this.isJdpdKernelDoublePrecision) {
+            tmpValueItem.setValue(ModelMessage.get("Preferences.JdpdKernel.JdpdKernelDoublePrecision.True"));
+        } else {
+            tmpValueItem.setValue(ModelMessage.get("Preferences.JdpdKernel.JdpdKernelDoublePrecision.False"));
+        }
+        tmpValueItem.setVerticalPosition(tmpVerticalPosition++);
+        tmpValueItemContainer.addValueItem(tmpValueItem);
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="- Jdpd log level EXCEPTION">
+        tmpValueItem = new ValueItem();
+        tmpValueItem.setNodeNames(tmpNodeNames);
+        tmpValueItem.setDefaultTypeFormat(new ValueItemDataTypeFormat(
+                ModelMessage.get("Preferences.JdpdKernel.JdpdLogLevelException.True"), 
+                new String[] {
+                    ModelMessage.get("Preferences.JdpdKernel.JdpdLogLevelException.True"), 
+                    ModelMessage.get("Preferences.JdpdKernel.JdpdLogLevelException.False")
+                }
+            )
+        );
+        tmpValueItem.setName(PreferenceEditableEnum.IS_JDPD_LOG_LEVEL_EXCEPTION.name());
+        tmpValueItem.setDescription(ModelMessage.get("Preferences.JdpdKernel.JdpdLogLevelException.Description"));
+        tmpValueItem.setDisplayName(ModelMessage.get("Preferences.JdpdKernel.JdpdLogLevelException"));
+        if (this.isJdpdLogLevelException) {
+            tmpValueItem.setValue(ModelMessage.get("Preferences.JdpdKernel.JdpdLogLevelException.True"));
+        } else {
+            tmpValueItem.setValue(ModelMessage.get("Preferences.JdpdKernel.JdpdLogLevelException.False"));
+        }
+        tmpValueItem.setVerticalPosition(tmpVerticalPosition++);
+        tmpValueItemContainer.addValueItem(tmpValueItem);
+        // </editor-fold>
+        // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Parallel computing settings">
         tmpVerticalPosition = this.addParallelComputingEditablePreferencesValueItems(tmpValueItemContainer, tmpVerticalPosition);
         // </editor-fold>
@@ -1005,7 +1058,6 @@ public final class Preferences {
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Job Result archive settings">
         tmpVerticalPosition = this.addJobResultArchiveEditablePreferencesValueItems(tmpValueItemContainer, tmpVerticalPosition);
-
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Miscellaneous">
         tmpNodeNames = new String[]{ModelMessage.get("Preferences.Root"), ModelMessage.get("Preferences.Miscellaneous")};
@@ -1098,34 +1150,15 @@ public final class Preferences {
         tmpValueItem.setVerticalPosition(tmpVerticalPosition++);
         tmpValueItemContainer.addValueItem(tmpValueItem);
         // </editor-fold>
-        // <editor-fold defaultstate="collapsed" desc="- Jdpd log level exceptions">
-        tmpValueItem = new ValueItem();
-        tmpValueItem.setNodeNames(tmpNodeNames);
-        tmpValueItem.setDefaultTypeFormat(new ValueItemDataTypeFormat(
-                ModelMessage.get("Preferences.Miscellaneous.JdpdLogLevelExceptions.True"), 
-                new String[] {
-                    ModelMessage.get("Preferences.Miscellaneous.JdpdLogLevelExceptions.True"), 
-                    ModelMessage.get("Preferences.Miscellaneous.JdpdLogLevelExceptions.False")
-                }
-            )
-        );
-        tmpValueItem.setName(PreferenceEditableEnum.IS_JDPD_LOG_LEVEL_EXCEPTIONS.name());
-        tmpValueItem.setDescription(ModelMessage.get("Preferences.Miscellaneous.JdpdLogLevelExceptions.Description"));
-        tmpValueItem.setDisplayName(ModelMessage.get("Preferences.Miscellaneous.IsJdpdLogLevelExceptions"));
-        if (this.isJdpdLogLevelExceptions) {
-            tmpValueItem.setValue(ModelMessage.get("Preferences.Miscellaneous.JdpdLogLevelExceptions.True"));
-        } else {
-            tmpValueItem.setValue(ModelMessage.get("Preferences.Miscellaneous.JdpdLogLevelExceptions.False"));
-        }
-        tmpValueItem.setVerticalPosition(tmpVerticalPosition++);
-        tmpValueItemContainer.addValueItem(tmpValueItem);
-        // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="- Number of after-decimal-separator digits for particle positions">
         tmpValueItem = new ValueItem();
         tmpValueItem.setNodeNames(tmpNodeNames);
         tmpValueItem.setDefaultTypeFormat(new ValueItemDataTypeFormat(
-                String.valueOf(this.getDefaultNumberOfAfterDecimalDigitsForParticlePositions()), 
-                ModelUtils.getNumberStringsForInterval(ModelDefinitions.MINIMUM_NUMBER_OF_AFTER_DECIMAL_SEPARATOR_DIGITS_FOR_PARTICLE_POSITIONS, ModelDefinitions.MAXIMUM_NUMBER_OF_AFTER_DECIMAL_SEPARATOR_DIGITS_FOR_PARTICLE_POSITIONS))
+            String.valueOf(this.getDefaultNumberOfAfterDecimalDigitsForParticlePositions()), 
+            ModelUtils.getNumberStringsForInterval(
+                ModelDefinitions.MINIMUM_NUMBER_OF_AFTER_DECIMAL_SEPARATOR_DIGITS_FOR_PARTICLE_POSITIONS, 
+                ModelDefinitions.MAXIMUM_NUMBER_OF_AFTER_DECIMAL_SEPARATOR_DIGITS_FOR_PARTICLE_POSITIONS)
+            )
         );
         tmpValueItem.setName(PreferenceEditableEnum.NUMBER_OF_AFTER_DECIMAL_SEPARATOR_DIGITS_FOR_PARTICLE_POSITIONS.name());
         tmpValueItem.setDescription(ModelMessage.get("Preferences.Miscellaneous.NumberOfAfterDecimalDigitsForParticlePositions.Description"));
@@ -1692,8 +1725,13 @@ public final class Preferences {
                         tmpHasChanged = true;
                     }
                     break;
-                case IS_JDPD_LOG_LEVEL_EXCEPTIONS:
-                    if (this.setJdpdLogLevelExceptions(tmpSingleValueItem.getValue().equals(ModelMessage.get("Preferences.Miscellaneous.JdpdLogLevelExceptions.True")))) {
+                case IS_JDPD_KERNEL_DOUBLE_PRECISION:
+                    if (this.setJdpdKernelDoublePrecision(tmpSingleValueItem.getValue().equals(ModelMessage.get("Preferences.JdpdKernel.JdpdKernelDoublePrecision.True")))) {
+                        tmpHasChanged = true;
+                    }
+                    break;
+                case IS_JDPD_LOG_LEVEL_EXCEPTION:
+                    if (this.setJdpdLogLevelException(tmpSingleValueItem.getValue().equals(ModelMessage.get("Preferences.JdpdKernel.JdpdLogLevelException.True")))) {
                         tmpHasChanged = true;
                     }
                     break;
@@ -2309,8 +2347,10 @@ public final class Preferences {
             tmpRoot.addContent(new Element(PreferenceXmlName.IS_JOB_RESULT_ARCHIVE_PROCESS_PARALLEL_IN_BACKGROUND).addContent(Boolean.toString(this.isJobResultArchiveProcessParallelInBackground)));
             // this.isJobResultArchiveFileUncompressed
             tmpRoot.addContent(new Element(PreferenceXmlName.IS_JOB_RESULT_ARCHIVE_FILE_UNCOMPRESSED).addContent(Boolean.toString(this.isJobResultArchiveFileUncompressed)));
-            // this.isJdpdLogLevelExceptions
-            tmpRoot.addContent(new Element(PreferenceXmlName.IS_JDPD_LOG_LEVEL_EXCEPTIONS).addContent(Boolean.toString(this.isJdpdLogLevelExceptions)));
+            // this.isJdpdKernelDoublePrecision
+            tmpRoot.addContent(new Element(PreferenceXmlName.IS_JDPD_KERNEL_DOUBLE_PRECISION).addContent(Boolean.toString(this.isJdpdKernelDoublePrecision)));
+            // this.isJdpdLogLevelException
+            tmpRoot.addContent(new Element(PreferenceXmlName.IS_JDPD_LOG_LEVEL_EXCEPTION).addContent(Boolean.toString(this.isJdpdLogLevelException)));
             // this.isConstantCompartmentBodyVolume
             tmpRoot.addContent(new Element(PreferenceXmlName.IS_CONSTANT_COMPARTMENT_BODY_VOLUME).addContent(Boolean.toString(this.isConstantCompartmentBodyVolume)));
             // this.isSimulationBoxSlicer
@@ -4069,36 +4109,72 @@ public final class Preferences {
     }
 
     // </editor-fold>
+    // <editor-fold defaultstate="collapsed" desc="- JdpdKernelDoublePrecision">
+    /**
+     * True: Jdpd kernel with double precision arithmetic is used, false: JdpdSP
+     * kernel with single precision (float) is used
+     *
+     * @return Jdpd kernel double precision flag
+     */
+    public boolean isJdpdKernelDoublePrecision() {
+        return this.isJdpdKernelDoublePrecision;
+    }
+
+    /**
+     * Default Jdpd kernel double precision flag
+     *
+     * @return Default Jdpd kernel double precision flag
+     */
+    public boolean getDefaultJdpdKernelDoublePrecision() {
+        return ModelDefinitions.IS_JDPD_KERNEL_DOUBLE_PRECISION_DEFAULT;
+    }
+
+    /**
+     * True: Jdpd kernel with double precision arithmetic is used, false: JdpdSP
+     * kernel with single precision (float) is used
+     *
+     * @param aValue Value
+     * @return True: Value changed, false: Otherwise
+     */
+    public boolean setJdpdKernelDoublePrecision(boolean aValue) {
+        if (this.isJdpdKernelDoublePrecision != aValue) {
+            this.isJdpdKernelDoublePrecision = aValue;
+            return true;
+        } else {
+            return false;
+        }
+    }
+    // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- JdpdLogLevelExceptions">
     /**
-     * True: Jdpd log level EXCEPTIONS is used, false: All available Jdpd log 
+     * True: Jdpd log level EXCEPTION is used, false: All available Jdpd log 
      * levels are used
      *
-     * @return Jdpd log level exceptions flag
+     * @return Jdpd log level EXCEPTION flag
      */
-    public boolean isJdpdLogLevelExceptions() {
-        return this.isJdpdLogLevelExceptions;
+    public boolean isJdpdLogLevelException() {
+        return this.isJdpdLogLevelException;
     }
 
     /**
-     * Default Jdpd log level exceptions flag
+     * Default Jdpd log level EXCEPTION flag
      *
-     * @return Default Jdpd log level exceptions flag
+     * @return Default Jdpd log level EXCEPTION flag
      */
-    public boolean getDefaultJdpdLogLevelExceptions() {
-        return ModelDefinitions.IS_JDPD_LOG_LEVEL_EXCEPTIONS_DEFAULT;
+    public boolean getDefaultJdpdLogLevelException() {
+        return ModelDefinitions.IS_JDPD_LOG_LEVEL_EXCEPTION_DEFAULT;
     }
 
     /**
-     * True: Jdpd log level EXCEPTIONS is used, false: All available Jdpd log 
+     * True: Jdpd log level EXCEPTION is used, false: All available Jdpd log 
      * levels are used
      *
      * @param aValue Value
      * @return True: Value changed, false: Otherwise
      */
-    public boolean setJdpdLogLevelExceptions(boolean aValue) {
-        if (this.isJdpdLogLevelExceptions != aValue) {
-            this.isJdpdLogLevelExceptions = aValue;
+    public boolean setJdpdLogLevelException(boolean aValue) {
+        if (this.isJdpdLogLevelException != aValue) {
+            this.isJdpdLogLevelException = aValue;
             return true;
         } else {
             return false;
@@ -4879,7 +4955,12 @@ public final class Preferences {
         boolean tmpHasChanged = false;
 
         // <editor-fold defaultstate="collapsed" desc="Set new value if changed">
-        int tmpCorrectedValue = ModelUtils.correctIntegerValue(aValue, ModelDefinitions.MINIMUM_NUMBER_OF_AFTER_DECIMAL_SEPARATOR_DIGITS_FOR_PARTICLE_POSITIONS, ModelDefinitions.MAXIMUM_NUMBER_OF_AFTER_DECIMAL_SEPARATOR_DIGITS_FOR_PARTICLE_POSITIONS);
+        int tmpCorrectedValue = 
+            ModelUtils.correctIntegerValue(
+                aValue, 
+                ModelDefinitions.MINIMUM_NUMBER_OF_AFTER_DECIMAL_SEPARATOR_DIGITS_FOR_PARTICLE_POSITIONS, 
+                ModelDefinitions.MAXIMUM_NUMBER_OF_AFTER_DECIMAL_SEPARATOR_DIGITS_FOR_PARTICLE_POSITIONS
+            );
         if (this.numberOfAfterDecimalDigitsForParticlePositions != tmpCorrectedValue) {
             this.numberOfAfterDecimalDigitsForParticlePositions = tmpCorrectedValue;
             tmpHasChanged = true;
@@ -10947,8 +11028,11 @@ public final class Preferences {
         // <editor-fold defaultstate="collapsed" desc="isJobResultArchiveFileUncompressed">
         this.isJobResultArchiveFileUncompressed = this.getDefaultJobResultArchiveFileUncompressed();
         // </editor-fold>
-        // <editor-fold defaultstate="collapsed" desc="this.isJdpdLogLevelExceptions">
-        this.isJdpdLogLevelExceptions = this.getDefaultJdpdLogLevelExceptions();
+        // <editor-fold defaultstate="collapsed" desc="this.isJdpdKernelDoublePrecision">
+        this.isJdpdKernelDoublePrecision = this.getDefaultJdpdKernelDoublePrecision();
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="this.isJdpdLogLevelException">
+        this.isJdpdLogLevelException = this.getDefaultJdpdLogLevelException();
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="this.isConstantCompartmentBodyVolume">
         this.isConstantCompartmentBodyVolume = this.getDefaultConstantCompartmentBodyVolumeFlag();
@@ -11690,10 +11774,16 @@ public final class Preferences {
             }
 
             // </editor-fold>
-            // <editor-fold defaultstate="collapsed" desc="this.isJdpdLogLevelExceptions">
-            tmpCurrentElement = anElement.getChild(PreferenceXmlName.IS_JDPD_LOG_LEVEL_EXCEPTIONS);
+            // <editor-fold defaultstate="collapsed" desc="this.isJdpdKernelDoublePrecision">
+            tmpCurrentElement = anElement.getChild(PreferenceXmlName.IS_JDPD_KERNEL_DOUBLE_PRECISION);
             if (tmpCurrentElement != null) {
-                this.isJdpdLogLevelExceptions = Boolean.parseBoolean(tmpCurrentElement.getText());
+                this.isJdpdKernelDoublePrecision = Boolean.parseBoolean(tmpCurrentElement.getText());
+            }
+            // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="this.isJdpdLogLevelException">
+            tmpCurrentElement = anElement.getChild(PreferenceXmlName.IS_JDPD_LOG_LEVEL_EXCEPTION);
+            if (tmpCurrentElement != null) {
+                this.isJdpdLogLevelException = Boolean.parseBoolean(tmpCurrentElement.getText());
             }
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="this.isConstantCompartmentBodyVolume">

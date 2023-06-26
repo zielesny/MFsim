@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -35,11 +35,29 @@ import de.gnwi.mfsim.gui.preference.GuiDefinitions;
 public class CustomPanelCompartmentEdit extends JPanel {
 
     // <editor-fold defaultstate="collapsed" desc="Private class variables">
+    /**
+     * GUI element
+     */
     private JButton editCompartmentNameButton;
+    /**
+     * GUI element
+     */
     private JButton addCompartmentXyLayerButton;
+    /**
+     * GUI element
+     */
     private JButton addCompartmentSphereButton;
+    /**
+     * GUI element
+     */
     private JButton removeCompartmentButton;
+    /**
+     * GUI element
+     */
     private CustomPanelValueItemEdit customValueItemEditPanel;
+    /**
+     * GUI element
+     */
     private SpringLayout springLayout;
     // </editor-fold>
     //

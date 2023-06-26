@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -33,122 +33,106 @@ import java.awt.datatransfer.UnsupportedFlavorException;
  */
 public class ImageSelection implements Transferable {
 
-	// <editor-fold defaultstate="collapsed" desc="Private class variables">
+    // <editor-fold defaultstate="collapsed" desc="Private class variables">
+    /**
+     * Image
+     */
+    private Image image;
 
-	/**
-	 * Image
-	 */
-	private Image image;
+    /**
+     * Flavor
+     */
+    private DataFlavor imageFlavor;
 
-	/**
-	 * Flavor
-	 */
-	private DataFlavor imageFlavor;
+    /**
+     * Flavors
+     */
+    private DataFlavor[] imageFlavors;
+    // </editor-fold>
+    //
+    // <editor-fold defaultstate="collapsed" desc="Constructor">
+    /**
+     * Constructor
+     * 
+     * @param anImage
+     *            Image
+     * @throws IllegalArgumentException
+     *             Thrown if image is invalid
+     */
+    public ImageSelection(Image anImage) throws IllegalArgumentException {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
 
-	/**
-	 * Flavors
-	 */
-	private DataFlavor[] imageFlavors;
+        if (anImage == null) {
+            throw new IllegalArgumentException("Image is invalid.");
+        }
 
-	// </editor-fold>
+        // </editor-fold>
 
-	//
+        this.image = anImage;
+        this.imageFlavor = DataFlavor.imageFlavor;
+        this.imageFlavors = new DataFlavor[] { DataFlavor.imageFlavor };
+    }
+    // </editor-fold>
+    //
+    // <editor-fold defaultstate="collapsed" desc="Public Transferable methods">
+    /**
+     * Standard transferable method
+     * 
+     * @param aFlavor
+     *            Flavor
+     * @return BMP image
+     * @throws UnsupportedFlavorException
+     *             Thrown if flavor is not supported
+     */
+    public synchronized Object getTransferData(DataFlavor aFlavor) throws UnsupportedFlavorException {
+        if (!aFlavor.equals(this.imageFlavor)) {
+            throw new UnsupportedFlavorException(aFlavor);
+        }
+        return this.image;
+    }
 
-	// <editor-fold defaultstate="collapsed" desc="Constructor">
+    /**
+     * Standard transferable method
+     * 
+     * @param aFlavor
+     *            Flavor
+     * @return True: Flavor is supported, false: Otherwise
+     */
+    public boolean isDataFlavorSupported(DataFlavor aFlavor) {
+        return aFlavor.equals(this.imageFlavor);
+    }
 
-	/**
-	 * Constructor
-	 * 
-	 * @param anImage
-	 *            Image
-	 * @throws IllegalArgumentException
-	 *             Thrown if image is invalid
-	 */
-	public ImageSelection(Image anImage) throws IllegalArgumentException {
+    /**
+     * Standard transferable method
+     * 
+     * @return Flavors
+     */
+    public synchronized DataFlavor[] getTransferDataFlavors() {
+        return this.imageFlavors;
+    }
+    // </editor-fold>
+    //
+    // <editor-fold defaultstate="collapsed" desc="Public static copy to clipboard method">
 
-		// <editor-fold defaultstate="collapsed" desc="Checks">
-
-		if (anImage == null) {
-			throw new IllegalArgumentException("Image is invalid.");
-		}
-
-		// </editor-fold>
-
-		this.image = anImage;
-		this.imageFlavor = DataFlavor.imageFlavor;
-		this.imageFlavors = new DataFlavor[] { DataFlavor.imageFlavor };
-	}
-
-	// </editor-fold>
-
-	//
-
-	// <editor-fold defaultstate="collapsed" desc="Public Transferable methods">
-
-	/**
-	 * Standard transferable method
-	 * 
-	 * @param aFlavor
-	 *            Flavor
-	 * @return BMP image
-	 * @throws UnsupportedFlavorException
-	 *             Thrown if flavor is not supported
-	 */
-	public synchronized Object getTransferData(DataFlavor aFlavor)
-			throws UnsupportedFlavorException {
-		if (!aFlavor.equals(this.imageFlavor)) {
-			throw new UnsupportedFlavorException(aFlavor);
-		}
-		return this.image;
-	}
-
-	/**
-	 * Standard transferable method
-	 * 
-	 * @param aFlavor
-	 *            Flavor
-	 * @return True: Flavor is supported, false: Otherwise
-	 */
-	public boolean isDataFlavorSupported(DataFlavor aFlavor) {
-		return aFlavor.equals(this.imageFlavor);
-	}
-
-	/**
-	 * Standard transferable method
-	 * 
-	 * @return Flavors
-	 */
-	public synchronized DataFlavor[] getTransferDataFlavors() {
-		return this.imageFlavors;
-	}
-
-	// </editor-fold>
-
-	//
-
-	// <editor-fold defaultstate="collapsed" desc="Public static copy to clipboard method">
-
-	/**
-	 * Copies an image to the clipboard in BMP format
-	 * 
-	 * @param anImage
-	 *            Image
-	 * @return True: Image was successfully copied to clipboard, false:
-	 *         Otherwise
-	 */
-	public static boolean copyImageToClipboard(Image anImage) {
-		try {
-			ImageSelection tmpImageSelection = new ImageSelection(anImage);
-			Clipboard tmpClipboard = java.awt.Toolkit.getDefaultToolkit()
-					.getSystemClipboard();
-			tmpClipboard.setContents(tmpImageSelection, null);
-			return true;
-		} catch (Exception anException) {
-		    ModelUtils.appendToLogfile(true, anException);
-			return false;
-		}
-	}
-
-	// </editor-fold>
+    /**
+     * Copies an image to the clipboard in BMP format
+     * 
+     * @param anImage
+     *            Image
+     * @return True: Image was successfully copied to clipboard, false:
+     *         Otherwise
+     */
+    public static boolean copyImageToClipboard(Image anImage) {
+        try {
+            ImageSelection tmpImageSelection = new ImageSelection(anImage);
+            Clipboard tmpClipboard = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
+            tmpClipboard.setContents(tmpImageSelection, null);
+            return true;
+        } catch (Exception anException) {
+            ModelUtils.appendToLogfile(true, anException);
+            return false;
+        }
+    }
+    // </editor-fold>
 
 }

@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -45,220 +45,445 @@ import de.gnwi.mfsim.model.preference.ModelDefinitions;
 public class MainFrame extends JFrame {
 
     // <editor-fold defaultstate="collapsed" desc="Private class variables">
+    /**
+     * GUI element
+     */
     private JMenu cacheMenu;
-
+    /**
+     * GUI element
+     */
     private JMenuItem showCacheMenuItem;
-
+    /**
+     * GUI element
+     */
     private JMenuItem clearCacheMenuItem;
-
+    /**
+     * GUI element
+     */
     private JMenu schemataMenu;
-
+    /**
+     * GUI element
+     */
     private JMenuItem manageSchemataMenuItem;
-
+    /**
+     * GUI element
+     */
     private JButton copySelectedJobInputsButton;
-
+    /**
+     * GUI element
+     */
     private JButton browseJobResultFolderButton;
-
+    /**
+     * GUI element
+     */
     private JButton viewLogfileButton;
-
+    /**
+     * GUI element
+     */
     private JButton browseJobInputFolderButton;
-
+    /**
+     * GUI element
+     */
     private JButton useExecutionJobForRestartButton;
-
+    /**
+     * GUI element
+     */
     private JCheckBoxMenuItem particleUpdateForJobInputMenuItem;
-
+    /**
+     * GUI element
+     */
     private JButton jobResultArchiveButton;
-
+    /**
+     * GUI element
+     */
     private JButton jobResultArchivePreferencesEditButton;
-
+    /**
+     * GUI element
+     */
     private JButton jobResultSettingsPreferencesEditButton;
-
+    /**
+     * GUI element
+     */
     private JButton importJobResultButton;
-
+    /**
+     * GUI element
+     */
     private JButton jobInputArchiveButton;
-
+    /**
+     * GUI element
+     */
     private JMenuItem browseTutorialsMenuItem;
-
+    /**
+     * GUI element
+     */
     private JMenuItem browseMFsimDataMenuItem;
-
+    /**
+     * GUI element
+     */
     private JMenuItem browseMFsimJobMenuItem;
-
+    /**
+     * GUI element
+     */
     private JMenuItem browseMFsimTempMenuItem;
-
+    /**
+     * GUI element
+     */
     private JMenuItem browseMFsimLogMenuItem;
-
+    /**
+     * GUI element
+     */
     private JMenuItem resetMFsimLogMenuItem;
-
+    /**
+     * GUI element
+     */
     private JMenuItem browseMFsimSourceMenuItem;
-
+    /**
+     * GUI element
+     */
     private JMenuItem browseMFsimInfoMenuItem;
-
+    /**
+     * GUI element
+     */
     private JButton showProgressButton;
-
+    /**
+     * GUI element
+     */
     private JButton editStepNumberButton;
-
+    /**
+     * GUI element
+     */
     private SpringLayout jobResultsPanelSpringLayout;
-
+    /**
+     * GUI element
+     */
     private JPanel jobResultsPanel;
-
+    /**
+     * GUI element
+     */
     private SpringLayout jobInputsPanelSpringLayout;
-
+    /**
+     * GUI element
+     */
     private JPanel jobInputsPanel;
-
+    /**
+     * GUI element
+     */
     private JPanel jobExecutionSelectPanel;
-
+    /**
+     * GUI element
+     */
     private SpringLayout jobExecutionSelectPanelSpringLayout;
-
+    /**
+     * GUI element
+     */
     private JMenuItem restorePreferencesMenuItem;
-
+    /**
+     * GUI element
+     */
     private JMenu preferencesMenu;
-
+    /**
+     * GUI element
+     */
     private JButton cleanJobExecutionQueueButton;
-
+    /**
+     * GUI element
+     */
     private JButton startJobExecutionButton;
-
+    /**
+     * GUI element
+     */
     private JButton stopSelectedJobButton;
-
+    /**
+     * GUI element
+     */
     private JMenuItem chooseParticleSetMenuItem;
-
+    /**
+     * GUI element
+     */
+    private JMenuItem formatParticleSetMenuItem;
+    /**
+     * GUI element
+     */
     private JMenuItem duplicateParticlesMenuItem;
-
+    /**
+     * GUI element
+     */
     private JMenuItem editParticlesMenuItem;
-
+    /**
+     * GUI element
+     */
     private JMenu particlesMenu;
-
+    /**
+     * GUI element
+     */
     private JMenu particleSetSubMenu;
-    
+    /**
+     * GUI element
+     */
     private JMenu rescaleRepulsionSubMenu;
-
+    /**
+     * GUI element
+     */
     private JMenu particleSubMenu;
-
+    /**
+     * GUI element
+     */
     private JButton viewSelectedJobResultButton;
-
+    /**
+     * GUI element
+     */
     private JButton viewSelectedJobInputButton;
-
+    /**
+     * GUI element
+     */
     private JButton importJobInputButton;
-
+    /**
+     * GUI element
+     */
     private JButton addExecutionJobForRestartButton;
-
+    /**
+     * GUI element
+     */
     private JLabel stepsForRestartInfoLabel;
-
+    /**
+     * GUI element
+     */
     private CustomPanelSelection selectJobForRestartSelectionPanel;
-
+    /**
+     * GUI element
+     */
     private SpringLayout selectJobForRestartPanelSpringLayout;
-
+    /**
+     * GUI element
+     */
     private JButton addExecutionJobInputButton;
-
+    /**
+     * GUI element
+     */
     private CustomPanelSelection selectExecutionJobInputSelectionPanel;
-
+    /**
+     * GUI element
+     */
     private SpringLayout selectExecutionJobInputPanelSpringLayout;
-
+    /**
+     * GUI element
+     */
     private JButton removeSelectedJobResultButton;
-
+    /**
+     * GUI element
+     */
     private JButton editTemplateJobInputButton;
-
+    /**
+     * GUI element
+     */
     private JButton removeSelectedJobInputButton;
-
+    /**
+     * GUI element
+     */
     private JButton editExistingJobInputButton;
-
+    /**
+     * GUI element
+     */
     private CustomPanelSelection jobInputsSelectionPanel;
-
+    /**
+     * GUI element
+     */
     private CustomPanelSelection jobResultsSelectionPanel;
-
+    /**
+     * GUI element
+     */
     private JPanel selectJobForRestartPanel;
-
+    /**
+     * GUI element
+     */
     private JPanel selectExecutionJobInputPanel;
-
+    /**
+     * GUI element
+     */
     private JButton editNewJobInputButton;
-
+    /**
+     * GUI element
+     */
     private JMenu tutorialsMenu;
-
+    /**
+     * GUI element
+     */
     private CustomPanelImage homeImagePanel;
-
+    /**
+     * GUI element
+     */
     private SpringLayout homePanelSpringLayout;
-
+    /**
+     * GUI element
+     */
     private JMenuItem editPreferencesMenuItem;
-
+    /**
+     * GUI element
+     */
     private SpringLayout designPanelSpringLayout;
-
+    /**
+     * GUI element
+     */
     private SpringLayout resultsPanelSpringLayout;
-
+    /**
+     * GUI element
+     */
     private JPanel resultsPanel;
-
+    /**
+     * GUI element
+     */
     private JMenuItem maximizeWindowSizeMenuItem;
-
+    /**
+     * GUI element
+     */
     private JMenuItem centerMenuItem;
-
+    /**
+     * GUI element
+     */
     private JList jobExecutionList;
-
+    /**
+     * GUI element
+     */
     private JScrollPane jobExecutionListScrollPanel;
-
+    /**
+     * GUI element
+     */
     private JMenuItem minimizeWindowSizeMenuItem;
-
+    /**
+     * GUI element
+     */
     private JMenu windowMenu;
-
+    /**
+     * GUI element
+     */
     private JButton positionDownInJobExecutionQueueButton;
-
+    /**
+     * GUI element
+     */
     private JButton positionUpInJobExecutionQueueButton;
-
+    /**
+     * GUI element
+     */
     private JButton removeJobfromJobExecutionQueueButton;
-
+    /**
+     * GUI element
+     */
     private SpringLayout jobExecutionQueuePanelSpringLayout;
-
+    /**
+     * GUI element
+     */
     private JPanel jobExecutionQueuePanel;
-
+    /**
+     * GUI element
+     */
     private JTabbedPane selectTabbedPanel;
-
+    /**
+     * GUI element
+     */
     private SpringLayout executionPanelSpringLayout;
-
+    /**
+     * GUI element
+     */
     private JPanel executionPanel;
-
+    /**
+     * GUI element
+     */
     private JPanel designPanel;
-
+    /**
+     * GUI element
+     */
     private JPanel homePanel;
-
+    /**
+     * GUI element
+     */
     private JMenuItem aboutMenuItem;
-
+    /**
+     * GUI element
+     */
     private JMenu helpMenu;
-
+    /**
+     * GUI element
+     */
     private JMenu mfSimDataMenu;
-
+    /**
+     * GUI element
+     */
     private JMenu mfSimJobMenu;
-
+    /**
+     * GUI element
+     */
     private JMenu mfSimTempMenu;
-    
+    /**
+     * GUI element
+     */
     private JMenu mfSimLogMenu;
-
+    /**
+     * GUI element
+     */
     private JMenu mfSimSourceMenu;
-
+    /**
+     * GUI element
+     */
     private JMenu mfSimInfoMenu;
-
+    /**
+     * GUI element
+     */
     private JMenuItem exitMenuItem;
-
+    /**
+     * GUI element
+     */
     private JMenu applicationMenu;
-
+    /**
+     * GUI element
+     */
     private JMenuBar menuBar;
-
+    /**
+     * GUI element
+     */
     private JLabel statusInformationLabel;
-
+    /**
+     * GUI element
+     */
     private JTabbedPane mainTabbedPanel;
-
+    /**
+     * GUI element
+     */
     private JPanel statusPanel;
-
+    /**
+     * GUI element
+     */
     private TitledBorder jobInputsPanelTitledBorder;
-
+    /**
+     * GUI element
+     */
     private TitledBorder jobResultsPanelTitledBorder;
-
+    /**
+     * GUI element
+     */
     private JMenuItem incrementProbeParticlesMenuItem;
-
+    /**
+     * GUI element
+     */
+    private JMenuItem backboneRepulsionMenuItem;
+    /**
+     * GUI element
+     */
     private JMenuItem removeParticlesMenuItem;
-
+    /**
+     * GUI element
+     */
     private JMenuItem morphParticlesMenuItem;
-    
+    /**
+     * GUI element
+     */
     private JMenuItem rescaleVminMenuItem;
-
+    /**
+     * GUI element
+     */
     private JMenuItem rescaleRepulsionIndividualMenuItem;
-
+    /**
+     * GUI element
+     */
     private JMenuItem rescaleRepulsionGlobalMenuItem;
     // </editor-fold>
     //
@@ -470,6 +695,20 @@ public class MainFrame extends JFrame {
                         this.particleSetSubMenu.add(this.chooseParticleSetMenuItem);
                     }
                     // </editor-fold>
+                    // <editor-fold defaultstate="collapsed" desc="formatParticleSetMenuItem">
+                    {
+                        this.formatParticleSetMenuItem = new JMenuItem();
+                        this.formatParticleSetMenuItem.addActionListener(new ActionListener() {
+
+                            public void actionPerformed(ActionEvent e) {
+                                MainFrame.this.mainFrameController.displayFormatParticleSetDialog();
+                            }
+
+                        });
+                        this.formatParticleSetMenuItem.setText(GuiMessage.get("MainFrame.formatParticleSetMenuItem.text")); 
+                        this.particleSetSubMenu.add(this.formatParticleSetMenuItem);
+                    }
+                    // </editor-fold>
                     // <editor-fold defaultstate="collapsed" desc="rescaleVminMenuItem">
                     {
                         this.rescaleVminMenuItem = new JMenuItem();
@@ -594,6 +833,20 @@ public class MainFrame extends JFrame {
                         });
                         this.incrementProbeParticlesMenuItem.setText(GuiMessage.get("MainFrame.incrementProbeParticlesMenuItem.text")); 
                         this.particleSubMenu.add(this.incrementProbeParticlesMenuItem);
+                    }
+                    // </editor-fold>
+                    // <editor-fold defaultstate="collapsed" desc="backboneRepulsionMenuItem">
+                    {
+                        this.backboneRepulsionMenuItem = new JMenuItem();
+                        this.backboneRepulsionMenuItem.addActionListener(new ActionListener() {
+
+                            public void actionPerformed(ActionEvent e) {
+                                MainFrame.this.mainFrameController.displayBackboneRepulsionDialog();
+                            }
+
+                        });
+                        this.backboneRepulsionMenuItem.setText(GuiMessage.get("MainFrame.backboneRepulsionMenuItem.text")); 
+                        this.particleSubMenu.add(this.backboneRepulsionMenuItem);
                     }
                     // </editor-fold>
                 }                
@@ -1888,174 +2141,389 @@ public class MainFrame extends JFrame {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Public exposed fields">
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public JList getJobExecutionList() {
         return this.jobExecutionList;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public JTabbedPane getMainTabbedPanel() {
         return this.mainTabbedPanel;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public JTabbedPane getSelectTabbedPanel() {
         return this.selectTabbedPanel;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public JPanel getJobExecutionQueuePanel() {
         return this.jobExecutionQueuePanel;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public JButton getPositionUpInJobExecutionQueueButton() {
         return this.positionUpInJobExecutionQueueButton;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public JButton getPositionDownInJobExecutionQueueButton() {
         return this.positionDownInJobExecutionQueueButton;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public JButton getRemoveJobfromJobExecutionQueueButton() {
         return this.removeJobfromJobExecutionQueueButton;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public JLabel getStatusInformationLabel() {
         return this.statusInformationLabel;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public JMenu getPreferencesMenu() {
         return this.preferencesMenu;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public JMenu geMFsimJobMenu() {
         return this.mfSimJobMenu;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public CustomPanelImage getHomeImagePanel() {
         return this.homeImagePanel;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public CustomPanelSelection getSelectJobResultPanel() {
         return this.jobResultsSelectionPanel;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public CustomPanelSelection getJobInputsSelectionPanel() {
         return this.jobInputsSelectionPanel;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public JButton getEditExistingJobInputButton() {
         return this.editExistingJobInputButton;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public JButton getEditTemplateJobInputButton() {
         return this.editTemplateJobInputButton;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public JButton getRemoveSelectedJobInputButton() {
         return this.removeSelectedJobInputButton;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public CustomPanelSelection getSelectExecutionJobInputSelectionPanel() {
         return this.selectExecutionJobInputSelectionPanel;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public CustomPanelSelection getSelectJobForRestartSelectionPanel() {
         return this.selectJobForRestartSelectionPanel;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public JButton getAddExecutionJobInputButton() {
         return this.addExecutionJobInputButton;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public JButton getAddExecutionJobForRestartButton() {
         return this.addExecutionJobForRestartButton;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public JButton getRemoveSelectedJobResultButton() {
         return this.removeSelectedJobResultButton;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public JButton getImportJobInputButton() {
         return this.importJobInputButton;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public JButton getViewSelectedJobInputButton() {
         return this.viewSelectedJobInputButton;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public JButton getViewSelectedJobResultButton() {
         return this.viewSelectedJobResultButton;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public JButton getStartJobExecutionButton() {
         return this.startJobExecutionButton;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public JButton getStopSelectedJobButton() {
         return this.stopSelectedJobButton;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public JButton getCleanJobExecutionQueueButton() {
         return this.cleanJobExecutionQueueButton;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public JButton getEditNewJobInputButton() {
         return this.editNewJobInputButton;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public JButton getEditStepNumberButton() {
         return this.editStepNumberButton;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public JLabel getStepsForRestartInfoLabel() {
         return this.stepsForRestartInfoLabel;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public JButton getShowProgressButton() {
         return showProgressButton;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public JButton getJobInputArchiveButton() {
         return jobInputArchiveButton;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public JButton getImportJobResultButton() {
         return importJobResultButton;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public JButton getJobResultArchiveButton() {
         return jobResultArchiveButton;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public JButton getJobResultArchivePreferencesEditButton() {
         return jobResultArchivePreferencesEditButton;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public JButton getJobResultSettingsPreferencesEditButton() {
         return jobResultSettingsPreferencesEditButton;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public JCheckBoxMenuItem getParticleUpdateForJobInputMenuItem() {
         return particleUpdateForJobInputMenuItem;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public JButton getBrowseJobInputFolderButton() {
         return browseJobInputFolderButton;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public JButton getBrowseJobResultFolderButton() {
         return browseJobResultFolderButton;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public JButton getViewLogfileButton() {
         return viewLogfileButton;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public TitledBorder getJobInputsPanelTitledBorder() {
         return this.jobInputsPanelTitledBorder;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public JPanel getJobInputsPanel() {
         return this.jobInputsPanel;
     }
 
+    /**
+     * GUI element
+     * 
+     * @return GUI element
+     */
     public JButton getCopySelectedJobInputsButton() {
         return copySelectedJobInputsButton;
     }

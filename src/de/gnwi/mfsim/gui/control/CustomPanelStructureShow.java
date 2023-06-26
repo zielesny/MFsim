@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -39,28 +39,97 @@ import de.gnwi.mfsim.gui.preference.GuiDefinitions;
 public class CustomPanelStructureShow extends JPanel {
 
     // <editor-fold defaultstate="collapsed" desc="Private class variables">
+    /**
+     * GUI element
+     */
     private JComboBox selectPartComboBox;
+    /**
+     * GUI element
+     */
     private JLabel structureTooComplexLabel;
+    /**
+     * GUI element
+     */
     private CustomPanelImage particleImagePanel;
+    /**
+     * GUI element
+     */
     private JPanel molecularStructurePanel;
+    /**
+     * GUI element
+     */
     private SpringLayout molecularStructurePanelSpringLayout;
+    /**
+     * GUI element
+     */
     private JPanel particlesPanel;
+    /**
+     * GUI element
+     */
     private SpringLayout particlesPanelSpringLayout;
+    /**
+     * GUI element
+     */
     private JScrollPane structureScrollPanel;
+    /**
+     * GUI element
+     */
     private SpringLayout selectPanelSpringLayout;
+    /**
+     * GUI element
+     */
     private JPanel selectPanel;
+    /**
+     * GUI element
+     */
     private JCheckBox reducedCheckBox;
+    /**
+     * GUI element
+     */
     private JButton graphicsResetButton;
+    /**
+     * GUI element
+     */
     private JButton graphicsCopyButton;
+    /**
+     * GUI element
+     */
     private JButton graphicsSaveButton;
+    /**
+     * GUI element
+     */
     private SingleGraph graph;
+    /**
+     * GUI element
+     */
     private Viewer graphViewer;
+    /**
+     * GUI element
+     */
     private ViewPanel graphStreamViewPanel;
+    /**
+     * GUI element
+     */
     private SpringLayout graphicsPanelSpringLayout;
+    /**
+     * GUI element
+     */
     private JPanel graphicsPanel;
+    /**
+     * GUI element
+     */
     private JList particlesInfoList;
+    /**
+     * GUI element
+     */
     private JScrollPane particlesInfoScrollPanel;
+    /**
+     * GUI element
+     */
     private JTextArea structureTextArea;
+    /**
+     * GUI element
+     */
     private SpringLayout springLayout;
     // </editor-fold>
     //

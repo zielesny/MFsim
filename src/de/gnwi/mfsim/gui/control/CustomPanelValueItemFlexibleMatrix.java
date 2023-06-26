@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -43,26 +43,49 @@ import de.gnwi.mfsim.gui.preference.GuiDefinitions;
 public class CustomPanelValueItemFlexibleMatrix extends JPanel {
 
     // <editor-fold defaultstate="collapsed" desc="Private class variables">
+    /**
+     * GUI element
+     */
     private JScrollPane matrixTableScrollPanel;
-
+    /**
+     * GUI element
+     */
     private SpringLayout springLayout;
-
+    /**
+     * GUI element
+     */
     private JTable matrixTable;
-
+    /**
+     * GUI element
+     */
     private JPanel infoPanel;
-
+    /**
+     * GUI element
+     */
     private JLabel infoLabel;
-
+    /**
+     * GUI element
+     */
     private JPanel actionsPanel;
-
+    /**
+     * GUI element
+     */
     private JPanel setColumnsPanel;
-
+    /**
+     * GUI element
+     */
     private JButton copyRowButton;
-
+    /**
+     * GUI element
+     */
     private JButton insertRowButton;
-
+    /**
+     * GUI element
+     */
     private JButton removeRowButton;
-
+    /**
+     * GUI element
+     */
     private JButton setColumnsButton;
     // </editor-fold>
     //

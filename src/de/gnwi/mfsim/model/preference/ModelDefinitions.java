@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -44,7 +44,7 @@ public interface ModelDefinitions {
     /**
      * Version of application. NOTE: MUST match version pattern below!
      */
-    String APPLICATION_VERSION = "2.5.0.0";
+    String APPLICATION_VERSION = "2.6.0.0";
 
     /**
      * Minimum job input application version. NOTE: MUST match version pattern below!
@@ -107,6 +107,11 @@ public interface ModelDefinitions {
      */
     String JOB_RESULT_PARTICLE_IN_MOLECULE_PAIR_RDF_DIRECTORY = "PIMP_RDF";
 
+    /**
+     * Molecule-center RDF directory in Job Result directory
+     */
+    String JOB_RESULT_MOLECULE_CENTER_PAIR_RDF_DIRECTORY = "MCP_RDF";
+    
     /**
      * Particle-pair distance directory in Job Result directory
      */
@@ -269,6 +274,12 @@ public interface ModelDefinitions {
     String JOB_RESULT_PARTICLE_IN_MOLECULE_PAIR_RDF_FILE_PREFIX = "MoleculeParticlePairRdf_";
 
     /**
+     * Prefix of molecule-particle-pair radial distribution function (RDF)
+     * file
+     */
+    String JOB_RESULT_MOLECULE_CENTER_PAIR_RDF_FILE_PREFIX = "MoleculeCenterPairRdf_";
+
+    /**
      * Prefix of particle-pair distance file
      */
     String JOB_RESULT_PARTICLE_PAIR_DISTANCE_FILE_PREFIX = "ParticlePairDistance_";
@@ -321,6 +332,10 @@ public interface ModelDefinitions {
      */
     String AMINO_ACID_DESCRIPTION_SECTION_TAG = "Amino acids";
 
+    /**
+     * SMILES section tag of particle information
+     */
+    String SMILES_SECTION_TAG = "SMILES";
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="-- Other definitions">
@@ -1229,11 +1244,18 @@ public interface ModelDefinitions {
     long DETERMINISTIC_RANDOM_SEED_DEFAULT = 1L;
 
     /**
-     * Default Jdpd log level exceptions flag.
-     * True: Jdpd log level EXCEPTIONS is used, false: All available Jdpd log 
+     * Default Jdpd kernel double precision flag.
+     * True: Jdpd kernel with double precision arithmetic is used, false: JdpdSP
+     * kernel with single precision (float) is used
+     */
+    boolean IS_JDPD_KERNEL_DOUBLE_PRECISION_DEFAULT = true;
+
+    /**
+     * Default Jdpd log level EXCEPTION flag.
+     * True: Jdpd log level EXCEPTION is used, false: All available Jdpd log 
      * levels are used
      */
-    boolean IS_JDPD_LOG_LEVEL_EXCEPTIONS_DEFAULT = true;
+    boolean IS_JDPD_LOG_LEVEL_EXCEPTION_DEFAULT = true;
 
     /**
      * Default compartment constant body flag
@@ -1545,6 +1567,11 @@ public interface ModelDefinitions {
      * Compartments: Length conversion value item name
      */
     String COMPARTMENT_LENGTH_CONVERSION_NAME = "COMPARTMENT_LENGTH_CONVERSION";
+
+    /**
+     * Compartments: Molecule start geometry value item name
+     */
+    String COMPARTMENT_MOLECULE_START_GEOMETRY_NAME = "COMPARTMENT_MOLECULE_START_GEOMETRY";
 
     /**
      * Compartments: Geometry random seed value item name

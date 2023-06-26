@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -40,62 +40,121 @@ import de.gnwi.mfsim.gui.preference.GuiDefinitions;
 public class CustomPanelCompartmentGraphics extends JPanel {
 
     // <editor-fold defaultstate="collapsed" desc="Private class variables">
+    /**
+     * GUI element
+     */
     private SpringLayout settingsButtonPanelSpringLayout;
-
+    /**
+     * GUI element
+     */
     private JPanel settingsButtonPanel;
-
+    /**
+     * GUI element
+     */
     private JButton defaultGraphicsButton;
-
+    /**
+     * GUI element
+     */
     private ButtonGroup configureSettingsButtonGroup = new ButtonGroup();
-
+    /**
+     * GUI element
+     */
     private JRadioButton transparencyRadioButton;
-
+    /**
+     * GUI element
+     */
     private JRadioButton fogRadioButton;
-
+    /**
+     * GUI element
+     */
     private JRadioButton bodyAttenuationRadioButton;
-
+    /**
+     * GUI element
+     */
     private JSlider valueSlider;
-
+    /**
+     * GUI element
+     */
     private JButton configureSettingsButton;
-
+    /**
+     * GUI element
+     */
     private SpringLayout settingsPanelSpringLayout;
-
+    /**
+     * GUI element
+     */
     private JLabel infoLabel;
-
+    /**
+     * GUI element
+     */
     private JPanel settingsPanel;
-
+    /**
+     * GUI element
+     */
     private CustomPanelImage boxViewImagePanel;
-
+    /**
+     * GUI element
+     */
     private JRadioButton xyBottomRadioButton;
-
+    /**
+     * GUI element
+     */
     private JRadioButton xyTopRadioButton;
-
+    /**
+     * GUI element
+     */
     private JRadioButton yzRightRadioButton;
-
+    /**
+     * GUI element
+     */
     private JRadioButton yzLeftRadioButton;
-
+    /**
+     * GUI element
+     */
     private ButtonGroup boxViewButtonGroup = new ButtonGroup();
-
+    /**
+     * GUI element
+     */
     private JRadioButton xzBackRadioButton;
-
+    /**
+     * GUI element
+     */
     private JRadioButton xzFrontRadioButton;
-
+    /**
+     * GUI element
+     */
     private SpringLayout simulationBoxPanelSpringLayout;
-
+    /**
+     * GUI element
+     */
     private JPanel simulationBoxPanel;
-
+    /**
+     * GUI element
+     */
     private SpringLayout boxViewPanelSpringLayout;
-
+    /**
+     * GUI element
+     */
     private JPanel boxViewPanel;
-
+    /**
+     * GUI element
+     */
     private JSlider thirdDimensionSlider;
-
+    /**
+     * GUI element
+     */
     private JLabel coordinatesLabel;
-
+    /**
+     * GUI element
+     */
     private CustomPanelSimulationBoxDraw simulationBoxDrawPanel;
-
+    /**
+     * GUI element
+     */
     private SpringLayout springLayout;
-
+    /**
+     * GUI element
+     */
     private JLabel geometryInfoLabel;
     // </editor-fold>
     //

@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -61,6 +61,18 @@ public class DistanceDistributionUtils {
      */
     private double halfBoxLengthZ;
     /**
+     * True: Periodic boundary condition in in x-direction, false: Otherwise
+     */
+    private boolean isPeriodicBoundaryX;
+    /**
+     * True: Periodic boundary condition in in y-direction, false: Otherwise
+     */
+    private boolean isPeriodicBoundaryY;
+    /**
+     * True: Periodic boundary condition in in z-direction, false: Otherwise
+     */
+    private boolean isPeriodicBoundaryZ;
+    /**
      * Minimum half box length
      */
     private double minimumHalfBoxLength;
@@ -74,9 +86,23 @@ public class DistanceDistributionUtils {
      * @param aBoxLengthX Length of box (x)
      * @param aBoxLengthY Width of box (y)
      * @param aBoxLengthZ Height of box (z)
+     * @param anIsPeriodicBoundaryX True: Periodic boundary condition in in
+     * x-direction, false: Otherwise
+     * @param anIsPeriodicBoundaryY True: Periodic boundary condition in in
+     * y-direction, false: Otherwise
+     * @param anIsPeriodicBoundaryZ True: Periodic boundary condition in in
+     * z-direction, false: Otherwise
      * @throws IllegalArgumentException Thrown if argument is illegal
      */
-    public DistanceDistributionUtils(double aSegmentLength, double aBoxLengthX, double aBoxLengthY, double aBoxLengthZ) {
+    public DistanceDistributionUtils(
+        double aSegmentLength, 
+        double aBoxLengthX, 
+        double aBoxLengthY, 
+        double aBoxLengthZ,
+        boolean anIsPeriodicBoundaryX, 
+        boolean anIsPeriodicBoundaryY,
+        boolean anIsPeriodicBoundaryZ
+    ) {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aSegmentLength <= 0) {
             throw new IllegalArgumentException("An argument is illegal");
@@ -90,6 +116,9 @@ public class DistanceDistributionUtils {
         this.boxLengthX = aBoxLengthX;
         this.boxLengthY = aBoxLengthY;
         this.boxLengthZ = aBoxLengthZ;
+        this.isPeriodicBoundaryX = anIsPeriodicBoundaryX;
+        this.isPeriodicBoundaryY = anIsPeriodicBoundaryY;
+        this.isPeriodicBoundaryZ = anIsPeriodicBoundaryZ;
 
         this.halfBoxLengthX = 0.5 * this.boxLengthX;
         this.halfBoxLengthY = 0.5 * this.boxLengthY;
@@ -519,20 +548,26 @@ public class DistanceDistributionUtils {
         double tmpDy = aParticlePosition.getY() - anotherParticlePosition.getY();
         double tmpDz = aParticlePosition.getZ() - anotherParticlePosition.getZ();
 
-        if (tmpDx > this.halfBoxLengthX) {
-            tmpDx -= this.boxLengthX;
-        } else if (tmpDx < (-this.halfBoxLengthX)) {
-            tmpDx += this.boxLengthX;
+        if (this.isPeriodicBoundaryX) {
+            if (tmpDx > this.halfBoxLengthX) {
+                tmpDx -= this.boxLengthX;
+            } else if (tmpDx < (-this.halfBoxLengthX)) {
+                tmpDx += this.boxLengthX;
+            }
         }
-        if (tmpDy > this.halfBoxLengthY) {
-            tmpDy -= this.boxLengthY;
-        } else if (tmpDy < (-this.halfBoxLengthY)) {
-            tmpDy += this.boxLengthY;
+        if (this.isPeriodicBoundaryY) {
+            if (tmpDy > this.halfBoxLengthY) {
+                tmpDy -= this.boxLengthY;
+            } else if (tmpDy < (-this.halfBoxLengthY)) {
+                tmpDy += this.boxLengthY;
+            }
         }
-        if (tmpDz > this.halfBoxLengthZ) {
-            tmpDz -= this.boxLengthZ;
-        } else if (tmpDz < (-this.halfBoxLengthZ)) {
-            tmpDz += this.boxLengthZ;
+        if (this.isPeriodicBoundaryZ) {
+            if (tmpDz > this.halfBoxLengthZ) {
+                tmpDz -= this.boxLengthZ;
+            } else if (tmpDz < (-this.halfBoxLengthZ)) {
+                tmpDz += this.boxLengthZ;
+            }
         }
 
         return Math.sqrt(tmpDx * tmpDx + tmpDy * tmpDy + tmpDz * tmpDz);

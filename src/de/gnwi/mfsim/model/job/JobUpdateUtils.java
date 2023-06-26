@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -177,6 +177,7 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
             ValueItem tmpBoxSizeValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("BoxSize");
             ValueItem tmpBonds12TableValueItem = tmpMoleculeTableValueItem.getValueItemContainer().getValueItem("Bonds12Table");
             ValueItem tmpMoleculeParticlePairRdfCalculationValueItem = tmpMoleculeTableValueItem.getValueItemContainer().getValueItem("MoleculeParticlePairRdfCalculation");
+            ValueItem tmpMoleculeCenterPairRdfCalculationValueItem = tmpMoleculeTableValueItem.getValueItemContainer().getValueItem("MoleculeCenterPairRdfCalculation");
             ValueItem tmpMoleculeParticlePairDistanceCalculationValueItem = tmpMoleculeTableValueItem.getValueItemContainer().getValueItem("MoleculeParticlePairDistanceCalculation");
             ValueItem tmpProteinDistanceForcesValueItem = tmpMoleculeTableValueItem.getValueItemContainer().getValueItem("ProteinDistanceForces");
             ValueItem tmpMoleculeBoundaryValueItem = tmpMoleculeTableValueItem.getValueItemContainer().getValueItem("MoleculeBoundary");
@@ -262,6 +263,10 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
             // <editor-fold defaultstate="collapsed" desc="4. Update MoleculeParticlePairRdfCalculation">
             // NOTE: MUST be AFTER update of MonomerTable, MoleculeTable and ParticleTable value item
             this.updateMoleculeParticlePairRdfCalculation(tmpMonomerTableValueItem, tmpMoleculeTableValueItem, tmpMoleculeParticlePairRdfCalculationValueItem);
+            // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="4a. Update MoleculeCenterPairRdfCalculation">
+            // NOTE: MUST be AFTER update of MonomerTable, MoleculeTable and ParticleTable value item
+            this.updateMoleculeCenterPairRdfCalculation(tmpMoleculeTableValueItem, tmpMoleculeCenterPairRdfCalculationValueItem);
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="5. Update MoleculeParticlePairDistanceCalculation">
             // NOTE: MUST be AFTER update of MonomerTable, MoleculeTable and ParticleTable value item
@@ -493,6 +498,13 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
             this.updateMoleculeSphere(tmpMoleculeSphereValueItem, tmpMoleculeTableValueItem, anUpdateNotifierValueItem);
             // </editor-fold>
             return;
+        }
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Update notifier MoleculeStartGeometry">
+        if (anUpdateNotifierValueItem.getName().equals("MoleculeStartGeometry")) {
+            // Update compartment container with changed molecule start geometry value
+            ValueItem tmpCompartmentsValueItem = anUpdateNotifierValueItem.getValueItemContainer().getValueItem("Compartments");
+            this.updateCompartmentContainerWithMoleculeStartGeometry(tmpCompartmentsValueItem, anUpdateNotifierValueItem.getValue());
         }
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Update notifier GeometryRandomSeed">
@@ -912,14 +924,21 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
         if (tmpMoleculeBackboneForcesValueItem == null) {
             return;
         }
-        if (tmpMoleculeBackboneForcesValueItem.isLocked()) {
-            return;
-        }
         // Behaviour is defined at row with index 6 (i.e. the 7th position)
         if (tmpMoleculeBackboneForcesValueItem.getMatrixColumnCount() > 6) {
             return;
         }
-        ValueItem tmpUpdatedMoleculeBackboneForcesValueItem = JdpdValueItemDefinition.getInstance().getClonedJdpdInputFileValueItem("MoleculeBackboneForces");
+        if (tmpMoleculeBackboneForcesValueItem.isLocked()) {
+            // IMPORTANT: Update locked tmpMoleculeBackboneForcesValueItem
+            ValueItem tmpUpdatedMoleculeBackboneForcesValueItem = 
+                JdpdValueItemDefinition.getInstance().getClonedJdpdInputFileValueItem("MoleculeBackboneForces");
+            aJobInput.getValueItemContainer().replaceValueItemWithKeptVerticalPositionAndNodeNames(
+                tmpUpdatedMoleculeBackboneForcesValueItem
+            );
+            return;
+        }
+        ValueItem tmpUpdatedMoleculeBackboneForcesValueItem = 
+            JdpdValueItemDefinition.getInstance().getClonedJdpdInputFileValueItem("MoleculeBackboneForces");
         ValueItemMatrixElement[][] tmpMatrix = tmpMoleculeBackboneForcesValueItem.getMatrix();
         ValueItemMatrixElement[][] tmpUpdatedMatrix = new ValueItemMatrixElement[tmpMatrix.length][];
         ValueItemDataTypeFormat tmpBehaviourTypeFormat = 
@@ -940,7 +959,9 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
         tmpUpdatedMoleculeBackboneForcesValueItem.setMatrix(tmpUpdatedMatrix);
         tmpUpdatedMoleculeBackboneForcesValueItem.setLocked(false);
         tmpUpdatedMoleculeBackboneForcesValueItem.setActivity(true);
-        aJobInput.getValueItemContainer().replaceValueItemWithKeptVerticalPositionAndNodeNames(tmpUpdatedMoleculeBackboneForcesValueItem);
+        aJobInput.getValueItemContainer().replaceValueItemWithKeptVerticalPositionAndNodeNames(
+            tmpUpdatedMoleculeBackboneForcesValueItem
+        );
     }
     
     /**
@@ -1004,6 +1025,26 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
             ValueItem tmpGeometryRandomSeedValueItem = JdpdValueItemDefinition.getInstance().getClonedJdpdInputFileValueItem("GeometryRandomSeed");
             aJobInput.getValueItemContainer().insertValueItemBefore(tmpGeometryRandomSeedValueItem, "Compartments");
             this.updateCompartmentContainerWithGeometryRandomSeed(aJobInput.getValueItemContainer().getValueItem("Compartments"), tmpGeometryRandomSeedValueItem.getValueAsLong());
+        }
+    }
+
+    /**
+     * Inserts value item "MoleculeStartGeometry" in specified job input if necessary
+     * 
+     * @param aJobInput Job input to be updated
+     */
+    public void insertMoleculeStartGeometryValueItem(JobInput aJobInput) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aJobInput == null) {
+            return;
+        }
+        // </editor-fold>
+        if (!aJobInput.getValueItemContainer().hasValueItem("MoleculeStartGeometry")) {
+            ValueItem tmpMoleculeStartGeometryValueItem = JdpdValueItemDefinition.getInstance().getClonedJdpdInputFileValueItem("MoleculeStartGeometry");
+            // Restore old setting
+            tmpMoleculeStartGeometryValueItem.setValue(ModelMessage.get("JdpdInputFile.parameter.MoleculeStartGeometry.LinearTube"));
+            aJobInput.getValueItemContainer().insertValueItemBefore(tmpMoleculeStartGeometryValueItem, "GeometryRandomSeed");
+            this.updateCompartmentContainerWithMoleculeStartGeometry(aJobInput.getValueItemContainer().getValueItem("Compartments"), tmpMoleculeStartGeometryValueItem.getValue());
         }
     }
     
@@ -1129,6 +1170,48 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
                 aJobInput.getValueItemContainer().getValueItem("MoleculeTable"),
                 aJobInput.getValueItemContainer().getValueItem("MoleculeCharge")
             );
+        }
+    }
+
+    /**
+     * Inserts and updates value item "MoleculeCenterPairRdfCalculation" in 
+     * specified job input if necessary
+     * 
+     * @param aJobInput Job input to be updated
+     */
+    public void insertMoleculeCenterPairRdfCalculationValueItem(JobInput aJobInput) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aJobInput == null) {
+            return;
+        }
+        // </editor-fold>
+        if (!aJobInput.getValueItemContainer().hasValueItem("MoleculeCenterPairRdfCalculation")) {
+            ValueItem tmpMoleculeCenterPairRdfCalculationValueItem = JdpdValueItemDefinition.getInstance().getClonedJdpdInputFileValueItem("MoleculeCenterPairRdfCalculation");
+            aJobInput.getValueItemContainer().insertValueItemBefore(tmpMoleculeCenterPairRdfCalculationValueItem, "ParticlePairDistanceCalculation");
+            this.updateMoleculeCenterPairRdfCalculation(
+                aJobInput.getValueItemContainer().getValueItem("MoleculeTable"),
+                aJobInput.getValueItemContainer().getValueItem("MoleculeCenterPairRdfCalculation")
+            );
+        }
+    }
+    
+    /**
+     * Updates descriptions of all value items of specified job input
+     * 
+     * @param aJobInput Job input to be updated
+     */
+    public void updateDescriptions(JobInput aJobInput) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aJobInput == null) {
+            return;
+        }
+        // </editor-fold>
+        ValueItem[] tmpValueItems = aJobInput.getValueItemContainer().getValueItemsOfContainer();
+        for (ValueItem tmpValueItem : tmpValueItems) {
+            String tmpDescription = JdpdValueItemDefinition.getInstance().getDescriptionOfJdpdInputFileValueItem(tmpValueItem.getName());
+            if (tmpDescription != null) {
+                tmpValueItem.setDescription(tmpDescription);
+            }
         }
     }
     // </editor-fold>
@@ -1657,6 +1740,41 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
             new ValueItemDataTypeFormat(tmpSortedMoleculeParticleArray), // Particle_in_molecule_2
         });
         aMoleculeParticlePairRdfCalculationValueItem.setActivity(false);
+        // </editor-fold>
+    }
+
+    /**
+     * Updates molecule-center-pair RDF calculation value item (see code)
+     *
+     * @param aMoleculeTableValueItem Molecules value item (is NOT changed)
+     * @param aMoleculeCenterPairRdfCalculationValueItem
+     * Molecule-center-pair RDF calculation value item (may be changed)
+     */
+    private void updateMoleculeCenterPairRdfCalculation(
+        ValueItem aMoleculeTableValueItem, 
+        ValueItem aMoleculeCenterPairRdfCalculationValueItem
+    ) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aMoleculeTableValueItem == null || !aMoleculeTableValueItem.getName().equals("MoleculeTable")) {
+            return;
+        }
+        if (aMoleculeCenterPairRdfCalculationValueItem == null || !aMoleculeCenterPairRdfCalculationValueItem.getName().equals("MoleculeCenterPairRdfCalculation")) {
+            return;
+        }
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Update and set inactive">
+        LinkedList<String> tmpSortedMoleculeNameList = this.jobUtilityMethods.getSortedMoleculeNameList(aMoleculeTableValueItem);
+        if (tmpSortedMoleculeNameList == null || tmpSortedMoleculeNameList.size() == 0) {
+            return;
+        }
+        String[] tmpSortedMoleculeNames = tmpSortedMoleculeNameList.toArray(new String[0]);
+        aMoleculeCenterPairRdfCalculationValueItem.setDefaultTypeFormats(
+            new ValueItemDataTypeFormat[] {
+                new ValueItemDataTypeFormat(tmpSortedMoleculeNames), // Molecule_1
+                new ValueItemDataTypeFormat(tmpSortedMoleculeNames)  // Molecule_2
+            }
+        );
+        aMoleculeCenterPairRdfCalculationValueItem.setActivity(false);
         // </editor-fold>
     }
 
@@ -2651,6 +2769,24 @@ public class JobUpdateUtils implements ValueItemUpdateNotifierInterface {
         CompartmentContainer tmpCompartmentContainer = aCompartmentsValueItem.getCompartmentContainer();
         if (tmpCompartmentContainer != null) {
             tmpCompartmentContainer.setGeometryRandomSeed(aGeometryRandomSeed);
+        }
+    }
+    
+    /**
+     * Updates compartment container with new molecule start geometry value
+     * 
+     * @param aCompartmentsValueItem Compartments value item
+     * @param aMoleculeStartGeometryString Molecule start geometry string
+     */
+    private void updateCompartmentContainerWithMoleculeStartGeometry(ValueItem aCompartmentsValueItem, String aMoleculeStartGeometryString) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aCompartmentsValueItem == null || !aCompartmentsValueItem.getName().equals("Compartments")) {
+            return;
+        }
+        // </editor-fold>
+        CompartmentContainer tmpCompartmentContainer = aCompartmentsValueItem.getCompartmentContainer();
+        if (tmpCompartmentContainer != null) {
+            tmpCompartmentContainer.setMoleculeStartGeometry(aMoleculeStartGeometryString);
         }
     }
     // </editor-fold>

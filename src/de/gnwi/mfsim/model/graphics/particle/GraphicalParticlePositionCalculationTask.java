@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -234,6 +234,7 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
             // <editor-fold defaultstate="collapsed" desc="Set variables">
             // Miscellaneous utility methods
             MiscUtilityMethods tmpMiscUtilityMethods = new MiscUtilityMethods();
+            boolean tmpIsMoleculeStartGeometryCompressedToSinglePoint = this.compartmentContainer.isMoleculeStartGeometryCompressedToSinglePoint();
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="Set random number generator and seed">
             int tmpRandomSeed = this.compartmentContainer.getGeometryRandomSeed();
@@ -473,15 +474,19 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                                                 );
                                                 tmpLastParticleCoordinates = tmpFirstParticleCoordinates;
                                             } else {
-                                                tmpSphere.fillRandomPointsInVolumeWithExcludingSpheres(
-                                                    tmpFirstParticleCoordinates, 
-                                                    tmpLastParticleCoordinates, 
-                                                    0, 
-                                                    tmpQuantityInVolume,
-                                                    tmpBondLength, 
-                                                    Preferences.getInstance().getNumberOfTrialsForCompartment(),
-                                                    tmpRandomNumberGenerator
-                                                );
+                                                if (tmpIsMoleculeStartGeometryCompressedToSinglePoint) {
+                                                    tmpLastParticleCoordinates = tmpFirstParticleCoordinates;
+                                                } else {
+                                                    tmpSphere.fillRandomPointsInVolumeWithExcludingSpheres(
+                                                        tmpFirstParticleCoordinates, 
+                                                        tmpLastParticleCoordinates, 
+                                                        0, 
+                                                        tmpQuantityInVolume,
+                                                        tmpBondLength, 
+                                                        Preferences.getInstance().getNumberOfTrialsForCompartment(),
+                                                        tmpRandomNumberGenerator
+                                                    );
+                                                }
                                             }
                                         }
                                         // <editor-fold defaultstate="collapsed" desc="Check if canceled">
@@ -492,17 +497,29 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                                         }
                                         // </editor-fold>
                                         if (tmpQuantityOnSurface > 0) {
-                                            if (this.graphicsUtilityMethods.isUpperSurfaceGeometryInSphere(tmpChemicalCompositionValueItem, i)) {
-                                                tmpSphere.fillUpperRandomPointsOnSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpRandomNumberGenerator);
-                                            } else if (this.graphicsUtilityMethods.isMiddleSurfaceGeometryInSphere(tmpChemicalCompositionValueItem, i)) {
-                                                tmpSphere.fillMiddleRandomPointsOnSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpRandomNumberGenerator);
-                                            } else {
+                                            if (this.graphicsUtilityMethods.isOutOfSurfaceGeometryInSphere(tmpChemicalCompositionValueItem, i)) {
                                                 tmpSphere.fillRandomPointsOnSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpRandomNumberGenerator);
+                                                this.graphicsUtilityMethods.fillPointsOutsideSphereSurface(
+                                                    tmpFirstParticleCoordinates, 
+                                                    tmpLastParticleCoordinates, 
+                                                    tmpQuantityInVolume, 
+                                                    tmpQuantityOnSurface, 
+                                                    tmpSphere, 
+                                                    this.compartmentContainer.getCompartmentBox()
+                                                );
+                                            } else {
+                                                if (this.graphicsUtilityMethods.isUpperSurfaceGeometryInSphere(tmpChemicalCompositionValueItem, i)) {
+                                                    tmpSphere.fillUpperRandomPointsOnSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpRandomNumberGenerator);
+                                                } else if (this.graphicsUtilityMethods.isMiddleSurfaceGeometryInSphere(tmpChemicalCompositionValueItem, i)) {
+                                                    tmpSphere.fillMiddleRandomPointsOnSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpRandomNumberGenerator);
+                                                } else if (this.graphicsUtilityMethods.isWholeSurfaceGeometryInSphere(tmpChemicalCompositionValueItem, i)) {
+                                                    tmpSphere.fillRandomPointsOnSurface(tmpFirstParticleCoordinates, tmpQuantityInVolume, tmpQuantityOnSurface, tmpRandomNumberGenerator);
+                                                }
+                                                // Center of sphere
+                                                GraphicalParticlePosition tmpCenterOfSphere = new GraphicalParticlePosition(tmpSphere.getBodyCenter().getX(), tmpSphere.getBodyCenter().getY(),
+                                                        tmpSphere.getBodyCenter().getZ());
+                                                Arrays.fill(tmpLastParticleCoordinates, tmpQuantityInVolume, tmpQuantityInVolume + tmpQuantityOnSurface, tmpCenterOfSphere);
                                             }
-                                            // Center of sphere
-                                            GraphicalParticlePosition tmpCenterOfSphere = new GraphicalParticlePosition(tmpSphere.getBodyCenter().getX(), tmpSphere.getBodyCenter().getY(),
-                                                    tmpSphere.getBodyCenter().getZ());
-                                            Arrays.fill(tmpLastParticleCoordinates, tmpQuantityInVolume, tmpQuantityInVolume + tmpQuantityOnSurface, tmpCenterOfSphere);
                                         }
                                         // <editor-fold defaultstate="collapsed" desc="Check if canceled">
                                         if (this.isStopped) {
@@ -569,7 +586,6 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                                 this.propertyChangeSupport.firePropertyChange(ModelDefinitions.PROPERTY_CHANGE_ERROR, false, true);
                                 return returnCancelled();
                             }
-
                             // </editor-fold>
                             // <editor-fold defaultstate="collapsed" desc="Sort matrix rows with protein data first">
                             // IMPORTANT in xy-layer: Sort so that rows with protein data come first
@@ -796,15 +812,19 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                                                     );
                                                     tmpLastParticleCoordinates = tmpFirstParticleCoordinates;
                                                 } else {
-                                                    tmpXyLayer.fillRandomPointsInVolumeWithExcludingSpheres(
-                                                        tmpFirstParticleCoordinates, 
-                                                        tmpLastParticleCoordinates, 
-                                                        0, 
-                                                        tmpQuantityInVolume,
-                                                        tmpBondLength, 
-                                                        Preferences.getInstance().getNumberOfTrialsForCompartment(),
-                                                        tmpRandomNumberGenerator
-                                                    );
+                                                    if (tmpIsMoleculeStartGeometryCompressedToSinglePoint) {
+                                                        tmpLastParticleCoordinates = tmpFirstParticleCoordinates;
+                                                    } else {
+                                                        tmpXyLayer.fillRandomPointsInVolumeWithExcludingSpheres(
+                                                            tmpFirstParticleCoordinates, 
+                                                            tmpLastParticleCoordinates, 
+                                                            0, 
+                                                            tmpQuantityInVolume,
+                                                            tmpBondLength, 
+                                                            Preferences.getInstance().getNumberOfTrialsForCompartment(),
+                                                            tmpRandomNumberGenerator
+                                                        );
+                                                    }
                                                 }
                                             }
                                             // <editor-fold defaultstate="collapsed" desc="Check if canceled">
@@ -1085,23 +1105,13 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                     } else {
                         // <editor-fold defaultstate="collapsed" desc="No protein data">
                         GraphicalParticlePosition[] tmpFirstParticleCoordinates = new GraphicalParticlePosition[tmpQuantity];
-                        if (tmpIsSingleParticleMolecule) {
-                            this.compartmentContainer.getCompartmentBox().fillFreeVolumeRandomPoints(
-                                tmpFirstParticleCoordinates, 
-                                0, 
-                                tmpQuantity, 
-                                Preferences.getInstance().getNumberOfTrialsForCompartment(),
-                                tmpRandomNumberGenerator
-                            );
-                        } else {
-                            this.compartmentContainer.getCompartmentBox().fillFreeVolumeRandomPoints(
-                                tmpFirstParticleCoordinates, 
-                                0, 
-                                tmpQuantity, 
-                                Preferences.getInstance().getNumberOfTrialsForCompartment(),
-                                tmpRandomNumberGenerator
-                            );
-                        }
+                        this.compartmentContainer.getCompartmentBox().fillFreeVolumeRandomPoints(
+                            tmpFirstParticleCoordinates, 
+                            0, 
+                            tmpQuantity, 
+                            Preferences.getInstance().getNumberOfTrialsForCompartment(),
+                            tmpRandomNumberGenerator
+                        );
                         // <editor-fold defaultstate="collapsed" desc="Check if canceled">
                         if (this.isStopped) {
                             // IMPORTANT: Restore matrix rows that were sorted with protein data first
@@ -1113,14 +1123,18 @@ public class GraphicalParticlePositionCalculationTask implements ProgressTaskInt
                         if (tmpIsSingleParticleMolecule) {
                             tmpLastParticleCoordinates = tmpFirstParticleCoordinates;
                         } else {
-                            tmpLastParticleCoordinates = new GraphicalParticlePosition[tmpQuantity];
-                            this.compartmentContainer.getCompartmentBox().fillFreeVolumeRandomPoints(
-                                tmpLastParticleCoordinates, 
-                                0, 
-                                tmpQuantity, 
-                                Preferences.getInstance().getNumberOfTrialsForCompartment(),
-                                tmpRandomNumberGenerator
-                            );
+                            if (tmpIsMoleculeStartGeometryCompressedToSinglePoint) {
+                                tmpLastParticleCoordinates = tmpFirstParticleCoordinates;
+                            } else {
+                                tmpLastParticleCoordinates = new GraphicalParticlePosition[tmpQuantity];
+                                this.compartmentContainer.getCompartmentBox().fillFreeVolumeRandomPoints(
+                                    tmpLastParticleCoordinates, 
+                                    0, 
+                                    tmpQuantity, 
+                                    Preferences.getInstance().getNumberOfTrialsForCompartment(),
+                                    tmpRandomNumberGenerator
+                                );
+                            }
                         }
                         // <editor-fold defaultstate="collapsed" desc="Check if canceled">
                         if (this.isStopped) {

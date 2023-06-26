@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -38,27 +38,93 @@ import de.gnwi.mfsim.gui.preference.GuiDefinitions;
 public class CustomPanelJmolViewer extends JPanel {
 
     // <editor-fold defaultstate="collapsed" desc="Private class variables">
+    /**
+     * GUI element
+     */
     private CustomPanelJmolSimulationBox jmolSimulationBoxPanel;
+    /**
+     * GUI element
+     */
     private JButton secondSettingsButton;
+    /**
+     * GUI element
+     */
     private JButton firstSettingsButton;
+    /**
+     * GUI element
+     */
     private SpringLayout settingsButtonPanelSpringLayout;
+    /**
+     * GUI element
+     */
     private JPanel settingsButtonPanel;
+    /**
+     * GUI element
+     */
     private JRadioButton movieRadioButton;
+    /**
+     * GUI element
+     */
     private JRadioButton animationRadioButton;
+    /**
+     * GUI element
+     */
     private JRadioButton graphicsRadioButton;
+    /**
+     * GUI element
+     */
     private JRadioButton moleculesRadioButton;
+    /**
+     * GUI element
+     */
     private SpringLayout settingsPanelSpringLayout;
+    /**
+     * GUI element
+     */
     private JPanel settingsPanel;
+    /**
+     * GUI element
+     */
     private CustomPanelImage boxViewImagePanel;
+    /**
+     * GUI element
+     */
     private JButton xyBottomButton;
+    /**
+     * GUI element
+     */
     private JButton xyTopButton;
+    /**
+     * GUI element
+     */
     private JButton yzRightButton;
+    /**
+     * GUI element
+     */
     private JButton yzLeftButton;
+    /**
+     * GUI element
+     */
     private ButtonGroup settingsButtonGroup = new ButtonGroup();
+    /**
+     * GUI element
+     */
     private JButton xzBackButton;
+    /**
+     * GUI element
+     */
     private JButton xzFrontButton;
+    /**
+     * GUI element
+     */
     private SpringLayout boxViewPanelSpringLayout;
+    /**
+     * GUI element
+     */
     private JPanel boxViewPanel;
+    /**
+     * GUI element
+     */
     private SpringLayout springLayout;
     // </editor-fold>
     //

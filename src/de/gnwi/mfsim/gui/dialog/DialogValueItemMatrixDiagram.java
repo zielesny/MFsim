@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -45,10 +45,17 @@ import de.gnwi.mfsim.model.preference.ModelDefinitions;
 public class DialogValueItemMatrixDiagram extends CustomDialogApplyCancelSize {
 
     // <editor-fold defaultstate="collapsed" desc="Private class variables">
+    /**
+     * GUI element
+     */
     private JPanel mainPanel;
-    
+    /**
+     * GUI element
+     */
     private SpringLayout mainPanelSpringLayout;
-    
+    /**
+     * GUI element
+     */
     private CustomPanelValueItemMatrixDiagram customPanelValueItemMatrixDiagram;
     // </editor-fold>
     //

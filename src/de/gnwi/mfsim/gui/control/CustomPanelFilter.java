@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -42,11 +42,29 @@ import de.gnwi.mfsim.gui.preference.GuiDefinitions;
 public class CustomPanelFilter extends JPanel {
 
     // <editor-fold defaultstate="collapsed" desc="Private class variables">
+    /**
+     * GUI element
+     */
     private JPanel infoPanel;
+    /**
+     * GUI element
+     */
     private JPanel actionsPanel;
+    /**
+     * GUI element
+     */
     private JButton clearButton;
+    /**
+     * GUI element
+     */
     private JButton editButton;
+    /**
+     * GUI element
+     */
     private JLabel filterInformationLabel;
+    /**
+     * GUI element
+     */
     private SpringLayout springLayout;
     // </editor-fold>
     //

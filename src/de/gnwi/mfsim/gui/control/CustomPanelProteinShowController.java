@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -25,7 +25,6 @@ import de.gnwi.mfsim.gui.dialog.DialogValueItemEdit;
 import de.gnwi.mfsim.gui.dialog.DialogValueItemShow;
 import de.gnwi.mfsim.gui.message.GuiMessage;
 import de.gnwi.mfsim.gui.util.GuiUtils;
-import de.gnwi.mfsim.model.particle.StandardParticleInteractionData;
 import de.gnwi.mfsim.model.preference.Preferences;
 import de.gnwi.mfsim.model.util.MiscUtilityMethods;
 import de.gnwi.mfsim.model.util.StringUtilityMethods;

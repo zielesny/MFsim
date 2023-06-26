@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -36,15 +36,45 @@ import javax.swing.border.BevelBorder;
 public class CustomPanelTableDataSchemataManage extends JPanel {
 
     // <editor-fold defaultstate="collapsed" desc="Private class variables">
+    /**
+     * GUI element
+     */
     private JButton mergeSchemataButton;
+    /**
+     * GUI element
+     */
     private JButton clearSchemataButton;
+    /**
+     * GUI element
+     */
     private JButton removeSchemataButton;
+    /**
+     * GUI element
+     */
     private JButton saveSchemataButton;
+    /**
+     * GUI element
+     */
     private JButton loadSchemataButton;
+    /**
+     * GUI element
+     */
     private JButton editSchemaButton;
+    /**
+     * GUI element
+     */
     private JButton viewSchemaButton;
+    /**
+     * GUI element
+     */
     private JScrollPane scrollPanel;
+    /**
+     * GUI element
+     */
     private SpringLayout springLayout;
+    /**
+     * GUI element
+     */
     private JList tableDataSchemataList;
     // </editor-fold>
     //

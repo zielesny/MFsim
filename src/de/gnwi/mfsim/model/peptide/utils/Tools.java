@@ -4,7 +4,7 @@
  */
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -24,13 +24,8 @@
 package de.gnwi.mfsim.model.peptide.utils;
 
 import de.gnwi.mfsim.model.peptide.utils.configuration.Point3D;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.charset.Charset;
 import de.gnwi.jdpd.interfaces.IRandom;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;

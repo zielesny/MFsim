@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -1268,8 +1268,8 @@ public class CustomPanelSimulationMovieSlicerController extends ChangeNotifier i
             }
 
             // </editor-fold>
-            // <editor-fold defaultstate="collapsed" desc="Start animation">
-            this.playAnimation();
+            // <editor-fold defaultstate="collapsed" desc="No automatic animation start">
+            this.stopAnimation();
             // </editor-fold>
         } else {
             // <editor-fold defaultstate="collapsed" desc="Set info label and step image if necessary/defined">

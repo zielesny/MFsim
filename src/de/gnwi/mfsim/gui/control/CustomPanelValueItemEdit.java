@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -46,101 +46,389 @@ import de.gnwi.mfsim.gui.preference.GuiDefinitions;
 public class CustomPanelValueItemEdit extends JPanel {
 
     // <editor-fold defaultstate="collapsed" desc="Private class variables">
+    /**
+     * GUI element
+     */
     private JButton showBoxPropertiesButton;
+    /**
+     * GUI element
+     */
     private JButton showTableDataSchemaButton;
+    /**
+     * GUI element
+     */
     private SpringLayout tableDataSchemaPanelSpringLayout;
+    /**
+     * GUI element
+     */
     private JPanel tableDataSchemaPanel;
+    /**
+     * GUI element
+     */
     private JComboBox tableDataSchemaComboBox;
+    /**
+     * GUI element
+     */
     private JButton applyTableDataSchemaButton;
+    /**
+     * GUI element
+     */
     private JButton removeTableDataSchemaButton;
+    /**
+     * GUI element
+     */
     private JButton setCurrentTableDataSchemaButton;
+    /**
+     * GUI element
+     */
     private JComboBox selectSimulationBoxDisplayComboBox;
+    /**
+     * GUI element
+     */
     private JLabel fileNameInfoLabel;
+    /**
+     * GUI element
+     */
     private JLabel fileNameLabel;
+    /**
+     * GUI element
+     */
     private JLabel fileInfoLabel;
+    /**
+     * GUI element
+     */
     private JTextField fileTextField;
+    /**
+     * GUI element
+     */
     private JButton fileBrowseButton;
+    /**
+     * GUI element
+     */
     private JPanel selectedFeatureFileValuePanel;
+    /**
+     * GUI element
+     */
     private SpringLayout selectedFeatureFileValuePanelSpringLayout;
+    /**
+     * GUI element
+     */
     private JLabel textShowContentLabel;
+    /**
+     * GUI element
+     */
     private JLabel textShowContentInfoLabel;
+    /**
+     * GUI element
+     */
     private JLabel textShowNameLabel;
+    /**
+     * GUI element
+     */
     private JLabel textShowNameInfoLabel;
+    /**
+     * GUI element
+     */
     private SpringLayout selectedFeatureTextShowPanelSpringLayout;
+    /**
+     * GUI element
+     */
     private JPanel selectedFeatureTextShowPanel;
+    /**
+     * GUI element
+     */
     private JButton compartmentRemoveButton;
+    /**
+     * GUI element
+     */
     private JButton compartmentViewButton;
+    /**
+     * GUI element
+     */
     private JButton compartmentEditButton;
+    /**
+     * GUI element
+     */
     private CustomPanelImage compartmentImagePanel;
+    /**
+     * GUI element
+     */
     private JLabel compartmentNameInfoLabel;
+    /**
+     * GUI element
+     */
     private JLabel compartmentNameLabel;
+    /**
+     * GUI element
+     */
     private SpringLayout selectedFeatureCompartmentPanelSpringLayout;
+    /**
+     * GUI element
+     */
     private JPanel selectedFeatureCompartmentPanel;
+    /**
+     * GUI element
+     */
     private JButton selectHintStatusButton;
+    /**
+     * GUI element
+     */
     private JButton selectErrorStatusButton;
+    /**
+     * GUI element
+     */
     private JComboBox selectValueItemStatusComboBox;
+    /**
+     * GUI element
+     */
     private JPanel selectValueItemStatusPanel;
+    /**
+     * GUI element
+     */
     private JPanel featureOverviewSelectPanel;
+    /**
+     * GUI element
+     */
     private JLabel selectedFeatureSelectionTextInfoLabel;
+    /**
+     * GUI element
+     */
     private JPanel selectedFeatureSelectionTextInfoPanel;
+    /**
+     * GUI element
+     */
     private CustomPanelValueItemFlexibleMatrix selectedFeatureFlexibleMatrixPanel;
+    /**
+     * GUI element
+     */
     private JLabel selectedFeatureNumericValueInfoLabel;
+    /**
+     * GUI element
+     */
     private JPanel selectedFeatureNumericValueInfoPanel;
+    /**
+     * GUI element
+     */
     private JButton matrixDiagramButton;
+    /**
+     * GUI element
+     */
     private JComboBox selectionTextComboBox;
+    /**
+     * GUI element
+     */
     private JLabel selectionTextInfoLabel;
+    /**
+     * GUI element
+     */
     private JLabel selectionTextNameLabel;
+    /**
+     * GUI element
+     */
     private JLabel selectionTextNameInfoLabel;
+    /**
+     * GUI element
+     */
     private SpringLayout selectedFeatureSelectionTextPanelSpringLayout;
+    /**
+     * GUI element
+     */
     private JPanel selectedFeatureSelectionTextPanel;
+    /**
+     * GUI element
+     */
     private JLabel matrixNameLabel;
+    /**
+     * GUI element
+     */
     private JLabel matrixNameInfoLabel;
+    /**
+     * GUI element
+     */
     private JLabel directoryNameLabel;
+    /**
+     * GUI element
+     */
     private JLabel directoryNameInfoLabel;
+    /**
+     * GUI element
+     */
     private JLabel timestampNameLabel;
+    /**
+     * GUI element
+     */
     private JLabel timestampNameInfoLabel;
+    /**
+     * GUI element
+     */
     private JLabel textNameLabel;
+    /**
+     * GUI element
+     */
     private JLabel textNameInfoLabel;
+    /**
+     * GUI element
+     */
     private JLabel valueNameLabel;
+    /**
+     * GUI element
+     */
     private JLabel valueNameInfoLabel;
+    /**
+     * GUI element
+     */
     private SpringLayout selectedFeatureInfoPanelSpringLayout;
+    /**
+     * GUI element
+     */
     private JPanel selectedFeatureInfoPanel;
+    /**
+     * GUI element
+     */
     private CustomPanelDescription selectedFeatureDescriptionPanel;
+    /**
+     * GUI element
+     */
     private CustomPanelDescription selectedFeatureHintPanel;
+    /**
+     * GUI element
+     */
     private CustomPanelDescription selectedFeatureErrorPanel;
+    /**
+     * GUI element
+     */
     private JTabbedPane selectedFeatureTabbedPanel;
+    /**
+     * GUI element
+     */
     private JCheckBox activityCheckBox;
+    /**
+     * GUI element
+     */
     private JButton directoryBrowseButton;
+    /**
+     * GUI element
+     */
     private JTextField directoryTextField;
+    /**
+     * GUI element
+     */
     private JLabel directoryInfoLabel;
+    /**
+     * GUI element
+     */
     private SpringLayout selectedFeatureDirectoryValuePanelSpringLayout;
+    /**
+     * GUI element
+     */
     private JPanel selectedFeatureDirectoryValuePanel;
+    /**
+     * GUI element
+     */
     private JButton timestampNowButton;
+    /**
+     * GUI element
+     */
     private JTextField timestampTextField;
+    /**
+     * GUI element
+     */
     private JLabel timestampInfoLabel;
+    /**
+     * GUI element
+     */
     private SpringLayout selectedFeatureDateValuePanelSpringLayout;
+    /**
+     * GUI element
+     */
     private JPanel selectedFeatureTimestampValuePanel;
+    /**
+     * GUI element
+     */
     private SpringLayout springLayout;
+    /**
+     * GUI element
+     */
     private BorderLayout selectedFeatureMatrixPanelBorderLayout;
+    /**
+     * GUI element
+     */
     private JPanel selectedFeatureMatrixPanel;
+    /**
+     * GUI element
+     */
     private SpringLayout matrixDisplayPanelSpringLayout;
+    /**
+     * GUI element
+     */
     private JPanel matrixDisplayPanel;
+    /**
+     * GUI element
+     */
     private JLabel textContentInfoLabel;
+    /**
+     * GUI element
+     */
     private JTextField textTextField;
+    /**
+     * GUI element
+     */
     private SpringLayout selectedFeatureTextValuePanelSpringLayout;
+    /**
+     * GUI element
+     */
     private JPanel selectedFeatureTextValuePanel;
+    /**
+     * GUI element
+     */
     private JTextField valueTextField;
+    /**
+     * GUI element
+     */
     private JLabel valueInfoLabel;
+    /**
+     * GUI element
+     */
     private SpringLayout selectedFeatureNumericValuePanelSpringLayout;
+    /**
+     * GUI element
+     */
     private JPanel selectedFeatureNumericValuePanel;
+    /**
+     * GUI element
+     */
     private JPanel selectedFeatureShowNothingPanel;
+    /**
+     * GUI element
+     */
     private JPanel selectedFeatureCardsPanel;
+    /**
+     * GUI element
+     */
     private JButton expandTreeButton;
+    /**
+     * GUI element
+     */
     private JButton collapseTreeButton;
+    /**
+     * GUI element
+     */
     private JPanel selectedFeaturePanel;
+    /**
+     * GUI element
+     */
     private JTree featureOverviewTree;
+    /**
+     * GUI element
+     */
     private JScrollPane featureOverviewTreeScrollPanel;
+    /**
+     * GUI element
+     */
     private SpringLayout featureOverviewPanelSpringLayout;
+    /**
+     * GUI element
+     */
     private JPanel featureOverviewPanel;
     // </editor-fold>
     //

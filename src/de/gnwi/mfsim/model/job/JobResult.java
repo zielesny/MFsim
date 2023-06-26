@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -19,9 +19,8 @@
  */
 package de.gnwi.mfsim.model.job;
 
-import de.gnwi.jdpd.samples.FileOutput;
+import de.gnwi.jdpd.interfaces.IOutputWriter;
 import de.gnwi.jdpd.utilities.Constants;
-import de.gnwi.jdpd.utilities.Strings;
 import de.gnwi.mfsim.model.valueItem.ValueItemDataTypeFormat;
 import de.gnwi.mfsim.model.valueItem.ValueItemContainer;
 import de.gnwi.mfsim.model.valueItem.ValueItemEnumDataType;
@@ -179,7 +178,7 @@ public class JobResult implements Comparable<JobResult> {
     /**
      * Jdpd file output
      */
-    private FileOutput jdpdfileOutput;
+    private IOutputWriter jdpdfileOutput;
 
     /**
      * True: Job result path is locked, false: Otherwise
@@ -187,9 +186,9 @@ public class JobResult implements Comparable<JobResult> {
     private boolean isResultPathLocked;
     
     /**
-     * Maximum used parallel task number info string
+     * Jdpd kernel info string
      */
-    private String maximumUsedParallelTaskNumberInfoString;
+    private String jdpdKernelInfoString;
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Constructors">
@@ -461,13 +460,13 @@ public class JobResult implements Comparable<JobResult> {
         tmpValueItem.setVerticalPosition(tmpVerticalPosition++);
         tmpValueItemContainer.addValueItem(tmpValueItem);
         // </editor-fold>
-        // <editor-fold defaultstate="collapsed" desc="-- Parallel calculators">
+        // <editor-fold defaultstate="collapsed" desc="-- Jdpd kernel information">
         tmpValueItem = new ValueItem();
         tmpValueItem.setDefaultTypeFormat(new ValueItemDataTypeFormat(ValueItemEnumDataType.TEXT));
-        tmpValueItem.setName("PARALLEL_CALCULATORS");
-        tmpValueItem.setDisplayName(ModelMessage.get("JobResults.GeneralInformation.ParallelCalculators"));
-        tmpValueItem.setDescription(ModelMessage.get("JobResults.GeneralInformation.ParallelCalculators.Description"));
-        tmpValueItem.setValue(this.maximumUsedParallelTaskNumberInfoString);
+        tmpValueItem.setName("JDPD_KERNEL_INFO");
+        tmpValueItem.setDisplayName(ModelMessage.get("JobResults.GeneralInformation.JdpdKernelInfo"));
+        tmpValueItem.setDescription(ModelMessage.get("JobResults.GeneralInformation.JdpdKernelInfo.Description"));
+        tmpValueItem.setValue(this.jdpdKernelInfoString);
         tmpValueItem.setNodeNames(tmpNodeNames);
         tmpValueItem.setVerticalPosition(tmpVerticalPosition++);
         tmpValueItemContainer.addValueItem(tmpValueItem);
@@ -929,7 +928,6 @@ public class JobResult implements Comparable<JobResult> {
                 for (String tmpJobResultParticlePairRdfFilePathname : tmpJobResultParticlePairRdfFilePathnames) {
                     String[] tmpInfoArray = this.fileUtilityMethods.readDefinedStringArrayFromFile(tmpJobResultParticlePairRdfFilePathname);
                     if (tmpInfoArray[0].equals("Version 1.0.0")) {
-
                         // <editor-fold defaultstate="collapsed" desc="Version 1.0.0">
                         String tmpFirstParticle = tmpInfoArray[1];
                         String tmpSecondParticle = tmpInfoArray[2];
@@ -962,7 +960,6 @@ public class JobResult implements Comparable<JobResult> {
                     }
                 }
             }
-
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="-- Molecule-particle-pair RDF">
             String[] tmpJobResultMoleculeParticlePairRdfFilePathnames = this.jobUtilityMethods.getJobResultMoleculeParticlePairRdfFilePathnames(this.jobResultPath);
@@ -971,7 +968,6 @@ public class JobResult implements Comparable<JobResult> {
                 for (String tmpJobResultMoleculeParticlePairRdfFilePathname : tmpJobResultMoleculeParticlePairRdfFilePathnames) {
                     String[] tmpInfoArray = this.fileUtilityMethods.readDefinedStringArrayFromFile(tmpJobResultMoleculeParticlePairRdfFilePathname);
                     if (tmpInfoArray[0].equals("Version 1.0.0")) {
-
                         // <editor-fold defaultstate="collapsed" desc="Version 1.0.0">
                         String tmpFirstMoleculeParticle = tmpInfoArray[1];
                         String tmpSecondMoleculeParticle = tmpInfoArray[2];
@@ -1004,7 +1000,69 @@ public class JobResult implements Comparable<JobResult> {
                     }
                 }
             }
+            // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="-- Molecule-center-pair RDF">
+            String[] tmpJobResultMoleculeCenterPairRdfFilePathnames = this.jobUtilityMethods.getJobResultMoleculeCenterPairRdfFilePathnames(this.jobResultPath);
+            if (tmpJobResultMoleculeCenterPairRdfFilePathnames != null && tmpJobResultMoleculeCenterPairRdfFilePathnames.length > 0) {
+                Arrays.sort(tmpJobResultMoleculeCenterPairRdfFilePathnames);
+                for (String tmpJobResultMoleculeParticlePairRdfFilePathname : tmpJobResultMoleculeCenterPairRdfFilePathnames) {
+                    String[] tmpInfoArray = this.fileUtilityMethods.readDefinedStringArrayFromFile(tmpJobResultMoleculeParticlePairRdfFilePathname);
+                    if (tmpInfoArray[0].equals("Version 1.0.0")) {
+                        // <editor-fold defaultstate="collapsed" desc="Version 1.0.0">
+                        String tmpFirstMoleculeCenter = tmpInfoArray[1];
+                        String tmpSecondMoleculeCenter = tmpInfoArray[2];
+                        String tmpMoleculeCenterPair = tmpFirstMoleculeCenter + "_" + tmpSecondMoleculeCenter;
+                        String tmpSegmentLength = tmpInfoArray[3];
+                        int tmpOffset = 4;
 
+                        tmpNodeNames = 
+                            new String[] {
+                                ModelMessage.get("JobResults.Root"), 
+                                ModelMessage.get("JobResults.SimulationResult.MoleculeCenterPairRDF"),
+                                String.format(ModelMessage.get("JobResults.SimulationResult.MoleculeCenterPairRDF.Pair"), tmpFirstMoleculeCenter, tmpSecondMoleculeCenter)
+                            };
+
+                        tmpValueItem = new ValueItem();
+                        tmpValueItem.setName("MOLECULE_CENTER_PAIR_RDF_" + tmpMoleculeCenterPair + "_" + tmpSegmentLength);
+                        tmpValueItem.setDisplayName(
+                            String.format(
+                                ModelMessage.get("JobResults.SimulationResult.MoleculeCenterPairRDF.PairSegmentLength"), 
+                                tmpFirstMoleculeCenter,
+                                tmpSecondMoleculeCenter, 
+                                tmpSegmentLength
+                            )
+                        );
+                        tmpValueItem.setDescription(
+                            String.format(
+                                ModelMessage.get("JobResults.SimulationResult.MoleculeCenterPairRDF.PairSegmentLength.Description"),
+                                tmpFirstMoleculeCenter, 
+                                tmpSecondMoleculeCenter, 
+                                tmpSegmentLength
+                            )
+                        );
+                        tmpValueItem.setBasicType(ValueItemEnumBasicType.MATRIX);
+                        tmpValueItem.setNodeNames(tmpNodeNames);
+                        tmpValueItem.setVerticalPosition(tmpVerticalPosition++);
+                        tmpValueItem.setMatrixColumnNames(
+                            new String[] {
+                                ModelMessage.get("JobResults.SimulationResult.MoleculeCenterPairRDF.Distance"),
+                                ModelMessage.get("JobResults.SimulationResult.MoleculeCenterPairRDF.RDF")
+                            }
+                        );
+                        tmpValueItem.setMatrixColumnWidths(
+                            new String[] {
+                                ModelDefinitions.CELL_WIDTH_NUMERIC_80, // Distance
+                                ModelDefinitions.CELL_WIDTH_NUMERIC_80  // RDF
+                            }
+                        );
+                        tmpValueItem.setMatrix(this.getAveragedValueItemMatrix(tmpInfoArray, tmpDataTypeFormatText, tmpOffset, Double.POSITIVE_INFINITY));
+                        // IMPORTANT: Set diagram columns
+                        tmpValueItem.setMatrixDiagramColumns(0, 1);
+                        tmpValueItemContainer.addValueItem(tmpValueItem);
+                        // </editor-fold>
+                    }
+                }
+            }
             // </editor-fold>
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="- Particle-particle distances">
@@ -1842,7 +1900,7 @@ public class JobResult implements Comparable<JobResult> {
         // Line 6: this.jobProcessingResult.name()
         // Line 7: this.jobInputPath
         // Line 8: this.mfSimVersionOfJobResult
-        // Line 9: this.maximumUsedParallelTaskNumberInfoString
+        // Line 9: this.jdpdKernelInfoString
         String[] infos = new String[]{
             "Version 1.0.0",
             this.description,
@@ -1852,7 +1910,7 @@ public class JobResult implements Comparable<JobResult> {
             this.jobProcessingResult.name(),
             this.jobInputPath,
             String.format(ModelMessage.get("ApplicationVersionFormat"), ModelDefinitions.APPLICATION_VERSION),
-            this.maximumUsedParallelTaskNumberInfoString
+            this.jdpdKernelInfoString
         };
         return this.fileUtilityMethods.writeDefinedStringArrayToFile(infos, tmpJobInformationPathname);
     }
@@ -1937,27 +1995,42 @@ public class JobResult implements Comparable<JobResult> {
     //
     // <editor-fold defaultstate="collapsed" desc="Public properties (set only)">
     /**
-     * Maximum used parallel task number info string
+     * Sets Jdpd kernel info string
      * (No checks are performed)
      * 
-     * @param tmpParallelTaskNumber MParallel task number
-     * @param tmpMaximumUsedParallelTaskNumber Maximum used parallel task number
-     * @param tmpMinimumParallelTaskCellNumber Minimum number of box cells for parallelisation
-     * @param tmpMinimumParallelTaskHarmonicBondNumber Minimum number of harmonic bonds for parallelisation
+     * @param aParallelTaskNumber MParallel task number
+     * @param aMaximumUsedParallelTaskNumber Maximum used parallel task number
+     * @param aMinimumParallelTaskCellNumber Minimum number of box cells for parallelisation
+     * @param aMinimumParallelTaskHarmonicBondNumber Minimum number of harmonic bonds for parallelisation
+     * @param anIsJdpdKernelDoublePrecision True: Double precision arithmetic Jdpd kernel, 
+     * false: Single precision arithmetic Jdpd kernel
      */
-    public void setMaximumUsedParallelTaskNumberInfoString(
-        int tmpParallelTaskNumber,
-        int tmpMaximumUsedParallelTaskNumber,
-        int tmpMinimumParallelTaskCellNumber,
-        int tmpMinimumParallelTaskHarmonicBondNumber
+    public void setJdpdKernelInfoString(
+        int aParallelTaskNumber,
+        int aMaximumUsedParallelTaskNumber,
+        int aMinimumParallelTaskCellNumber,
+        int aMinimumParallelTaskHarmonicBondNumber,
+        boolean anIsJdpdKernelDoublePrecision
     ) {
-        this.maximumUsedParallelTaskNumberInfoString = 
-            String.format(ModelMessage.get("JobResults.ParallelizationInfoFormat"),
-                tmpParallelTaskNumber,
-                tmpMaximumUsedParallelTaskNumber,
-                tmpMinimumParallelTaskCellNumber,
-                tmpMinimumParallelTaskHarmonicBondNumber
-            );
+        if (anIsJdpdKernelDoublePrecision) {
+            this.jdpdKernelInfoString = 
+                String.format(ModelMessage.get("JobResults.JdpdKernelInfoFormat"),
+                    de.gnwi.jdpd.utilities.Strings.JDPD_VERSION_TEXT,
+                    aParallelTaskNumber,
+                    aMaximumUsedParallelTaskNumber,
+                    aMinimumParallelTaskCellNumber,
+                    aMinimumParallelTaskHarmonicBondNumber
+                );
+        } else {
+            this.jdpdKernelInfoString = 
+                String.format(ModelMessage.get("JobResults.JdpdKernelInfoFormat"),
+                    de.gnwi.jdpdsp.utilities.Strings.JDPD_VERSION_TEXT,
+                    aParallelTaskNumber,
+                    aMaximumUsedParallelTaskNumber,
+                    aMinimumParallelTaskCellNumber,
+                    aMinimumParallelTaskHarmonicBondNumber
+                );
+        }
     }
     // </editor-fold>
     //
@@ -1985,7 +2058,12 @@ public class JobResult implements Comparable<JobResult> {
         }
 
         // </editor-fold>
-        this.aliveInformation = String.format(ModelMessage.get("Format.JobResultAliveInformation"), String.valueOf(aProgressPercentage), aTimeRemaining);
+        this.aliveInformation = 
+            String.format(
+                ModelMessage.get("Format.JobResultAliveInformation"), 
+                String.valueOf(aProgressPercentage), 
+                aTimeRemaining
+            );
     }
 
     /**
@@ -2337,7 +2415,7 @@ public class JobResult implements Comparable<JobResult> {
      * 
      * @return Jdpd file output
      */
-    public FileOutput getJdpdFileOutput() {
+    public IOutputWriter getJdpdFileOutput() {
         return this.jdpdfileOutput;
     }
 
@@ -2346,7 +2424,7 @@ public class JobResult implements Comparable<JobResult> {
      * 
      * @param aJdpdFileOutput Jdpd file output
      */
-    public void setJdpdFileOutput(FileOutput aJdpdFileOutput) {
+    public void setJdpdFileOutput(IOutputWriter aJdpdFileOutput) {
         this.jdpdfileOutput = aJdpdFileOutput;
     }
     
@@ -2416,7 +2494,7 @@ public class JobResult implements Comparable<JobResult> {
         this.mfSimVersionOfJobResult = null;
         this.jdpdfileOutput = null;
         this.isResultPathLocked = false;
-        this.maximumUsedParallelTaskNumberInfoString = ModelMessage.get("JobResults.NoParallelizationInfo");
+        this.jdpdKernelInfoString = ModelMessage.get("JobResults.NoInfo");
     }
 
     /**
@@ -2571,7 +2649,6 @@ public class JobResult implements Comparable<JobResult> {
                 }
             }
         }
-
         // </editor-fold>
         ValueItemMatrixElement[][] tmpMatrix = new ValueItemMatrixElement[tmpNumberOfDataPairsWithCutoff][];
         int tmpIndex = anOffset;
@@ -2639,7 +2716,7 @@ public class JobResult implements Comparable<JobResult> {
             // Line 6: this.jobProcessingResult.name()
             // Line 7: this.jobInputPath
             // Line 8: this.mfSimVersionOfJobResult
-            // Line 9: this.maximumUsedParallelTaskNumberInfoString
+            // Line 9: this.jdpdKernelInfoString
             if (infos[0].equals("Version 1.0.0")) {
                 // <editor-fold defaultstate="collapsed" desc="Line 2 - this.description">
                 if (infos.length > 1) {
@@ -2696,9 +2773,9 @@ public class JobResult implements Comparable<JobResult> {
                     return false;
                 }
                 // </editor-fold>
-                // <editor-fold defaultstate="collapsed" desc="Line 9 - this.maximumUsedParallelTaskNumberInfoString">
+                // <editor-fold defaultstate="collapsed" desc="Line 9 - this.jdpdKernelInfoString">
                 if (infos.length > 8) {
-                    this.maximumUsedParallelTaskNumberInfoString = infos[8];
+                    this.jdpdKernelInfoString = infos[8];
                 } else {
                     return false;
                 }
@@ -2739,7 +2816,7 @@ public class JobResult implements Comparable<JobResult> {
             tmpBufferedReader = new BufferedReader(tmpFileReader, Constants.BUFFER_SIZE);
             // Read version
             String tmpVersion = tmpBufferedReader.readLine();
-            if (!tmpVersion.equals(Strings.VERSION_1_0_0)) {
+            if (!tmpVersion.equals(de.gnwi.jdpd.utilities.Strings.INPUT_OUTPUT_VERSION_1_0_0)) {
                 return aVerticalPosition;
             }
             // NOTE: "0" = NO decimals

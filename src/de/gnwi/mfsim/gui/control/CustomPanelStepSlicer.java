@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -39,27 +39,93 @@ import de.gnwi.mfsim.gui.preference.GuiDefinitions;
 public class CustomPanelStepSlicer extends JPanel {
 
     // <editor-fold defaultstate="collapsed" desc="Private class variables">
+    /**
+     * GUI element
+     */
     private JLabel generalInfoLabel;
+    /**
+     * GUI element
+     */
     private CustomPanelSimulationBoxSlicer simulationBoxPanel;
+    /**
+     * GUI element
+     */
     private JButton secondSettingsButton;
+    /**
+     * GUI element
+     */
     private JButton firstSettingsButton;
+    /**
+     * GUI element
+     */
     private SpringLayout settingsButtonPanelSpringLayout;
+    /**
+     * GUI element
+     */
     private JPanel settingsButtonPanel;
+    /**
+     * GUI element
+     */
     private JRadioButton movieRadioButton;
+    /**
+     * GUI element
+     */
     private JRadioButton animationRadioButton;
+    /**
+     * GUI element
+     */
     private ButtonGroup settingsButtonGroup = new ButtonGroup();
+    /**
+     * GUI element
+     */
     private SpringLayout settingsPanelSpringLayout;
+    /**
+     * GUI element
+     */
     private JPanel settingsPanel;
+    /**
+     * GUI element
+     */
     private CustomPanelImage boxViewImagePanel;
+    /**
+     * GUI element
+     */
     private JRadioButton xyBottomRadioButton;
+    /**
+     * GUI element
+     */
     private JRadioButton xyTopRadioButton;
+    /**
+     * GUI element
+     */
     private JRadioButton yzRightRadioButton;
+    /**
+     * GUI element
+     */
     private JRadioButton yzLeftRadioButton;
+    /**
+     * GUI element
+     */
     private ButtonGroup boxViewButtonGroup = new ButtonGroup();
+    /**
+     * GUI element
+     */
     private JRadioButton xzBackRadioButton;
+    /**
+     * GUI element
+     */
     private JRadioButton xzFrontRadioButton;
+    /**
+     * GUI element
+     */
     private SpringLayout boxViewPanelSpringLayout;
+    /**
+     * GUI element
+     */
     private JPanel boxViewPanel;
+    /**
+     * GUI element
+     */
     private SpringLayout springLayout;
     // </editor-fold>
     //

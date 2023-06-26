@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -22,7 +22,6 @@ package de.gnwi.mfsim.model.particle;
 import de.gnwi.jdpd.utilities.FileOutputStrings;
 import de.gnwi.mfsim.model.valueItem.ValueItemDataTypeFormat;
 import de.gnwi.mfsim.model.valueItem.ValueItemContainer;
-import de.gnwi.mfsim.model.valueItem.ValueItemEnumDataType;
 import de.gnwi.mfsim.model.valueItem.ValueItem;
 import de.gnwi.mfsim.model.valueItem.ValueItemEnumBasicType;
 import de.gnwi.mfsim.model.valueItem.ValueItemMatrixElement;
@@ -771,6 +770,194 @@ public final class StandardParticleInteractionData {
         return false;
     }
     // </editor-fold>
+    // <editor-fold defaultstate="collapsed" desc="- Value item related methods for backbone repulsion">
+    /**
+     * Returns value item container with value items for amino acids backbone 
+     * repulsion
+     *
+     * @return Value item container with value items for amino acids backbone 
+     * repulsion
+     */
+    public ValueItemContainer getBackboneRepulsionValueItemContainer() {
+        String[] tmpNodeNames;
+        ValueItemContainer tmpBackboneRepulsionValueItemContainer = new ValueItemContainer(new StandardParticleUpdateUtils());
+        int tmpVerticalPosition = 0;
+        tmpNodeNames = new String[]{ModelMessage.get("BackboneRepulsion.Root")};
+        // <editor-fold defaultstate="collapsed" desc="Set tmpParticleSetNameValueItem">
+        ValueItem tmpParticleSetFilenameValueItem = new ValueItem();
+        tmpParticleSetFilenameValueItem.setName("PARTICLE_SET_FILE_NAME");
+        tmpParticleSetFilenameValueItem.setDisplayName(ModelMessage.get("BackboneRepulsion.ParticleSetFilenameValueItem.displayName"));
+        tmpParticleSetFilenameValueItem.setUpdateNotifier(true);
+        tmpParticleSetFilenameValueItem.setBasicType(ValueItemEnumBasicType.SCALAR);
+
+        String tmpCurrentParticleSetFilePathname = Preferences.getInstance().getCurrentParticleSetFilePathname();
+        File tmpCurrentParticleSetFile = new File(tmpCurrentParticleSetFilePathname);
+        String tmpCurrentParticleSetFileName = tmpCurrentParticleSetFile.getName();
+        ValueItemMatrixElement[][] tmpMatrix = new ValueItemMatrixElement[1][1];
+        tmpMatrix[0][0] = 
+            new ValueItemMatrixElement(
+                new ValueItemDataTypeFormat(
+                    tmpCurrentParticleSetFileName, 
+                    "[A-Za-z0-9\\_\\(\\)\\-\\.]", 
+                    "^ParticleSet[A-Za-z0-9\\_\\(\\)\\-\\.][A-Za-z0-9\\_\\(\\)\\-\\.]*\\.txt$"
+                )
+            );
+        tmpParticleSetFilenameValueItem.setMatrix(tmpMatrix);
+
+        tmpParticleSetFilenameValueItem.setDescription(ModelMessage.get("BackboneRepulsion.ParticleSetFilenameValueItem.description"));
+        tmpParticleSetFilenameValueItem.setNodeNames(tmpNodeNames);
+        tmpParticleSetFilenameValueItem.setVerticalPosition(tmpVerticalPosition++);
+        tmpBackboneRepulsionValueItemContainer.addValueItem(tmpParticleSetFilenameValueItem);
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Set tmpVminRescaleValueItem">
+        ValueItem tmpBackboneOffsetValueItem = new ValueItem();
+        tmpBackboneOffsetValueItem.setName("BACKBONE_OFFSET");
+        tmpBackboneOffsetValueItem.setUpdateNotifier(true);
+        tmpBackboneOffsetValueItem.setDisplayName(ModelMessage.get("BackboneRepulsion.BackboneOffsetValueItem.displayName"));
+        tmpBackboneOffsetValueItem.setDefaultTypeFormat(new ValueItemDataTypeFormat("0.0", 6, 0.0, Double.POSITIVE_INFINITY));        
+        tmpBackboneOffsetValueItem.setDescription(ModelMessage.get("BackboneRepulsion.BackboneOffsetValueItem.description"));
+        tmpBackboneOffsetValueItem.setNodeNames(tmpNodeNames);
+        tmpBackboneOffsetValueItem.setVerticalPosition(tmpVerticalPosition++);
+        tmpBackboneRepulsionValueItemContainer.addValueItem(tmpBackboneOffsetValueItem);
+        // </editor-fold>
+        return tmpBackboneRepulsionValueItemContainer;
+    }
+
+    /**
+     * Set repulsions between (uncharged) amino acid backbone particles 
+     * for all temperatures in particle set.
+     *
+     * @param aBackboneRepulsionValueItemContainer Value item container for
+     * maximum amino acid backbone repulsions
+     * @return True: Particles set with amino acid backbone repulsions could be 
+     * created, false: Otherwise
+     */
+    public boolean setBackboneRepulsions(ValueItemContainer aBackboneRepulsionValueItemContainer) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aBackboneRepulsionValueItemContainer == null) {
+            return false;
+        }
+        if (!this.isParticleSetVersion("1.0.0.0")) {
+            return false;
+        }
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Read current particle set file">
+        LinkedList<String> tmpParticleSetFileLineList = this.fileUtilityMethods.readStringListFromFile(Preferences.getInstance().getCurrentParticleSetFilePathname(), null);
+        if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.size() == 0) {
+            return false;
+        }
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Set amino acid backbone repulsion">
+        ValueItem tmpBackboneOffsetValueItem = aBackboneRepulsionValueItemContainer.getValueItem("BACKBONE_OFFSET");
+        LinkedList<String> tmpBackboneRepulsionParticleSetFileLineList = 
+            this.getParticleSetWithBackboneRepulsions(
+                tmpParticleSetFileLineList,
+                tmpBackboneOffsetValueItem.getValueAsDouble()
+            );
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Save particle set file">
+        ValueItem tmpParticleSetFilenameValueItem = aBackboneRepulsionValueItemContainer.getValueItem("PARTICLE_SET_FILE_NAME");
+        String tmpNewParticleSetFilename = tmpParticleSetFilenameValueItem.getValue();
+        String tmpNewParticleSetFilePathnameInDpdSourceParticles = Preferences.getInstance().getDpdSourceParticlesPath() + File.separatorChar + tmpNewParticleSetFilename;
+        String tmpNewParticleSetFilePathnameInCustomParticles = Preferences.getInstance().getCustomParticlesPath() + File.separatorChar + tmpNewParticleSetFilename;
+        while ((new File(tmpNewParticleSetFilePathnameInCustomParticles)).isFile() || (new File(tmpNewParticleSetFilePathnameInDpdSourceParticles)).isFile()) {
+            String tmpNewParticleSetFilenameWithoutEnding = this.fileUtilityMethods.getFilenameWithoutExtension(tmpNewParticleSetFilename);
+            tmpNewParticleSetFilename = String.format(ModelMessage.get("BackboneRepulsion.NewParticleFilenameFormat"), tmpNewParticleSetFilenameWithoutEnding) + FileOutputStrings.TEXT_FILE_ENDING;
+            tmpNewParticleSetFilePathnameInDpdSourceParticles = Preferences.getInstance().getDpdSourceParticlesPath() + File.separatorChar + tmpNewParticleSetFilename;
+            tmpNewParticleSetFilePathnameInCustomParticles = Preferences.getInstance().getCustomParticlesPath() + File.separatorChar + tmpNewParticleSetFilename;
+        }
+        // Write new particle set file
+        if (!ModelUtils.writeStringListToFile(this.getFormattedParticleSet(tmpBackboneRepulsionParticleSetFileLineList), tmpNewParticleSetFilePathnameInCustomParticles)) {
+            return false;
+        }
+        // </editor-fold>
+        return true;
+    }
+    // </editor-fold>
+    // <editor-fold defaultstate="collapsed" desc="- Value item related methods for particle set formatting">
+    /**
+     * Returns value item container with value items for particle set formatting
+     *
+     * @return Value item container with value items for particle set formatting
+     */
+    public ValueItemContainer getFormatParticleSetValueItemContainer() {
+        String[] tmpNodeNames;
+        ValueItemContainer tmpFormatParticleSetValueItemContainer = new ValueItemContainer(new StandardParticleUpdateUtils());
+        int tmpVerticalPosition = 0;
+        tmpNodeNames = new String[]{ModelMessage.get("ParticleSetFormatting.Root")};
+        // <editor-fold defaultstate="collapsed" desc="Set tmpParticleSetNameValueItem">
+        ValueItem tmpParticleSetFilenameValueItem = new ValueItem();
+        tmpParticleSetFilenameValueItem.setName("PARTICLE_SET_FILE_NAME");
+        tmpParticleSetFilenameValueItem.setDisplayName(ModelMessage.get("ParticleSetFormatting.ParticleSetFilenameValueItem.displayName"));
+        tmpParticleSetFilenameValueItem.setUpdateNotifier(true);
+        tmpParticleSetFilenameValueItem.setBasicType(ValueItemEnumBasicType.SCALAR);
+
+        String tmpCurrentParticleSetFilePathname = Preferences.getInstance().getCurrentParticleSetFilePathname();
+        File tmpCurrentParticleSetFile = new File(tmpCurrentParticleSetFilePathname);
+        String tmpCurrentParticleSetFileName = tmpCurrentParticleSetFile.getName();
+        ValueItemMatrixElement[][] tmpMatrix = new ValueItemMatrixElement[1][1];
+        tmpMatrix[0][0] = 
+            new ValueItemMatrixElement(
+                new ValueItemDataTypeFormat(
+                    tmpCurrentParticleSetFileName, 
+                    "[A-Za-z0-9\\_\\(\\)\\-\\.]", 
+                    "^ParticleSet[A-Za-z0-9\\_\\(\\)\\-\\.][A-Za-z0-9\\_\\(\\)\\-\\.]*\\.txt$"
+                )
+            );
+        tmpParticleSetFilenameValueItem.setMatrix(tmpMatrix);
+
+        tmpParticleSetFilenameValueItem.setDescription(ModelMessage.get("ParticleSetFormatting.ParticleSetFilenameValueItem.description"));
+        tmpParticleSetFilenameValueItem.setNodeNames(tmpNodeNames);
+        tmpParticleSetFilenameValueItem.setVerticalPosition(tmpVerticalPosition++);
+        tmpFormatParticleSetValueItemContainer.addValueItem(tmpParticleSetFilenameValueItem);
+        // </editor-fold>
+        return tmpFormatParticleSetValueItemContainer;
+    }
+
+    /**
+     * Format particle set
+     *
+     * @param aParticlesValueItemContainerForParticleSetFormatting Value item container for
+     * particle set formatting
+     * @return True: Particles set was formatted, false: Otherwise
+     */
+    public boolean formatParticleSet(ValueItemContainer aParticlesValueItemContainerForParticleSetFormatting) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aParticlesValueItemContainerForParticleSetFormatting == null) {
+            return false;
+        }
+        if (!this.isParticleSetVersion("1.0.0.0")) {
+            return false;
+        }
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Read current particle set file">
+        LinkedList<String> tmpParticleSetFileLineList = this.fileUtilityMethods.readStringListFromFile(Preferences.getInstance().getCurrentParticleSetFilePathname(), null);
+        if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.size() == 0) {
+            return false;
+        }
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Format particle set">
+        LinkedList<String> tmpFormattedParticleSetFileLineList = this.getFormattedParticleSet(tmpParticleSetFileLineList);
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Save particle set file">
+        ValueItem tmpParticleSetFilenameValueItem = aParticlesValueItemContainerForParticleSetFormatting.getValueItem("PARTICLE_SET_FILE_NAME");
+        String tmpNewParticleSetFilename = tmpParticleSetFilenameValueItem.getValue();
+        String tmpNewParticleSetFilePathnameInDpdSourceParticles = Preferences.getInstance().getDpdSourceParticlesPath() + File.separatorChar + tmpNewParticleSetFilename;
+        String tmpNewParticleSetFilePathnameInCustomParticles = Preferences.getInstance().getCustomParticlesPath() + File.separatorChar + tmpNewParticleSetFilename;
+        while ((new File(tmpNewParticleSetFilePathnameInCustomParticles)).isFile() || (new File(tmpNewParticleSetFilePathnameInDpdSourceParticles)).isFile()) {
+            String tmpNewParticleSetFilenameWithoutEnding = this.fileUtilityMethods.getFilenameWithoutExtension(tmpNewParticleSetFilename);
+            tmpNewParticleSetFilename = String.format(ModelMessage.get("ParticleSetFormatting.NewParticleFilenameFormat"), tmpNewParticleSetFilenameWithoutEnding) + FileOutputStrings.TEXT_FILE_ENDING;
+            tmpNewParticleSetFilePathnameInDpdSourceParticles = Preferences.getInstance().getDpdSourceParticlesPath() + File.separatorChar + tmpNewParticleSetFilename;
+            tmpNewParticleSetFilePathnameInCustomParticles = Preferences.getInstance().getCustomParticlesPath() + File.separatorChar + tmpNewParticleSetFilename;
+        }
+        // Write new particle set file
+        if (!ModelUtils.writeStringListToFile(tmpFormattedParticleSetFileLineList, tmpNewParticleSetFilePathnameInCustomParticles)) {
+            return false;
+        }
+        // </editor-fold>
+        return true;
+    }
+    // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- Value item related methods for particle duplicate operations">
     /**
      * Returns value item container with value items for particle duplicate
@@ -922,7 +1109,7 @@ public final class StandardParticleInteractionData {
             tmpNewParticleSetFilePathnameInCustomParticles = Preferences.getInstance().getCustomParticlesPath() + File.separatorChar + tmpNewParticleSetFilename;
         }
         // Write new particle set file
-        if (!ModelUtils.writeStringListToFile(tmpParticleSetFileLineList, tmpNewParticleSetFilePathnameInCustomParticles)) {
+        if (!ModelUtils.writeStringListToFile(this.getFormattedParticleSet(tmpParticleSetFileLineList), tmpNewParticleSetFilePathnameInCustomParticles)) {
             return false;
         }
         // </editor-fold>
@@ -1052,10 +1239,9 @@ public final class StandardParticleInteractionData {
         }
 
         // Write new particle set file
-        if (!ModelUtils.writeStringListToFile(tmpParticleSetFileLineList, tmpNewParticleSetFilePathnameInCustomParticles)) {
+        if (!ModelUtils.writeStringListToFile(this.getFormattedParticleSet(tmpParticleSetFileLineList), tmpNewParticleSetFilePathnameInCustomParticles)) {
             return false;
         }
-
         // </editor-fold>
         return true;
     }
@@ -1192,7 +1378,7 @@ public final class StandardParticleInteractionData {
         }
 
         // Write morphed particle set file
-        if (!ModelUtils.writeStringListToFile(tmpMorphedParticleSetFileLineList, tmpNewParticleSetFilePathnameInCustomParticles)) {
+        if (!ModelUtils.writeStringListToFile(this.getFormattedParticleSet(tmpMorphedParticleSetFileLineList), tmpNewParticleSetFilePathnameInCustomParticles)) {
             return false;
         }
 
@@ -1304,7 +1490,7 @@ public final class StandardParticleInteractionData {
         }
 
         // Write new particle set file
-        if (!ModelUtils.writeStringListToFile(tmpParticleSetFileLineList, tmpNewParticleSetFilePathnameInCustomParticles)) {
+        if (!ModelUtils.writeStringListToFile(this.getFormattedParticleSet(tmpParticleSetFileLineList), tmpNewParticleSetFilePathnameInCustomParticles)) {
             return false;
         }
         // </editor-fold>
@@ -1452,7 +1638,7 @@ public final class StandardParticleInteractionData {
         }
 
         // Write new particle set file
-        if (!ModelUtils.writeStringListToFile(tmpParticleSetFileLineList, tmpNewParticleSetFilePathnameInCustomParticles)) {
+        if (!ModelUtils.writeStringListToFile(this.getFormattedParticleSet(tmpParticleSetFileLineList), tmpNewParticleSetFilePathnameInCustomParticles)) {
             return false;
         }
         // </editor-fold>
@@ -1582,7 +1768,7 @@ public final class StandardParticleInteractionData {
             tmpNewParticleSetFilePathnameInCustomParticles = Preferences.getInstance().getCustomParticlesPath() + File.separatorChar + tmpNewParticleSetFilename;
         }
         // Write new particle set file
-        if (!ModelUtils.writeStringListToFile(tmpParticleSetFileLineList, tmpNewParticleSetFilePathnameInCustomParticles)) {
+        if (!ModelUtils.writeStringListToFile(this.getFormattedParticleSet(tmpParticleSetFileLineList), tmpNewParticleSetFilePathnameInCustomParticles)) {
             return false;
         }
         // </editor-fold>
@@ -1851,13 +2037,11 @@ public final class StandardParticleInteractionData {
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Private methods">
-    //
     // <editor-fold defaultstate="collapsed" desc="- Particle related operations">
     /**
      * Duplicates specified old particle
      *
-     * @param aParticleSetFileLineList Particle set file line
-     * list
+     * @param aParticleSetFileLineList Particle set file line list (is not changed)
      * @param anOldParticle Old particle for duplication (not allowed to be
      * null/empty)
      * @param aNewParticle New particle (not allowed to be null/empty)
@@ -2060,7 +2244,7 @@ public final class StandardParticleInteractionData {
     /**
      * Duplicates specified old particle
      *
-     * @param aParticleSetFileLineList Particle set file line list
+     * @param aParticleSetFileLineList Particle set file line list (is not changed)
      * @param anOldParticle Old particle for duplication (not allowed to be
      * null/empty)
      * @param aNewParticle New particle (not allowed to be null/empty)
@@ -2170,14 +2354,16 @@ public final class StandardParticleInteractionData {
     /**
      * Removes specified particle
      *
-     * @param aParticleSetFileLineList Particle set file line
-     * list
+     * @param aParticleSetFileLineList Particle set file line list (is not changed)
      * @param aParticleToBeRemoved Particle to be removed (not allowed to be
      * null/empty)
      * @return New particle set file line list or null if new list could not be
      * created
      */
-    private LinkedList<String> removeParticle(LinkedList<String> aParticleSetFileLineList, String aParticleToBeRemoved) {
+    private LinkedList<String> removeParticle(
+        LinkedList<String> aParticleSetFileLineList, 
+        String aParticleToBeRemoved
+    ) {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aParticleSetFileLineList == null || aParticleSetFileLineList.size() == 0) {
             return null;
@@ -2237,6 +2423,834 @@ public final class StandardParticleInteractionData {
         // </editor-fold>
         // </editor-fold>
         return tmpNewParticleSetFileLineList;
+    }
+
+    /**
+     * Returns particle set where repulsions for each temperature are set for 
+     * interactions of amino acid backbone particles (including their PD1, 
+     * PD2, ... particles).
+     * Note: Charged backbone particles are NOT taken into account
+     * Note: If particle set does not contain amino acid definitions the 
+     * particle set is returned unchanged
+     * 
+     * @param aParticleSetFileLineList Particle set file line list (is not 
+     * changed)
+     * @param aBackboneOffset Backbone offset (greater/equal zero)
+     * @return Particle set where repulsions for each temperature are set for 
+     * interactions of amino acid backbone particles (including their PD1, 
+     * PD2, ... particles)
+     */
+    private LinkedList<String> getParticleSetWithBackboneRepulsions(
+        LinkedList<String> aParticleSetFileLineList,
+        double aBackboneOffset
+    ) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aParticleSetFileLineList == null || aParticleSetFileLineList.isEmpty()) {
+            return aParticleSetFileLineList;
+        }
+        if (aBackboneOffset < 0.0) {
+            throw new IllegalArgumentException("aBackboneOffset is less than zero.");
+        }
+        // </editor-fold>
+        // Detect backbone particles (including their PD1, PD2, ... particles)
+        LinkedList<String> tmpAminoAcidBackboneParticles = this.getAminoAcidBackboneParticles(aParticleSetFileLineList);
+        if (tmpAminoAcidBackboneParticles == null) {
+            return aParticleSetFileLineList;
+        }
+        // Get diagonal repulsions ...
+        double[] tmpDiagonalRepulsionValues = this.getDiagonalRepulsions(aParticleSetFileLineList, tmpAminoAcidBackboneParticles.getFirst());
+        // ... and add backbone offset
+        String[] tmpNewDiagonalRepulsions = new String[tmpDiagonalRepulsionValues.length];
+        for (int i = 0; i < tmpDiagonalRepulsionValues.length; i++) {
+            tmpNewDiagonalRepulsions[i] = this.stringUtilityMethods.formatDoubleValue(tmpDiagonalRepulsionValues[i] + aBackboneOffset, 6);
+        }
+        // Write comment
+        LinkedList<String> tmpNewParticleSetFileLineList = new LinkedList<>();
+        tmpNewParticleSetFileLineList.add("#");
+        tmpNewParticleSetFileLineList.add("# With a backbone offset of");
+        tmpNewParticleSetFileLineList.add("# " + String.valueOf(aBackboneOffset));
+        tmpNewParticleSetFileLineList.add("# added to the diagonal a(ii) repulsions, the new backbone repulsions");
+        for (String tmpNewDiagonalRepulsion : tmpNewDiagonalRepulsions) {
+            tmpNewParticleSetFileLineList.add("# " + tmpNewDiagonalRepulsion);
+        }
+        tmpNewParticleSetFileLineList.add("# for the " + String.valueOf(tmpNewDiagonalRepulsions.length) + "(different) temperature(s) are set for the following (uncharged) amino acid backbone particles:");
+        for (String tmpAminoAcidBackboneParticle : tmpAminoAcidBackboneParticles) {
+            tmpNewParticleSetFileLineList.add("# " + tmpAminoAcidBackboneParticle);
+        }
+        tmpNewParticleSetFileLineList.add("#");
+        for (String tmpLine : aParticleSetFileLineList) {
+            tmpNewParticleSetFileLineList.add(tmpLine);
+        }
+        // Replace interactions
+        String[] tmpAminoAcidBackboneParticleArray = tmpAminoAcidBackboneParticles.toArray(new String[0]);
+        for (int i = 0; i < tmpAminoAcidBackboneParticleArray.length; i++) {
+            for (int k = 0; k <= i; k++) {
+                tmpNewParticleSetFileLineList = 
+                    this.getParticleSetWithReplacedInteraction(
+                        tmpNewParticleSetFileLineList,
+                        tmpAminoAcidBackboneParticleArray[i],
+                        tmpAminoAcidBackboneParticleArray[k],
+                        tmpNewDiagonalRepulsions
+                    );
+            }
+        }
+        return tmpNewParticleSetFileLineList;
+    }
+    
+    /**
+     * Returns amino acid backbone particles (including their PD1, PD2, ... 
+     * particles)
+     * Note: Charged backbone particles are NOT taken into account
+     * 
+     * @param aParticleSetFileLineList Particle set file line list (is not changed)
+     * @return Amino acid backbone particles (including their PD1, PD2, ... 
+     * particles) or null if none are detected
+     */
+    private LinkedList<String> getAminoAcidBackboneParticles(
+        LinkedList<String> aParticleSetFileLineList
+    ) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aParticleSetFileLineList == null || aParticleSetFileLineList.isEmpty()) {
+            return null;
+        }
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Initial definitions">
+        LinkedList<String> tmpBackboneParticleList = new LinkedList<>();
+        
+        String tmpParticleDescriptionStartLine = String.format(ModelDefinitions.SECTION_START_TAG_FORMAT, ModelDefinitions.PARTICLE_DESCRIPTION_SECTION_TAG);
+        String tmpParticleDescriptionEndLine = String.format(ModelDefinitions.SECTION_END_TAG_FORMAT, ModelDefinitions.PARTICLE_DESCRIPTION_SECTION_TAG);
+        boolean tmpIsParticleDescriptionSectionStart = false;
+        boolean tmpIsParticleDescriptionsSectionEnd = false;
+
+        String tmpAminoAcidsStartLine = String.format(ModelDefinitions.SECTION_START_TAG_FORMAT, ModelDefinitions.AMINO_ACID_DESCRIPTION_SECTION_TAG);
+        String tmpAminoAcidsEndLine = String.format(ModelDefinitions.SECTION_END_TAG_FORMAT, ModelDefinitions.AMINO_ACID_DESCRIPTION_SECTION_TAG);
+        boolean tmpIsAminoAcidsSectionStart = false;
+        boolean tmpIsAminoAcidsSectionEnd = false;
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Determine amino acid backbone particles in amino acids section">
+        for (String tmpCurrentLine : aParticleSetFileLineList) {
+            // <editor-fold defaultstate="collapsed" desc="Section detection">
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpAminoAcidsStartLine)) {
+                tmpIsAminoAcidsSectionStart = true;
+                continue;
+            }
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpAminoAcidsEndLine)) {
+                tmpIsAminoAcidsSectionEnd = true;
+                continue;
+            }
+            // </editor-fold>
+            if (tmpIsAminoAcidsSectionStart && 
+                !tmpIsAminoAcidsSectionEnd && 
+                !tmpCurrentLine.trim().isEmpty() &&
+                !tmpCurrentLine.startsWith(ModelDefinitions.LINE_PREFIX_TO_IGNORE)
+            ) {
+                // <editor-fold defaultstate="collapsed" desc="Section amino acids">
+                String[] tmpTokens = this.stringUtilityMethods.splitAndTrim(tmpCurrentLine);
+                // Amino acid backbone SPICES are in 4. column (index 3)
+                // Backbone particle is separated with "(" if there is more than 1
+                int tmpIndex = tmpTokens[3].indexOf('(');
+                String tmpBackboneParticle;
+                if (tmpIndex < 0) {
+                    tmpBackboneParticle = tmpTokens[3];
+                } else {
+                    tmpBackboneParticle = tmpTokens[3].substring(0, tmpIndex);
+                }
+                // Backbone particles end with "BB" (BackBone)
+                // Since the number of backbone particles is O(10), i.e. small, 
+                // the slow list search is justified
+                if (tmpBackboneParticle.endsWith("BB")) {
+                    if (!tmpBackboneParticleList.contains(tmpBackboneParticle)) {
+                        tmpBackboneParticleList.add(tmpBackboneParticle);
+                    }
+                }
+                // </editor-fold>
+            }
+        }
+        if (tmpBackboneParticleList.isEmpty()) {
+            return null;
+        }
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Enrich with corresponding PD-particles">
+        // Create corresponding PD particles from backbone particles: "BB" is replaced bei "PD<number>"
+        LinkedList<String> tmpPdParticleList = new LinkedList<>();
+        for (String tmpBackboneParticle : tmpBackboneParticleList) {
+            tmpPdParticleList.add(tmpBackboneParticle.substring(0, tmpBackboneParticle.length() - 2) + "PD");
+        }
+        // Rewind
+        tmpIsParticleDescriptionSectionStart = false;
+        tmpIsParticleDescriptionsSectionEnd = false;
+        for (String tmpCurrentLine : aParticleSetFileLineList) {
+            // <editor-fold defaultstate="collapsed" desc="Section detection">
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleDescriptionStartLine)) {
+                tmpIsParticleDescriptionSectionStart = true;
+                continue;
+            }
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleDescriptionEndLine)) {
+                tmpIsParticleDescriptionsSectionEnd = true;
+                continue;
+            }
+            // </editor-fold>
+            if (tmpIsParticleDescriptionSectionStart && 
+                !tmpIsParticleDescriptionsSectionEnd && 
+                !tmpCurrentLine.trim().isEmpty() &&
+                !tmpCurrentLine.startsWith(ModelDefinitions.LINE_PREFIX_TO_IGNORE)
+            ) {
+                // <editor-fold defaultstate="collapsed" desc="Section particle description">
+                String[] tmpTokens = this.stringUtilityMethods.splitAndTrim(tmpCurrentLine);
+                // Particle is first token (index 0)
+                for (String tmpPdParticle : tmpPdParticleList) {
+                    if (tmpTokens[0].startsWith(tmpPdParticle)) {
+                        if (!tmpBackboneParticleList.contains(tmpTokens[0])) {
+                            tmpBackboneParticleList.add(tmpTokens[0]);
+                        }
+                    }
+                }
+                // </editor-fold>
+            }
+        }
+        // </editor-fold>
+        // Note: Charged backbone particles are NOT taken into account
+        return tmpBackboneParticleList;
+    }
+
+    /**
+     * Returns array with maximum values for a(ij) repulsion for all temperatures.
+     * array[0]: Maximum a(ij) for 1. termperature
+     * array[1]: Maximum a(ij) for 2. termperature
+     * ...
+     *
+     * @param aParticleSetFileLineList Particle set file line list (is not changed)
+     * @return Array with maximum values for a(ij) repulsion for all temperatures 
+     * or null if none could be detected
+     */
+    private String[] getMaximumRepulsions(
+        LinkedList<String> aParticleSetFileLineList
+    ) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aParticleSetFileLineList == null || aParticleSetFileLineList.isEmpty()) {
+            return null;
+        }
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Initial definitions">
+        String[] tmpMaximumRepulsions = null;
+        double[] tmpMaximumRepulsionValues = null;
+
+        String tmpParticleInteractionsStartLine = String.format(ModelDefinitions.SECTION_START_TAG_FORMAT, ModelDefinitions.PARTICLE_INTERACTIONS_SECTION_TAG);
+        String tmpParticleInteractionsEndLine = String.format(ModelDefinitions.SECTION_END_TAG_FORMAT, ModelDefinitions.PARTICLE_INTERACTIONS_SECTION_TAG);
+        boolean tmpIsParticleInteractionsSectionStart = false;
+        boolean tmpIsParticleInteractionsSectionEnd = false;
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Determine maximum repulsions">
+        for (String tmpCurrentLine : aParticleSetFileLineList) {
+            // <editor-fold defaultstate="collapsed" desc="Section detection">
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleInteractionsStartLine)) {
+                tmpIsParticleInteractionsSectionStart = true;
+                continue;
+            }
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleInteractionsEndLine)) {
+                tmpIsParticleInteractionsSectionEnd = true;
+                continue;
+            }
+            // </editor-fold>
+            if (tmpIsParticleInteractionsSectionStart && 
+                !tmpIsParticleInteractionsSectionEnd && 
+                !tmpCurrentLine.trim().isEmpty() &&
+                !tmpCurrentLine.startsWith(ModelDefinitions.LINE_PREFIX_TO_IGNORE)
+            ) {
+                // <editor-fold defaultstate="collapsed" desc="Section particle interaction">
+                String[] tmpTokens = this.stringUtilityMethods.splitAndTrim(tmpCurrentLine);
+                // NOTE: 1. line starting with "Pair  <Temperature 1>  <Temperature 2> ..."
+                //       has to be omitted
+                if (!tmpTokens[0].equals("Pair")) {
+                    // Repulsions for different temperatures are in column 2 and higher (index 1 and above)
+                    if (tmpMaximumRepulsions == null) {
+                        tmpMaximumRepulsions = new String[tmpTokens.length - 1];
+                        tmpMaximumRepulsionValues = new double[tmpTokens.length - 1];
+                        Arrays.fill(tmpMaximumRepulsionValues, 0.0);
+                    }
+                    for (int i = 1; i < tmpTokens.length; i++) {
+                        double tmpValue = Double.valueOf(tmpTokens[i]);
+                        if (tmpValue > tmpMaximumRepulsionValues[i - 1]) {
+                            tmpMaximumRepulsions[i - 1] = tmpTokens[i];
+                            tmpMaximumRepulsionValues[i - 1] = tmpValue;
+                        }
+                    }
+                }
+                // </editor-fold>
+            }
+        }
+        // </editor-fold>
+        return tmpMaximumRepulsions;
+    }
+
+
+    /**
+     * Returns array with diagonal a(ii) repulsions for all temperatures for
+     * specified particle.
+     * array[0]: Maximum a(ii) for 1. termperature
+     * array[1]: Maximum a(ii) for 2. termperature
+     * etc.
+     *
+     * @param aParticleSetFileLineList Particle set file line list (is not changed)
+     * @param aParticle Particle
+     * @return Array with diagonal a(ii) repulsions for all temperatures 
+     * or null if none could be detected
+     */
+    private double[] getDiagonalRepulsions(
+        LinkedList<String> aParticleSetFileLineList,
+        String aParticle
+    ) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aParticleSetFileLineList == null || aParticleSetFileLineList.isEmpty()) {
+            return null;
+        }
+        if (aParticle == null || aParticle.isEmpty()) {
+            return null;
+        }
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Initial definitions">
+        double[] tmpDiagonalRepulsionValues = null;
+        String tmpParticlePairToken = aParticle + "_" + aParticle;
+
+        String tmpParticleInteractionsStartLine = String.format(ModelDefinitions.SECTION_START_TAG_FORMAT, ModelDefinitions.PARTICLE_INTERACTIONS_SECTION_TAG);
+        String tmpParticleInteractionsEndLine = String.format(ModelDefinitions.SECTION_END_TAG_FORMAT, ModelDefinitions.PARTICLE_INTERACTIONS_SECTION_TAG);
+        boolean tmpIsParticleInteractionsSectionStart = false;
+        boolean tmpIsParticleInteractionsSectionEnd = false;
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Determine maximum repulsions">
+        for (String tmpCurrentLine : aParticleSetFileLineList) {
+            // <editor-fold defaultstate="collapsed" desc="Section detection">
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleInteractionsStartLine)) {
+                tmpIsParticleInteractionsSectionStart = true;
+                continue;
+            }
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleInteractionsEndLine)) {
+                tmpIsParticleInteractionsSectionEnd = true;
+                continue;
+            }
+            // </editor-fold>
+            if (tmpIsParticleInteractionsSectionStart && 
+                !tmpIsParticleInteractionsSectionEnd && 
+                !tmpCurrentLine.trim().isEmpty() &&
+                !tmpCurrentLine.startsWith(ModelDefinitions.LINE_PREFIX_TO_IGNORE)
+            ) {
+                // <editor-fold defaultstate="collapsed" desc="Section particle interaction">
+                String[] tmpTokens = this.stringUtilityMethods.splitAndTrim(tmpCurrentLine);
+                // NOTE: 1. line starting with "Pair  <Temperature 1>  <Temperature 2> ..."
+                //       has to be omitted
+                if (!tmpTokens[0].equals("Pair")) {
+                    if (tmpTokens[0].equals(tmpParticlePairToken)) {
+                        tmpDiagonalRepulsionValues = new double[tmpTokens.length - 1];
+                        for (int i = 1; i < tmpTokens.length; i++) {
+                            tmpDiagonalRepulsionValues[i - 1] = Double.valueOf(tmpTokens[i]);
+                        }
+                        break;
+                    }
+                }
+                // </editor-fold>
+            }
+        }
+        // </editor-fold>
+        return tmpDiagonalRepulsionValues;
+    }
+    
+    /**
+     * Returns particle set file line list with replaced interaction
+     *
+     * @param aParticleSetFileLineList Particle set file line list (is not changed)
+     * @param aFirstParticle First particle
+     * @param aSecondParticle Second particle
+     * @param anInteractions Array with new interactions for all temperatures
+     * @return Particle set file line list with replaced interaction or null if 
+     * list with replacement could not be created
+     */
+    private LinkedList<String> getParticleSetWithReplacedInteraction(
+        LinkedList<String> aParticleSetFileLineList,
+        String aFirstParticle,
+        String aSecondParticle,
+        String[] anInteractions
+    ) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aParticleSetFileLineList == null || aParticleSetFileLineList.isEmpty()) {
+            return null;
+        }
+        if (aFirstParticle == null || aFirstParticle.isEmpty()) {
+            return null;
+        }
+        if (aSecondParticle == null || aSecondParticle.isEmpty()) {
+            return null;
+        }
+        if (anInteractions == null || anInteractions.length == 0) {
+            return null;
+        }
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Initial definitions">
+        LinkedList<String> tmpNewParticleSetFileLineList = new LinkedList<>();
+
+        String tmpParticleInteractionsStartLine = String.format(ModelDefinitions.SECTION_START_TAG_FORMAT, ModelDefinitions.PARTICLE_INTERACTIONS_SECTION_TAG);
+        String tmpParticleInteractionsEndLine = String.format(ModelDefinitions.SECTION_END_TAG_FORMAT, ModelDefinitions.PARTICLE_INTERACTIONS_SECTION_TAG);
+        boolean tmpIsParticleInteractionsSectionStart = false;
+        boolean tmpIsParticleInteractionsSectionEnd = false;
+        
+        // Particle pairs in particle set file are separated by "_"
+        String tmpParticlePairA = aFirstParticle + "_" + aSecondParticle;
+        String tmpParticlePairB = aSecondParticle + "_" + aFirstParticle;
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Replace interaction">
+        for (String tmpCurrentLine : aParticleSetFileLineList) {
+            // <editor-fold defaultstate="collapsed" desc="Section detection">
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleInteractionsStartLine)) {
+                tmpIsParticleInteractionsSectionStart = true;
+                tmpNewParticleSetFileLineList.add(tmpCurrentLine);
+                continue;
+            }
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleInteractionsEndLine)) {
+                tmpIsParticleInteractionsSectionEnd = true;
+                tmpNewParticleSetFileLineList.add(tmpCurrentLine);
+                continue;
+            }
+            // </editor-fold>
+            if (tmpIsParticleInteractionsSectionStart && 
+                !tmpIsParticleInteractionsSectionEnd && 
+                !tmpCurrentLine.trim().isEmpty() &&
+                !tmpCurrentLine.startsWith(ModelDefinitions.LINE_PREFIX_TO_IGNORE)
+            ) {
+                // <editor-fold defaultstate="collapsed" desc="Section particle interaction">
+                String tmpFirstToken = this.stringUtilityMethods.getFirstToken(tmpCurrentLine);
+                if (tmpFirstToken.equals(tmpParticlePairA)) {
+                    StringBuilder tmpBuffer = new StringBuilder(tmpCurrentLine.length());
+                    tmpBuffer.append(tmpParticlePairA);
+                    tmpBuffer.append(" ".repeat(2));
+                    for (int i = 0; i < anInteractions.length; i++) {
+                        tmpBuffer.append(anInteractions[i]);
+                        if (i < anInteractions.length - 1) {
+                            tmpBuffer.append(" ".repeat(2));
+                        }
+                    }
+                    tmpNewParticleSetFileLineList.add(tmpBuffer.toString());
+                } else if (tmpFirstToken.equals(tmpParticlePairB)) {
+                    StringBuilder tmpBuffer = new StringBuilder(tmpCurrentLine.length());
+                    tmpBuffer.append(tmpParticlePairB);
+                    tmpBuffer.append(" ".repeat(2));
+                    for (int i = 0; i < anInteractions.length; i++) {
+                        tmpBuffer.append(anInteractions[i]);
+                        if (i < anInteractions.length - 1) {
+                            tmpBuffer.append(" ".repeat(2));
+                        }
+                    }
+                    tmpNewParticleSetFileLineList.add(tmpBuffer.toString());
+                } else {
+                    tmpNewParticleSetFileLineList.add(tmpCurrentLine);
+                }
+                // </editor-fold>
+            } else {
+                tmpNewParticleSetFileLineList.add(tmpCurrentLine);
+            }
+        }
+        // </editor-fold>
+        return tmpNewParticleSetFileLineList;
+    }
+    // </editor-fold>
+    // <editor-fold defaultstate="collapsed" desc="- Particle set related operations">
+    /**
+     * Formats aParticleSetFileLineList with sorted sections
+     *
+     * @param aParticleSetFileLineList Particle set file line list (is not changed)
+     * @return New formatted particle set file line list with sorted sections 
+     * or null if new list could not be created
+     */
+    private LinkedList<String> getFormattedParticleSet(
+        LinkedList<String> aParticleSetFileLineList
+    ) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aParticleSetFileLineList == null || aParticleSetFileLineList.isEmpty()) {
+            return null;
+        }
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Initial definitions">
+        LinkedList<String> tmpFormattedParticleSetFileLineList = new LinkedList<>();
+        LinkedList<String> tmpSortedParticleSetFileLineList = new LinkedList<>();
+
+        String tmpParticleDescriptionStartLine = String.format(ModelDefinitions.SECTION_START_TAG_FORMAT, ModelDefinitions.PARTICLE_DESCRIPTION_SECTION_TAG);
+        String tmpParticleDescriptionEndLine = String.format(ModelDefinitions.SECTION_END_TAG_FORMAT, ModelDefinitions.PARTICLE_DESCRIPTION_SECTION_TAG);
+        boolean tmpIsParticleDescriptionSectionStart = false;
+        boolean tmpIsParticleDescriptionsSectionEnd = false;
+        int[] tmpParticleDescriptionsColumnLengths = null;
+
+        String tmpParticleInteractionsStartLine = String.format(ModelDefinitions.SECTION_START_TAG_FORMAT, ModelDefinitions.PARTICLE_INTERACTIONS_SECTION_TAG);
+        String tmpParticleInteractionsEndLine = String.format(ModelDefinitions.SECTION_END_TAG_FORMAT, ModelDefinitions.PARTICLE_INTERACTIONS_SECTION_TAG);
+        boolean tmpIsParticleInteractionsSectionStart = false;
+        boolean tmpIsParticleInteractionsSectionEnd = false;
+        int[] tmpParticleInteractionsColumnLengths = null;
+
+        String tmpAminoAcidsStartLine = String.format(ModelDefinitions.SECTION_START_TAG_FORMAT, ModelDefinitions.AMINO_ACID_DESCRIPTION_SECTION_TAG);
+        String tmpAminoAcidsEndLine = String.format(ModelDefinitions.SECTION_END_TAG_FORMAT, ModelDefinitions.AMINO_ACID_DESCRIPTION_SECTION_TAG);
+        boolean tmpIsAminoAcidsSectionStart = false;
+        boolean tmpIsAminoAcidsSectionEnd = false;
+        int[] tmpAminoAcidsColumnLengths = null;
+
+        String tmpSmilesStartLine = String.format(ModelDefinitions.SECTION_START_TAG_FORMAT, ModelDefinitions.SMILES_SECTION_TAG);
+        String tmpSmilesEndLine = String.format(ModelDefinitions.SECTION_END_TAG_FORMAT, ModelDefinitions.SMILES_SECTION_TAG);
+        boolean tmpIsSmilesSectionStart = false;
+        boolean tmpIsSmilesSectionEnd = false;
+        int[] tmpSmilesColumnLengths = null;
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Determine column lengths">
+        for (String tmpCurrentLine : aParticleSetFileLineList) {
+            // <editor-fold defaultstate="collapsed" desc="Section detection">
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleDescriptionStartLine)) {
+                tmpIsParticleDescriptionSectionStart = true;
+                continue;
+            }
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleDescriptionEndLine)) {
+                tmpIsParticleDescriptionsSectionEnd = true;
+                continue;
+            }
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleInteractionsStartLine)) {
+                tmpIsParticleInteractionsSectionStart = true;
+                continue;
+            }
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleInteractionsEndLine)) {
+                tmpIsParticleInteractionsSectionEnd = true;
+                continue;
+            }
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpAminoAcidsStartLine)) {
+                tmpIsAminoAcidsSectionStart = true;
+                continue;
+            }
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpAminoAcidsEndLine)) {
+                tmpIsAminoAcidsSectionEnd = true;
+                continue;
+            }
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpSmilesStartLine)) {
+                tmpIsSmilesSectionStart = true;
+                continue;
+            }
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpSmilesEndLine)) {
+                tmpIsSmilesSectionEnd = true;
+                continue;
+            }
+            // </editor-fold>
+            if (tmpIsParticleDescriptionSectionStart && 
+                !tmpIsParticleDescriptionsSectionEnd && 
+                !tmpCurrentLine.trim().isEmpty() &&
+                !tmpCurrentLine.startsWith(ModelDefinitions.LINE_PREFIX_TO_IGNORE)
+            ) {
+                // <editor-fold defaultstate="collapsed" desc="Section particle description">
+                tmpParticleDescriptionsColumnLengths = this.getTokenColumnLengths(tmpCurrentLine, tmpParticleDescriptionsColumnLengths);
+                // </editor-fold>
+            } else if (tmpIsParticleInteractionsSectionStart && 
+                !tmpIsParticleInteractionsSectionEnd && 
+                !tmpCurrentLine.trim().isEmpty() &&
+                !tmpCurrentLine.startsWith(ModelDefinitions.LINE_PREFIX_TO_IGNORE)
+            ) {
+                // <editor-fold defaultstate="collapsed" desc="Section particle interaction">
+                tmpParticleInteractionsColumnLengths = this.getTokenColumnLengths(tmpCurrentLine, tmpParticleInteractionsColumnLengths);
+                // </editor-fold>
+            } else if (tmpIsAminoAcidsSectionStart && 
+                !tmpIsAminoAcidsSectionEnd && 
+                !tmpCurrentLine.trim().isEmpty() &&
+                !tmpCurrentLine.startsWith(ModelDefinitions.LINE_PREFIX_TO_IGNORE)
+            ) {
+                // <editor-fold defaultstate="collapsed" desc="Section amino acids">
+                tmpAminoAcidsColumnLengths = this.getTokenColumnLengths(tmpCurrentLine, tmpAminoAcidsColumnLengths);
+                // </editor-fold>
+            } else if (tmpIsSmilesSectionStart && 
+                !tmpIsSmilesSectionEnd && 
+                !tmpCurrentLine.trim().isEmpty() &&
+                !tmpCurrentLine.startsWith(ModelDefinitions.LINE_PREFIX_TO_IGNORE)
+            ) {
+                // <editor-fold defaultstate="collapsed" desc="Section SMILES">
+                tmpSmilesColumnLengths = this.getTokenColumnLengths(tmpCurrentLine, tmpSmilesColumnLengths);
+                // </editor-fold>
+            }
+        }
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Format sections">
+        // Rewind
+        tmpIsParticleDescriptionSectionStart = false;
+        tmpIsParticleDescriptionsSectionEnd = false;
+        tmpIsParticleInteractionsSectionStart = false;
+        tmpIsParticleInteractionsSectionEnd = false;
+        tmpIsAminoAcidsSectionStart = false;
+        tmpIsAminoAcidsSectionEnd = false;
+        tmpIsSmilesSectionStart = false;
+        tmpIsSmilesSectionEnd = false;
+        for (String tmpCurrentLine : aParticleSetFileLineList) {
+            // <editor-fold defaultstate="collapsed" desc="Section detection">
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleDescriptionStartLine)) {
+                tmpIsParticleDescriptionSectionStart = true;
+                tmpFormattedParticleSetFileLineList.add(tmpCurrentLine);
+                continue;
+            }
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleDescriptionEndLine)) {
+                tmpIsParticleDescriptionsSectionEnd = true;
+                tmpFormattedParticleSetFileLineList.add(tmpCurrentLine);
+                continue;
+            }
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleInteractionsStartLine)) {
+                tmpIsParticleInteractionsSectionStart = true;
+                tmpFormattedParticleSetFileLineList.add(tmpCurrentLine);
+                continue;
+            }
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleInteractionsEndLine)) {
+                tmpIsParticleInteractionsSectionEnd = true;
+                tmpFormattedParticleSetFileLineList.add(tmpCurrentLine);
+                continue;
+            }
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpAminoAcidsStartLine)) {
+                tmpIsAminoAcidsSectionStart = true;
+                tmpFormattedParticleSetFileLineList.add(tmpCurrentLine);
+                continue;
+            }
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpAminoAcidsEndLine)) {
+                tmpIsAminoAcidsSectionEnd = true;
+                tmpFormattedParticleSetFileLineList.add(tmpCurrentLine);
+                continue;
+            }
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpSmilesStartLine)) {
+                tmpIsSmilesSectionStart = true;
+                tmpFormattedParticleSetFileLineList.add(tmpCurrentLine);
+                continue;
+            }
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpSmilesEndLine)) {
+                tmpIsSmilesSectionEnd = true;
+                tmpFormattedParticleSetFileLineList.add(tmpCurrentLine);
+                continue;
+            }
+            // </editor-fold>
+            if (tmpIsParticleDescriptionSectionStart && 
+                !tmpIsParticleDescriptionsSectionEnd && 
+                !tmpCurrentLine.trim().isEmpty() &&
+                !tmpCurrentLine.startsWith(ModelDefinitions.LINE_PREFIX_TO_IGNORE)
+            ) {
+                // <editor-fold defaultstate="collapsed" desc="Section particle description">
+                tmpFormattedParticleSetFileLineList.add(this.getFormattedLine(tmpCurrentLine, tmpParticleDescriptionsColumnLengths));
+                // </editor-fold>
+            } else if (tmpIsParticleInteractionsSectionStart && 
+                !tmpIsParticleInteractionsSectionEnd && 
+                !tmpCurrentLine.trim().isEmpty() &&
+                !tmpCurrentLine.startsWith(ModelDefinitions.LINE_PREFIX_TO_IGNORE)
+            ) {
+                // <editor-fold defaultstate="collapsed" desc="Section particle interaction">
+                tmpFormattedParticleSetFileLineList.add(this.getFormattedLine(tmpCurrentLine, tmpParticleInteractionsColumnLengths));
+                // </editor-fold>
+            } else if (tmpIsAminoAcidsSectionStart && 
+                !tmpIsAminoAcidsSectionEnd && 
+                !tmpCurrentLine.trim().isEmpty() &&
+                !tmpCurrentLine.startsWith(ModelDefinitions.LINE_PREFIX_TO_IGNORE)
+            ) {
+                // <editor-fold defaultstate="collapsed" desc="Section amino acids">
+                tmpFormattedParticleSetFileLineList.add(this.getFormattedLine(tmpCurrentLine, tmpAminoAcidsColumnLengths));
+                // </editor-fold>
+            } else if (tmpIsSmilesSectionStart && 
+                !tmpIsSmilesSectionEnd && 
+                !tmpCurrentLine.trim().isEmpty() &&
+                !tmpCurrentLine.startsWith(ModelDefinitions.LINE_PREFIX_TO_IGNORE)
+            ) {
+                // <editor-fold defaultstate="collapsed" desc="Section SMILES">
+                tmpFormattedParticleSetFileLineList.add(this.getFormattedLine(tmpCurrentLine, tmpSmilesColumnLengths));
+                // </editor-fold>
+            } else {
+                tmpFormattedParticleSetFileLineList.add(tmpCurrentLine);
+            }
+        }
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Sort sections">
+        // Rewind
+        tmpIsParticleDescriptionSectionStart = false;
+        tmpIsParticleDescriptionsSectionEnd = false;
+        tmpIsParticleInteractionsSectionStart = false;
+        tmpIsParticleInteractionsSectionEnd = false;
+        tmpIsAminoAcidsSectionStart = false;
+        tmpIsAminoAcidsSectionEnd = false;
+        tmpIsSmilesSectionStart = false;
+        tmpIsSmilesSectionEnd = false;
+        LinkedList<String> tmpLineListForSorting = new LinkedList<>();
+        for (String tmpCurrentLine : tmpFormattedParticleSetFileLineList) {
+            // <editor-fold defaultstate="collapsed" desc="Section detection">
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleDescriptionStartLine)) {
+                tmpIsParticleDescriptionSectionStart = true;
+                tmpSortedParticleSetFileLineList.add(tmpCurrentLine);
+                tmpLineListForSorting.clear();
+                continue;
+            }
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleDescriptionEndLine)) {
+                tmpIsParticleDescriptionsSectionEnd = true;
+                Collections.sort(tmpLineListForSorting);
+                for (String tmpLine : tmpLineListForSorting) {
+                    tmpSortedParticleSetFileLineList.add(tmpLine);
+                }
+                tmpSortedParticleSetFileLineList.add(tmpCurrentLine);
+                continue;
+            }
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleInteractionsStartLine)) {
+                tmpIsParticleInteractionsSectionStart = true;
+                tmpSortedParticleSetFileLineList.add(tmpCurrentLine);
+                tmpLineListForSorting.clear();
+                continue;
+            }
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleInteractionsEndLine)) {
+                tmpIsParticleInteractionsSectionEnd = true;
+                Collections.sort(tmpLineListForSorting);
+                for (String tmpLine : tmpLineListForSorting) {
+                    tmpSortedParticleSetFileLineList.add(tmpLine);
+                }
+                tmpSortedParticleSetFileLineList.add(tmpCurrentLine);
+                continue;
+            }
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpAminoAcidsStartLine)) {
+                tmpIsAminoAcidsSectionStart = true;
+                tmpSortedParticleSetFileLineList.add(tmpCurrentLine);
+                tmpLineListForSorting.clear();
+                continue;
+            }
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpAminoAcidsEndLine)) {
+                tmpIsAminoAcidsSectionEnd = true;
+                Collections.sort(tmpLineListForSorting);
+                for (String tmpLine : tmpLineListForSorting) {
+                    tmpSortedParticleSetFileLineList.add(tmpLine);
+                }
+                tmpSortedParticleSetFileLineList.add(tmpCurrentLine);
+                continue;
+            }
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpSmilesStartLine)) {
+                tmpIsSmilesSectionStart = true;
+                tmpSortedParticleSetFileLineList.add(tmpCurrentLine);
+                tmpLineListForSorting.clear();
+                continue;
+            }
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpSmilesEndLine)) {
+                tmpIsSmilesSectionEnd = true;
+                Collections.sort(tmpLineListForSorting);
+                for (String tmpLine : tmpLineListForSorting) {
+                    tmpSortedParticleSetFileLineList.add(tmpLine);
+                }
+                tmpSortedParticleSetFileLineList.add(tmpCurrentLine);
+                continue;
+            }
+            // </editor-fold>
+            if (tmpIsParticleDescriptionSectionStart && 
+                !tmpIsParticleDescriptionsSectionEnd && 
+                !tmpCurrentLine.trim().isEmpty() &&
+                !tmpCurrentLine.startsWith(ModelDefinitions.LINE_PREFIX_TO_IGNORE)
+            ) {
+                // <editor-fold defaultstate="collapsed" desc="Section particle description">
+                tmpLineListForSorting.add(tmpCurrentLine);
+                // </editor-fold>
+            } else if (tmpIsParticleInteractionsSectionStart && 
+                !tmpIsParticleInteractionsSectionEnd && 
+                !tmpCurrentLine.trim().isEmpty() &&
+                !tmpCurrentLine.startsWith(ModelDefinitions.LINE_PREFIX_TO_IGNORE)
+            ) {
+                // <editor-fold defaultstate="collapsed" desc="Section particle interaction">
+                String tmpFirstToken = this.stringUtilityMethods.getFirstToken(tmpCurrentLine);
+                // NOTE: 1. line starting with "Pair  <Temperature 1>  <Temperature 2> ..."
+                //       has to be omitted
+                if (tmpFirstToken.equals("Pair")) {
+                    tmpSortedParticleSetFileLineList.add(tmpCurrentLine);
+                } else {
+                    tmpLineListForSorting.add(tmpCurrentLine);
+                }
+                // </editor-fold>
+            } else if (tmpIsAminoAcidsSectionStart && 
+                !tmpIsAminoAcidsSectionEnd && 
+                !tmpCurrentLine.trim().isEmpty() &&
+                !tmpCurrentLine.startsWith(ModelDefinitions.LINE_PREFIX_TO_IGNORE)
+            ) {
+                // <editor-fold defaultstate="collapsed" desc="Section amino acids">
+                tmpLineListForSorting.add(tmpCurrentLine);
+                // </editor-fold>
+            } else if (tmpIsSmilesSectionStart && 
+                !tmpIsSmilesSectionEnd && 
+                !tmpCurrentLine.trim().isEmpty() &&
+                !tmpCurrentLine.startsWith(ModelDefinitions.LINE_PREFIX_TO_IGNORE)
+            ) {
+                // <editor-fold defaultstate="collapsed" desc="Section SMILES">
+                tmpLineListForSorting.add(tmpCurrentLine);
+                // </editor-fold>
+            } else {
+                tmpSortedParticleSetFileLineList.add(tmpCurrentLine);
+            }
+        }
+        // </editor-fold>
+        return tmpSortedParticleSetFileLineList;
+    }
+    
+    /**
+     * Sets column lengths for tokens in aLine
+     * 
+     * @param aLine Line with tokens (not allowed to be null)
+     * @param aColumnLengths Lengths of token columns (may be null)
+     * @return Array with updated token column lengths
+     */
+    private int[] getTokenColumnLengths(
+        String aLine, 
+        int[]aColumnLengths
+    ) {
+        // No checks are performed
+        String[] tmpTokens = this.stringUtilityMethods.splitAndTrim(aLine);
+        if (aColumnLengths == null || aColumnLengths.length == 0) {
+            aColumnLengths = new int[tmpTokens.length];
+        }
+        for (int i = 0; i < tmpTokens.length; i++) {
+            if (aColumnLengths[i] < tmpTokens[i].length()) {
+                aColumnLengths[i] = tmpTokens[i].length();
+            }
+        }
+        return aColumnLengths;
+    }
+
+    /**
+     * Formats tokens of aLine according to column lengths
+     * 
+     * @param aLine Line with tokens (not allowed to be null)
+     * @param aColumnLengths Lengths of token columns (not allowed to be null)
+     * @return Formatted line with 1 space character for separation
+     */
+    private String getFormattedLine(
+        String aLine, 
+        int[]aColumnLengths
+    ) {
+        // No checks are performed
+        int tmpNumberOfSeparationSpaces = 2;
+        String[] tmpTokens = this.stringUtilityMethods.splitAndTrim(aLine);
+        // Capacity = Tokens + 1 space
+        StringBuilder tmpBuffer = new StringBuilder(aLine.length() + tmpTokens.length);
+        
+        if (tmpTokens.length == 1) {
+            return tmpTokens[0];
+        } else if (tmpTokens.length == 2) {
+            tmpBuffer.append(tmpTokens[0]);
+            tmpBuffer.append(" ".repeat(aColumnLengths[0] + tmpNumberOfSeparationSpaces - tmpTokens[0].length()));
+            if (this.stringUtilityMethods.isNumeric(tmpTokens[1])) {
+                tmpBuffer.append(" ".repeat(aColumnLengths[1] - tmpTokens[1].length()));
+                tmpBuffer.append(tmpTokens[1]);
+            } else {
+                tmpBuffer.append(tmpTokens[1]);
+            }
+            return tmpBuffer.toString();
+        } else {
+            tmpBuffer.append(tmpTokens[0]);
+            tmpBuffer.append(" ".repeat(aColumnLengths[0] + tmpNumberOfSeparationSpaces - tmpTokens[0].length()));
+            for (int i = 1; i < tmpTokens.length - 1; i++) {
+                if (this.stringUtilityMethods.isNumeric(tmpTokens[i])) {
+                    tmpBuffer.append(" ".repeat(aColumnLengths[i] - tmpTokens[i].length()));
+                    tmpBuffer.append(tmpTokens[i]);
+                    tmpBuffer.append(" ".repeat(tmpNumberOfSeparationSpaces));
+                } else {
+                    tmpBuffer.append(tmpTokens[i]);
+                    tmpBuffer.append(" ".repeat(aColumnLengths[i] + tmpNumberOfSeparationSpaces - tmpTokens[i].length()));
+                }
+            }
+            if (this.stringUtilityMethods.isNumeric(tmpTokens[tmpTokens.length - 1])) {
+                tmpBuffer.append(" ".repeat(aColumnLengths[tmpTokens.length - 1] - tmpTokens[tmpTokens.length - 1].length()));
+                tmpBuffer.append(tmpTokens[tmpTokens.length - 1]);
+            } else {
+                tmpBuffer.append(tmpTokens[tmpTokens.length - 1]);
+            }
+        }
+        return tmpBuffer.toString();
     }
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- Scaling related operations">
@@ -2723,6 +3737,7 @@ public final class StandardParticleInteractionData {
         tmpNewParticleSetFileLineList.add("#");
         tmpNewParticleSetFileLineList.add("# - a(ij) shifted min = " + String.valueOf(tmpAijShiftedMin));
         tmpNewParticleSetFileLineList.add("# - a(ij) shifted max = " + String.valueOf(tmpAijShiftedMax));
+        tmpNewParticleSetFileLineList.add("#");
         for (int i = 0; i < tmpTemperatures.length; i++) {
             tmpNewParticleSetFileLineList.add("# Temperature         = " + String.valueOf(tmpTemperatures[i]));
             tmpNewParticleSetFileLineList.add("# - a(ii) old         = " + String.valueOf(tmpAiiOld[i]));

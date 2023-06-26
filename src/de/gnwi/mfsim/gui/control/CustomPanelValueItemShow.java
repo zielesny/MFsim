@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -42,110 +42,217 @@ import de.gnwi.mfsim.gui.preference.GuiDefinitions;
 public class CustomPanelValueItemShow extends JPanel {
 
     // <editor-fold defaultstate="collapsed" desc="Private class variables">
+    /**
+     * GUI element
+     */
     private JButton compartmentShowButton;
-
+    /**
+     * GUI element
+     */
     private JButton showBoxPropertiesButton;
-
+    /**
+     * GUI element
+     */
     private JComboBox selectSimulationBoxDisplayCompartmentComboBox;
-
+    /**
+     * GUI element
+     */
     private JComboBox selectSimulationBoxDisplayComboBox;
-
+    /**
+     * GUI element
+     */
     private JComboBox selectTimeStepDisplayComboBox;
-
+    /**
+     * GUI element
+     */
     private JButton copyMatrixDataButton;
-
+    /**
+     * GUI element
+     */
     private JPanel simulationBoxImageActionPanel;
-
+    /**
+     * GUI element
+     */
     private JPanel simulationBoxActionPanel;
-    
+    /**
+     * GUI element
+     */
     private JPanel simulationBoxActionPanelWest;
-    
+    /**
+     * GUI element
+     */
     private JPanel simulationBoxActionPanelEast;
-
+    /**
+     * GUI element
+     */
     private JButton viewButton;
-
+    /**
+     * GUI element
+     */
     private JButton slicerTimeStepPreferencesEditButton;
-
+    /**
+     * GUI element
+     */
     private CustomPanelImage simulationBoxImagePanel;
-
+    /**
+     * GUI element
+     */
     private JLabel simulationBoxNameInfoLabel;
-
+    /**
+     * GUI element
+     */
     private JLabel simulationBoxNameLabel;
-
+    /**
+     * GUI element
+     */
     private SpringLayout selectedFeatureSimulationBoxPanelSpringLayout;
-
+    /**
+     * GUI element
+     */
     private JPanel selectedFeatureSimulationBoxPanel;
-
+    /**
+     * GUI element
+     */
     private JPanel compartmentImageActionPanel;
-
+    /**
+     * GUI element
+     */
     private JPanel compartmentActionPanel;
-
+    /**
+     * GUI element
+     */
     private JButton compartmentViewButton;
-
+    /**
+     * GUI element
+     */
     private CustomPanelImage compartmentImagePanel;
-
+    /**
+     * GUI element
+     */
     private JLabel compartmentNameInfoLabel;
-
+    /**
+     * GUI element
+     */
     private JLabel compartmentNameLabel;
-
+    /**
+     * GUI element
+     */
     private SpringLayout selectedFeatureCompartmentPanelSpringLayout;
-
+    /**
+     * GUI element
+     */
     private JPanel selectedFeatureCompartmentPanel;
-
+    /**
+     * GUI element
+     */
     private CustomPanelDescription selectedFeatureDescriptionPanel;
-
+    /**
+     * GUI element
+     */
     private CustomPanelDescription selectedFeatureHintPanel;
-
+    /**
+     * GUI element
+     */
     private CustomPanelDescription selectedFeatureErrorPanel;
-
+    /**
+     * GUI element
+     */
     private CustomPanelValueItemMatrixShow selectedFeatureMatrixShowPanel;
-
+    /**
+     * GUI element
+     */
     private JButton matrixDiagramButton;
-
+    /**
+     * GUI element
+     */
     private JLabel matrixNameLabel;
-
+    /**
+     * GUI element
+     */
     private JLabel matrixNameInfoLabel;
-
+    /**
+     * GUI element
+     */
     private JLabel textNameLabel;
-
+    /**
+     * GUI element
+     */
     private JLabel textNameInfoLabel;
-
+    /**
+     * GUI element
+     */
     private SpringLayout selectedFeatureInfoPanelSpringLayout;
-
+    /**
+     * GUI element
+     */
     private JPanel selectedFeatureInfoPanel;
-
+    /**
+     * GUI element
+     */
     private JTabbedPane selectedFeatureTabbedPanel;
-
+    /**
+     * GUI element
+     */
     private SpringLayout springLayout;
-
+    /**
+     * GUI element
+     */
     private SpringLayout selectedFeatureMatrixPanelSpringLayout;
-
+    /**
+     * GUI element
+     */
     private JPanel selectedFeatureMatrixPanel;
-
+    /**
+     * GUI element
+     */
     private JLabel contentInfoLabel;
-
+    /**
+     * GUI element
+     */
     private JLabel contentLabel;
-
+    /**
+     * GUI element
+     */
     private SpringLayout selectedFeatureTextValuePanelSpringLayout;
-
+    /**
+     * GUI element
+     */
     private JPanel selectedFeatureTextValuePanel;
-
+    /**
+     * GUI element
+     */
     private JPanel selectedFeatureShowNothingPanel;
-
+    /**
+     * GUI element
+     */
     private JPanel selectedFeatureCardsPanel;
-
+    /**
+     * GUI element
+     */
     private JButton expandTreeButton;
-
+    /**
+     * GUI element
+     */
     private JButton collapseTreeButton;
-
+    /**
+     * GUI element
+     */
     private JPanel selectedFeaturePanel;
-
+    /**
+     * GUI element
+     */
     private JTree featureOverviewTree;
-
+    /**
+     * GUI element
+     */
     private JScrollPane featureOverviewTreeScrollPanel;
-
+    /**
+     * GUI element
+     */
     private SpringLayout featureOverviewPanelSpringLayout;
-
+    /**
+     * GUI element
+     */
     private JPanel featureOverviewPanel;
     // </editor-fold>
     //
@@ -309,6 +416,7 @@ public class CustomPanelValueItemShow extends JPanel {
                             {
                                 this.contentLabel = new JLabel();
                                 this.contentLabel.setInheritsPopupMenu(true);
+                                this.contentLabel.setToolTipText(GuiMessage.get("CustomPanelValueItemShow.contentLabel.toolTipText"));
                                 this.selectedFeatureTextValuePanel.add(this.contentLabel);
                                 this.selectedFeatureTextValuePanelSpringLayout.putConstraint(SpringLayout.EAST, this.contentLabel, -10, SpringLayout.EAST, this.selectedFeatureTextValuePanel);
                                 this.selectedFeatureTextValuePanelSpringLayout.putConstraint(SpringLayout.WEST, this.contentLabel, 60, SpringLayout.WEST, this.selectedFeatureTextValuePanel);
@@ -316,7 +424,6 @@ public class CustomPanelValueItemShow extends JPanel {
                                 this.selectedFeatureTextValuePanelSpringLayout.putConstraint(SpringLayout.NORTH, this.contentLabel, 50, SpringLayout.NORTH, this.selectedFeatureTextValuePanel);
                             }
                         }
-
                         // </editor-fold>
                         // <editor-fold defaultstate="collapsed" desc="selectedFeatureMatrixPanel">
                         {
@@ -574,7 +681,6 @@ public class CustomPanelValueItemShow extends JPanel {
 
                         // </editor-fold>
                     }
-
                     // </editor-fold>
                     // <editor-fold defaultstate="collapsed" desc="selectedFeatureDescriptionPanel">
                     {

@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -28,11 +28,8 @@ import java.util.zip.Inflater;
 import java.util.Base64;
 import java.util.UUID;
 import de.gnwi.mfsim.model.preference.ModelDefinitions;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.LinkedList;
+import java.util.regex.Pattern;
 
 /**
  * String utility methods to be instantiated
@@ -46,6 +43,11 @@ public class StringUtilityMethods {
      * Decimal format for double numbers without decimals
      */
     private final DecimalFormat formatOfNumericValueWithoutDecimals = new DecimalFormat("#0");
+    
+    /**
+     * Pattern for strings that represent numeric values
+     */
+    private final Pattern numericPattern = Pattern.compile("-?\\d+(\\.\\d+)?");
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Constructor">
@@ -325,6 +327,20 @@ public class StringUtilityMethods {
             }
         } else {
             Arrays.sort(aStringArray);
+        }
+    }
+    
+    /**
+     * Returns if a string represents a numeric value
+     * 
+     * @param aNumberRepresentation String representation (may be null or empty)
+     * @return True: String representation is a numeric value, false: Otherwise
+     */
+    public boolean isNumeric(String aNumberRepresentation) {
+        if (aNumberRepresentation == null || aNumberRepresentation.isEmpty()) {
+            return false;
+        } else {
+            return this.numericPattern.matcher(aNumberRepresentation).matches();
         }
     }
     // </editor-fold>

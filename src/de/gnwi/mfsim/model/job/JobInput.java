@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2022  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -27,6 +27,7 @@ import de.gnwi.mfsim.model.util.StringUtilityMethods;
 import de.gnwi.mfsim.model.preference.Preferences;
 import de.gnwi.mfsim.model.util.FileUtilityMethods;
 import de.gnwi.mfsim.model.valueItem.ValueItemContainer;
+import de.gnwi.mfsim.model.valueItem.ValueItem;
 import java.io.File;
 import java.io.StringReader;
 import org.jdom2.Document;
@@ -402,6 +403,17 @@ public class JobInput implements Comparable<JobInput> {
             return null;
         } else {
             return tmpAllMFsimVersionTokens[tmpAllMFsimVersionTokens.length - 1];
+        }
+    }
+    
+    /**
+     * Updates MFsim version of this job input
+     */
+    public void updateMFsimApplicationVersion() {
+        this.mfSimVersionInformationOfJobInput = ModelDefinitions.APPLICATION_VERSION;
+        ValueItem tmpApplicationVersionValueItem = this.valueItemContainer.getValueItem("ApplicationVersion");
+        if(tmpApplicationVersionValueItem != null) {
+            tmpApplicationVersionValueItem.setValue(String.format(ModelMessage.get("ApplicationVersionFormat"), ModelDefinitions.APPLICATION_VERSION));
         }
     }
     // </editor-fold>
