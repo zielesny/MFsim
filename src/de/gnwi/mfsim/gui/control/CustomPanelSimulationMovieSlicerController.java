@@ -881,6 +881,7 @@ public class CustomPanelSimulationMovieSlicerController extends ChangeNotifier i
      *
      * @param e PropertyChangeEvent
      */
+    @Override
     public void propertyChange(PropertyChangeEvent e) {
         if (!this.isKilled) {
             try {
@@ -888,21 +889,34 @@ public class CustomPanelSimulationMovieSlicerController extends ChangeNotifier i
                 if (e.getPropertyName().equals(ModelDefinitions.PROPERTY_CHANGE_PROGRESS)) {
                     int tmpProgressValue = (Integer) e.getNewValue();
                     if (tmpProgressValue == 100) {
-                        SimulationBoxViewSingleTimeStepSlice tmpSimulationBoxViewSingleTimeStepSlice = (SimulationBoxViewSingleTimeStepSlice) e.getSource();
-                        if (!this.slicerIdentification.containsKey(tmpSimulationBoxViewSingleTimeStepSlice.getGloballyUniqueID())) {
-                            this.slicerIdentification.put(tmpSimulationBoxViewSingleTimeStepSlice.getGloballyUniqueID(), tmpSimulationBoxViewSingleTimeStepSlice.getGloballyUniqueID());
+                        SimulationBoxViewSingleTimeStepSlice tmpSimulationBoxViewSingleTimeStepSlice = 
+                            (SimulationBoxViewSingleTimeStepSlice) e.getSource();
+                        if (!this.slicerIdentification.containsKey(
+                                tmpSimulationBoxViewSingleTimeStepSlice.getGloballyUniqueID()
+                            )
+                        ) {
+                            this.slicerIdentification.put(
+                                tmpSimulationBoxViewSingleTimeStepSlice.getGloballyUniqueID(), 
+                                tmpSimulationBoxViewSingleTimeStepSlice.getGloballyUniqueID()
+                            );
                             // Set this.enlargedBoxSizeInfo
                             if (this.enlargedBoxSizeInfo == null) {
                                 this.enlargedBoxSizeInfo = tmpSimulationBoxViewSingleTimeStepSlice.getBoxSizeInfo();
                             }
                             // Set simulation step info
                             TimeStepInfo tmpTimeStepInfo = tmpSimulationBoxViewSingleTimeStepSlice.getTimeStepInfo();
-                            TimeStepInfo[] tmpTimeStepInfoArray = this.simulationBoxViewToTimeStepInfoMap.get(tmpTimeStepInfo.getBoxView());
-                            tmpTimeStepInfoArray[tmpTimeStepInfo.getBoxViewIndex()] = tmpTimeStepInfo;
+                            TimeStepInfo[] tmpTimeStepInfoArray = 
+                                this.simulationBoxViewToTimeStepInfoMap.get(tmpTimeStepInfo.getBoxView());
+                            // Note: It sometimes happens (why?) that tmpTimeStepInfoArray is null, thus: Check!
+                            if (tmpTimeStepInfoArray != null) {
+                                tmpTimeStepInfoArray[tmpTimeStepInfo.getBoxViewIndex()] = tmpTimeStepInfo;
+                            }
                             // IMPORTANT: Remove property change listener of tmpSimulationBoxViewSingleTimeStepSlice ...
                             tmpSimulationBoxViewSingleTimeStepSlice.removePropertyChangeListener(this);
                             // ... and remove from this.startedSimulationBoxViewSingleTimeStepSliceList
-                            this.startedSimulationBoxViewSingleTimeStepSliceList.remove(tmpSimulationBoxViewSingleTimeStepSlice);
+                            this.startedSimulationBoxViewSingleTimeStepSliceList.remove(
+                                tmpSimulationBoxViewSingleTimeStepSlice
+                            );
                             // Update display
                             if (tmpTimeStepInfo.getBoxViewIndex() > this.lastIntermediateImageIndex) {
                                 this.lastIntermediateImageIndex = tmpTimeStepInfo.getBoxViewIndex();
@@ -1127,7 +1141,6 @@ public class CustomPanelSimulationMovieSlicerController extends ChangeNotifier i
         // Parameter false: No backwards images
         GuiUtils.createMovieImages(this, false, Preferences.getInstance().getImageDirectoryPathForSimulationMovies());
     }
-
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="- Animation related methods">
@@ -1316,7 +1329,6 @@ public class CustomPanelSimulationMovieSlicerController extends ChangeNotifier i
                 break;
         }
     }
-
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="- Slicer related methods">

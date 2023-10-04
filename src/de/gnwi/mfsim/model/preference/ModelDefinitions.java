@@ -44,7 +44,7 @@ public interface ModelDefinitions {
     /**
      * Version of application. NOTE: MUST match version pattern below!
      */
-    String APPLICATION_VERSION = "2.6.0.0";
+    String APPLICATION_VERSION = "2.6.1.0";
 
     /**
      * Minimum job input application version. NOTE: MUST match version pattern below!

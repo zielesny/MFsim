@@ -20,6 +20,7 @@
 package de.gnwi.mfsim.model.particle;
 
 import de.gnwi.jdpd.utilities.FileOutputStrings;
+import de.gnwi.jdpd.utilities.Utils;
 import de.gnwi.mfsim.model.valueItem.ValueItemDataTypeFormat;
 import de.gnwi.mfsim.model.valueItem.ValueItemContainer;
 import de.gnwi.mfsim.model.valueItem.ValueItem;
@@ -1211,7 +1212,6 @@ public final class StandardParticleInteractionData {
         if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.size() == 0) {
             return false;
         }
-
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Remove particles">
         ValueItem tmpParticleRemoveMatrixValueItem = aParticlesValueItemContainerForRemove.getValueItem("PARTICLE_REMOVE_MATRIX");
@@ -1716,39 +1716,7 @@ public final class StandardParticleInteractionData {
         }
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Increment protein backbone probe particles">
-        String[] tmpCurrentProteinBackboneProbeParticleArray = this.getAllSortedProteinBackboneProbeParticles();
-        if (tmpCurrentProteinBackboneProbeParticleArray == null) {
-            return false;
-        }
-        HashMap<String, String> tmpCurrentIncrementProbeParticleMap = new HashMap<>(tmpCurrentProteinBackboneProbeParticleArray.length);
-        for (String tmpCurrentProteinBackboneProbeParticle : tmpCurrentProteinBackboneProbeParticleArray) {
-            Matcher tmpProteinBackboneProbeParticleMatcher = 
-                ModelDefinitions.PARTICLE_PROTEIN_BACKBONE_PROBE_NUMBER_CAPTURING_PATTERN.matcher(tmpCurrentProteinBackboneProbeParticle);
-            if (tmpProteinBackboneProbeParticleMatcher.matches()) {
-                String tmpParticlePart = tmpProteinBackboneProbeParticleMatcher.group(1);
-                String tmpPD = tmpProteinBackboneProbeParticleMatcher.group(2);
-                String tmpNumberString = tmpProteinBackboneProbeParticleMatcher.group(3);
-                String tmpIncrementedNumberString = String.valueOf(Integer.valueOf(tmpNumberString) + 1);
-                String tmpIncrementedProteinBackboneProbeParticle = tmpParticlePart + tmpPD + tmpIncrementedNumberString;
-                if (tmpIncrementedProteinBackboneProbeParticle.matches(ModelDefinitions.PARTICLE_REGEX_PATTERN_STRING) && !this.hasParticle(tmpIncrementedProteinBackboneProbeParticle)) {
-                    tmpCurrentIncrementProbeParticleMap.put(tmpCurrentProteinBackboneProbeParticle, tmpIncrementedProteinBackboneProbeParticle);
-                }
-            }
-        }
-        if (tmpCurrentIncrementProbeParticleMap.isEmpty()) {
-            return false;
-        }
-        for (String tmpCurrentProteinBackboneProbeParticle : tmpCurrentIncrementProbeParticleMap.keySet()) {
-            String tmpIncrementedProteinBackboneProbeParticle = tmpCurrentIncrementProbeParticleMap.get(tmpCurrentProteinBackboneProbeParticle);
-            // Use color of current protein backbone probe particle
-            String tmpIncrementedProteinBackboneProbeParticleColor = null;
-            tmpParticleSetFileLineList = this.duplicateSingleParticle(
-                tmpParticleSetFileLineList, 
-                tmpCurrentProteinBackboneProbeParticle, 
-                tmpIncrementedProteinBackboneProbeParticle, 
-                tmpIncrementedProteinBackboneProbeParticleColor
-            );
-        }
+        tmpParticleSetFileLineList = this.incrementProbeParticles(tmpParticleSetFileLineList);
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Save particle set file">
         ValueItem tmpParticleSetFilenameValueItem = aValueItemContainerForProbeParticleIncrement.getValueItem("PARTICLE_SET_FILE_NAME");
@@ -2034,10 +2002,482 @@ public final class StandardParticleInteractionData {
         return this.hasChanged;
     }
     // </editor-fold>
+    // <editor-fold defaultstate="collapsed" desc="- Script for particle transformation related methods">
+    /**
+     * Runs script for particle set transformation
+     * 
+     * @param aScriptFilepathname Filepathname of script to be run
+     * @return Error string due to script run or empty string if script was run 
+     * successfully
+     */
+    public String runScript(String aScriptFilepathname) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aScriptFilepathname == null || 
+            aScriptFilepathname.isEmpty() || 
+            !(new File(aScriptFilepathname)).isFile()
+        ) {
+            return "runScript: aScriptFilepathname is invalid";
+        }
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Read commands of script file">
+        String[][] tmpCommandItems = null;
+        try {
+        tmpCommandItems = 
+            this.fileUtilityMethods.readJaggedStringArrayFromFile(
+                aScriptFilepathname,
+                ModelDefinitions.LINE_PREFIX_TO_IGNORE
+            );
+            if (tmpCommandItems == null) {
+                return "runScript: Command items were null.";
+            }
+            if (tmpCommandItems.length == 0) {
+                return "runScript: Length of command items were 0.";
+            }
+        } catch (Exception anException) {
+            return "runScript: Command items of script file could not be read. Exception: " + anException.toString();
+        }
+        // </editor-fold>
+
+        // Interpreter loop
+        LinkedList<String> tmpParticleSetFileLineList = null;
+        for (int i = 0; i < tmpCommandItems.length; i++) {
+            // <editor-fold defaultstate="collapsed" desc="LOAD">
+            try {
+                if (tmpCommandItems[i][0].equals("LOAD")) {
+                    String tmpParticleSetName = tmpCommandItems[i][1];
+                    String tmpParticleSetFilePathname = 
+                        (new File(aScriptFilepathname)).getParent() + File.separatorChar + tmpParticleSetName;
+                    if (!(new File(tmpParticleSetFilePathname)).isFile()) {
+                        return "runScript: Command LOAD: Particle set file could not be found.";
+                    }
+                    tmpParticleSetFileLineList = 
+                        this.fileUtilityMethods.readStringListFromFile(
+                            tmpParticleSetFilePathname, 
+                            null
+                        );
+                    tmpParticleSetFileLineList.addFirst(
+                        "# " +
+                        tmpCommandItems[i][0] + " " +
+                        tmpCommandItems[i][1]
+                    );
+                }
+            } catch (Exception anException) {
+                return "runScript: Command LOAD could not be run. Exception: " + anException.toString();
+            }
+            // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="DUPLICATE">
+            try {
+                if (tmpCommandItems[i][0].equals("DUPLICATE")) {
+                    if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
+                        return "runScript: Command DUPLICATE: There is no particle set defined.";
+                    }
+                    // DUPLICATE <old particle> <new particle> <new particle color>
+                    String tmpOldParticle = tmpCommandItems[i][1];
+                    String tmpNewParticle = tmpCommandItems[i][2];
+                    String tmpNewParticleColor = tmpCommandItems[i][3];
+                    tmpParticleSetFileLineList = 
+                        this.duplicateSingleParticle(
+                            tmpParticleSetFileLineList, 
+                            tmpOldParticle, 
+                            tmpNewParticle, 
+                            tmpNewParticleColor
+                        );
+                    if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
+                        return "runScript: Command DUPLICATE: Particle set was destroyed. This should never happen.";
+                    }
+                    tmpParticleSetFileLineList.addFirst(
+                        "# " +
+                        tmpCommandItems[i][0] + " " +
+                        tmpCommandItems[i][1] + " " +
+                        tmpCommandItems[i][2] + " " +
+                        tmpCommandItems[i][3]
+                    );
+                }
+            } catch (Exception anException) {
+                return "runScript: Command DUPLICATE could not be run. Exception: " + anException.toString();
+            }
+            // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="DUPLICATE_WITH_CHARGE_CHANGE">
+            try {
+                if (tmpCommandItems[i][0].equals("DUPLICATE_WITH_CHARGE_CHANGE")) {
+                    if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
+                        return "runScript: Command DUPLICATE_WITH_CHARGE_CHANGE: There is no particle set defined.";
+                    }
+                    // DUPLICATE_WITH_CHARGE_CHANGE <old particle> <new particle> <new charge> <repulsion correction> <new particle color>
+                    String tmpOldParticle = tmpCommandItems[i][1];
+                    String tmpNewParticle = tmpCommandItems[i][2];
+                    String tmpNewCharge = tmpCommandItems[i][3];
+                    double tmpRepulsionCorrectionFactor = Double.valueOf(tmpCommandItems[i][4]);
+                    String tmpNewParticleColor = tmpCommandItems[i][5];
+                    tmpParticleSetFileLineList = 
+                        this.duplicateSingleParticle(
+                            tmpParticleSetFileLineList, 
+                            tmpOldParticle, 
+                            tmpNewParticle, 
+                            tmpNewCharge,
+                            tmpRepulsionCorrectionFactor,
+                            tmpNewParticleColor
+                        );
+                    if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
+                        return "runScript: Command DUPLICATE_WITH_CHARGE_CHANGE: Particle set was destroyed. This should never happen.";
+                    }
+                    tmpParticleSetFileLineList.addFirst(
+                        "# " +
+                        tmpCommandItems[i][0] + " " +
+                        tmpCommandItems[i][1] + " " +
+                        tmpCommandItems[i][2] + " " +
+                        tmpCommandItems[i][3] + " " +
+                        tmpCommandItems[i][4] + " " +
+                        tmpCommandItems[i][5]
+                    );
+                }
+            } catch (Exception anException) {
+                return "runScript: Command DUPLICATE_WITH_CHARGE_CHANGE could not be run. Exception: " + anException.toString();
+            }
+            // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="SET_PARTICLE">
+            try {
+                if (tmpCommandItems[i][0].equals("SET_PARTICLE")) {
+                    if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
+                        return "runScript: Command SET_PARTICLE: There is no particle set defined.";
+                    }
+                    // SET_PARTICLE <particle> <new name> <new DPD mass> 
+                    //              <new charge> <new mass in g/mol> 
+                    //              <new volume in A^3> <new graphics radius> 
+                    //              <new color>
+                    String tmpParticle = tmpCommandItems[i][1];
+                    String tmpNewName = tmpCommandItems[i][2];
+                    String tmpNewDpdMass = tmpCommandItems[i][3];
+                    String tmpNewCharge = tmpCommandItems[i][4];
+                    String tmpNewMassInGmol = tmpCommandItems[i][5];
+                    String tmpNewVolumeInA3 = tmpCommandItems[i][6];
+                    String tmpNewGraphicsRadius = tmpCommandItems[i][7];
+                    String tmpNewColor = tmpCommandItems[i][8];
+                    tmpParticleSetFileLineList = 
+                        this.setParticle(
+                            tmpParticleSetFileLineList,
+                            tmpParticle,
+                            tmpNewName,
+                            tmpNewDpdMass,
+                            tmpNewCharge,
+                            tmpNewMassInGmol,
+                            tmpNewVolumeInA3,
+                            tmpNewGraphicsRadius,
+                            tmpNewColor
+                        );
+                    if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
+                        return "runScript: Command SET_PARTICLE: Particle set was destroyed. This should never happen.";
+                    }
+                    tmpParticleSetFileLineList.addFirst(
+                        "# " +
+                        tmpCommandItems[i][0] + " " +
+                        tmpCommandItems[i][1] + " " +
+                        tmpCommandItems[i][2] + " " +
+                        tmpCommandItems[i][3] + " " +
+                        tmpCommandItems[i][4] + " " +
+                        tmpCommandItems[i][5] + " " +
+                        tmpCommandItems[i][6] + " " +
+                        tmpCommandItems[i][7] + " " +
+                        tmpCommandItems[i][8]
+                    );
+                }
+            } catch (Exception anException) {
+                return "runScript: Command SET_PARTICLE could not be run. Exception: " + anException.toString();
+            }
+            // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="REMOVE">
+            try {
+                if (tmpCommandItems[i][0].equals("REMOVE")) {
+                    if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
+                        return "runScript: Command REMOVE: There is no particle set defined.";
+                    }
+                    String tmpParticleToBeRemoved = tmpCommandItems[i][1];
+                    tmpParticleSetFileLineList = 
+                        this.removeParticle(
+                            tmpParticleSetFileLineList, 
+                            tmpParticleToBeRemoved
+                        );
+                    if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
+                        return "runScript: Command REMOVE: Particle set was destroyed. This should never happen.";
+                    }
+                    tmpParticleSetFileLineList.addFirst(
+                        "# " +
+                        tmpCommandItems[i][0] + " " +
+                        tmpCommandItems[i][1]
+                    );
+                }
+            } catch (Exception anException) {
+                return "runScript: Command REMOVE could not be run. Exception: " + anException.toString();
+            }
+            // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="MORPH">
+            try {
+                if (tmpCommandItems[i][0].equals("MORPH")) {
+                    if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
+                        return "runScript: Command MORPH: There is no particle set defined.";
+                    }
+                    String tmpSourceParticle = tmpCommandItems[i][1];
+                    String tmpTargetParticle = tmpCommandItems[i][2];
+                    double tmpPercentage = Double.valueOf(tmpCommandItems[i][3]);
+                    tmpParticleSetFileLineList = 
+                        this.morphParticle(
+                            tmpParticleSetFileLineList, 
+                            tmpSourceParticle,
+                            tmpTargetParticle,
+                            tmpPercentage
+                        );
+                    if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
+                        return "runScript: Command MORPH: Particle set was destroyed. This should never happen.";
+                    }
+                    tmpParticleSetFileLineList.addFirst(
+                        "# " +
+                        tmpCommandItems[i][0] + " " +
+                        tmpCommandItems[i][1] + " " +
+                        tmpCommandItems[i][2] + " " +
+                        tmpCommandItems[i][3]
+                    );
+                }
+            } catch (Exception anException) {
+                return "runScript: Command MORPH could not be run. Exception: " + anException.toString();
+            }
+            // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="INCREMENT_PD">
+            try {
+                if (tmpCommandItems[i][0].equals("INCREMENT_PD")) {
+                    if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
+                        return "runScript: Command INCREMENT_PD: There is no particle set defined.";
+                    }
+                    tmpParticleSetFileLineList = this.incrementProbeParticles(tmpParticleSetFileLineList);
+                    if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
+                        return "runScript: Command INCREMENT_PD: Particle set was destroyed. This should never happen.";
+                    }
+                    tmpParticleSetFileLineList.addFirst(
+                        "# " +
+                        tmpCommandItems[i][0]
+                    );
+                }
+            } catch (Exception anException) {
+                return "runScript: Command INCREMENT_PD could not be run. Exception: " + anException.toString();
+            }
+            // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="BACKBONE_REPULSION">
+            try {
+                if (tmpCommandItems[i][0].equals("BACKBONE_REPULSION")) {
+                    if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
+                        return "runScript: Command BACKBONE_REPULSION: There is no particle set defined.";
+                    }
+                    double tmpOffset = Double.valueOf(tmpCommandItems[i][1]);
+                    tmpParticleSetFileLineList = this.getParticleSetWithBackboneRepulsions(
+                        tmpParticleSetFileLineList,
+                        tmpOffset
+                        );
+                    if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
+                        return "runScript: Command BACKBONE_REPULSION: Particle set was destroyed. This should never happen.";
+                    }
+                    tmpParticleSetFileLineList.addFirst(
+                        "# " +
+                        tmpCommandItems[i][0] + " " +
+                        tmpCommandItems[i][1]
+                    );
+                }
+            } catch (Exception anException) {
+                return "runScript: Command BACKBONE_REPULSION could not be run. Exception: " + anException.toString();
+            }
+            // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="RESCALE_TO_NEW_VMIN">
+            try {
+                if (tmpCommandItems[i][0].equals("RESCALE_TO_NEW_VMIN")) {
+                    if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
+                        return "runScript: Command RESCALE_TO_NEW_VMIN: There is no particle set defined.";
+                    }
+                    double tmpNewVmin = Double.valueOf(tmpCommandItems[i][1]);
+                    tmpParticleSetFileLineList = this.scaleToNewVmin(tmpParticleSetFileLineList, tmpNewVmin);
+                    if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
+                        return "runScript: Command RESCALE_TO_NEW_VMIN: Particle set was destroyed. This should never happen.";
+                    }
+                    tmpParticleSetFileLineList.addFirst(
+                        "# " +
+                        tmpCommandItems[i][0] + " " +
+                        tmpCommandItems[i][1]
+                    );
+                }
+            } catch (Exception anException) {
+                return "runScript: Command RESCALE_TO_NEW_VMIN could not be run. Exception: " + anException.toString();
+            }
+            // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="RESCALE_REPULSIONS_INDIVIDUAL">
+            try {
+                if (tmpCommandItems[i][0].equals("RESCALE_REPULSIONS_INDIVIDUAL")) {
+                    if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
+                        return "runScript: Command RESCALE_REPULSIONS_INDIVIDUAL: There is no particle set defined.";
+                    }
+                    double tmpTempFactor = Double.valueOf(tmpCommandItems[i][1]);
+                    double tmpLowerRepulsionRange = Double.valueOf(tmpCommandItems[i][2]);
+                    double tmpChargeOffset = Double.valueOf(tmpCommandItems[i][3]);
+                    tmpParticleSetFileLineList = 
+                        this.rescaleRepulsionsWithIndividualScalingFactors(
+                            tmpParticleSetFileLineList, 
+                            tmpTempFactor, 
+                            tmpLowerRepulsionRange, 
+                            tmpChargeOffset
+                        );
+                    if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
+                        return "runScript: Command RESCALE_REPULSIONS_INDIVIDUAL: Particle set was destroyed. This should never happen.";
+                    }
+                    tmpParticleSetFileLineList.addFirst(
+                        "# " +
+                        tmpCommandItems[i][0] + " " +
+                        tmpCommandItems[i][1] + " " +
+                        tmpCommandItems[i][2] + " " +
+                        tmpCommandItems[i][3]
+                    );
+                }
+            } catch (Exception anException) {
+                return "runScript: Command RESCALE_REPULSIONS_INDIVIDUAL could not be run. Exception: " + anException.toString();
+            }
+            // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="RESCALE_REPULSIONS_GLOBAL">
+            try {
+                if (tmpCommandItems[i][0].equals("RESCALE_REPULSIONS_GLOBAL")) {
+                    if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
+                        return "runScript: Command RESCALE_REPULSIONS_GLOBAL: There is no particle set defined.";
+                    }
+                    double tmpTempFactor = Double.valueOf(tmpCommandItems[i][1]);
+                    double tmpLowerRepulsionRange = Double.valueOf(tmpCommandItems[i][2]);
+                    double tmpChargeOffset = Double.valueOf(tmpCommandItems[i][3]);
+                    tmpParticleSetFileLineList = 
+                        this.rescaleRepulsionsWithGlobalScalingFactor(
+                            tmpParticleSetFileLineList, 
+                            tmpTempFactor, 
+                            tmpLowerRepulsionRange, 
+                            tmpChargeOffset
+                        );
+                    if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
+                        return "runScript: Command RESCALE_REPULSIONS_GLOBAL: Particle set was destroyed. This should never happen.";
+                    }
+                    tmpParticleSetFileLineList.addFirst(
+                        "# " +
+                        tmpCommandItems[i][0] + " " +
+                        tmpCommandItems[i][1] + " " +
+                        tmpCommandItems[i][2] + " " +
+                        tmpCommandItems[i][3]
+                    );
+                }
+            } catch (Exception anException) {
+                return "runScript: Command RESCALE_REPULSIONS_GLOBAL could not be run. Exception: " + anException.toString();
+            }
+            // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="FORMAT">
+            try {
+                if (tmpCommandItems[i][0].equals("FORMAT")) {
+                    if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
+                        return "runScript: Command FORMAT: There is no particle set defined.";
+                    }
+                    tmpParticleSetFileLineList = this.getFormattedParticleSet(tmpParticleSetFileLineList);
+                    if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
+                        return "runScript: Command FORMAT: Particle set was destroyed. This should never happen.";
+                    }
+                    tmpParticleSetFileLineList.addFirst(
+                        "# " +
+                        tmpCommandItems[i][0]
+                    );
+                }
+            } catch (Exception anException) {
+                return "runScript: Command FORMAT could not be run. Exception: " + anException.toString();
+            }
+            // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="SAVE">
+            try {
+                if (tmpCommandItems[i][0].equals("SAVE")) {
+                    if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
+                        return "runScript: Command SAVE: There is no particle set to be saved.";
+                    }
+                    String tmpNewParticleSetName = tmpCommandItems[i][1];
+                    String tmpNewParticleSetFilePathname = 
+                        (new File(aScriptFilepathname)).getParent() + File.separatorChar + tmpNewParticleSetName;
+                    if ((new File(tmpNewParticleSetFilePathname)).exists()) {
+                        return "runScript: Command SAVE: Particle set file " + tmpNewParticleSetFilePathname + " already exists.";
+                    }
+                    tmpParticleSetFileLineList.addFirst(
+                        "# " +
+                        tmpCommandItems[i][0] + " " +
+                        tmpCommandItems[i][1]
+                    );
+                    if (!Utils.writeStringListToFile(tmpParticleSetFileLineList, tmpNewParticleSetFilePathname)) {
+                        return "runScript: Command SAVE: Could not write particle set file " + tmpNewParticleSetFilePathname;
+                    }
+                }
+            } catch (Exception anException) {
+                return "runScript: Command SAVE could not be run. Exception: " + anException.toString();
+            }
+            // </editor-fold>
+        }
+
+        // Commands were run successfully
+        return "";
+    }
+    // </editor-fold>
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="Private methods">
     // <editor-fold defaultstate="collapsed" desc="- Particle related operations">
+    /**
+     * Increment probe particles if available
+     * 
+     * @param aParticleSetFileLineList Particle set file line list (is not changed)
+     * @return New particle set file line list or null if new list could not be
+     * created
+     */
+    private LinkedList<String> incrementProbeParticles (
+        LinkedList<String> aParticleSetFileLineList
+    ) {
+        String[] tmpCurrentProteinBackboneProbeParticleArray = this.getAllSortedProteinBackboneProbeParticles();
+        if (tmpCurrentProteinBackboneProbeParticleArray == null) {
+            return null;
+        }
+        HashMap<String, String> tmpCurrentIncrementProbeParticleMap = 
+            new HashMap<>(tmpCurrentProteinBackboneProbeParticleArray.length);
+        for (String tmpCurrentProteinBackboneProbeParticle : tmpCurrentProteinBackboneProbeParticleArray) {
+            Matcher tmpProteinBackboneProbeParticleMatcher = 
+                ModelDefinitions.PARTICLE_PROTEIN_BACKBONE_PROBE_NUMBER_CAPTURING_PATTERN.matcher(
+                    tmpCurrentProteinBackboneProbeParticle
+                );
+            if (tmpProteinBackboneProbeParticleMatcher.matches()) {
+                String tmpParticlePart = tmpProteinBackboneProbeParticleMatcher.group(1);
+                String tmpPD = tmpProteinBackboneProbeParticleMatcher.group(2);
+                String tmpNumberString = tmpProteinBackboneProbeParticleMatcher.group(3);
+                String tmpIncrementedNumberString = String.valueOf(Integer.valueOf(tmpNumberString) + 1);
+                String tmpIncrementedProteinBackboneProbeParticle = tmpParticlePart + tmpPD + tmpIncrementedNumberString;
+                if (tmpIncrementedProteinBackboneProbeParticle.matches(ModelDefinitions.PARTICLE_REGEX_PATTERN_STRING) &&
+                    !this.hasParticle(tmpIncrementedProteinBackboneProbeParticle)
+                ) {
+                    tmpCurrentIncrementProbeParticleMap.put(
+                        tmpCurrentProteinBackboneProbeParticle, 
+                        tmpIncrementedProteinBackboneProbeParticle
+                    );
+                }
+            }
+        }
+        if (tmpCurrentIncrementProbeParticleMap.isEmpty()) {
+            return null;
+        }
+        LinkedList<String> tmpNewParticleSetFileLineList = aParticleSetFileLineList;
+        for (String tmpCurrentProteinBackboneProbeParticle : tmpCurrentIncrementProbeParticleMap.keySet()) {
+            String tmpIncrementedProteinBackboneProbeParticle = 
+                tmpCurrentIncrementProbeParticleMap.get(tmpCurrentProteinBackboneProbeParticle);
+            // Use color of current protein backbone probe particle
+            String tmpIncrementedProteinBackboneProbeParticleColor = null;
+            tmpNewParticleSetFileLineList = 
+                this.duplicateSingleParticle(
+                    aParticleSetFileLineList, 
+                    tmpCurrentProteinBackboneProbeParticle, 
+                    tmpIncrementedProteinBackboneProbeParticle, 
+                    tmpIncrementedProteinBackboneProbeParticleColor
+                );
+        }
+        return tmpNewParticleSetFileLineList;
+    }
+    
     /**
      * Duplicates specified old particle
      *
@@ -2097,8 +2537,7 @@ public final class StandardParticleInteractionData {
 
         // Correct duplicated particle for charge
         LinkedList<String> tmpNewParticleSetFileLineList = new LinkedList<>();
-        tmpNewParticleSetFileLineList.add("# Repulsion correction factor (" + anOldParticle + "|" + aNewParticle + ") = " + String.valueOf(aRepulsionCorrectionFactor));
-        tmpNewParticleSetFileLineList.add("#");
+        tmpNewParticleSetFileLineList.add("#    Repulsion correction factor (" + anOldParticle + "|" + aNewParticle + ") = " + String.valueOf(aRepulsionCorrectionFactor));
         
         String tmpParticleDescriptionStartLine = String.format(ModelDefinitions.SECTION_START_TAG_FORMAT, ModelDefinitions.PARTICLE_DESCRIPTION_SECTION_TAG);
         String tmpParticleDescriptionEndLine = String.format(ModelDefinitions.SECTION_END_TAG_FORMAT, ModelDefinitions.PARTICLE_DESCRIPTION_SECTION_TAG);
@@ -2275,9 +2714,8 @@ public final class StandardParticleInteractionData {
         // <editor-fold defaultstate="collapsed" desc="Duplicate particles">
         // <editor-fold defaultstate="collapsed" desc="- Initial definitions">
         LinkedList<String> tmpNewParticleSetFileLineList = new LinkedList<>();
-        tmpNewParticleSetFileLineList.add("# Old particle = " + anOldParticle);
-        tmpNewParticleSetFileLineList.add("# New particle = " + aNewParticle);
-        tmpNewParticleSetFileLineList.add("#");
+        tmpNewParticleSetFileLineList.add("#    Old particle = " + anOldParticle);
+        tmpNewParticleSetFileLineList.add("#    New particle = " + aNewParticle);
 
         String tmpParticleDescriptionStartLine = String.format(ModelDefinitions.SECTION_START_TAG_FORMAT, ModelDefinitions.PARTICLE_DESCRIPTION_SECTION_TAG);
         String tmpParticleDescriptionEndLine = String.format(ModelDefinitions.SECTION_END_TAG_FORMAT, ModelDefinitions.PARTICLE_DESCRIPTION_SECTION_TAG);
@@ -2426,6 +2864,103 @@ public final class StandardParticleInteractionData {
     }
 
     /**
+     * Sets specified particle
+     *
+     * @param aParticleSetFileLineList Particle set file line list (is not changed)
+     * @param aParticle Particle (not allowed to be null/empty)
+     * @param aNewName New name(not allowed to be null/empty)
+     * @param aNewDpdMass New DPD mass (not allowed to be null/empty)
+     * @param aNewCharge New charge (not allowed to be null/empty)
+     * @param aNewMassInGmol New mass in g/mol (not allowed to be null/empty)
+     * @param aNewVolumeInA3 New volume in A^3 (not allowed to be null/empty)
+     * @param aNewGraphicsRadius New graphics radius (not allowed to be null/empty)
+     * @param aNewColor New color (not allowed to be null/empty)
+     * @return New particle set file line list or null if new list could not be
+     * created
+     */
+    private LinkedList<String> setParticle(
+        LinkedList<String> aParticleSetFileLineList, 
+        String aParticle,
+        String aNewName,
+        String aNewDpdMass,
+        String aNewCharge,
+        String aNewMassInGmol,
+        String aNewVolumeInA3,
+        String aNewGraphicsRadius,
+        String aNewColor
+    ) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aParticleSetFileLineList == null || aParticleSetFileLineList.size() == 0) {
+            return null;
+        }
+        if (aParticle == null || aParticle.isEmpty()) {
+            return null;
+        }
+        if (aNewName == null || aNewName.isEmpty()) {
+            return null;
+        }
+        if (aNewDpdMass == null || aNewDpdMass.isEmpty()) {
+            return null;
+        }
+        if (aNewCharge == null || aNewCharge.isEmpty()) {
+            return null;
+        }
+        if (aNewMassInGmol == null || aNewMassInGmol.isEmpty()) {
+            return null;
+        }
+        if (aNewVolumeInA3 == null || aNewVolumeInA3.isEmpty()) {
+            return null;
+        }
+        if (aNewGraphicsRadius == null || aNewGraphicsRadius.isEmpty()) {
+            return null;
+        }
+        if (aNewColor == null || aNewColor.isEmpty()) {
+            return null;
+        }
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Set particle">
+        // <editor-fold defaultstate="collapsed" desc="- Initial definitions">
+        LinkedList<String> tmpNewParticleSetFileLineList = new LinkedList<String>();
+
+        String tmpParticleDescriptionStartLine = String.format(ModelDefinitions.SECTION_START_TAG_FORMAT, ModelDefinitions.PARTICLE_DESCRIPTION_SECTION_TAG);
+        String tmpParticleDescriptionEndLine = String.format(ModelDefinitions.SECTION_END_TAG_FORMAT, ModelDefinitions.PARTICLE_DESCRIPTION_SECTION_TAG);
+        boolean tmpIsDescriptionSectionStart = false;
+        boolean tmpIsDescriptionsSectionEnd = false;
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="- Set particle">
+        for (String tmpCurrentLine : aParticleSetFileLineList) {
+            tmpNewParticleSetFileLineList.add(tmpCurrentLine);
+
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleDescriptionStartLine)) {
+                tmpIsDescriptionSectionStart = true;
+            }
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleDescriptionEndLine)) {
+                tmpIsDescriptionsSectionEnd = true;
+            }
+
+            // Description section
+            if (tmpIsDescriptionSectionStart && !tmpIsDescriptionsSectionEnd && !tmpCurrentLine.trim().isEmpty()) {
+                if (this.stringUtilityMethods.getFirstToken(tmpCurrentLine).equals(aParticle)) {
+                    tmpNewParticleSetFileLineList.removeLast();
+                    tmpNewParticleSetFileLineList.add(
+                        aParticle + " " +
+                        aNewName + " " + 
+                        aNewDpdMass + " " + 
+                        aNewCharge + " " + 
+                        aNewMassInGmol + " " + 
+                        aNewVolumeInA3 + " " + 
+                        aNewGraphicsRadius + " " +
+                        aNewColor
+                    );
+                }
+            }
+        }
+        // </editor-fold>
+        // </editor-fold>
+        return tmpNewParticleSetFileLineList;
+    }
+    
+    /**
      * Returns particle set where repulsions for each temperature are set for 
      * interactions of amino acid backbone particles (including their PD1, 
      * PD2, ... particles).
@@ -2466,18 +3001,16 @@ public final class StandardParticleInteractionData {
         }
         // Write comment
         LinkedList<String> tmpNewParticleSetFileLineList = new LinkedList<>();
-        tmpNewParticleSetFileLineList.add("#");
-        tmpNewParticleSetFileLineList.add("# With a backbone offset of");
-        tmpNewParticleSetFileLineList.add("# " + String.valueOf(aBackboneOffset));
-        tmpNewParticleSetFileLineList.add("# added to the diagonal a(ii) repulsions, the new backbone repulsions");
+        tmpNewParticleSetFileLineList.add("#    With a backbone offset of");
+        tmpNewParticleSetFileLineList.add("#    " + String.valueOf(aBackboneOffset));
+        tmpNewParticleSetFileLineList.add("#    added to the diagonal a(ii) repulsions, the new backbone repulsions");
         for (String tmpNewDiagonalRepulsion : tmpNewDiagonalRepulsions) {
-            tmpNewParticleSetFileLineList.add("# " + tmpNewDiagonalRepulsion);
+            tmpNewParticleSetFileLineList.add("#    " + tmpNewDiagonalRepulsion);
         }
-        tmpNewParticleSetFileLineList.add("# for the " + String.valueOf(tmpNewDiagonalRepulsions.length) + "(different) temperature(s) are set for the following (uncharged) amino acid backbone particles:");
+        tmpNewParticleSetFileLineList.add("#    for the " + String.valueOf(tmpNewDiagonalRepulsions.length) + "(different) temperature(s) are set for the following (uncharged) amino acid backbone particles:");
         for (String tmpAminoAcidBackboneParticle : tmpAminoAcidBackboneParticles) {
-            tmpNewParticleSetFileLineList.add("# " + tmpAminoAcidBackboneParticle);
+            tmpNewParticleSetFileLineList.add("#    " + tmpAminoAcidBackboneParticle);
         }
-        tmpNewParticleSetFileLineList.add("#");
         for (String tmpLine : aParticleSetFileLineList) {
             tmpNewParticleSetFileLineList.add(tmpLine);
         }
@@ -3501,27 +4034,21 @@ public final class StandardParticleInteractionData {
         // Set a(ii) and a(ij) for charged/charged pairs ONLY
         LinkedList<String> tmpNewParticleSetFileLineList = new LinkedList<>();
 
-        tmpNewParticleSetFileLineList.add("# --------------------------------------------------------------------------------");
-        tmpNewParticleSetFileLineList.add("# Rescale settings:");
-        tmpNewParticleSetFileLineList.add("# Temperature factor     = " + String.valueOf(aTempFactor));
-        tmpNewParticleSetFileLineList.add("# Lower repulsion range  = " + String.valueOf(aLowerRepulsionRange));
-        tmpNewParticleSetFileLineList.add("# Charge offset          = " + String.valueOf(aChargeOffset));
-        tmpNewParticleSetFileLineList.add("#");
+        tmpNewParticleSetFileLineList.add("#    Rescale settings:");
+        tmpNewParticleSetFileLineList.add("#    Temperature factor     = " + String.valueOf(aTempFactor));
+        tmpNewParticleSetFileLineList.add("#    Lower repulsion range  = " + String.valueOf(aLowerRepulsionRange));
+        tmpNewParticleSetFileLineList.add("#    Charge offset          = " + String.valueOf(aChargeOffset));
         for (int i = 0; i < tmpTemperatures.length; i++) {
-            tmpNewParticleSetFileLineList.add("# Temperature         = " + String.valueOf(tmpTemperatures[i]));
-            tmpNewParticleSetFileLineList.add("# - a(ii) old         = " + String.valueOf(tmpAiiOld[i]));
-            tmpNewParticleSetFileLineList.add("# - a(ii) new         = " + String.valueOf(tmpAiiNew[i]));
-            tmpNewParticleSetFileLineList.add("# - a(ii) shift       = " + String.valueOf(tmpAiiShift[i]));
-            tmpNewParticleSetFileLineList.add("# - a(ij) shifted min = " + String.valueOf(tmpAijShiftedMin[i]));
-            tmpNewParticleSetFileLineList.add("# - a(ij) shifted max = " + String.valueOf(tmpAijShiftedMax[i]));
-            tmpNewParticleSetFileLineList.add("# - Scaling factor    = " + String.valueOf(tmpScalingFactors[i]));
-            tmpNewParticleSetFileLineList.add("# - a(ij) scaled  min = " + String.valueOf(tmpAijScaledMin[i]));
-            tmpNewParticleSetFileLineList.add("# - a(ij) scaled  max = " + String.valueOf(tmpAijScaledMax[i]));
-            tmpNewParticleSetFileLineList.add("#");
+            tmpNewParticleSetFileLineList.add("#    Temperature         = " + String.valueOf(tmpTemperatures[i]));
+            tmpNewParticleSetFileLineList.add("#    - a(ii) old         = " + String.valueOf(tmpAiiOld[i]));
+            tmpNewParticleSetFileLineList.add("#    - a(ii) new         = " + String.valueOf(tmpAiiNew[i]));
+            tmpNewParticleSetFileLineList.add("#    - a(ii) shift       = " + String.valueOf(tmpAiiShift[i]));
+            tmpNewParticleSetFileLineList.add("#    - a(ij) shifted min = " + String.valueOf(tmpAijShiftedMin[i]));
+            tmpNewParticleSetFileLineList.add("#    - a(ij) shifted max = " + String.valueOf(tmpAijShiftedMax[i]));
+            tmpNewParticleSetFileLineList.add("#    - Scaling factor    = " + String.valueOf(tmpScalingFactors[i]));
+            tmpNewParticleSetFileLineList.add("#    - a(ij) scaled  min = " + String.valueOf(tmpAijScaledMin[i]));
+            tmpNewParticleSetFileLineList.add("#    - a(ij) scaled  max = " + String.valueOf(tmpAijScaledMax[i]));
         }
-        tmpNewParticleSetFileLineList.add("# --------------------------------------------------------------------------------");
-        tmpNewParticleSetFileLineList.add("#");
-        
         tmpIsInteractionsSectionStart = false;
         tmpIsInteractionsSectionEnd = false;
         for (String tmpCurrentLine : tmpScaledParticleSetFileLineList) {
@@ -3729,27 +4256,21 @@ public final class StandardParticleInteractionData {
         // Set a(ii) and a(ij) for charged/charged pairs ONLY
         LinkedList<String> tmpNewParticleSetFileLineList = new LinkedList<>();
 
-        tmpNewParticleSetFileLineList.add("# --------------------------------------------------------------------------------");
-        tmpNewParticleSetFileLineList.add("# Rescale settings:");
-        tmpNewParticleSetFileLineList.add("# Temperature factor     = " + String.valueOf(aTempFactor));
-        tmpNewParticleSetFileLineList.add("# Lower repulsion range  = " + String.valueOf(aLowerRepulsionRange));
-        tmpNewParticleSetFileLineList.add("# Charge offset          = " + String.valueOf(aChargeOffset));
-        tmpNewParticleSetFileLineList.add("#");
-        tmpNewParticleSetFileLineList.add("# - a(ij) shifted min = " + String.valueOf(tmpAijShiftedMin));
-        tmpNewParticleSetFileLineList.add("# - a(ij) shifted max = " + String.valueOf(tmpAijShiftedMax));
-        tmpNewParticleSetFileLineList.add("#");
+        tmpNewParticleSetFileLineList.add("#    Rescale settings:");
+        tmpNewParticleSetFileLineList.add("#    Temperature factor     = " + String.valueOf(aTempFactor));
+        tmpNewParticleSetFileLineList.add("#    Lower repulsion range  = " + String.valueOf(aLowerRepulsionRange));
+        tmpNewParticleSetFileLineList.add("#    Charge offset          = " + String.valueOf(aChargeOffset));
+        tmpNewParticleSetFileLineList.add("#    - a(ij) shifted min = " + String.valueOf(tmpAijShiftedMin));
+        tmpNewParticleSetFileLineList.add("#    - a(ij) shifted max = " + String.valueOf(tmpAijShiftedMax));
         for (int i = 0; i < tmpTemperatures.length; i++) {
-            tmpNewParticleSetFileLineList.add("# Temperature         = " + String.valueOf(tmpTemperatures[i]));
-            tmpNewParticleSetFileLineList.add("# - a(ii) old         = " + String.valueOf(tmpAiiOld[i]));
-            tmpNewParticleSetFileLineList.add("# - a(ii) new         = " + String.valueOf(tmpAiiNew[i]));
-            tmpNewParticleSetFileLineList.add("# - a(ii) shift       = " + String.valueOf(tmpAiiShift[i]));
-            tmpNewParticleSetFileLineList.add("# - Scaling factor    = " + String.valueOf(tmpScalingFactors[i]));
-            tmpNewParticleSetFileLineList.add("# - a(ij) scaled  min = " + String.valueOf(tmpAijScaledMin[i]));
-            tmpNewParticleSetFileLineList.add("# - a(ij) scaled  max = " + String.valueOf(tmpAijScaledMax[i]));
-            tmpNewParticleSetFileLineList.add("#");
+            tmpNewParticleSetFileLineList.add("#    Temperature         = " + String.valueOf(tmpTemperatures[i]));
+            tmpNewParticleSetFileLineList.add("#    - a(ii) old         = " + String.valueOf(tmpAiiOld[i]));
+            tmpNewParticleSetFileLineList.add("#    - a(ii) new         = " + String.valueOf(tmpAiiNew[i]));
+            tmpNewParticleSetFileLineList.add("#    - a(ii) shift       = " + String.valueOf(tmpAiiShift[i]));
+            tmpNewParticleSetFileLineList.add("#    - Scaling factor    = " + String.valueOf(tmpScalingFactors[i]));
+            tmpNewParticleSetFileLineList.add("#    - a(ij) scaled  min = " + String.valueOf(tmpAijScaledMin[i]));
+            tmpNewParticleSetFileLineList.add("#    - a(ij) scaled  max = " + String.valueOf(tmpAijScaledMax[i]));
         }
-        tmpNewParticleSetFileLineList.add("# --------------------------------------------------------------------------------");
-        tmpNewParticleSetFileLineList.add("#");
         
         tmpIsInteractionsSectionStart = false;
         tmpIsInteractionsSectionEnd = false;
@@ -3830,13 +4351,10 @@ public final class StandardParticleInteractionData {
         }
         // </editor-fold>
         LinkedList<String> tmpMorphedParticleSetFileLineList = new LinkedList<>();
-        tmpMorphedParticleSetFileLineList.add("# --------------------------------------------------------------------------------");
-        tmpMorphedParticleSetFileLineList.add("# Settings for morph operation:");
-        tmpMorphedParticleSetFileLineList.add("# Source particle = " + aSourceParticle);
-        tmpMorphedParticleSetFileLineList.add("# Target particle = " + aTargetParticle);
-        tmpMorphedParticleSetFileLineList.add("# Percentage      = " + String.valueOf(aPercentage));
-        tmpMorphedParticleSetFileLineList.add("# --------------------------------------------------------------------------------");
-        tmpMorphedParticleSetFileLineList.add("#");
+        tmpMorphedParticleSetFileLineList.add("#    Settings for morph operation:");
+        tmpMorphedParticleSetFileLineList.add("#    Source particle = " + aSourceParticle);
+        tmpMorphedParticleSetFileLineList.add("#    Target particle = " + aTargetParticle);
+        tmpMorphedParticleSetFileLineList.add("#    Percentage      = " + String.valueOf(aPercentage));
 
         // <editor-fold defaultstate="collapsed" desc="Set tmpTargetParticleAij">
         HashMap<String, double[]> tmpTargetParticleAij = new HashMap<>(aParticleSetFileLineList.size());

@@ -1060,26 +1060,34 @@ public final class Preferences {
         tmpVerticalPosition = this.addJobResultArchiveEditablePreferencesValueItems(tmpValueItemContainer, tmpVerticalPosition);
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Miscellaneous">
-        tmpNodeNames = new String[]{ModelMessage.get("Preferences.Root"), ModelMessage.get("Preferences.Miscellaneous")};
+        tmpNodeNames = 
+            new String[] {
+                ModelMessage.get("Preferences.Root"), 
+                ModelMessage.get("Preferences.Miscellaneous")
+            };
         // <editor-fold defaultstate="collapsed" desc="- Volume scaling for concentration calculation">
         tmpValueItem = new ValueItem();
         tmpValueItem.setNodeNames(tmpNodeNames);
-        tmpValueItem.setDefaultTypeFormat(new ValueItemDataTypeFormat(
-                ModelMessage.get("Preferences.Miscellaneous.IsVolumeScalingForConcentrationCalculation.True"), 
-                new String[]
-                {
+        tmpValueItem.setDefaultTypeFormat(
+            new ValueItemDataTypeFormat(
+                ModelMessage.get("Preferences.Miscellaneous.IsVolumeScalingForConcentrationCalculation.False"), 
+                new String[] {
                     ModelMessage.get("Preferences.Miscellaneous.IsVolumeScalingForConcentrationCalculation.True"),
                     ModelMessage.get("Preferences.Miscellaneous.IsVolumeScalingForConcentrationCalculation.False")
                 }
             )
         );
         tmpValueItem.setName(PreferenceEditableEnum.IS_VOLUME_SCALING_FOR_CONCENTRATION_CALCULATION.name());
-        tmpValueItem.setDescription(ModelMessage.get("Preferences.Miscellaneous.IsVolumeScalingForConcentrationCalculation.Description"));
-        tmpValueItem.setDisplayName(ModelMessage.get("Preferences.Miscellaneous.IsVolumeScalingForConcentrationCalculation"));
+        tmpValueItem.setDescription(
+            ModelMessage.get("Preferences.Miscellaneous.IsVolumeScalingForConcentrationCalculation.Description"));
+        tmpValueItem.setDisplayName(
+            ModelMessage.get("Preferences.Miscellaneous.IsVolumeScalingForConcentrationCalculation"));
         if (this.isVolumeScalingForConcentrationCalculation) {
-            tmpValueItem.setValue(ModelMessage.get("Preferences.Miscellaneous.IsVolumeScalingForConcentrationCalculation.True"));
+            tmpValueItem.setValue(
+                ModelMessage.get("Preferences.Miscellaneous.IsVolumeScalingForConcentrationCalculation.True"));
         } else {
-            tmpValueItem.setValue(ModelMessage.get("Preferences.Miscellaneous.IsVolumeScalingForConcentrationCalculation.False"));
+            tmpValueItem.setValue(
+                ModelMessage.get("Preferences.Miscellaneous.IsVolumeScalingForConcentrationCalculation.False"));
         }
         tmpValueItem.setVerticalPosition(tmpVerticalPosition++);
         tmpValueItemContainer.addValueItem(tmpValueItem);
@@ -1443,6 +1451,26 @@ public final class Preferences {
     }
 
     /**
+     * Returns linked list with available particle set filenames
+     * 
+     * @return Linked list with available particle set filenames
+     */
+    public LinkedList<String> getAvailableParticleSetFilenamesList() {
+        LinkedList<String> tmpAvailableParticleSetFilenamesList = new LinkedList<>();
+        this.fileUtilityMethods.fillFilenamesWithPrefix(
+            tmpAvailableParticleSetFilenamesList, 
+            this.getDpdSourceParticlesPath(), 
+            ModelDefinitions.PARTICLE_SET_FILE_PREFIX
+        );
+        this.fileUtilityMethods.fillFilenamesWithPrefix(
+            tmpAvailableParticleSetFilenamesList, 
+            this.getCustomParticlesPath(), 
+            ModelDefinitions.PARTICLE_SET_FILE_PREFIX
+        );
+        return tmpAvailableParticleSetFilenamesList;
+    }
+    
+    /**
      * Returns ValueItemContainer with editable preferences for particle set
      * settings (may be returned after edit process with method
      * setEditablePreferences())
@@ -1455,10 +1483,7 @@ public final class Preferences {
 
         String[] tmpNodeNames = new String[]{ModelMessage.get("ParticleEdit.Root")};
 
-        LinkedList<String> tmpAvailableParticleSetFilenamesList = new LinkedList<>();
-        this.fileUtilityMethods.fillFilenamesWithPrefix(tmpAvailableParticleSetFilenamesList, this.getDpdSourceParticlesPath(), ModelDefinitions.PARTICLE_SET_FILE_PREFIX);
-        this.fileUtilityMethods.fillFilenamesWithPrefix(tmpAvailableParticleSetFilenamesList, this.getCustomParticlesPath(), ModelDefinitions.PARTICLE_SET_FILE_PREFIX);
-
+        LinkedList<String> tmpAvailableParticleSetFilenamesList = this.getAvailableParticleSetFilenamesList();
         String[] tmpAvailableParticleSetFilenames = tmpAvailableParticleSetFilenamesList.toArray(new String[0]);
         Arrays.sort(tmpAvailableParticleSetFilenames);
 

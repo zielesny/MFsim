@@ -1727,7 +1727,7 @@ public class FileUtilityMethods {
                 }
             } else {
                 while ((tmpLine = tmpBufferedReader.readLine()) != null) {
-                    if (!tmpLine.startsWith(aCommentLinePrefix)) {
+                    if (!tmpLine.trim().startsWith(aCommentLinePrefix)) {
                         String[] tmpItems = this.stringUtilityMethods.splitAndTrim(tmpLine.trim());
                         if (tmpItems != null) {
                             tmpLinkedList.add(tmpItems);

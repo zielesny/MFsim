@@ -59,6 +59,8 @@ import java.util.concurrent.Executors;
 import javax.swing.JOptionPane;
 import de.gnwi.mfsim.gui.preference.GuiDefinitions;
 import de.gnwi.mfsim.model.preference.ModelDefinitions;
+import de.gnwi.mfsim.model.valueItem.ValueItemDataTypeFormat;
+import de.gnwi.mfsim.model.valueItem.ValueItemEnumDataType;
 
 /**
  * Controller class for MainFrame
@@ -593,13 +595,68 @@ public class MainFrameController implements PropertyChangeListener {
     // </editor-fold>
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="-- Menu Particles">
+    // <editor-fold defaultstate="collapsed" desc="--- Run script">
+    /**
+     * Display run-script dialog
+     */
+    public void runScript() {
+        try {
+            ValueItemContainer tmpValueItemContainer = new ValueItemContainer(null);
+            String[] tmpNodeNames = new String[]{GuiMessage.get("RunScriptDialog.Root")};
+            ValueItem tmpValueItem = new ValueItem();
+            tmpValueItem.setNodeNames(tmpNodeNames);
+            tmpValueItem.setDefaultTypeFormat(new ValueItemDataTypeFormat(ValueItemEnumDataType.FILE));
+            String tmpValueItemName = "PARTICLES_MENU_RUN_SCRIPT";
+            tmpValueItem.setName(tmpValueItemName);
+            tmpValueItem.setDescription(GuiMessage.get("RunScriptDialog.RunScript.Description"));
+            tmpValueItem.setDisplayName(GuiMessage.get("RunScriptDialog.RunScript.ScriptFilePathname"));
+            tmpValueItem.setValue("");
+            tmpValueItem.setVerticalPosition(1);
+            tmpValueItemContainer.addValueItem(tmpValueItem);
+            if (DialogValueItemEdit.hasChanged(GuiMessage.get("RunScriptDialog.Title"), tmpValueItemContainer)) {
+                MouseCursorManagement.getInstance().setWaitCursor();
+                String tmpScriptFilepathname = tmpValueItemContainer.getValueOfValueItem(tmpValueItemName);
+                String tmpErrorString = StandardParticleInteractionData.getInstance().runScript(tmpScriptFilepathname);
+                if (!tmpErrorString.isEmpty()) {
+                    JOptionPane.showMessageDialog(
+                        null, 
+                        String.format(
+                            GuiMessage.get("Error.RunScriptFailed"), 
+                            tmpErrorString
+                        ),
+                        GuiMessage.get("Error.RunScriptTitle"), 
+                        JOptionPane.ERROR_MESSAGE
+                    );
+                }
+            }
+        } catch (Exception anException) {
+            ModelUtils.appendToLogfile(true, anException);
+            MouseCursorManagement.getInstance().setDefaultCursor();
+            // <editor-fold defaultstate="collapsed" desc="Message CommandExecutionFailed">
+            JOptionPane.showMessageDialog(
+                null, 
+                String.format(
+                    GuiMessage.get("Error.CommandExecutionFailed"), 
+                    "runScript()", 
+                    "MainFrameController"
+                ),
+                GuiMessage.get("Error.ErrorNotificationTitle"), 
+                JOptionPane.ERROR_MESSAGE
+            );
+            // </editor-fold>
+        } finally {
+            MouseCursorManagement.getInstance().setDefaultCursor();
+        }        
+    }
+    // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="--- Particle set">
     /**
      * Display choose-particle-set dialog
      */
     public void displayChooseParticleSetDialog() {
         try {
-            ValueItemContainer tmpParticleSetValueItemContainer = Preferences.getInstance().getParticleSetEditablePreferencesValueItemContainer();
+            ValueItemContainer tmpParticleSetValueItemContainer = 
+                Preferences.getInstance().getParticleSetEditablePreferencesValueItemContainer();
             if (DialogValueItemEdit.hasChanged(GuiMessage.get("ParticleSetChooseDialog.title"), tmpParticleSetValueItemContainer)) {
                 MouseCursorManagement.getInstance().setWaitCursor();
                 Preferences.getInstance().setEditablePreferences(tmpParticleSetValueItemContainer);
@@ -615,9 +672,16 @@ public class MainFrameController implements PropertyChangeListener {
             ModelUtils.appendToLogfile(true, anException);
             MouseCursorManagement.getInstance().setDefaultCursor();
             // <editor-fold defaultstate="collapsed" desc="Message CommandExecutionFailed">
-            JOptionPane.showMessageDialog(null, String.format(GuiMessage.get("Error.CommandExecutionFailed"), "displayEditParticleSetDialog()", "MainFrameController"),
-                    GuiMessage.get("Error.ErrorNotificationTitle"), JOptionPane.ERROR_MESSAGE);
-
+            JOptionPane.showMessageDialog(
+                null, 
+                String.format(
+                    GuiMessage.get("Error.CommandExecutionFailed"), 
+                    "displayChooseParticleSetDialog()", 
+                    "MainFrameController"
+                ),
+                GuiMessage.get("Error.ErrorNotificationTitle"), 
+                JOptionPane.ERROR_MESSAGE
+            );
             // </editor-fold>
         } finally {
             MouseCursorManagement.getInstance().setDefaultCursor();

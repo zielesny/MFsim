@@ -196,6 +196,10 @@ public class MainFrame extends JFrame {
     /**
      * GUI element
      */
+    private JMenuItem runScriptMenuItem;
+    /**
+     * GUI element
+     */
     private JMenuItem chooseParticleSetMenuItem;
     /**
      * GUI element
@@ -856,17 +860,39 @@ public class MainFrame extends JFrame {
                     this.particlesMenu.addSeparator();
                 }
                 // </editor-fold>
+                // <editor-fold defaultstate="collapsed" desc="runScriptMenuItem">
+                {
+                    this.runScriptMenuItem = new JMenuItem();
+                    this.runScriptMenuItem.addActionListener(new ActionListener() {
+
+                        public void actionPerformed(final ActionEvent e) {
+                            MainFrame.this.mainFrameController.runScript();
+                        }
+
+                    });
+                    this.runScriptMenuItem.setText(GuiMessage.get("MainFrame.runScriptMenuItem.text")); 
+                    this.particlesMenu.add(this.runScriptMenuItem);
+                }
+                // </editor-fold>
+                // <editor-fold defaultstate="collapsed" desc="Separator">
+                {
+                    this.particlesMenu.addSeparator();
+                }
+                // </editor-fold>
                 // <editor-fold defaultstate="collapsed" desc="particleUpdateForJobInputMenuItem">
                 {
                     this.particleUpdateForJobInputMenuItem = new JCheckBoxMenuItem();
                     this.particleUpdateForJobInputMenuItem.addItemListener(new ItemListener() {
 
                         public void itemStateChanged(ItemEvent e) {
-                            Preferences.getInstance().setParticleUpdateForJobInput(MainFrame.this.particleUpdateForJobInputMenuItem.isSelected());
+                            Preferences.getInstance().setParticleUpdateForJobInput(
+                                MainFrame.this.particleUpdateForJobInputMenuItem.isSelected()
+                            );
                         }
 
                     });
-                    this.particleUpdateForJobInputMenuItem.setText(GuiMessage.get("MainFrame.particleUpdateForJobInputMenuItem.text")); 
+                    this.particleUpdateForJobInputMenuItem.setText(
+                        GuiMessage.get("MainFrame.particleUpdateForJobInputMenuItem.text")); 
                     this.particlesMenu.add(this.particleUpdateForJobInputMenuItem);
                 }
                 // </editor-fold>
@@ -891,7 +917,6 @@ public class MainFrame extends JFrame {
                     this.centerMenuItem.setText(GuiMessage.get("MainFrame.centerMenuItem.text")); 
                     this.windowMenu.add(this.centerMenuItem);
                 }
-
                 // </editor-fold>
                 // <editor-fold defaultstate="collapsed" desc="minimizeWindowSizeMenuItem">
                 {

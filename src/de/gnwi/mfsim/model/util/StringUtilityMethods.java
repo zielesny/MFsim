@@ -75,7 +75,7 @@ public class StringUtilityMethods {
             return null;
         }
         // </editor-fold>
-        String[] tmpItems = ModelDefinitions.WHITESPACE_PATTERN.split(aString);
+        String[] tmpItems = ModelDefinitions.WHITESPACE_PATTERN.split(aString.trim());
         if (tmpItems == null || tmpItems.length == 0) {
             return null;
         }
