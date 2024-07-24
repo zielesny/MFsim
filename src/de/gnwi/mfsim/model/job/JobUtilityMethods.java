@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2024  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -6346,7 +6346,7 @@ public class JobUtilityMethods {
                                             PointInSpace[] tmpFirstParticleCoordinates = new PointInSpace[tmpQuantityInVolume + tmpQuantityOnSurface];
                                             PointInSpace[] tmpLastParticleCoordinates = new PointInSpace[tmpQuantityInVolume + tmpQuantityOnSurface];
                                             if (tmpQuantityInVolume > 0) {
-                                                if (tmpIsSingleParticleMolecule) {
+                                                if (tmpIsSingleParticleMolecule || tmpIsMoleculeStartGeometryCompressedToSinglePoint) {
                                                     tmpSphere.fillRandomPointsInVolumeWithExcludingSpheres(
                                                         tmpFirstParticleCoordinates, 
                                                         0, 
@@ -6356,19 +6356,15 @@ public class JobUtilityMethods {
                                                     );
                                                     tmpLastParticleCoordinates = tmpFirstParticleCoordinates;
                                                 } else {
-                                                    if (tmpIsMoleculeStartGeometryCompressedToSinglePoint) {
-                                                        tmpLastParticleCoordinates = tmpFirstParticleCoordinates;
-                                                    } else {
-                                                        tmpSphere.fillRandomPointsInVolumeWithExcludingSpheres(
-                                                            tmpFirstParticleCoordinates, 
-                                                            tmpLastParticleCoordinates, 
-                                                            0, 
-                                                            tmpQuantityInVolume,
-                                                            tmpBondLength, 
-                                                            Preferences.getInstance().getNumberOfTrialsForCompartment(),
-                                                            tmpRandomNumberGenerator
-                                                        );
-                                                    }
+                                                    tmpSphere.fillRandomPointsInVolumeWithExcludingSpheres(
+                                                        tmpFirstParticleCoordinates, 
+                                                        tmpLastParticleCoordinates, 
+                                                        0, 
+                                                        tmpQuantityInVolume,
+                                                        tmpBondLength, 
+                                                        Preferences.getInstance().getNumberOfTrialsForCompartment(),
+                                                        tmpRandomNumberGenerator
+                                                    );
                                                 }
                                             }
                                             if (tmpQuantityOnSurface > 0) {
@@ -6638,7 +6634,7 @@ public class JobUtilityMethods {
                                                 double tmpOffsetY = tmpXyLayerCenterYCoordinate;
                                                 double tmpOffsetZ = tmpXyLayerCenterZCoordinate;
                                                 if (tmpQuantityInVolume > 0) {
-                                                    if (tmpIsSingleParticleMolecule) {
+                                                    if (tmpIsSingleParticleMolecule || tmpIsMoleculeStartGeometryCompressedToSinglePoint) {
                                                         tmpXyLayer.fillRandomPointsInVolumeWithExcludingSpheres(
                                                             tmpFirstParticleCoordinates, 
                                                             0, 
@@ -6648,19 +6644,15 @@ public class JobUtilityMethods {
                                                         );
                                                         tmpLastParticleCoordinates = tmpFirstParticleCoordinates;
                                                     } else {
-                                                        if (tmpIsMoleculeStartGeometryCompressedToSinglePoint) {
-                                                            tmpLastParticleCoordinates = tmpFirstParticleCoordinates;
-                                                        } else {
-                                                            tmpXyLayer.fillRandomPointsInVolumeWithExcludingSpheres(
-                                                                tmpFirstParticleCoordinates, 
-                                                                tmpLastParticleCoordinates, 
-                                                                0, 
-                                                                tmpQuantityInVolume,
-                                                                tmpBondLength, 
-                                                                Preferences.getInstance().getNumberOfTrialsForCompartment(),
-                                                                tmpRandomNumberGenerator
-                                                            );
-                                                        }
+                                                        tmpXyLayer.fillRandomPointsInVolumeWithExcludingSpheres(
+                                                            tmpFirstParticleCoordinates, 
+                                                            tmpLastParticleCoordinates, 
+                                                            0, 
+                                                            tmpQuantityInVolume,
+                                                            tmpBondLength, 
+                                                            Preferences.getInstance().getNumberOfTrialsForCompartment(),
+                                                            tmpRandomNumberGenerator
+                                                        );
                                                     }
                                                 }
                                                 if (tmpQuantityOnSurface > 0) {
@@ -6906,21 +6898,17 @@ public class JobUtilityMethods {
                                 tmpRandomNumberGenerator
                             );
                             PointInSpace[] tmpLastParticleCoordinates;
-                            if (tmpIsSingleParticleMolecule) {
+                            if (tmpIsSingleParticleMolecule || tmpIsMoleculeStartGeometryCompressedToSinglePoint) {
                                 tmpLastParticleCoordinates = tmpFirstParticleCoordinates;
                             } else {
-                                if (tmpIsMoleculeStartGeometryCompressedToSinglePoint) {
-                                    tmpLastParticleCoordinates = tmpFirstParticleCoordinates;
-                                } else {
-                                    tmpLastParticleCoordinates = new PointInSpace[tmpQuantity];
-                                    tmpCompartmentContainer.getCompartmentBox().fillFreeVolumeRandomPoints(
-                                        tmpLastParticleCoordinates, 
-                                        0, 
-                                        tmpQuantity, 
-                                        Preferences.getInstance().getNumberOfTrialsForCompartment(),
-                                        tmpRandomNumberGenerator
-                                    );
-                                }
+                                tmpLastParticleCoordinates = new PointInSpace[tmpQuantity];
+                                tmpCompartmentContainer.getCompartmentBox().fillFreeVolumeRandomPoints(
+                                    tmpLastParticleCoordinates, 
+                                    0, 
+                                    tmpQuantity, 
+                                    Preferences.getInstance().getNumberOfTrialsForCompartment(),
+                                    tmpRandomNumberGenerator
+                                );
                             }
                             SpicesGraphics tmpSpices = SpicesPool.getInstance().getSpices(tmpMolecularStructureString);
                             tmpSpices.setCoordinates(tmpLineNumber, tmpFirstParticleCoordinates, tmpLastParticleCoordinates, tmpBondLength);

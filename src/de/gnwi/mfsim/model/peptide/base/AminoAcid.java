@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2024  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -265,8 +265,9 @@ public final class AminoAcid {
     }
 
     /**
-     *
-     * @return Gets the charge settings of current amino acid.
+     * Returns charge settings of current amino acid.
+     * 
+     * @return Charge settings of current amino acid.
      */
     public ArrayList<ChargeSetting> getChargeSettings() {
         return this.chargeSettings;
@@ -291,8 +292,9 @@ public final class AminoAcid {
     }
 
     /**
-     *
-     * @return Gets the one letter code of the amino acid.
+     * Returns one letter code of the amino acid.
+     * 
+     * @return One letter code of the amino acid.
      */
     public String getOneLetterCode() {
         return this.oneLetter;

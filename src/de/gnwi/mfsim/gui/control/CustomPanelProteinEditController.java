@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2024  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -710,9 +710,20 @@ public class CustomPanelProteinEditController extends ChangeNotifier implements 
             if (tmpProteinBackboneProbesValueItem == null) {
                 MouseCursorManagement.getInstance().setDefaultCursor();
                 // <editor-fold defaultstate="collapsed" desc="Message that method failed">
-                JOptionPane.showMessageDialog(null, String.format(GuiMessage.get("Error.CommandExecutionFailed"), "setProperties()", "CustomPanelProteinEditController"),
-                        GuiMessage.get("Error.ErrorNotificationTitle"), JOptionPane.ERROR_MESSAGE);
-
+                JOptionPane.showMessageDialog(
+                    null, 
+                    String.format(
+                        GuiMessage.get("Error.CommandExecutionFailed"), 
+                        "setProperties()", 
+                        "CustomPanelProteinEditController"
+                    ),
+                    GuiMessage.get("Error.ErrorNotificationTitle"), 
+                    JOptionPane.ERROR_MESSAGE
+                );
+                ModelUtils.appendToLogfile(
+                    true,
+                    "CustomPanelProteinEditController.setProperties: tmpProteinBackboneProbesValueItem is null. This should never happen! (There may be missing probe definitions for backbone particles in the particle set file.)"
+                );
                 // </editor-fold>
                 return;
             }

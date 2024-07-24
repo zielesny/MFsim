@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2024  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -23,7 +23,8 @@ import java.io.InputStream;
 import java.net.URL;
 
 /**
- *
+ * Resource locator
+ * 
  * @author Andreas Truszkowski
  */
 public class ResourceLocator {

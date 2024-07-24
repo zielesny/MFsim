@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2024  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>  
  * 
@@ -17,6 +17,237 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+--------------------------------------------------------------------------------
+MFsim 2.6.4.0 (MFsim.jar)
+--------------------------------------------------------------------------------
+with Java runtime environment derived from JDK 21 with Hotspot JVM
+
+Minimum compatible MFsim Job Input version : 1.7.5.1
+Minimum compatible MFsim Job Result version: 1.1.0.4
+
+Dependencies:
+  - commons-lang3-3.4.jar
+      Apache Commons Lang (https://commons.apache.org/proper/commons-lang/):
+      Version 3.4
+  - commons-math3-3.6.1.jar
+      Apache Commons Math 3.6.1 (https://commons.apache.org/proper/commons-math/)
+      Version 3.6.1
+  - commons-rng-client-api-1.4.jar
+    commons-rng-core-1.4.jar
+    commons-rng-sampling-1.4.jar
+    commons-rng-simple-1.4.jar
+      Apache Commons RNG 1.4 (http://commons.apache.org/proper/commons-rng/)
+      Version 1.4
+  - biojava3-core-3.0.8.jar
+    biojava3-structure-3.0.8.jar
+      BioJava (http://biojava.org/)
+      Version 3.0.8
+  - gs-algo-1.3.jar
+    gs-core-1.3.jar
+    gs-ui-1.3.jar
+      GraphStream (http://graphstream-project.org/)
+      Version 1.3
+  - Jama-1.0.3.jar
+      Java Matrix Package (http://math.nist.gov/javanumerics/jama/)
+      Version 1.0.3
+  - jcommon-1.0.9.jar
+      JCommon (http://www.jfree.org/jcommon/):
+      Version 1.0.9
+  - Jdpd.jar/JdpdSP.jar
+      Version 1.6.2.0 (https://github.com/zielesny/Jdpd)
+  - jdom-2.0.6.jar
+      JDOM (http://www.jdom.org/)
+      Version 2.0.6
+  - jfreechart-1.0.5.jar
+      JFreeChart (http://www.jfree.org/jfreechart/):
+      Version 1.0.5
+  - Jmol.jar
+      Jmol (http://jmol.sourceforge.net/)
+      Version 14.2.7_2014.10.13
+  - Spices.jar
+      Version 1.0.0.0 (https://github.com/zielesny/SPICES)
+  - SpicesToGraphStream.jar
+      Version 1.0.0.0 (https://github.com/zielesny/SPICES)
+  - vecmath-1.5.2.jar
+      3D Vector Math Package
+      (https://mvnrepository.com/artifact/javax.vecmath/vecmath)
+      Version 1.5.2
+
+External Windows OS executables:    
+  - ffmpeg.exe
+      FFmpeg (Static) Version 3.2.4 (https://ffmpeg.org)
+
+--------------------------------------------------------------------------------
+- Removed problems:
+  - After workspace change possible defined JobInput or JobResults filter could 
+    not be cleared. This bug is removed.
+  - Particle set transformation script execution: DUPLICATE_WITH_CHARGE_CHANGE - 
+    The new color is now written as defined (before is was always converted to 
+    lowercase)
+
+- Improvements:
+  - Menu items for particle set and particle transformations are completely 
+    removed. Use transformation script instead (see menu item "Run script").
+  - Commands for particle set transformation script are extended, see 
+    description.
+
+
+--------------------------------------------------------------------------------
+MFsim 2.6.3.0 (MFsim.jar)
+--------------------------------------------------------------------------------
+with Java runtime environment derived from JDK 17.0.0.35 with Hotspot JVM
+
+Minimum compatible MFsim Job Input version : 1.7.5.1
+Minimum compatible MFsim Job Result version: 1.1.0.4
+
+Dependencies:
+  - commons-lang3-3.4.jar
+      Apache Commons Lang (https://commons.apache.org/proper/commons-lang/):
+      Version 3.4
+  - commons-math3-3.6.1.jar
+      Apache Commons Math 3.6.1 (https://commons.apache.org/proper/commons-math/)
+      Version 3.6.1
+  - commons-rng-client-api-1.4.jar
+    commons-rng-core-1.4.jar
+    commons-rng-sampling-1.4.jar
+    commons-rng-simple-1.4.jar
+      Apache Commons RNG 1.4 (http://commons.apache.org/proper/commons-rng/)
+      Version 1.4
+  - biojava3-core-3.0.8.jar
+    biojava3-structure-3.0.8.jar
+      BioJava (http://biojava.org/)
+      Version 3.0.8
+  - gs-algo-1.3.jar
+    gs-core-1.3.jar
+    gs-ui-1.3.jar
+      GraphStream (http://graphstream-project.org/)
+      Version 1.3
+  - Jama-1.0.3.jar
+      Java Matrix Package (http://math.nist.gov/javanumerics/jama/)
+      Version 1.0.3
+  - jcommon-1.0.9.jar
+      JCommon (http://www.jfree.org/jcommon/):
+      Version 1.0.9
+  - Jdpd.jar/JdpdSP.jar
+      Version 1.6.2.0 (https://github.com/zielesny/Jdpd)
+  - jdom-2.0.6.jar
+      JDOM (http://www.jdom.org/)
+      Version 2.0.6
+  - jfreechart-1.0.5.jar
+      JFreeChart (http://www.jfree.org/jfreechart/):
+      Version 1.0.5
+  - Jmol.jar
+      Jmol (http://jmol.sourceforge.net/)
+      Version 14.2.7_2014.10.13
+  - Spices.jar
+      Version 1.0.0.0 (https://github.com/zielesny/SPICES)
+  - SpicesToGraphStream.jar
+      Version 1.0.0.0 (https://github.com/zielesny/SPICES)
+  - vecmath-1.5.2.jar
+      3D Vector Math Package
+      (https://mvnrepository.com/artifact/javax.vecmath/vecmath)
+      Version 1.5.2
+
+External Windows OS executables:    
+  - ffmpeg.exe
+      FFmpeg (Static) Version 3.2.4 (https://ffmpeg.org)
+
+--------------------------------------------------------------------------------
+- Removed problems:
+  - A severe problem in calculating simulation box positions for molecules that
+    are collapsed to a single point is removed (known bug of Version 2.6.2.0 
+    is resolved).
+
+- Known bugs:
+  None
+
+
+--------------------------------------------------------------------------------
+MFsim 2.6.2.0 (MFsim.jar)
+--------------------------------------------------------------------------------
+with Java runtime environment derived from JDK 17.0.0.35 with Hotspot JVM
+
+Minimum compatible MFsim Job Input version : 1.7.5.1
+Minimum compatible MFsim Job Result version: 1.1.0.4
+
+Dependencies:
+  - commons-lang3-3.4.jar
+      Apache Commons Lang (https://commons.apache.org/proper/commons-lang/):
+      Version 3.4
+  - commons-math3-3.6.1.jar
+      Apache Commons Math 3.6.1 (https://commons.apache.org/proper/commons-math/)
+      Version 3.6.1
+  - commons-rng-client-api-1.4.jar
+    commons-rng-core-1.4.jar
+    commons-rng-sampling-1.4.jar
+    commons-rng-simple-1.4.jar
+      Apache Commons RNG 1.4 (http://commons.apache.org/proper/commons-rng/)
+      Version 1.4
+  - biojava3-core-3.0.8.jar
+    biojava3-structure-3.0.8.jar
+      BioJava (http://biojava.org/)
+      Version 3.0.8
+  - gs-algo-1.3.jar
+    gs-core-1.3.jar
+    gs-ui-1.3.jar
+      GraphStream (http://graphstream-project.org/)
+      Version 1.3
+  - Jama-1.0.3.jar
+      Java Matrix Package (http://math.nist.gov/javanumerics/jama/)
+      Version 1.0.3
+  - jcommon-1.0.9.jar
+      JCommon (http://www.jfree.org/jcommon/):
+      Version 1.0.9
+  - Jdpd.jar/JdpdSP.jar
+      Version 1.6.2.0 (https://github.com/zielesny/Jdpd)
+  - jdom-2.0.6.jar
+      JDOM (http://www.jdom.org/)
+      Version 2.0.6
+  - jfreechart-1.0.5.jar
+      JFreeChart (http://www.jfree.org/jfreechart/):
+      Version 1.0.5
+  - Jmol.jar
+      Jmol (http://jmol.sourceforge.net/)
+      Version 14.2.7_2014.10.13
+  - Spices.jar
+      Version 1.0.0.0 (https://github.com/zielesny/SPICES)
+  - SpicesToGraphStream.jar
+      Version 1.0.0.0 (https://github.com/zielesny/SPICES)
+  - vecmath-1.5.2.jar
+      3D Vector Math Package
+      (https://mvnrepository.com/artifact/javax.vecmath/vecmath)
+      Version 1.5.2
+
+External Windows OS executables:    
+  - ffmpeg.exe
+      FFmpeg (Static) Version 3.2.4 (https://ffmpeg.org)
+
+--------------------------------------------------------------------------------
+- Improvements:
+  - For a job restart it can now be defined if the velocities are taken from the
+    previous job or if they are new initialized (then also the defined number of 
+	  velocity scaling steps is performed again ).
+
+- Removed problems:
+  - Particle set "ParticleSet_MemProt_V01.txt" was corrected for missing 
+    PD-Particles of backbone particles, e.g. for particles MeNH2BB or MeNH2PBB.
+  - Removed problems of the "Run script" function for particle set conversion:
+    - The "INCREMENT_PD" command is removed. Use the duplication command 
+	  instead.
+    - A severe error in the scaling functions for particle sets is removed (the
+	  temperatures and diagonal a(ii) repulsions were incorrectly taken from 
+	  the particle set that is loaded on startup of MFsim).
+    - A severe error in the duplicate functions for particle sets is removed 
+	  (the mappings were incorrectly taken from the particle set that is loaded 
+	  on startup of MFsim).
+
+- Known bugs:
+  - There is a subtle bug in the compartment editor which depends on the 
+    specific sequence of operations so that the resulting compartments are not 
+	  properly defined. Until now this bug can not be reproduced. Every help is 
+	  appreciated.
+
 
 --------------------------------------------------------------------------------
 MFsim 2.6.1.0 (MFsim.jar)

@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2024  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -355,6 +355,10 @@ public enum PreferenceEditableEnum {
      */
     NUMBER_OF_STEPS_FOR_JOB_RESTART,
     /**
+     * PreferenceBasic: this.isVelocityInitializationForRestart
+     */
+    VELOCITY_INITIALIZATION_FOR_JOB_RESTART,
+    /**
      * PreferenceBasic: this.simulationBoxMagnificationPercentage
      */
     SIMULATION_BOX_MAGNIFICATION_PERCENTAGE,
@@ -501,6 +505,7 @@ public enum PreferenceEditableEnum {
             PreferenceEditableEnum.representationToPreferenceEditableEnumMap.put(PreferenceEditableEnum.SIMULATION_MOVIE_IMAGE_PATH.name(), PreferenceEditableEnum.SIMULATION_MOVIE_IMAGE_PATH);
             PreferenceEditableEnum.representationToPreferenceEditableEnumMap.put(PreferenceEditableEnum.CHART_MOVIE_IMAGE_PATH.name(), PreferenceEditableEnum.CHART_MOVIE_IMAGE_PATH);
             PreferenceEditableEnum.representationToPreferenceEditableEnumMap.put(PreferenceEditableEnum.NUMBER_OF_STEPS_FOR_JOB_RESTART.name(), PreferenceEditableEnum.NUMBER_OF_STEPS_FOR_JOB_RESTART);
+            PreferenceEditableEnum.representationToPreferenceEditableEnumMap.put(PreferenceEditableEnum.VELOCITY_INITIALIZATION_FOR_JOB_RESTART.name(), PreferenceEditableEnum.VELOCITY_INITIALIZATION_FOR_JOB_RESTART);
             PreferenceEditableEnum.representationToPreferenceEditableEnumMap.put(PreferenceEditableEnum.FIRST_SLICE_INDEX.name(), PreferenceEditableEnum.FIRST_SLICE_INDEX);
             PreferenceEditableEnum.representationToPreferenceEditableEnumMap.put(PreferenceEditableEnum.NUMBER_OF_ZOOM_VOLUME_BINS.name(), PreferenceEditableEnum.NUMBER_OF_ZOOM_VOLUME_BINS);
             PreferenceEditableEnum.representationToPreferenceEditableEnumMap.put(PreferenceEditableEnum.NUMBER_OF_FRAME_POINTS_SLICER.name(), PreferenceEditableEnum.NUMBER_OF_FRAME_POINTS_SLICER);

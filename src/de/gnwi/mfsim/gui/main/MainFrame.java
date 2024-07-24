@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2024  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -679,181 +679,181 @@ public class MainFrame extends JFrame {
                 this.particlesMenu.setText(GuiMessage.get("MainFrame.particlesMenu.text")); 
                 this.menuBar.add(this.particlesMenu);
 
-                // <editor-fold defaultstate="collapsed" desc="particleSetSubMenu">
+                // <editor-fold defaultstate="collapsed" desc="chooseParticleSetMenuItem">
                 {
-                    this.particleSetSubMenu = new JMenu();
-                    this.particleSetSubMenu.setText(GuiMessage.get("MainFrame.particleSetSubMenu.text")); 
-                    this.particlesMenu.add(this.particleSetSubMenu);
-                    
-                    // <editor-fold defaultstate="collapsed" desc="chooseParticleSetMenuItem">
-                    {
-                        this.chooseParticleSetMenuItem = new JMenuItem();
-                        this.chooseParticleSetMenuItem.addActionListener(new ActionListener() {
+                    this.chooseParticleSetMenuItem = new JMenuItem();
+                    this.chooseParticleSetMenuItem.addActionListener(new ActionListener() {
 
-                            public void actionPerformed(ActionEvent e) {
-                                MainFrame.this.mainFrameController.displayChooseParticleSetDialog();
-                            }
-
-                        });
-                        this.chooseParticleSetMenuItem.setText(GuiMessage.get("MainFrame.chooseParticleSetMenuItem.text")); 
-                        this.particleSetSubMenu.add(this.chooseParticleSetMenuItem);
-                    }
-                    // </editor-fold>
-                    // <editor-fold defaultstate="collapsed" desc="formatParticleSetMenuItem">
-                    {
-                        this.formatParticleSetMenuItem = new JMenuItem();
-                        this.formatParticleSetMenuItem.addActionListener(new ActionListener() {
-
-                            public void actionPerformed(ActionEvent e) {
-                                MainFrame.this.mainFrameController.displayFormatParticleSetDialog();
-                            }
-
-                        });
-                        this.formatParticleSetMenuItem.setText(GuiMessage.get("MainFrame.formatParticleSetMenuItem.text")); 
-                        this.particleSetSubMenu.add(this.formatParticleSetMenuItem);
-                    }
-                    // </editor-fold>
-                    // <editor-fold defaultstate="collapsed" desc="rescaleVminMenuItem">
-                    {
-                        this.rescaleVminMenuItem = new JMenuItem();
-                        this.rescaleVminMenuItem.addActionListener(new ActionListener() {
-
-                            public void actionPerformed(ActionEvent e) {
-                                MainFrame.this.mainFrameController.displayRescaleVminDialog();
-                            }
-
-                        });
-                        this.rescaleVminMenuItem.setText(GuiMessage.get("MainFrame.rescaleVminMenuItem.text")); 
-                        this.particleSetSubMenu.add(this.rescaleVminMenuItem);
-                    }
-                    // </editor-fold>
-                    {
-                        this.rescaleRepulsionSubMenu = new JMenu();
-                        this.rescaleRepulsionSubMenu.setText(GuiMessage.get("MainFrame.rescaleRepulsionSubMenu.text")); 
-                        this.particleSetSubMenu.add(this.rescaleRepulsionSubMenu);
-
-                        // <editor-fold defaultstate="collapsed" desc="rescaleRepulsionIndividualMenuItem">
-                        {
-                            this.rescaleRepulsionIndividualMenuItem = new JMenuItem();
-                            this.rescaleRepulsionIndividualMenuItem.addActionListener(new ActionListener() {
-
-                                public void actionPerformed(ActionEvent e) {
-                                    MainFrame.this.mainFrameController.displayRescaleRepulsionsDialog(true);
-                                }
-
-                            });
-                            this.rescaleRepulsionIndividualMenuItem.setText(GuiMessage.get("MainFrame.rescaleRepulsionIndividualMenuItem.text")); 
-                            this.rescaleRepulsionSubMenu.add(this.rescaleRepulsionIndividualMenuItem);
+                        public void actionPerformed(ActionEvent e) {
+                            MainFrame.this.mainFrameController.displayChooseParticleSetDialog();
                         }
-                        // </editor-fold>
-                        // <editor-fold defaultstate="collapsed" desc="rescaleRepulsionGlobalMenuItem">
-                        {
-                            this.rescaleRepulsionGlobalMenuItem = new JMenuItem();
-                            this.rescaleRepulsionGlobalMenuItem.addActionListener(new ActionListener() {
 
-                                public void actionPerformed(ActionEvent e) {
-                                    MainFrame.this.mainFrameController.displayRescaleRepulsionsDialog(false);
-                                }
-
-                            });
-                            this.rescaleRepulsionGlobalMenuItem.setText(GuiMessage.get("MainFrame.rescaleRepulsionGlobalMenuItem.text")); 
-                            this.rescaleRepulsionSubMenu.add(this.rescaleRepulsionGlobalMenuItem);
-                        }
-                        // </editor-fold>
-                    }
-                    // <editor-fold defaultstate="collapsed" desc="editParticlesMenuItem">
-                    {
-                        this.editParticlesMenuItem = new JMenuItem();
-                        this.editParticlesMenuItem.addActionListener(new ActionListener() {
-
-                            public void actionPerformed(ActionEvent e) {
-                                MainFrame.this.mainFrameController.displayEditParticlesDialog();
-                            }
-
-                        });
-                        this.editParticlesMenuItem.setText(GuiMessage.get("MainFrame.editParticlesMenuItem.text")); 
-                        this.particleSetSubMenu.add(this.editParticlesMenuItem);
-                    }
-                    // </editor-fold>
+                    });
+                    this.chooseParticleSetMenuItem.setText(GuiMessage.get("MainFrame.chooseParticleSetMenuItem.text"));
+                    this.particlesMenu.add(this.chooseParticleSetMenuItem);
                 }
                 // </editor-fold>
-                // <editor-fold defaultstate="collapsed" desc="particleSubMenu">
-                {
-                    this.particleSubMenu = new JMenu();
-                    this.particleSubMenu.setText(GuiMessage.get("MainFrame.particleSubMenu.text")); 
-                    this.particlesMenu.add(this.particleSubMenu);
-                    
-                    // <editor-fold defaultstate="collapsed" desc="duplicateParticlesMenuItem">
-                    {
-                        this.duplicateParticlesMenuItem = new JMenuItem();
-                        this.duplicateParticlesMenuItem.addActionListener(new ActionListener() {
-
-                            public void actionPerformed(ActionEvent e) {
-                                MainFrame.this.mainFrameController.displayDuplicateParticlesDialog();
-                            }
-
-                        });
-                        this.duplicateParticlesMenuItem.setText(GuiMessage.get("MainFrame.duplicateParticlesMenuItem.text")); 
-                        this.particleSubMenu.add(this.duplicateParticlesMenuItem);
-                    }
-                    // </editor-fold>
-                    // <editor-fold defaultstate="collapsed" desc="removeParticlesMenuItem">
-                    {
-                        this.removeParticlesMenuItem = new JMenuItem();
-                        this.removeParticlesMenuItem.addActionListener(new ActionListener() {
-
-                            public void actionPerformed(ActionEvent e) {
-                                MainFrame.this.mainFrameController.displayRemoveParticlesDialog();
-                            }
-
-                        });
-                        this.removeParticlesMenuItem.setText(GuiMessage.get("MainFrame.removeParticlesMenuItem.text")); 
-                        this.particleSubMenu.add(this.removeParticlesMenuItem);
-                    }
-                    // </editor-fold>
-                    // <editor-fold defaultstate="collapsed" desc="morphParticlesMenuItem">
-                    {
-                        this.morphParticlesMenuItem = new JMenuItem();
-                        this.morphParticlesMenuItem.addActionListener(new ActionListener() {
-
-                            public void actionPerformed(ActionEvent e) {
-                                MainFrame.this.mainFrameController.displayMorphParticleDialog();
-                            }
-
-                        });
-                        this.morphParticlesMenuItem.setText(GuiMessage.get("MainFrame.morphParticleMenuItem.text")); 
-                        this.particleSubMenu.add(this.morphParticlesMenuItem);
-                    }
-                    // </editor-fold>
-                    // <editor-fold defaultstate="collapsed" desc="incrementProbeParticlesMenuItem">
-                    {
-                        this.incrementProbeParticlesMenuItem = new JMenuItem();
-                        this.incrementProbeParticlesMenuItem.addActionListener(new ActionListener() {
-
-                            public void actionPerformed(ActionEvent e) {
-                                MainFrame.this.mainFrameController.displayIncrementProbeParticlesDialog();
-                            }
-
-                        });
-                        this.incrementProbeParticlesMenuItem.setText(GuiMessage.get("MainFrame.incrementProbeParticlesMenuItem.text")); 
-                        this.particleSubMenu.add(this.incrementProbeParticlesMenuItem);
-                    }
-                    // </editor-fold>
-                    // <editor-fold defaultstate="collapsed" desc="backboneRepulsionMenuItem">
-                    {
-                        this.backboneRepulsionMenuItem = new JMenuItem();
-                        this.backboneRepulsionMenuItem.addActionListener(new ActionListener() {
-
-                            public void actionPerformed(ActionEvent e) {
-                                MainFrame.this.mainFrameController.displayBackboneRepulsionDialog();
-                            }
-
-                        });
-                        this.backboneRepulsionMenuItem.setText(GuiMessage.get("MainFrame.backboneRepulsionMenuItem.text")); 
-                        this.particleSubMenu.add(this.backboneRepulsionMenuItem);
-                    }
-                    // </editor-fold>
-                }                
+                // <editor-fold defaultstate="collapsed" desc="TURNED TO COMMENT: particleSetSubMenu">
+                //                {
+                //                    this.particleSetSubMenu = new JMenu();
+                //                    this.particleSetSubMenu.setText(GuiMessage.get("MainFrame.particleSetSubMenu.text")); 
+                //                    this.particlesMenu.add(this.particleSetSubMenu);
+                //                    
+                //                    // <editor-fold defaultstate="collapsed" desc="formatParticleSetMenuItem">
+                //                    {
+                //                        this.formatParticleSetMenuItem = new JMenuItem();
+                //                        this.formatParticleSetMenuItem.addActionListener(new ActionListener() {
+                //
+                //                            public void actionPerformed(ActionEvent e) {
+                //                                MainFrame.this.mainFrameController.displayFormatParticleSetDialog();
+                //                            }
+                //
+                //                        });
+                //                        this.formatParticleSetMenuItem.setText(GuiMessage.get("MainFrame.formatParticleSetMenuItem.text")); 
+                //                        this.particleSetSubMenu.add(this.formatParticleSetMenuItem);
+                //                    }
+                //                    // </editor-fold>
+                //                    // <editor-fold defaultstate="collapsed" desc="rescaleVminMenuItem">
+                //                    {
+                //                        this.rescaleVminMenuItem = new JMenuItem();
+                //                        this.rescaleVminMenuItem.addActionListener(new ActionListener() {
+                //
+                //                            public void actionPerformed(ActionEvent e) {
+                //                                MainFrame.this.mainFrameController.displayRescaleVminDialog();
+                //                            }
+                //
+                //                        });
+                //                        this.rescaleVminMenuItem.setText(GuiMessage.get("MainFrame.rescaleVminMenuItem.text")); 
+                //                        this.particleSetSubMenu.add(this.rescaleVminMenuItem);
+                //                    }
+                //                    // </editor-fold>
+                //                    {
+                //                        this.rescaleRepulsionSubMenu = new JMenu();
+                //                        this.rescaleRepulsionSubMenu.setText(GuiMessage.get("MainFrame.rescaleRepulsionSubMenu.text")); 
+                //                        this.particleSetSubMenu.add(this.rescaleRepulsionSubMenu);
+                //
+                //                        // <editor-fold defaultstate="collapsed" desc="rescaleRepulsionIndividualMenuItem">
+                //                        {
+                //                            this.rescaleRepulsionIndividualMenuItem = new JMenuItem();
+                //                            this.rescaleRepulsionIndividualMenuItem.addActionListener(new ActionListener() {
+                //
+                //                                public void actionPerformed(ActionEvent e) {
+                //                                    MainFrame.this.mainFrameController.displayRescaleRepulsionsDialog(true);
+                //                                }
+                //
+                //                            });
+                //                            this.rescaleRepulsionIndividualMenuItem.setText(GuiMessage.get("MainFrame.rescaleRepulsionIndividualMenuItem.text")); 
+                //                            this.rescaleRepulsionSubMenu.add(this.rescaleRepulsionIndividualMenuItem);
+                //                        }
+                //                        // </editor-fold>
+                //                        // <editor-fold defaultstate="collapsed" desc="rescaleRepulsionGlobalMenuItem">
+                //                        {
+                //                            this.rescaleRepulsionGlobalMenuItem = new JMenuItem();
+                //                            this.rescaleRepulsionGlobalMenuItem.addActionListener(new ActionListener() {
+                //
+                //                                public void actionPerformed(ActionEvent e) {
+                //                                    MainFrame.this.mainFrameController.displayRescaleRepulsionsDialog(false);
+                //                                }
+                //
+                //                            });
+                //                            this.rescaleRepulsionGlobalMenuItem.setText(GuiMessage.get("MainFrame.rescaleRepulsionGlobalMenuItem.text")); 
+                //                            this.rescaleRepulsionSubMenu.add(this.rescaleRepulsionGlobalMenuItem);
+                //                        }
+                //                        // </editor-fold>
+                //                    }
+                //                    // <editor-fold defaultstate="collapsed" desc="editParticlesMenuItem">
+                //                    {
+                //                        this.editParticlesMenuItem = new JMenuItem();
+                //                        this.editParticlesMenuItem.addActionListener(new ActionListener() {
+                //
+                //                            public void actionPerformed(ActionEvent e) {
+                //                                MainFrame.this.mainFrameController.displayEditParticlesDialog();
+                //                            }
+                //
+                //                        });
+                //                        this.editParticlesMenuItem.setText(GuiMessage.get("MainFrame.editParticlesMenuItem.text")); 
+                //                        this.particleSetSubMenu.add(this.editParticlesMenuItem);
+                //                    }
+                //                    // </editor-fold>
+                //                }
+                // </editor-fold>
+                // <editor-fold defaultstate="collapsed" desc="TURNED TO COMMENT: particleSubMenu">
+                //                {
+                //                    this.particleSubMenu = new JMenu();
+                //                    this.particleSubMenu.setText(GuiMessage.get("MainFrame.particleSubMenu.text")); 
+                //                    this.particlesMenu.add(this.particleSubMenu);
+                //                    
+                //                    // <editor-fold defaultstate="collapsed" desc="duplicateParticlesMenuItem">
+                //                    {
+                //                        this.duplicateParticlesMenuItem = new JMenuItem();
+                //                        this.duplicateParticlesMenuItem.addActionListener(new ActionListener() {
+                //
+                //                            public void actionPerformed(ActionEvent e) {
+                //                                MainFrame.this.mainFrameController.displayDuplicateParticlesDialog();
+                //                            }
+                //
+                //                        });
+                //                        this.duplicateParticlesMenuItem.setText(GuiMessage.get("MainFrame.duplicateParticlesMenuItem.text")); 
+                //                        this.particleSubMenu.add(this.duplicateParticlesMenuItem);
+                //                    }
+                //                    // </editor-fold>
+                //                    // <editor-fold defaultstate="collapsed" desc="removeParticlesMenuItem">
+                //                    {
+                //                        this.removeParticlesMenuItem = new JMenuItem();
+                //                        this.removeParticlesMenuItem.addActionListener(new ActionListener() {
+                //
+                //                            public void actionPerformed(ActionEvent e) {
+                //                                MainFrame.this.mainFrameController.displayRemoveParticlesDialog();
+                //                            }
+                //
+                //                        });
+                //                        this.removeParticlesMenuItem.setText(GuiMessage.get("MainFrame.removeParticlesMenuItem.text")); 
+                //                        this.particleSubMenu.add(this.removeParticlesMenuItem);
+                //                    }
+                //                    // </editor-fold>
+                //                    // <editor-fold defaultstate="collapsed" desc="morphParticlesMenuItem">
+                //                    {
+                //                        this.morphParticlesMenuItem = new JMenuItem();
+                //                        this.morphParticlesMenuItem.addActionListener(new ActionListener() {
+                //
+                //                            public void actionPerformed(ActionEvent e) {
+                //                                MainFrame.this.mainFrameController.displayMorphParticleDialog();
+                //                            }
+                //
+                //                        });
+                //                        this.morphParticlesMenuItem.setText(GuiMessage.get("MainFrame.morphParticleMenuItem.text")); 
+                //                        this.particleSubMenu.add(this.morphParticlesMenuItem);
+                //                    }
+                //                    // </editor-fold>
+                //                    // <editor-fold defaultstate="collapsed" desc="incrementProbeParticlesMenuItem">
+                //                    {
+                //                        this.incrementProbeParticlesMenuItem = new JMenuItem();
+                //                        this.incrementProbeParticlesMenuItem.addActionListener(new ActionListener() {
+                //
+                //                            public void actionPerformed(ActionEvent e) {
+                //                                MainFrame.this.mainFrameController.displayIncrementProbeParticlesDialog();
+                //                            }
+                //
+                //                        });
+                //                        this.incrementProbeParticlesMenuItem.setText(GuiMessage.get("MainFrame.incrementProbeParticlesMenuItem.text")); 
+                //                        this.particleSubMenu.add(this.incrementProbeParticlesMenuItem);
+                //                    }
+                //                    // </editor-fold>
+                //                    // <editor-fold defaultstate="collapsed" desc="backboneRepulsionMenuItem">
+                //                    {
+                //                        this.backboneRepulsionMenuItem = new JMenuItem();
+                //                        this.backboneRepulsionMenuItem.addActionListener(new ActionListener() {
+                //
+                //                            public void actionPerformed(ActionEvent e) {
+                //                                MainFrame.this.mainFrameController.displayBackboneRepulsionDialog();
+                //                            }
+                //
+                //                        });
+                //                        this.backboneRepulsionMenuItem.setText(GuiMessage.get("MainFrame.backboneRepulsionMenuItem.text")); 
+                //                        this.particleSubMenu.add(this.backboneRepulsionMenuItem);
+                //                    }
+                //                    // </editor-fold>
+                //                }                
                 // </editor-fold>
                 // <editor-fold defaultstate="collapsed" desc="Separator">
                 {
@@ -1593,14 +1593,12 @@ public class MainFrame extends JFrame {
                                 {
                                     this.stepsForRestartInfoLabel = new JLabel();
                                     this.stepsForRestartInfoLabel.setForeground(GuiDefinitions.PANEL_TITLE_COLOR);
-                                    this.stepsForRestartInfoLabel.setText(GuiMessage.get("MainFrame.stepsForRestartInfoLabel.text")); 
                                     this.selectJobForRestartPanel.add(this.stepsForRestartInfoLabel);
                                     this.selectJobForRestartPanelSpringLayout.putConstraint(SpringLayout.EAST, this.stepsForRestartInfoLabel, -90, SpringLayout.EAST, this.selectJobForRestartPanel);
                                     this.selectJobForRestartPanelSpringLayout.putConstraint(SpringLayout.WEST, this.stepsForRestartInfoLabel, 170, SpringLayout.WEST, this.selectJobForRestartPanel);
                                     this.selectJobForRestartPanelSpringLayout.putConstraint(SpringLayout.SOUTH, this.stepsForRestartInfoLabel, 0, SpringLayout.SOUTH, this.selectJobForRestartPanel);
                                     this.selectJobForRestartPanelSpringLayout.putConstraint(SpringLayout.NORTH, this.stepsForRestartInfoLabel, -35, SpringLayout.SOUTH, this.selectJobForRestartPanel);
                                 }
-
                                 // </editor-fold>
                                 // <editor-fold defaultstate="collapsed" desc="addExecutionJobForRestartButton">
                                 {
@@ -1657,7 +1655,7 @@ public class MainFrame extends JFrame {
                                     this.editStepNumberButton.addActionListener(new ActionListener() {
 
                                         public void actionPerformed(ActionEvent e) {
-                                            MainFrame.this.mainFrameController.editNumberOfAdditionalStepsForJobRestart();
+                                            MainFrame.this.mainFrameController.editSettingsForJobRestart();
                                         }
 
                                     });

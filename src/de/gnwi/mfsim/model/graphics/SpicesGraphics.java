@@ -1,6 +1,6 @@
 /**
  * SPICES (Simplified Particle Input ConnEction Specification)
- * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2024  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -243,9 +243,12 @@ public class SpicesGraphics extends Spices {
  the index of the molecular structure, second index is the index of the
  GraphicalParticlePosition object for the particle position.
      */
-    public GraphicalParticlePosition[][] getParticleCoordinates(HashMap<String, IGraphicalParticle> aParticleToGraphicalParticleMap,
-            GraphicalParticlePosition[] aFirstParticleCoordinates, 
-            GraphicalParticlePosition[] aLastParticleCoordinates, double aBondLength) {
+    public GraphicalParticlePosition[][] getParticleCoordinates(
+        HashMap<String, IGraphicalParticle> aParticleToGraphicalParticleMap,
+        GraphicalParticlePosition[] aFirstParticleCoordinates, 
+        GraphicalParticlePosition[] aLastParticleCoordinates, 
+        double aBondLength
+    ) {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (this.inputStructure == null || this.inputStructure.isEmpty()) {
             return null;
@@ -321,7 +324,8 @@ public class SpicesGraphics extends Spices {
         HashMap<String, IGraphicalParticle> aParticleToGraphicalParticleMap, 
         GraphicalParticlePosition aFirstParticleCoordinate,
         GraphicalParticlePosition aLastParticleCoordinate, 
-        double aBondLength) {
+        double aBondLength
+    ) {
         int[] tmpParticleIndices = aSpices.partOfSpices[aPartIndex].getInnerParticleIndices();
         PointInSpace tmpFirstParticleCoordinate = (PointInSpace)aFirstParticleCoordinate;
         PointInSpace tmpLastParticleCoordinate = (PointInSpace)aLastParticleCoordinate;        

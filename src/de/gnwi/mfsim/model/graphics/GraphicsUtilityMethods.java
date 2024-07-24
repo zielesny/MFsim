@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2024  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -4173,12 +4173,11 @@ public class GraphicsUtilityMethods {
 
     /**
      * Returns if a sphere and a xy-layer overlap
+     * Author: Sebastian Fritsch
      *
      * @param aSphere Sphere
      * @param aXyLayer Xy-layer
      * @return True: Bodies overlap, false: Otherwise
-     * 
-     * @author Sebastian Fritsch
      */
     public boolean isSphereXyLayerOverlap(BodySphere aSphere, BodyXyLayer aXyLayer) {
         //<editor-fold defaultstate="collapsed" desc="Checks">
@@ -4212,12 +4211,11 @@ public class GraphicsUtilityMethods {
 
     /**
      * Returns if two xy-layers overlap
+     * Author: Sebastian Fritsch
      *
      * @param aXyLayer1 Xy-layer 1
      * @param aXyLayer2 Xy-layer 2
      * @return True: Xy-layers overlap, false: Otherwise
-     * 
-     * @author Sebastian Fritsch
      */
     public boolean isXyLayerXyLayerOverlap(BodyXyLayer aXyLayer1, BodyXyLayer aXyLayer2) {
         //<editor-fold defaultstate="collapsed" desc="Checks">

@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2024  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -67,6 +67,7 @@ import org.biojava.bio.structure.quaternary.BiologicalAssemblyTransformation;
 import de.gnwi.mfsim.model.graphics.particle.IGraphicalParticle;
 import de.gnwi.mfsim.model.graphics.particle.IGraphicalParticlePosition;
 import de.gnwi.mfsim.model.preference.ModelDefinitions;
+import java.net.URI;
 import org.apache.commons.rng.simple.RandomSource;
 
 /**
@@ -184,7 +185,9 @@ public final class PdbToDpd {
             if (aPdbIndex.length() != 4) {
                 throw new DpdPeptideException("Peptide.NotAValidPDBID");
             }
-            URL website = new URL("http://www.rcsb.org/pdb/files/" + aPdbIndex + ".pdb");
+            // Old deprecated code:
+            // URL website = new URL("http://www.rcsb.org/pdb/files/" + aPdbIndex + ".pdb");
+            URL website = (new URI("http://www.rcsb.org/pdb/files/" + aPdbIndex + ".pdb")).toURL();
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(website.openStream()));
             StringBuilder stringBuilder = new StringBuilder();
             String line;

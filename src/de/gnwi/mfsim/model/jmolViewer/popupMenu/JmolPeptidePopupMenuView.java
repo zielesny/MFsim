@@ -4,7 +4,7 @@
  */
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2024  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -29,7 +29,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
 
 /**
- *
+ * Jmol peptide popup menu view
+ * 
  * @author Andreas Truszkowski
  */
 public class JmolPeptidePopupMenuView extends JPopupMenu {

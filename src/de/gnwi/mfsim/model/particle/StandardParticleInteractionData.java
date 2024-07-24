@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2024  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -381,22 +381,11 @@ public final class StandardParticleInteractionData {
     /**
      * Returns default "H2O" (water) particle
      * 
-     * @return Default "H2O" (water) particle or null if none is defined
+     * @return Default "H2O" (water) particle
      */
     public String getDefaultWaterParticle() {
-        String[] tmpParticles = this.getAllParticlesSortedAscending();
-        if (tmpParticles == null) {
-            return null;
-        }
-        // Select water (H2O) particle as default if possible
-        String tmpDefaultParticle = null;
-        for (String tmpParticle : tmpParticles) {
-            if (tmpParticle.toUpperCase(Locale.ENGLISH).equals("H2O")) {
-                tmpDefaultParticle = "H2O";
-                break;
-            }
-        }
-        return tmpDefaultParticle;
+        String tmpDefaultWaterParticle = "H2O";
+        return tmpDefaultWaterParticle;
     }
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- Amino acid description related methods">
@@ -1255,7 +1244,6 @@ public final class StandardParticleInteractionData {
      * display
      */
     public ValueItemContainer getParticlesValueItemContainerForMorph() {
-        // TODO: Create code
         String[] tmpNodeNames;
         ValueItemContainer tmpParticlesValueItemContainerForMorph = new ValueItemContainer(new StandardParticleUpdateUtils());
         int tmpVerticalPosition = 0;
@@ -1599,7 +1587,6 @@ public final class StandardParticleInteractionData {
         if (tmpTemperatureFactorValueItem == null) {
             return false;
         }
-        double tmpTempFactor = tmpTemperatureFactorValueItem.getValueAsDouble();
         ValueItem tmpLowerRepulsionRangeValueItem = aRepulsionsRescaleValueItemContainer.getValueItem("LOWER_REPULSION_RANGE");
         if (tmpLowerRepulsionRangeValueItem == null) {
             return false;
@@ -1611,9 +1598,9 @@ public final class StandardParticleInteractionData {
         }
         double tmpChargeOffset = tmpChargeOffsetValueItem.getValueAsDouble();
         if (isIndividualScaling) {
-            tmpParticleSetFileLineList = this.rescaleRepulsionsWithIndividualScalingFactors(tmpParticleSetFileLineList, tmpTempFactor, tmpLowerRepulsionRange, tmpChargeOffset);
+            tmpParticleSetFileLineList = this.rescaleRepulsionsWithIndividualScalingFactors(tmpParticleSetFileLineList, tmpLowerRepulsionRange, tmpChargeOffset);
         } else {
-            tmpParticleSetFileLineList = this.rescaleRepulsionsWithGlobalScalingFactor(tmpParticleSetFileLineList, tmpTempFactor, tmpLowerRepulsionRange, tmpChargeOffset);
+            tmpParticleSetFileLineList = this.rescaleRepulsionsWithGlobalScalingFactor(tmpParticleSetFileLineList, tmpLowerRepulsionRange, tmpChargeOffset);
         }
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Save particle set file">
@@ -1708,15 +1695,8 @@ public final class StandardParticleInteractionData {
             return false;
         }
         // </editor-fold>
-        // <editor-fold defaultstate="collapsed" desc="Read current particle set file">
-        LinkedList<String> tmpParticleSetFileLineList = 
-            this.fileUtilityMethods.readStringListFromFile(Preferences.getInstance().getCurrentParticleSetFilePathname(), null);
-        if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.size() == 0) {
-            return false;
-        }
-        // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Increment protein backbone probe particles">
-        tmpParticleSetFileLineList = this.incrementProbeParticles(tmpParticleSetFileLineList);
+        LinkedList<String> tmpParticleSetFileLineList = this.incrementProbeParticles();
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Save particle set file">
         ValueItem tmpParticleSetFilenameValueItem = aValueItemContainerForProbeParticleIncrement.getValueItem("PARTICLE_SET_FILE_NAME");
@@ -2241,25 +2221,6 @@ public final class StandardParticleInteractionData {
                 return "runScript: Command MORPH could not be run. Exception: " + anException.toString();
             }
             // </editor-fold>
-            // <editor-fold defaultstate="collapsed" desc="INCREMENT_PD">
-            try {
-                if (tmpCommandItems[i][0].equals("INCREMENT_PD")) {
-                    if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
-                        return "runScript: Command INCREMENT_PD: There is no particle set defined.";
-                    }
-                    tmpParticleSetFileLineList = this.incrementProbeParticles(tmpParticleSetFileLineList);
-                    if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
-                        return "runScript: Command INCREMENT_PD: Particle set was destroyed. This should never happen.";
-                    }
-                    tmpParticleSetFileLineList.addFirst(
-                        "# " +
-                        tmpCommandItems[i][0]
-                    );
-                }
-            } catch (Exception anException) {
-                return "runScript: Command INCREMENT_PD could not be run. Exception: " + anException.toString();
-            }
-            // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="BACKBONE_REPULSION">
             try {
                 if (tmpCommandItems[i][0].equals("BACKBONE_REPULSION")) {
@@ -2305,19 +2266,221 @@ public final class StandardParticleInteractionData {
                 return "runScript: Command RESCALE_TO_NEW_VMIN could not be run. Exception: " + anException.toString();
             }
             // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="SHIFT_REPULSIONS_FOR_TEMPERATURE">
+            try {
+                if (tmpCommandItems[i][0].equals("SHIFT_REPULSIONS_FOR_TEMPERATURE")) {
+                    if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
+                        return "runScript: Command SHIFT_REPULSIONS_FOR_TEMPERATURE: There is no particle set defined.";
+                    }
+                    tmpParticleSetFileLineList = 
+                        this.shiftRepulsionsForTemperature(
+                            tmpParticleSetFileLineList
+                        );
+                    if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
+                        return "runScript: Command SHIFT_REPULSIONS_FOR_TEMPERATURE: Particle set was destroyed. This should never happen.";
+                    }
+                    tmpParticleSetFileLineList.addFirst(
+                        "# " +
+                        tmpCommandItems[i][0]
+                    );
+                }
+            } catch (Exception anException) {
+                return "runScript: Command SHIFT_REPULSIONS_FOR_TEMPERATURE could not be run. Exception: " + anException.toString();
+            }
+            // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="NORMALIZE">
+            try {
+                if (tmpCommandItems[i][0].equals("NORMALIZE")) {
+                    if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
+                        return "runScript: Command NORMALIZE: There is no particle set defined.";
+                    }
+                    double tmpAijSmall = Double.valueOf(tmpCommandItems[i][1]);
+                    double tmpAijLarge = Double.valueOf(tmpCommandItems[i][2]);
+                    tmpParticleSetFileLineList = 
+                        this.normalize(
+                            tmpParticleSetFileLineList, 
+                            tmpAijSmall, 
+                            tmpAijLarge
+                        );
+                    if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
+                        return "runScript: Command NORMALIZE: Particle set was destroyed. This should never happen.";
+                    }
+                    tmpParticleSetFileLineList.addFirst(
+                        "# " +
+                        tmpCommandItems[i][0] + " " +
+                        tmpCommandItems[i][1] + " " +
+                        tmpCommandItems[i][2]
+                    );
+                }
+            } catch (Exception anException) {
+                return "runScript: Command NORMALIZE could not be run. Exception: " + anException.toString();
+            }
+            // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="SCALE_INDIVIDUAL">
+            try {
+                if (tmpCommandItems[i][0].equals("SCALE_INDIVIDUAL")) {
+                    if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
+                        return "runScript: Command SCALE_INDIVIDUAL: There is no particle set defined.";
+                    }
+                    double tmpAijMin = Double.valueOf(tmpCommandItems[i][1]);
+                    double tmpAijSmall = Double.valueOf(tmpCommandItems[i][2]);
+                    double tmpAijLarge = Double.valueOf(tmpCommandItems[i][3]);
+                    tmpParticleSetFileLineList = 
+                        this.scaleIndividual(
+                            tmpParticleSetFileLineList, 
+                            tmpAijMin, 
+                            tmpAijSmall, 
+                            tmpAijLarge
+                        );
+                    if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
+                        return "runScript: Command SCALE_INDIVIDUAL: Particle set was destroyed. This should never happen.";
+                    }
+                    tmpParticleSetFileLineList.addFirst(
+                        "# " +
+                        tmpCommandItems[i][0] + " " +
+                        tmpCommandItems[i][1] + " " +
+                        tmpCommandItems[i][2] + " " +
+                        tmpCommandItems[i][3]
+                    );
+                }
+            } catch (Exception anException) {
+                return "runScript: Command SCALE_INDIVIDUAL could not be run. Exception: " + anException.toString();
+            }
+            // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="SCALE_GLOBAL">
+            try {
+                if (tmpCommandItems[i][0].equals("SCALE_GLOBAL")) {
+                    if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
+                        return "runScript: Command SCALE_GLOBAL: There is no particle set defined.";
+                    }
+                    double tmpAijMin = Double.valueOf(tmpCommandItems[i][1]);
+                    double tmpAijSmall = Double.valueOf(tmpCommandItems[i][2]);
+                    double tmpAijLarge = Double.valueOf(tmpCommandItems[i][3]);
+                    tmpParticleSetFileLineList = 
+                        this.scaleGlobal(
+                            tmpParticleSetFileLineList, 
+                            tmpAijMin, 
+                            tmpAijSmall, 
+                            tmpAijLarge
+                        );
+                    if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
+                        return "runScript: Command SCALE_GLOBAL: Particle set was destroyed. This should never happen.";
+                    }
+                    tmpParticleSetFileLineList.addFirst(
+                        "# " +
+                        tmpCommandItems[i][0] + " " +
+                        tmpCommandItems[i][1] + " " +
+                        tmpCommandItems[i][2] + " " +
+                        tmpCommandItems[i][3]
+                    );
+                }
+            } catch (Exception anException) {
+                return "runScript: Command SCALE_GLOBAL could not be run. Exception: " + anException.toString();
+            }
+            // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="ADD_CHARGED_PARTICLE_INDIVIDUAL">
+            try {
+                if (tmpCommandItems[i][0].equals("ADD_CHARGED_PARTICLE_INDIVIDUAL")) {
+                    if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
+                        return "runScript: Command ADD_CHARGED_PARTICLE_INDIVIDUAL: There is no particle set defined.";
+                    }
+                    String tmpUnchargedParticle = tmpCommandItems[i][1];
+                    String tmpNewChargedParticle = tmpCommandItems[i][2];
+                    String tmpNewCharge = tmpCommandItems[i][3];
+                    double tmpAijMin = Double.valueOf(tmpCommandItems[i][4]);
+                    double tmpAijSmall = Double.valueOf(tmpCommandItems[i][5]);
+                    double tmpAijLarge = Double.valueOf(tmpCommandItems[i][6]);
+                    double tmpChargeOffset = Double.valueOf(tmpCommandItems[i][7]);
+                    String tmpNewChargedParticleColor = tmpCommandItems[i][8];
+                    tmpParticleSetFileLineList = 
+                        this.addChargedParticleIndividual(
+                            tmpParticleSetFileLineList, 
+                            tmpUnchargedParticle, 
+                            tmpNewChargedParticle, 
+                            tmpNewCharge,
+                            tmpAijMin,
+                            tmpAijSmall,
+                            tmpAijLarge,
+                            tmpChargeOffset,
+                            tmpNewChargedParticleColor
+                        );
+                    if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
+                        return "runScript: Command ADD_CHARGED_PARTICLE_INDIVIDUAL: Particle set was destroyed. This should never happen.";
+                    }
+                    tmpParticleSetFileLineList.addFirst(
+                        "# " +
+                        tmpCommandItems[i][0] + " " +
+                        tmpCommandItems[i][1] + " " +
+                        tmpCommandItems[i][2] + " " +
+                        tmpCommandItems[i][3] + " " +
+                        tmpCommandItems[i][4] + " " +
+                        tmpCommandItems[i][5] + " " +
+                        tmpCommandItems[i][6] + " " +
+                        tmpCommandItems[i][7] + " " +
+                        tmpCommandItems[i][8]
+                    );
+                }
+            } catch (Exception anException) {
+                return "runScript: Command ADD_CHARGED_PARTICLE_INDIVIDUAL could not be run. Exception: " + anException.toString();
+            }
+            // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="ADD_CHARGED_PARTICLE_GLOBAL">
+            try {
+                if (tmpCommandItems[i][0].equals("ADD_CHARGED_PARTICLE_GLOBAL")) {
+                    if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
+                        return "runScript: Command ADD_CHARGED_PARTICLE_GLOBAL: There is no particle set defined.";
+                    }
+                    String tmpUnchargedParticle = tmpCommandItems[i][1];
+                    String tmpNewChargedParticle = tmpCommandItems[i][2];
+                    String tmpNewCharge = tmpCommandItems[i][3];
+                    double tmpAijMin = Double.valueOf(tmpCommandItems[i][4]);
+                    double tmpAijSmall = Double.valueOf(tmpCommandItems[i][5]);
+                    double tmpAijLarge = Double.valueOf(tmpCommandItems[i][6]);
+                    double tmpChargeOffset = Double.valueOf(tmpCommandItems[i][7]);
+                    String tmpNewChargedParticleColor = tmpCommandItems[i][8];
+                    tmpParticleSetFileLineList = 
+                        this.addChargedParticleGlobal(
+                            tmpParticleSetFileLineList, 
+                            tmpUnchargedParticle, 
+                            tmpNewChargedParticle, 
+                            tmpNewCharge,
+                            tmpAijMin,
+                            tmpAijSmall,
+                            tmpAijLarge,
+                            tmpChargeOffset,
+                            tmpNewChargedParticleColor
+                        );
+                    if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
+                        return "runScript: Command ADD_CHARGED_PARTICLE_GLOBAL: Particle set was destroyed. This should never happen.";
+                    }
+                    tmpParticleSetFileLineList.addFirst(
+                        "# " +
+                        tmpCommandItems[i][0] + " " +
+                        tmpCommandItems[i][1] + " " +
+                        tmpCommandItems[i][2] + " " +
+                        tmpCommandItems[i][3] + " " +
+                        tmpCommandItems[i][4] + " " +
+                        tmpCommandItems[i][5] + " " +
+                        tmpCommandItems[i][6] + " " +
+                        tmpCommandItems[i][7] + " " +
+                        tmpCommandItems[i][8]
+                    );
+                }
+            } catch (Exception anException) {
+                return "runScript: Command ADD_CHARGED_PARTICLE_GLOBAL could not be run. Exception: " + anException.toString();
+            }
+            // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="RESCALE_REPULSIONS_INDIVIDUAL">
             try {
                 if (tmpCommandItems[i][0].equals("RESCALE_REPULSIONS_INDIVIDUAL")) {
                     if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
                         return "runScript: Command RESCALE_REPULSIONS_INDIVIDUAL: There is no particle set defined.";
                     }
-                    double tmpTempFactor = Double.valueOf(tmpCommandItems[i][1]);
-                    double tmpLowerRepulsionRange = Double.valueOf(tmpCommandItems[i][2]);
-                    double tmpChargeOffset = Double.valueOf(tmpCommandItems[i][3]);
+                    double tmpLowerRepulsionRange = Double.valueOf(tmpCommandItems[i][1]);
+                    double tmpChargeOffset = Double.valueOf(tmpCommandItems[i][2]);
                     tmpParticleSetFileLineList = 
                         this.rescaleRepulsionsWithIndividualScalingFactors(
                             tmpParticleSetFileLineList, 
-                            tmpTempFactor, 
                             tmpLowerRepulsionRange, 
                             tmpChargeOffset
                         );
@@ -2328,8 +2491,7 @@ public final class StandardParticleInteractionData {
                         "# " +
                         tmpCommandItems[i][0] + " " +
                         tmpCommandItems[i][1] + " " +
-                        tmpCommandItems[i][2] + " " +
-                        tmpCommandItems[i][3]
+                        tmpCommandItems[i][2]
                     );
                 }
             } catch (Exception anException) {
@@ -2342,13 +2504,11 @@ public final class StandardParticleInteractionData {
                     if (tmpParticleSetFileLineList == null || tmpParticleSetFileLineList.isEmpty()) {
                         return "runScript: Command RESCALE_REPULSIONS_GLOBAL: There is no particle set defined.";
                     }
-                    double tmpTempFactor = Double.valueOf(tmpCommandItems[i][1]);
-                    double tmpLowerRepulsionRange = Double.valueOf(tmpCommandItems[i][2]);
-                    double tmpChargeOffset = Double.valueOf(tmpCommandItems[i][3]);
+                    double tmpLowerRepulsionRange = Double.valueOf(tmpCommandItems[i][1]);
+                    double tmpChargeOffset = Double.valueOf(tmpCommandItems[i][2]);
                     tmpParticleSetFileLineList = 
                         this.rescaleRepulsionsWithGlobalScalingFactor(
                             tmpParticleSetFileLineList, 
-                            tmpTempFactor, 
                             tmpLowerRepulsionRange, 
                             tmpChargeOffset
                         );
@@ -2359,8 +2519,7 @@ public final class StandardParticleInteractionData {
                         "# " +
                         tmpCommandItems[i][0] + " " +
                         tmpCommandItems[i][1] + " " +
-                        tmpCommandItems[i][2] + " " +
-                        tmpCommandItems[i][3]
+                        tmpCommandItems[i][2]
                     );
                 }
             } catch (Exception anException) {
@@ -2424,13 +2583,10 @@ public final class StandardParticleInteractionData {
     /**
      * Increment probe particles if available
      * 
-     * @param aParticleSetFileLineList Particle set file line list (is not changed)
      * @return New particle set file line list or null if new list could not be
      * created
      */
-    private LinkedList<String> incrementProbeParticles (
-        LinkedList<String> aParticleSetFileLineList
-    ) {
+    private LinkedList<String> incrementProbeParticles () {
         String[] tmpCurrentProteinBackboneProbeParticleArray = this.getAllSortedProteinBackboneProbeParticles();
         if (tmpCurrentProteinBackboneProbeParticleArray == null) {
             return null;
@@ -2461,7 +2617,13 @@ public final class StandardParticleInteractionData {
         if (tmpCurrentIncrementProbeParticleMap.isEmpty()) {
             return null;
         }
-        LinkedList<String> tmpNewParticleSetFileLineList = aParticleSetFileLineList;
+        // <editor-fold defaultstate="collapsed" desc="Read current particle set file">
+        LinkedList<String> tmpNewParticleSetFileLineList = 
+            this.fileUtilityMethods.readStringListFromFile(Preferences.getInstance().getCurrentParticleSetFilePathname(), null);
+        if (tmpNewParticleSetFileLineList == null || tmpNewParticleSetFileLineList.size() == 0) {
+            return null;
+        }
+        // </editor-fold>
         for (String tmpCurrentProteinBackboneProbeParticle : tmpCurrentIncrementProbeParticleMap.keySet()) {
             String tmpIncrementedProteinBackboneProbeParticle = 
                 tmpCurrentIncrementProbeParticleMap.get(tmpCurrentProteinBackboneProbeParticle);
@@ -2469,13 +2631,643 @@ public final class StandardParticleInteractionData {
             String tmpIncrementedProteinBackboneProbeParticleColor = null;
             tmpNewParticleSetFileLineList = 
                 this.duplicateSingleParticle(
-                    aParticleSetFileLineList, 
+                    tmpNewParticleSetFileLineList, 
                     tmpCurrentProteinBackboneProbeParticle, 
                     tmpIncrementedProteinBackboneProbeParticle, 
                     tmpIncrementedProteinBackboneProbeParticleColor
                 );
         }
         return tmpNewParticleSetFileLineList;
+    }
+
+    /**
+     * Adds a new charged particle with an individual (!) scaling factor for 
+     * each (!) temperature.
+     * Note: Operations shiftRepulsionsForTemperature(), normalize() and 
+     * scaleIndividual() should be performed before.
+     *
+     * @param aParticleSetFileLineList Particle set file line list (is not 
+     * changed)
+     * @param anUnchargedParticle Uncharged particle for duplication and being 
+     * charged (not allowed to be
+     * null/empty)
+     * @param aNewChargedParticle New charged particle (not allowed to be 
+     * null/empty)
+     * @param aNewCharge New charge (not allowed to be null/empty)
+     * @param anAijMin Minimum value for a(ij)
+     * @param anAijSmall Lower boundary for normalized a(ij)
+     * @param anAijLarge Upper boundary for normalized a(ij)
+     * @param aChargeOffset Charge offset
+     * @param aNewChargedParticleColor New charged particle color
+     * @return New particle set file line list or null if new list could not be
+     * created
+     */
+    private LinkedList<String> addChargedParticleIndividual(
+        LinkedList<String> aParticleSetFileLineList, 
+        String anUnchargedParticle, 
+        String aNewChargedParticle, 
+        String aNewCharge,
+        double anAijMin,
+        double anAijSmall,
+        double anAijLarge,
+        double aChargeOffset,
+        String aNewChargedParticleColor
+    ) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aParticleSetFileLineList == null || aParticleSetFileLineList.isEmpty()) {
+            return null;
+        }
+        if (anUnchargedParticle == null || anUnchargedParticle.isEmpty()) {
+            return null;
+        }
+        if (aNewChargedParticle == null || aNewChargedParticle.isEmpty()) {
+            return null;
+        }
+        if (aNewCharge == null || aNewCharge.isEmpty()) {
+            return null;
+        }
+        if (anUnchargedParticle.trim().equalsIgnoreCase(aNewChargedParticle.trim())) {
+            return aParticleSetFileLineList;
+        }
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Add charged particle">
+        HashMap<String, Integer> tmpParticleToChargeMap = 
+            this.getParticleToChargeMap(aParticleSetFileLineList);
+        if (tmpParticleToChargeMap.get(anUnchargedParticle) == Integer.valueOf(aNewCharge)) {
+            // Charge is defined but not changed
+            return this.duplicateSingleParticle(
+                aParticleSetFileLineList, 
+                anUnchargedParticle, 
+                aNewChargedParticle, 
+                aNewChargedParticleColor
+            );
+        } else if (tmpParticleToChargeMap.get(anUnchargedParticle) != 0) {
+            // A charge can not be changed for a charged particle
+            return aParticleSetFileLineList;
+        }
+        
+        // Duplicate particle
+        LinkedList<String> tmpDuplicatedParticleSetFileLineList = 
+            this.duplicateSingleParticle(
+                aParticleSetFileLineList, 
+                anUnchargedParticle, 
+                aNewChargedParticle, 
+                aNewChargedParticleColor
+            );
+
+        // Correct duplicated particle for charge
+        LinkedList<String> tmpNewParticleSetFileLineList = new LinkedList<>();
+        
+        String tmpParticleDescriptionStartLine = 
+            String.format(
+                ModelDefinitions.SECTION_START_TAG_FORMAT, 
+                ModelDefinitions.PARTICLE_DESCRIPTION_SECTION_TAG
+            );
+        String tmpParticleDescriptionEndLine = 
+            String.format(
+                ModelDefinitions.SECTION_END_TAG_FORMAT, 
+                ModelDefinitions.PARTICLE_DESCRIPTION_SECTION_TAG
+            );
+        boolean tmpIsDescriptionSectionStart = false;
+        boolean tmpIsDescriptionsSectionEnd = false;
+
+        String tmpParticleInteractionsStartLine = 
+            String.format(
+                ModelDefinitions.SECTION_START_TAG_FORMAT, 
+                ModelDefinitions.PARTICLE_INTERACTIONS_SECTION_TAG
+            );
+        String tmpParticleInteractionsEndLine = 
+            String.format(
+                ModelDefinitions.SECTION_END_TAG_FORMAT, 
+                ModelDefinitions.PARTICLE_INTERACTIONS_SECTION_TAG
+            );
+        boolean tmpIsInteractionsSectionStart = false;
+        boolean tmpIsInteractionsSectionEnd = false;
+
+        // Set necessary objects
+        String tmpWaterParticle = this.getDefaultWaterParticle();
+        String[][] tmpItems = 
+            this.stringUtilityMethods.readJaggedStringArrayPartFromLineList(
+                aParticleSetFileLineList,
+                ModelDefinitions.LINE_PREFIX_TO_IGNORE, 
+                ModelDefinitions.PARTICLE_INTERACTIONS_SECTION_TAG
+            );
+        HashMap<String, String> tmpParticlePairTemperatureToInteractionMap = 
+            new HashMap<>(
+                this.miscUtilityMethods.getNumberOfElementsOfJaggedArrayOfStrings(tmpItems)
+            );
+
+        // Determine a(ij) min und max
+        double[] tmpTemperatures = this.getTemperatures(aParticleSetFileLineList);
+        double[] tmpAii = this.getAiiForTemperatures(aParticleSetFileLineList); 
+        double[] tmpAijMinMinusChargeOffset = new double[tmpTemperatures.length];
+        double[] tmpAijMaxPlusChargeOffset = new double[tmpTemperatures.length];
+        for (int i = 0; i < tmpTemperatures.length; i++) {
+            double tmpScalingFactor = (tmpAii[i] - anAijMin) / (tmpAii[i] - anAijSmall);
+            tmpAijMinMinusChargeOffset[i] = tmpAii[i] - tmpScalingFactor * (tmpAii[i] - anAijSmall) - aChargeOffset;
+            tmpAijMaxPlusChargeOffset[i] = tmpAii[i] + tmpScalingFactor * (anAijLarge - tmpAii[i]) + aChargeOffset;
+        }
+        
+        // First line (index 0) is temperature information for particles, first item is "Pair"
+        String[] tmpTemperatureStrings = new String[tmpItems[0].length - 1];
+        for (int k = 1; k < tmpItems[0].length; k++) {
+            tmpTemperatureStrings[k - 1] = this.getTemperatureString(tmpItems[0][k]);
+        }
+        // Second line (index 1) and following: Interactions a(ij)
+        for (int i = 1; i < tmpItems.length; i++) {
+            String[] tmpParticles = ModelDefinitions.GENERAL_UNDERSCORE_PATTERN.split(tmpItems[i][0]);
+            for (int k = 1; k < tmpItems[i].length; k++) {
+                // NOTE: Interaction description uses names of particles so they must be converted to particle shortcuts
+                this.addInteraction(
+                    tmpParticlePairTemperatureToInteractionMap,
+                    tmpParticles[0], // particle_shortcut_1
+                    tmpParticles[1], // particle_shortcut_2
+                    tmpItems[0][k],  // temperature
+                    tmpItems[i][k]   // interaction
+                ); 
+            }
+        }
+        
+        for (String tmpCurrentLine : tmpDuplicatedParticleSetFileLineList) {
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleDescriptionEndLine)) {
+                tmpIsDescriptionsSectionEnd = true;
+            }
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleInteractionsEndLine)) {
+                tmpIsInteractionsSectionEnd = true;
+            }
+
+            if (tmpIsDescriptionSectionStart && 
+                !tmpIsDescriptionsSectionEnd && 
+                !tmpCurrentLine.trim().isEmpty() &&
+                !tmpCurrentLine.startsWith(ModelDefinitions.LINE_PREFIX_TO_IGNORE)
+            ) {
+                // <editor-fold defaultstate="collapsed" desc="Correct Description section">
+                if (this.stringUtilityMethods.getFirstToken(tmpCurrentLine).equals(aNewChargedParticle)) {
+                    // Set new charge
+                    String tmpNewDescriptionLine = this.stringUtilityMethods.replaceToken(tmpCurrentLine, 3, aNewCharge);
+                    tmpNewParticleSetFileLineList.add(tmpNewDescriptionLine);
+                } else {
+                    tmpNewParticleSetFileLineList.add(tmpCurrentLine);
+                }
+                // </editor-fold>
+            } else if (
+                tmpIsInteractionsSectionStart && 
+                !tmpIsInteractionsSectionEnd && 
+                !tmpCurrentLine.trim().isEmpty() &&
+                !tmpCurrentLine.startsWith(ModelDefinitions.LINE_PREFIX_TO_IGNORE)
+            ) {
+                // <editor-fold defaultstate="collapsed" desc="Correct Interaction section a(ij) for i != j (diagonal a(ii) is already correctly set)">
+                String[] tmpParticles = ModelDefinitions.GENERAL_UNDERSCORE_PATTERN.split(this.stringUtilityMethods.getFirstToken(tmpCurrentLine));
+                if (tmpParticles.length > 1 && !tmpParticles[0].equals(tmpParticles[1])) {
+                    if (tmpParticles[0].equals(aNewChargedParticle) || tmpParticles[1].equals(aNewChargedParticle)) {
+                        // Determine other particle
+                        String tmpOtherParticle = tmpParticles[0];
+                        if (tmpParticles[0].equals(aNewChargedParticle)) {
+                            tmpOtherParticle = tmpParticles[1];
+                        }
+                        String tmpNewInteractionLine = tmpCurrentLine;
+                        if (tmpOtherParticle.equals(tmpWaterParticle)) {
+                            // <editor-fold defaultstate="collapsed" desc="Other particle is uncharged water">
+                            for (int i = 0; i < tmpTemperatureStrings.length; i++) {
+                                double tmpA_UnchargedParticle_Water = 
+                                    Double.valueOf(
+                                        this.getInteraction(
+                                            tmpParticlePairTemperatureToInteractionMap, 
+                                            anUnchargedParticle, 
+                                            tmpWaterParticle, 
+                                            tmpTemperatureStrings[i]
+                                        )
+                                    );
+                                double tmpA_NewChargedParticle_Water = tmpA_UnchargedParticle_Water;
+                                tmpNewInteractionLine = 
+                                    this.stringUtilityMethods.replaceToken(
+                                        tmpNewInteractionLine, 
+                                        i + 1, 
+                                        this.stringUtilityMethods.formatDoubleValue(tmpA_NewChargedParticle_Water, 6)
+                                    );
+                            }
+                            // </editor-fold>
+                        } else {
+                            // <editor-fold defaultstate="collapsed" desc="Other particle is NOT water">
+                            if (tmpParticleToChargeMap.get(tmpOtherParticle) == 0) {
+                                // <editor-fold defaultstate="collapsed" desc="Other particle is NOT charged">
+                                for (int i = 0; i < tmpTemperatureStrings.length; i++) {
+                                    double tmpA_OtherParticle_Water = 
+                                        Double.valueOf(
+                                            this.getInteraction(
+                                                tmpParticlePairTemperatureToInteractionMap, 
+                                                tmpOtherParticle, 
+                                                tmpWaterParticle, 
+                                                tmpTemperatureStrings[i]
+                                            )
+                                        );
+                                    double tmpA_Water_Water = 
+                                        Double.valueOf(
+                                            this.getInteraction(
+                                                tmpParticlePairTemperatureToInteractionMap, 
+                                                tmpWaterParticle, 
+                                                tmpWaterParticle, 
+                                                tmpTemperatureStrings[i]
+                                            )
+                                        );
+                                    double tmpA_UnchargedParticle_OtherParticle = 
+                                        Double.valueOf(
+                                            this.getInteraction(
+                                                tmpParticlePairTemperatureToInteractionMap, 
+                                                anUnchargedParticle, 
+                                                tmpOtherParticle, 
+                                                tmpTemperatureStrings[i]
+                                            )
+                                        );
+                                    
+                                    double tmpA_NewChargedParticle_OtherParticle = 0.0;
+                                    if (tmpA_UnchargedParticle_OtherParticle <= tmpA_Water_Water) {
+                                        if (tmpA_UnchargedParticle_OtherParticle < tmpA_OtherParticle_Water) {
+                                            tmpA_NewChargedParticle_OtherParticle = tmpA_UnchargedParticle_OtherParticle;
+                                        } else {
+                                            tmpA_NewChargedParticle_OtherParticle = tmpA_OtherParticle_Water;
+                                        }
+                                    } else {
+                                        if (tmpA_UnchargedParticle_OtherParticle > tmpA_OtherParticle_Water) {
+                                            tmpA_NewChargedParticle_OtherParticle = tmpA_UnchargedParticle_OtherParticle;
+                                        } else {
+                                            tmpA_NewChargedParticle_OtherParticle = tmpA_OtherParticle_Water;
+                                        }
+                                    }
+                                    
+                                    tmpNewInteractionLine = 
+                                        this.stringUtilityMethods.replaceToken(
+                                            tmpNewInteractionLine, 
+                                            i + 1, 
+                                            this.stringUtilityMethods.formatDoubleValue(tmpA_NewChargedParticle_OtherParticle, 6)
+                                        );
+                                }
+                                // </editor-fold>
+                            } else {
+                                // <editor-fold defaultstate="collapsed" desc="Other particle is charged">
+                                if (tmpParticleToChargeMap.get(tmpOtherParticle) * Integer.valueOf(aNewCharge) > 0) {
+                                    // <editor-fold defaultstate="collapsed" desc="Equal charges">
+                                    for (int i = 0; i < tmpTemperatureStrings.length; i++) {
+                                        tmpNewInteractionLine = 
+                                            this.stringUtilityMethods.replaceToken(
+                                                tmpNewInteractionLine, 
+                                                i + 1, 
+                                                this.stringUtilityMethods.formatDoubleValue(tmpAijMaxPlusChargeOffset[i], 6)
+                                            );
+                                    }
+                                    // </editor-fold>
+                                } else {
+                                    // <editor-fold defaultstate="collapsed" desc="Different charges">
+                                    for (int i = 0; i < tmpTemperatureStrings.length; i++) {
+                                        tmpNewInteractionLine = 
+                                            this.stringUtilityMethods.replaceToken(
+                                                tmpNewInteractionLine, 
+                                                i + 1, 
+                                                this.stringUtilityMethods.formatDoubleValue(tmpAijMinMinusChargeOffset[i], 6)
+                                            );
+                                    }
+                                    // </editor-fold>
+                                }
+                                // </editor-fold>
+                            }
+                            // </editor-fold>
+                        }
+                        tmpNewParticleSetFileLineList.add(tmpNewInteractionLine);
+                    } else {
+                        tmpNewParticleSetFileLineList.add(tmpCurrentLine);
+                    }
+                } else {
+                    tmpNewParticleSetFileLineList.add(tmpCurrentLine);
+                }
+                // </editor-fold>
+            } else {
+                tmpNewParticleSetFileLineList.add(tmpCurrentLine);
+            }
+
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleDescriptionStartLine)) {
+                tmpIsDescriptionSectionStart = true;
+            }
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleInteractionsStartLine)) {
+                tmpIsInteractionsSectionStart = true;
+            }
+        }
+        return tmpNewParticleSetFileLineList;
+        // </editor-fold>
+    }
+
+    /**
+     * Adds a new charged particle with a single global scaling factor.
+     * Note: Operations shiftRepulsionsForTemperature(), normalize() and 
+     * scaleGlobal() should be performed before.
+     *
+     * @param aParticleSetFileLineList Particle set file line list (is not 
+     * changed)
+     * @param anUnchargedParticle Uncharged particle for duplication and being 
+     * charged (not allowed to be
+     * null/empty)
+     * @param aNewChargedParticle New charged particle (not allowed to be 
+     * null/empty)
+     * @param aNewCharge New charge (not allowed to be null/empty)
+     * @param anAijMin Minimum value for a(ij)
+     * @param anAijSmall Lower boundary for normalized a(ij)
+     * @param anAijLarge Upper boundary for normalized a(ij)
+     * @param aChargeOffset Charge offset
+     * @param aNewChargedParticleColor New charged particle color
+     * @return New particle set file line list or null if new list could not be
+     * created
+     */
+    private LinkedList<String> addChargedParticleGlobal(
+        LinkedList<String> aParticleSetFileLineList, 
+        String anUnchargedParticle, 
+        String aNewChargedParticle, 
+        String aNewCharge,
+        double anAijMin,
+        double anAijSmall,
+        double anAijLarge,
+        double aChargeOffset,
+        String aNewChargedParticleColor
+    ) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aParticleSetFileLineList == null || aParticleSetFileLineList.isEmpty()) {
+            return null;
+        }
+        if (anUnchargedParticle == null || anUnchargedParticle.isEmpty()) {
+            return null;
+        }
+        if (aNewChargedParticle == null || aNewChargedParticle.isEmpty()) {
+            return null;
+        }
+        if (aNewCharge == null || aNewCharge.isEmpty()) {
+            return null;
+        }
+        if (anUnchargedParticle.trim().equalsIgnoreCase(aNewChargedParticle.trim())) {
+            return aParticleSetFileLineList;
+        }
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Add charged particle">
+        HashMap<String, Integer> tmpParticleToChargeMap = 
+            this.getParticleToChargeMap(aParticleSetFileLineList);
+        if (tmpParticleToChargeMap.get(anUnchargedParticle) == Integer.valueOf(aNewCharge)) {
+            // Charge is defined but not changed
+            return this.duplicateSingleParticle(
+                aParticleSetFileLineList, 
+                anUnchargedParticle, 
+                aNewChargedParticle, 
+                aNewChargedParticleColor
+            );
+        } else if (tmpParticleToChargeMap.get(anUnchargedParticle) != 0) {
+            // A charge can not be changed for a charged particle
+            return aParticleSetFileLineList;
+        }
+        
+        // Duplicate particle
+        LinkedList<String> tmpDuplicatedParticleSetFileLineList = 
+            this.duplicateSingleParticle(
+                aParticleSetFileLineList, 
+                anUnchargedParticle, 
+                aNewChargedParticle, 
+                aNewChargedParticleColor
+            );
+
+        // Correct duplicated particle for charge
+        LinkedList<String> tmpNewParticleSetFileLineList = new LinkedList<>();
+        
+        String tmpParticleDescriptionStartLine = 
+            String.format(
+                ModelDefinitions.SECTION_START_TAG_FORMAT, 
+                ModelDefinitions.PARTICLE_DESCRIPTION_SECTION_TAG
+            );
+        String tmpParticleDescriptionEndLine = 
+            String.format(
+                ModelDefinitions.SECTION_END_TAG_FORMAT, 
+                ModelDefinitions.PARTICLE_DESCRIPTION_SECTION_TAG
+            );
+        boolean tmpIsDescriptionSectionStart = false;
+        boolean tmpIsDescriptionsSectionEnd = false;
+
+        String tmpParticleInteractionsStartLine = 
+            String.format(
+                ModelDefinitions.SECTION_START_TAG_FORMAT, 
+                ModelDefinitions.PARTICLE_INTERACTIONS_SECTION_TAG
+            );
+        String tmpParticleInteractionsEndLine = 
+            String.format(
+                ModelDefinitions.SECTION_END_TAG_FORMAT, 
+                ModelDefinitions.PARTICLE_INTERACTIONS_SECTION_TAG
+            );
+        boolean tmpIsInteractionsSectionStart = false;
+        boolean tmpIsInteractionsSectionEnd = false;
+
+        // Set necessary objects
+        String tmpWaterParticle = this.getDefaultWaterParticle();
+        String[][] tmpItems = 
+            this.stringUtilityMethods.readJaggedStringArrayPartFromLineList(
+                aParticleSetFileLineList,
+                ModelDefinitions.LINE_PREFIX_TO_IGNORE, 
+                ModelDefinitions.PARTICLE_INTERACTIONS_SECTION_TAG
+            );
+        HashMap<String, String> tmpParticlePairTemperatureToInteractionMap = 
+            new HashMap<>(
+                this.miscUtilityMethods.getNumberOfElementsOfJaggedArrayOfStrings(tmpItems)
+            );
+
+        // Determine a(ij) min und max
+        double[] tmpTemperatures = this.getTemperatures(aParticleSetFileLineList);
+        double[] tmpAii = this.getAiiForTemperatures(aParticleSetFileLineList); 
+        double[] tmpAijMinMinusChargeOffset = new double[tmpTemperatures.length];
+        double[] tmpAijMaxPlusChargeOffset = new double[tmpTemperatures.length];
+        // NOTE: tmpAii[0] must be the lowest (!) temperature
+        double tmpGlobalScalingFactor = (tmpAii[0] - anAijMin) / (tmpAii[0] - anAijSmall);
+        for (int i = 0; i < tmpTemperatures.length; i++) {
+            tmpAijMinMinusChargeOffset[i] = tmpAii[i] - tmpGlobalScalingFactor * (tmpAii[i] - anAijSmall) - aChargeOffset;
+            tmpAijMaxPlusChargeOffset[i] = tmpAii[i] + tmpGlobalScalingFactor * (anAijLarge - tmpAii[i]) + aChargeOffset;
+        }
+        
+        // First line (index 0) is temperature information for particles, first item is "Pair"
+        String[] tmpTemperatureStrings = new String[tmpItems[0].length - 1];
+        for (int k = 1; k < tmpItems[0].length; k++) {
+            tmpTemperatureStrings[k - 1] = this.getTemperatureString(tmpItems[0][k]);
+        }
+        // Second line (index 1) and following: Interactions a(ij)
+        for (int i = 1; i < tmpItems.length; i++) {
+            String[] tmpParticles = ModelDefinitions.GENERAL_UNDERSCORE_PATTERN.split(tmpItems[i][0]);
+            for (int k = 1; k < tmpItems[i].length; k++) {
+                // NOTE: Interaction description uses names of particles so they must be converted to particle shortcuts
+                this.addInteraction(
+                    tmpParticlePairTemperatureToInteractionMap,
+                    tmpParticles[0], // particle_shortcut_1
+                    tmpParticles[1], // particle_shortcut_2
+                    tmpItems[0][k],  // temperature
+                    tmpItems[i][k]   // interaction
+                ); 
+            }
+        }
+        
+        for (String tmpCurrentLine : tmpDuplicatedParticleSetFileLineList) {
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleDescriptionEndLine)) {
+                tmpIsDescriptionsSectionEnd = true;
+            }
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleInteractionsEndLine)) {
+                tmpIsInteractionsSectionEnd = true;
+            }
+
+            if (tmpIsDescriptionSectionStart && 
+                !tmpIsDescriptionsSectionEnd && 
+                !tmpCurrentLine.trim().isEmpty() &&
+                !tmpCurrentLine.startsWith(ModelDefinitions.LINE_PREFIX_TO_IGNORE)
+            ) {
+                // <editor-fold defaultstate="collapsed" desc="Correct Description section">
+                if (this.stringUtilityMethods.getFirstToken(tmpCurrentLine).equals(aNewChargedParticle)) {
+                    // Set new charge
+                    String tmpNewDescriptionLine = this.stringUtilityMethods.replaceToken(tmpCurrentLine, 3, aNewCharge);
+                    tmpNewParticleSetFileLineList.add(tmpNewDescriptionLine);
+                } else {
+                    tmpNewParticleSetFileLineList.add(tmpCurrentLine);
+                }
+                // </editor-fold>
+            } else if (
+                tmpIsInteractionsSectionStart && 
+                !tmpIsInteractionsSectionEnd && 
+                !tmpCurrentLine.trim().isEmpty() &&
+                !tmpCurrentLine.startsWith(ModelDefinitions.LINE_PREFIX_TO_IGNORE)
+            ) {
+                // <editor-fold defaultstate="collapsed" desc="Correct Interaction section a(ij) for i != j (diagonal a(ii) is already correctly set)">
+                String[] tmpParticles = ModelDefinitions.GENERAL_UNDERSCORE_PATTERN.split(this.stringUtilityMethods.getFirstToken(tmpCurrentLine));
+                if (tmpParticles.length > 1 && !tmpParticles[0].equals(tmpParticles[1])) {
+                    if (tmpParticles[0].equals(aNewChargedParticle) || tmpParticles[1].equals(aNewChargedParticle)) {
+                        // Determine other particle
+                        String tmpOtherParticle = tmpParticles[0];
+                        if (tmpParticles[0].equals(aNewChargedParticle)) {
+                            tmpOtherParticle = tmpParticles[1];
+                        }
+                        String tmpNewInteractionLine = tmpCurrentLine;
+                        if (tmpOtherParticle.equals(tmpWaterParticle)) {
+                            // <editor-fold defaultstate="collapsed" desc="Other particle is uncharged water">
+                            for (int i = 0; i < tmpTemperatureStrings.length; i++) {
+                                double tmpA_UnchargedParticle_Water = 
+                                    Double.valueOf(
+                                        this.getInteraction(
+                                            tmpParticlePairTemperatureToInteractionMap, 
+                                            anUnchargedParticle, 
+                                            tmpWaterParticle, 
+                                            tmpTemperatureStrings[i]
+                                        )
+                                    );
+                                double tmpA_NewChargedParticle_Water = tmpA_UnchargedParticle_Water;
+                                tmpNewInteractionLine = 
+                                    this.stringUtilityMethods.replaceToken(
+                                        tmpNewInteractionLine, 
+                                        i + 1, 
+                                        this.stringUtilityMethods.formatDoubleValue(tmpA_NewChargedParticle_Water, 6)
+                                    );
+                            }
+                            // </editor-fold>
+                        } else {
+                            // <editor-fold defaultstate="collapsed" desc="Other particle is NOT water">
+                            if (tmpParticleToChargeMap.get(tmpOtherParticle) == 0) {
+                                // <editor-fold defaultstate="collapsed" desc="Other particle is NOT charged">
+                                for (int i = 0; i < tmpTemperatureStrings.length; i++) {
+                                    double tmpA_OtherParticle_Water = 
+                                        Double.valueOf(
+                                            this.getInteraction(
+                                                tmpParticlePairTemperatureToInteractionMap, 
+                                                tmpOtherParticle, 
+                                                tmpWaterParticle, 
+                                                tmpTemperatureStrings[i]
+                                            )
+                                        );
+                                    double tmpA_Water_Water = 
+                                        Double.valueOf(
+                                            this.getInteraction(
+                                                tmpParticlePairTemperatureToInteractionMap, 
+                                                tmpWaterParticle, 
+                                                tmpWaterParticle, 
+                                                tmpTemperatureStrings[i]
+                                            )
+                                        );
+                                    double tmpA_UnchargedParticle_OtherParticle = 
+                                        Double.valueOf(
+                                            this.getInteraction(
+                                                tmpParticlePairTemperatureToInteractionMap, 
+                                                anUnchargedParticle, 
+                                                tmpOtherParticle, 
+                                                tmpTemperatureStrings[i]
+                                            )
+                                        );
+                                    
+                                    double tmpA_NewChargedParticle_OtherParticle = 0.0;
+                                    if (tmpA_UnchargedParticle_OtherParticle <= tmpA_Water_Water) {
+                                        if (tmpA_UnchargedParticle_OtherParticle < tmpA_OtherParticle_Water) {
+                                            tmpA_NewChargedParticle_OtherParticle = tmpA_UnchargedParticle_OtherParticle;
+                                        } else {
+                                            tmpA_NewChargedParticle_OtherParticle = tmpA_OtherParticle_Water;
+                                        }
+                                    } else {
+                                        if (tmpA_UnchargedParticle_OtherParticle > tmpA_OtherParticle_Water) {
+                                            tmpA_NewChargedParticle_OtherParticle = tmpA_UnchargedParticle_OtherParticle;
+                                        } else {
+                                            tmpA_NewChargedParticle_OtherParticle = tmpA_OtherParticle_Water;
+                                        }
+                                    }
+                                    
+                                    tmpNewInteractionLine = 
+                                        this.stringUtilityMethods.replaceToken(
+                                            tmpNewInteractionLine, 
+                                            i + 1, 
+                                            this.stringUtilityMethods.formatDoubleValue(tmpA_NewChargedParticle_OtherParticle, 6)
+                                        );
+                                }
+                                // </editor-fold>
+                            } else {
+                                // <editor-fold defaultstate="collapsed" desc="Other particle is charged">
+                                if (tmpParticleToChargeMap.get(tmpOtherParticle) * Integer.valueOf(aNewCharge) > 0) {
+                                    // <editor-fold defaultstate="collapsed" desc="Equal charges">
+                                    for (int i = 0; i < tmpTemperatureStrings.length; i++) {
+                                        tmpNewInteractionLine = 
+                                            this.stringUtilityMethods.replaceToken(
+                                                tmpNewInteractionLine, 
+                                                i + 1, 
+                                                this.stringUtilityMethods.formatDoubleValue(tmpAijMaxPlusChargeOffset[i], 6)
+                                            );
+                                    }
+                                    // </editor-fold>
+                                } else {
+                                    // <editor-fold defaultstate="collapsed" desc="Different charges">
+                                    for (int i = 0; i < tmpTemperatureStrings.length; i++) {
+                                        tmpNewInteractionLine = 
+                                            this.stringUtilityMethods.replaceToken(
+                                                tmpNewInteractionLine, 
+                                                i + 1, 
+                                                this.stringUtilityMethods.formatDoubleValue(tmpAijMinMinusChargeOffset[i], 6)
+                                            );
+                                    }
+                                    // </editor-fold>
+                                }
+                                // </editor-fold>
+                            }
+                            // </editor-fold>
+                        }
+                        tmpNewParticleSetFileLineList.add(tmpNewInteractionLine);
+                    } else {
+                        tmpNewParticleSetFileLineList.add(tmpCurrentLine);
+                    }
+                } else {
+                    tmpNewParticleSetFileLineList.add(tmpCurrentLine);
+                }
+                // </editor-fold>
+            } else {
+                tmpNewParticleSetFileLineList.add(tmpCurrentLine);
+            }
+
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleDescriptionStartLine)) {
+                tmpIsDescriptionSectionStart = true;
+            }
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleInteractionsStartLine)) {
+                tmpIsInteractionsSectionStart = true;
+            }
+        }
+        return tmpNewParticleSetFileLineList;
+        // </editor-fold>
     }
     
     /**
@@ -2549,10 +3341,46 @@ public final class StandardParticleInteractionData {
         boolean tmpIsInteractionsSectionStart = false;
         boolean tmpIsInteractionsSectionEnd = false;
 
+        // Set necessary objects
         String tmpWaterParticle = this.getDefaultWaterParticle();
-        String[] tmpTemperatureStrings = this.getTemperatureStrings();
-        double[] tmpMinInteractionValueForTemperatures = this.getMinInteractionValueForTemperatures();
-        double[] tmpMaxInteractionValueForTemperatures = this.getMaxInteractionValueForTemperatures();
+        String[][] tmpItems = 
+            this.stringUtilityMethods.readJaggedStringArrayPartFromLineList(
+                aParticleSetFileLineList,
+                ModelDefinitions.LINE_PREFIX_TO_IGNORE, 
+                ModelDefinitions.PARTICLE_INTERACTIONS_SECTION_TAG
+            );
+        HashMap<String, String> tmpParticlePairTemperatureToInteractionMap = 
+            new HashMap<>(this.miscUtilityMethods.getNumberOfElementsOfJaggedArrayOfStrings(tmpItems));
+        // First line (index 0) is temperature information for particles, first item is "Pair"
+        String[] tmpTemperatureStrings = new String[tmpItems[0].length - 1];
+        double[] tmpMinInteractionValueForTemperatures = new double[tmpItems[0].length - 1];
+        Arrays.fill(tmpMinInteractionValueForTemperatures, Double.MAX_VALUE);
+        double[] tmpMaxInteractionValueForTemperatures = new double[tmpItems[0].length - 1];
+        Arrays.fill(tmpMaxInteractionValueForTemperatures, -Double.MAX_VALUE);
+        for (int k = 1; k < tmpItems[0].length; k++) {
+            tmpTemperatureStrings[k - 1] = this.getTemperatureString(tmpItems[0][k]);
+        }
+        // Second line (index 1) and following: Interactions a(ij)
+        for (int i = 1; i < tmpItems.length; i++) {
+            String[] tmpParticles = ModelDefinitions.GENERAL_UNDERSCORE_PATTERN.split(tmpItems[i][0]);
+            for (int k = 1; k < tmpItems[i].length; k++) {
+                // NOTE: Interaction description uses names of particles so they must be converted to particle shortcuts
+                this.addInteraction(
+                    tmpParticlePairTemperatureToInteractionMap,
+                    tmpParticles[0], // particle_shortcut_1
+                    tmpParticles[1], // particle_shortcut_2
+                    tmpItems[0][k],  // temperature
+                    tmpItems[i][k]   // interaction
+                ); 
+                double tmpInteractionValue = Double.valueOf(tmpItems[i][k]);
+                if (tmpInteractionValue < tmpMinInteractionValueForTemperatures[k - 1]) {
+                    tmpMinInteractionValueForTemperatures[k -1] = tmpInteractionValue;
+                }
+                if (tmpInteractionValue > tmpMaxInteractionValueForTemperatures[k - 1]) {
+                    tmpMaxInteractionValueForTemperatures[k -1] = tmpInteractionValue;
+                }
+            }
+        }
         
         for (String tmpCurrentLine : tmpDuplicatedParticleSetFileLineList) {
             if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleDescriptionEndLine)) {
@@ -2595,8 +3423,24 @@ public final class StandardParticleInteractionData {
                         if (tmpOtherParticle.equals(tmpWaterParticle)) {
                             // <editor-fold defaultstate="collapsed" desc="Other particle is uncharged water">
                             for (int i = 0; i < tmpTemperatureStrings.length; i++) {
-                                double tmpA_OldParticle_Water = Double.valueOf(this.getInteraction(anOldParticle, tmpWaterParticle, tmpTemperatureStrings[i]));
-                                double tmpA_Water_Water = Double.valueOf(this.getInteraction(tmpWaterParticle, tmpWaterParticle, tmpTemperatureStrings[i]));
+                                double tmpA_OldParticle_Water = 
+                                    Double.valueOf(
+                                        this.getInteraction(
+                                            tmpParticlePairTemperatureToInteractionMap, 
+                                            anOldParticle, 
+                                            tmpWaterParticle, 
+                                            tmpTemperatureStrings[i]
+                                        )
+                                    );
+                                double tmpA_Water_Water = 
+                                    Double.valueOf(
+                                        this.getInteraction(
+                                            tmpParticlePairTemperatureToInteractionMap, 
+                                            tmpWaterParticle, 
+                                            tmpWaterParticle, 
+                                            tmpTemperatureStrings[i]
+                                        )
+                                    );
                                 double tmpDelta = aRepulsionCorrectionFactor * Math.abs(tmpA_OldParticle_Water - tmpA_Water_Water);
                                 double tmpA_NewParticle_Water = tmpA_OldParticle_Water - tmpDelta;
                                 tmpNewInteractionLine = 
@@ -2612,10 +3456,34 @@ public final class StandardParticleInteractionData {
                             if (tmpParticleToChargeMap.get(tmpOtherParticle) == 0) {
                                 // <editor-fold defaultstate="collapsed" desc="Other particle is NOT charged">
                                 for (int i = 0; i < tmpTemperatureStrings.length; i++) {
-                                    double tmpA_OtherParticle_Water = Double.valueOf(this.getInteraction(tmpOtherParticle, tmpWaterParticle, tmpTemperatureStrings[i]));
-                                    double tmpA_Water_Water = Double.valueOf(this.getInteraction(tmpWaterParticle, tmpWaterParticle, tmpTemperatureStrings[i]));
+                                    double tmpA_OtherParticle_Water = 
+                                        Double.valueOf(
+                                            this.getInteraction(
+                                                tmpParticlePairTemperatureToInteractionMap, 
+                                                tmpOtherParticle, 
+                                                tmpWaterParticle, 
+                                                tmpTemperatureStrings[i]
+                                            )
+                                        );
+                                    double tmpA_Water_Water = 
+                                        Double.valueOf(
+                                            this.getInteraction(
+                                                tmpParticlePairTemperatureToInteractionMap, 
+                                                tmpWaterParticle, 
+                                                tmpWaterParticle, 
+                                                tmpTemperatureStrings[i]
+                                            )
+                                        );
                                     double tmpDelta = aRepulsionCorrectionFactor * Math.abs(tmpA_OtherParticle_Water - tmpA_Water_Water);
-                                    double tmpA_OldParticle_OtherParticle = Double.valueOf(this.getInteraction(anOldParticle, tmpOtherParticle, tmpTemperatureStrings[i]));;
+                                    double tmpA_OldParticle_OtherParticle = 
+                                        Double.valueOf(
+                                            this.getInteraction(
+                                                tmpParticlePairTemperatureToInteractionMap, 
+                                                anOldParticle, 
+                                                tmpOtherParticle, 
+                                                tmpTemperatureStrings[i]
+                                            )
+                                        );
                                     double tmpA_NewParticle_OtherParticle = tmpA_OldParticle_OtherParticle + tmpDelta;
                                     if (tmpA_OtherParticle_Water < tmpA_Water_Water) {
                                         tmpA_NewParticle_OtherParticle = tmpA_OldParticle_OtherParticle - tmpDelta;
@@ -2753,7 +3621,7 @@ public final class StandardParticleInteractionData {
                 if (this.stringUtilityMethods.getFirstToken(tmpCurrentLine).equals(anOldParticle)) {
                     String tmpNewDescriptionLine = this.stringUtilityMethods.replaceToken(tmpCurrentLine, 0, aNewParticle);
                     if (aNewParticleColor != null && !aNewParticleColor.isEmpty()) {
-                        tmpNewDescriptionLine = this.stringUtilityMethods.replaceToken(tmpNewDescriptionLine, 7, aNewParticleColor.toLowerCase(Locale.ENGLISH));
+                        tmpNewDescriptionLine = this.stringUtilityMethods.replaceToken(tmpNewDescriptionLine, 7, aNewParticleColor);
                     }
                     tmpNewParticleSetFileLineList.add(tmpNewDescriptionLine);
                 }
@@ -3250,7 +4118,7 @@ public final class StandardParticleInteractionData {
         boolean tmpIsParticleInteractionsSectionStart = false;
         boolean tmpIsParticleInteractionsSectionEnd = false;
         // </editor-fold>
-        // <editor-fold defaultstate="collapsed" desc="Determine maximum repulsions">
+        // <editor-fold defaultstate="collapsed" desc="Determine diagonal repulsions">
         for (String tmpCurrentLine : aParticleSetFileLineList) {
             // <editor-fold defaultstate="collapsed" desc="Section detection">
             if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleInteractionsStartLine)) {
@@ -3786,7 +4654,7 @@ public final class StandardParticleInteractionData {
         return tmpBuffer.toString();
     }
     // </editor-fold>
-    // <editor-fold defaultstate="collapsed" desc="- Scaling related operations">
+    // <editor-fold defaultstate="collapsed" desc="- Scaling, shifting and normalization related operations">
     /**
      * Scales all molecular volumes to new minimum volume
      * 
@@ -3796,7 +4664,10 @@ public final class StandardParticleInteractionData {
      * @return New particle set file line list or null if new list could not be
      * created
      */
-    private LinkedList<String> scaleToNewVmin(LinkedList<String> aParticleSetFileLineList, double aNewVmin) {
+    private LinkedList<String> scaleToNewVmin(
+        LinkedList<String> aParticleSetFileLineList, 
+        double aNewVmin
+    ) {
         // <editor-fold defaultstate="collapsed" desc="Checks">
         if (aParticleSetFileLineList == null || aParticleSetFileLineList.size() == 0) {
             return null;
@@ -3873,13 +4744,403 @@ public final class StandardParticleInteractionData {
         }
         return tmpNewParticleSetFileLineList;
     }
+
+    /**
+     * Shifts all repulsions a(ij) to account for shift of 
+     * diagonal repulsions a(ii) according to temperature: a(ii) = T [K]/12
+     * Note: Charge of particle is IGNORED for shift operation.
+     * 
+     * @param aParticleSetFileLineList Particle set file line list
+     * @return New particle set file line list or null if new list could not be
+     * created
+     */
+    private LinkedList<String> shiftRepulsionsForTemperature(
+        LinkedList<String> aParticleSetFileLineList 
+    ) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aParticleSetFileLineList == null || aParticleSetFileLineList.isEmpty()) {
+            return null;
+        }
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Definitions">
+        String tmpParticleInteractionsStartLine = 
+            String.format(
+                ModelDefinitions.SECTION_START_TAG_FORMAT, 
+                ModelDefinitions.PARTICLE_INTERACTIONS_SECTION_TAG
+            );
+        String tmpParticleInteractionsEndLine = 
+            String.format(
+                ModelDefinitions.SECTION_END_TAG_FORMAT, 
+                ModelDefinitions.PARTICLE_INTERACTIONS_SECTION_TAG
+            );
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Determine temperatures and old a(ii) for temperatures">
+        double[] tmpTemperatures = this.getTemperatures(aParticleSetFileLineList);
+        double[] tmpAiiOld = this.getAiiForTemperatures(aParticleSetFileLineList); 
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Shift a(ij)">
+        double[] tmpAiiNew = new double[tmpAiiOld.length];
+        double[] tmpAiiShift = new double[tmpAiiOld.length];
+        for (int i = 0; i < tmpAiiOld.length; i++) {
+            tmpAiiNew[i] = tmpTemperatures[i] / 12.0;
+            tmpAiiShift[i] = tmpAiiNew[i] - tmpAiiOld[i];
+        }
+
+        double[] tmpAijShiftedMin = new double[tmpTemperatures.length];
+        Arrays.fill(tmpAijShiftedMin, Double.MAX_VALUE);
+        double[] tmpAijShiftedMax = new double[tmpTemperatures.length];
+        Arrays.fill(tmpAijShiftedMax, -Double.MAX_VALUE);
+        
+        LinkedList<String> tmpShiftedParticleSetFileLineList = new LinkedList<>();
+        tmpShiftedParticleSetFileLineList.add("#    Diagonal shift for temperature settings:");
+        for (int i = 0; i < tmpTemperatures.length; i++) {
+            tmpShiftedParticleSetFileLineList.add("#    Temperature         = " + String.valueOf(tmpTemperatures[i]));
+            tmpShiftedParticleSetFileLineList.add("#    - a(ii) old         = " + String.valueOf(tmpAiiOld[i]));
+            tmpShiftedParticleSetFileLineList.add("#    - a(ii) new         = " + String.valueOf(tmpAiiNew[i]));
+            tmpShiftedParticleSetFileLineList.add("#    - a(ii) shift       = " + String.valueOf(tmpAiiShift[i]));
+        }
+        boolean tmpIsInteractionsSectionStart = false;
+        boolean tmpIsInteractionsSectionEnd = false;
+        for (String tmpCurrentLine : aParticleSetFileLineList) {
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleInteractionsEndLine)) {
+                tmpIsInteractionsSectionEnd = true;
+            }
+            if (tmpIsInteractionsSectionStart && 
+                !tmpIsInteractionsSectionEnd && 
+                !tmpCurrentLine.trim().isEmpty() &&
+                !tmpCurrentLine.startsWith(ModelDefinitions.LINE_PREFIX_TO_IGNORE) &&
+                !tmpCurrentLine.startsWith("Pair")
+            ) {
+                String[] tmpItems = this.stringUtilityMethods.splitAndTrim(tmpCurrentLine);
+                String[] tmpParticles = ModelDefinitions.GENERAL_UNDERSCORE_PATTERN.split(tmpItems[0]);
+                if (tmpParticles[0].equals(tmpParticles[1])) {
+                    // Set a(ii)
+                    for (int i = 1; i < tmpItems.length; i++) {
+                        tmpItems[i] = this.stringUtilityMethods.formatDoubleValue(tmpAiiNew[i - 1], 6);
+                        if (tmpAiiNew[i - 1] < tmpAijShiftedMin[i - 1]) {
+                            tmpAijShiftedMin[i - 1] = tmpAiiNew[i - 1];
+                        }
+                        if (tmpAiiNew[i - 1] > tmpAijShiftedMax[i - 1]) {
+                            tmpAijShiftedMax[i - 1] = tmpAiiNew[i - 1];
+                        }
+                    }
+                } else {
+                    // Shift a(ij)
+                    for (int i = 1; i < tmpItems.length; i++) {
+                        double tmpSingleShiftedAij = Double.valueOf(tmpItems[i]) + tmpAiiShift[i - 1];
+                        if (tmpSingleShiftedAij < tmpAijShiftedMin[i - 1]) {
+                            tmpAijShiftedMin[i - 1] = tmpSingleShiftedAij;
+                        }
+                        if (tmpSingleShiftedAij > tmpAijShiftedMax[i - 1]) {
+                            tmpAijShiftedMax[i - 1] = tmpSingleShiftedAij;
+                        }
+                        tmpItems[i] = String.valueOf(tmpSingleShiftedAij);
+                    }
+                }
+                tmpShiftedParticleSetFileLineList.add(
+                    this.stringUtilityMethods.concatenateStringsWithSpace(tmpItems)
+                );
+            } else {
+                tmpShiftedParticleSetFileLineList.add(tmpCurrentLine);
+            }
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleInteractionsStartLine)) {
+                tmpIsInteractionsSectionStart = true;
+            }
+        }
+        // </editor-fold>
+        return tmpShiftedParticleSetFileLineList;
+    }
+
+    /**
+     * Normalizes all repulsions a(ij) to interval [anAijSmall, anAijLarge].
+     * Note: Charge of particle is IGNORED for normalization operation.
+     * 
+     * @param aParticleSetFileLineList Particle set file line list
+     * @param anAijSmall Lower boundary of interval
+     * @param anAijLarge Upper boundary of interval
+     * @return New particle set file line list or null if new list could not be
+     * created
+     */
+    private LinkedList<String> normalize(
+        LinkedList<String> aParticleSetFileLineList,
+        double anAijSmall,
+        double anAijLarge
+    ) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aParticleSetFileLineList == null || aParticleSetFileLineList.isEmpty()) {
+            return null;
+        }
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Definitions">
+        String tmpParticleInteractionsStartLine = 
+            String.format(
+                ModelDefinitions.SECTION_START_TAG_FORMAT, 
+                ModelDefinitions.PARTICLE_INTERACTIONS_SECTION_TAG
+            );
+        String tmpParticleInteractionsEndLine = 
+            String.format(
+                ModelDefinitions.SECTION_END_TAG_FORMAT, 
+                ModelDefinitions.PARTICLE_INTERACTIONS_SECTION_TAG
+            );
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Normalize a(ij)">
+        double tmpAijSmallPlusOne = anAijSmall + 1.0;
+        double tmpAijLargeMinusOne = anAijLarge - 1.0;
+        LinkedList<String> tmpNormalizedParticleSetFileLineList = new LinkedList<>();
+        tmpNormalizedParticleSetFileLineList.add("#    Normalization settings:");
+        tmpNormalizedParticleSetFileLineList.add("#    a(ij) small         = " + String.valueOf(anAijSmall));
+        tmpNormalizedParticleSetFileLineList.add("#    a(ij) large         = " + String.valueOf(anAijLarge));
+        boolean tmpIsInteractionsSectionStart = false;
+        boolean tmpIsInteractionsSectionEnd = false;
+        for (String tmpCurrentLine : aParticleSetFileLineList) {
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleInteractionsEndLine)) {
+                tmpIsInteractionsSectionEnd = true;
+            }
+            if (tmpIsInteractionsSectionStart && 
+                !tmpIsInteractionsSectionEnd && 
+                !tmpCurrentLine.trim().isEmpty() &&
+                !tmpCurrentLine.startsWith(ModelDefinitions.LINE_PREFIX_TO_IGNORE) &&
+                !tmpCurrentLine.startsWith("Pair")
+            ) {
+                String[] tmpItems = this.stringUtilityMethods.splitAndTrim(tmpCurrentLine);
+                String[] tmpParticles = ModelDefinitions.GENERAL_UNDERSCORE_PATTERN.split(tmpItems[0]);
+                
+                for (int i = 1; i < tmpItems.length; i++) {
+                    double tmpOldAij = Double.valueOf(tmpItems[i]);
+                    if (tmpOldAij < tmpAijSmallPlusOne) {
+                        double tmpMappedAij = 
+                            Math.tanh(tmpOldAij - tmpAijSmallPlusOne) + tmpAijSmallPlusOne;
+                        tmpItems[i] = this.stringUtilityMethods.formatDoubleValue(tmpMappedAij, 6);
+                    } else if (tmpOldAij > tmpAijLargeMinusOne) {
+                        double tmpMappedAij = 
+                            Math.tanh(tmpOldAij - tmpAijLargeMinusOne) + tmpAijLargeMinusOne;
+                        tmpItems[i] = this.stringUtilityMethods.formatDoubleValue(tmpMappedAij, 6);
+                    }
+                }
+                tmpNormalizedParticleSetFileLineList.add(
+                    this.stringUtilityMethods.concatenateStringsWithSpace(tmpItems)
+                );
+            } else {
+                tmpNormalizedParticleSetFileLineList.add(tmpCurrentLine);
+            }
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleInteractionsStartLine)) {
+                tmpIsInteractionsSectionStart = true;
+            }
+        }
+        // </editor-fold>
+        return tmpNormalizedParticleSetFileLineList;
+    }
+    
+    /**
+     * Scales repulsions according to settings with an individual (!) scaling
+     * factor for each (!) temperature.
+     * Note: Operations shiftRepulsionsForTemperature() and normalize() should 
+     * be performed before.
+     * Note: Charge of particle is IGNORED for scaling operation.
+     * 
+     * @param aParticleSetFileLineList Particle set file line list
+     * @param anAijMin Minimum value for a(ij)
+     * @param anAijSmall Lower boundary for normalized a(ij)
+     * @param anAijLarge Upper boundary for normalized a(ij)
+     * @return New particle set file line list or null if new list could not be
+     * created
+     */
+    private LinkedList<String> scaleIndividual(
+        LinkedList<String> aParticleSetFileLineList, 
+        double anAijMin,
+        double anAijSmall,
+        double anAijLarge
+    ) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aParticleSetFileLineList == null || aParticleSetFileLineList.isEmpty()) {
+            return null;
+        }
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Definitions">
+        String tmpParticleInteractionsStartLine = 
+            String.format(
+                ModelDefinitions.SECTION_START_TAG_FORMAT, 
+                ModelDefinitions.PARTICLE_INTERACTIONS_SECTION_TAG
+            );
+        String tmpParticleInteractionsEndLine = 
+            String.format(
+                ModelDefinitions.SECTION_END_TAG_FORMAT, 
+                ModelDefinitions.PARTICLE_INTERACTIONS_SECTION_TAG
+            );
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Determine temperatures and a(ii) for temperatures">
+        double[] tmpTemperatures = this.getTemperatures(aParticleSetFileLineList);
+        double[] tmpAii = this.getAiiForTemperatures(aParticleSetFileLineList); 
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Scale repulsions individually">
+        HashMap<String, Integer> tmpParticleToChargeMap = this.getParticleToChargeMap(aParticleSetFileLineList);
+
+        double[] tmpScalingFactors = new double[tmpTemperatures.length];
+        for (int i = 0; i < tmpScalingFactors.length; i++) {
+            tmpScalingFactors[i] = (tmpAii[i] - anAijMin) / (tmpAii[i] - anAijSmall);
+        }
+
+        LinkedList<String> tmpScaledParticleSetFileLineList = new LinkedList<>();
+        tmpScaledParticleSetFileLineList.add("#    Scale settings:");
+        tmpScaledParticleSetFileLineList.add("#    a(ij) min              = " + String.valueOf(anAijMin));
+        tmpScaledParticleSetFileLineList.add("#    a(ij) small            = " + String.valueOf(anAijSmall));
+        tmpScaledParticleSetFileLineList.add("#    a(ij) large            = " + String.valueOf(anAijLarge));
+        for (int i = 0; i < tmpTemperatures.length; i++) {
+            tmpScaledParticleSetFileLineList.add("#    Temperature            = " + String.valueOf(tmpTemperatures[i]));
+            tmpScaledParticleSetFileLineList.add("#    - Scaling factor       = " + String.valueOf(tmpScalingFactors[i]));
+        }
+        
+        boolean tmpIsInteractionsSectionStart = false;
+        boolean tmpIsInteractionsSectionEnd = false;
+        for (String tmpCurrentLine : aParticleSetFileLineList) {
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleInteractionsEndLine)) {
+                tmpIsInteractionsSectionEnd = true;
+            }
+            if (tmpIsInteractionsSectionStart && 
+                !tmpIsInteractionsSectionEnd && 
+                !tmpCurrentLine.trim().isEmpty() &&
+                !tmpCurrentLine.startsWith(ModelDefinitions.LINE_PREFIX_TO_IGNORE) &&
+                !tmpCurrentLine.startsWith("Pair")
+            ) {
+                String[] tmpItems = this.stringUtilityMethods.splitAndTrim(tmpCurrentLine);
+                String[] tmpParticles = ModelDefinitions.GENERAL_UNDERSCORE_PATTERN.split(tmpItems[0]);
+                if (tmpParticleToChargeMap.get(tmpParticles[0]) == 0 || tmpParticleToChargeMap.get(tmpParticles[1]) == 0) {
+                    if (!tmpParticles[0].equals(tmpParticles[1])) {
+                        // Scale a(ij)
+                        for (int i = 1; i < tmpItems.length; i++) {
+                            double tmpAij = Double.valueOf(tmpItems[i]);
+                            double tmpAijNew;
+                            if (tmpAij < tmpAii[i - 1]) {
+                                tmpAijNew = tmpAii[i - 1] - tmpScalingFactors[i - 1] * (tmpAii[i - 1] - tmpAij);
+                                tmpItems[i] = this.stringUtilityMethods.formatDoubleValue(tmpAijNew, 6);
+                            } else {
+                                tmpAijNew = tmpAii[i - 1] + tmpScalingFactors[i - 1] * (tmpAij - tmpAii[i - 1]);
+                                tmpItems[i] = this.stringUtilityMethods.formatDoubleValue(tmpAijNew, 6);
+                            }
+                        }
+                        tmpScaledParticleSetFileLineList.add(this.stringUtilityMethods.concatenateStringsWithSpace(tmpItems));
+                    } else {
+                        tmpScaledParticleSetFileLineList.add(tmpCurrentLine);
+                    }
+                } else {
+                    tmpScaledParticleSetFileLineList.add(tmpCurrentLine);
+                }
+            } else {
+                tmpScaledParticleSetFileLineList.add(tmpCurrentLine);
+            }
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleInteractionsStartLine)) {
+                tmpIsInteractionsSectionStart = true;
+            }
+        }
+        // </editor-fold>
+        return tmpScaledParticleSetFileLineList;
+    }
+    
+    /**
+     * Scales repulsions according to settings with a single global scaling 
+     * factor.
+     * Note: Operations shiftRepulsionsForTemperature() and normalize() should 
+     * be performed before.
+     * Note: Charge of particle is IGNORED for scaling operation.
+     * 
+     * @param aParticleSetFileLineList Particle set file line list
+     * @param anAijMin Minimum value for a(ij)
+     * @param anAijSmall Lower boundary for normalized a(ij)
+     * @param anAijLarge Upper boundary for normalized a(ij)
+     * @return New particle set file line list or null if new list could not be
+     * created
+     */
+    private LinkedList<String> scaleGlobal(
+        LinkedList<String> aParticleSetFileLineList, 
+        double anAijMin,
+        double anAijSmall,
+        double anAijLarge
+    ) {
+        // <editor-fold defaultstate="collapsed" desc="Checks">
+        if (aParticleSetFileLineList == null || aParticleSetFileLineList.isEmpty()) {
+            return null;
+        }
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Definitions">
+        String tmpParticleInteractionsStartLine = 
+            String.format(
+                ModelDefinitions.SECTION_START_TAG_FORMAT, 
+                ModelDefinitions.PARTICLE_INTERACTIONS_SECTION_TAG
+            );
+        String tmpParticleInteractionsEndLine = 
+            String.format(
+                ModelDefinitions.SECTION_END_TAG_FORMAT, 
+                ModelDefinitions.PARTICLE_INTERACTIONS_SECTION_TAG
+            );
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Determine temperatures and a(ii) for temperatures">
+        double[] tmpTemperatures = this.getTemperatures(aParticleSetFileLineList);
+        double[] tmpAii = this.getAiiForTemperatures(aParticleSetFileLineList); 
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Scale repulsions global">
+        HashMap<String, Integer> tmpParticleToChargeMap = this.getParticleToChargeMap(aParticleSetFileLineList);
+
+        // NOTE: tmpAii[0] must be the lowest (!) temperature
+        double tmpGlobalScalingFactor = (tmpAii[0] - anAijMin) / (tmpAii[0] - anAijSmall);
+
+        LinkedList<String> tmpScaledParticleSetFileLineList = new LinkedList<>();
+        tmpScaledParticleSetFileLineList.add("#    Scale settings:");
+        tmpScaledParticleSetFileLineList.add("#    a(ij) min              = " + String.valueOf(anAijMin));
+        tmpScaledParticleSetFileLineList.add("#    a(ij) small            = " + String.valueOf(anAijSmall));
+        tmpScaledParticleSetFileLineList.add("#    a(ij) large            = " + String.valueOf(anAijLarge));
+        tmpScaledParticleSetFileLineList.add("#    Global scaling factor  = " + String.valueOf(tmpGlobalScalingFactor));
+        
+        boolean tmpIsInteractionsSectionStart = false;
+        boolean tmpIsInteractionsSectionEnd = false;
+        for (String tmpCurrentLine : aParticleSetFileLineList) {
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleInteractionsEndLine)) {
+                tmpIsInteractionsSectionEnd = true;
+            }
+            if (tmpIsInteractionsSectionStart && 
+                !tmpIsInteractionsSectionEnd && 
+                !tmpCurrentLine.trim().isEmpty() &&
+                !tmpCurrentLine.startsWith(ModelDefinitions.LINE_PREFIX_TO_IGNORE) &&
+                !tmpCurrentLine.startsWith("Pair")
+            ) {
+                String[] tmpItems = this.stringUtilityMethods.splitAndTrim(tmpCurrentLine);
+                String[] tmpParticles = ModelDefinitions.GENERAL_UNDERSCORE_PATTERN.split(tmpItems[0]);
+                if (tmpParticleToChargeMap.get(tmpParticles[0]) == 0 || tmpParticleToChargeMap.get(tmpParticles[1]) == 0) {
+                    if (!tmpParticles[0].equals(tmpParticles[1])) {
+                        // Scale a(ij)
+                        for (int i = 1; i < tmpItems.length; i++) {
+                            double tmpAij = Double.valueOf(tmpItems[i]);
+                            double tmpAijNew;
+                            if (tmpAij < tmpAii[i - 1]) {
+                                tmpAijNew = tmpAii[i - 1] - tmpGlobalScalingFactor * (tmpAii[i - 1] - tmpAij);
+                                tmpItems[i] = this.stringUtilityMethods.formatDoubleValue(tmpAijNew, 6);
+                            } else {
+                                tmpAijNew = tmpAii[i - 1] + tmpGlobalScalingFactor * (tmpAij - tmpAii[i - 1]);
+                                tmpItems[i] = this.stringUtilityMethods.formatDoubleValue(tmpAijNew, 6);
+                            }
+                        }
+                        tmpScaledParticleSetFileLineList.add(this.stringUtilityMethods.concatenateStringsWithSpace(tmpItems));
+                    } else {
+                        tmpScaledParticleSetFileLineList.add(tmpCurrentLine);
+                    }
+                } else {
+                    tmpScaledParticleSetFileLineList.add(tmpCurrentLine);
+                }
+            } else {
+                tmpScaledParticleSetFileLineList.add(tmpCurrentLine);
+            }
+            if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleInteractionsStartLine)) {
+                tmpIsInteractionsSectionStart = true;
+            }
+        }
+        // </editor-fold>
+        return tmpScaledParticleSetFileLineList;
+    }
     
     /**
      * Rescales repulsions according to settings with an individual (!) scaling
-     * factor for each (!) temperatures.
+     * factor for each (!) temperature.
      * 
      * @param aParticleSetFileLineList Particle set file line list
-     * @param aTempFactor Temperature factor (see code)
      * @param aLowerRepulsionRange Lower repulsion range (see code)
      * @param aChargeOffset Charge offset (see code)
      * @return New particle set file line list or null if new list could not be
@@ -3887,7 +5148,6 @@ public final class StandardParticleInteractionData {
      */
     private LinkedList<String> rescaleRepulsionsWithIndividualScalingFactors(
         LinkedList<String> aParticleSetFileLineList, 
-        double aTempFactor, 
         double aLowerRepulsionRange, 
         double aChargeOffset
     ) {
@@ -3896,13 +5156,16 @@ public final class StandardParticleInteractionData {
             return null;
         }
         // </editor-fold>
-        // <editor-fold defaultstate="collapsed" desc="Rescale repulsions">
+        // <editor-fold defaultstate="collapsed" desc="Definitions">
         String tmpParticleInteractionsStartLine = String.format(ModelDefinitions.SECTION_START_TAG_FORMAT, ModelDefinitions.PARTICLE_INTERACTIONS_SECTION_TAG);
         String tmpParticleInteractionsEndLine = String.format(ModelDefinitions.SECTION_END_TAG_FORMAT, ModelDefinitions.PARTICLE_INTERACTIONS_SECTION_TAG);
-        
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Determine temperatures and old a(ii) for temperatures">
+        double[] tmpTemperatures = this.getTemperatures(aParticleSetFileLineList);
+        double[] tmpAiiOld = this.getAiiForTemperatures(aParticleSetFileLineList); 
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Rescale repulsions">
         HashMap<String, Integer> tmpParticleToChargeMap = this.getParticleToChargeMap(aParticleSetFileLineList);
-        double[] tmpTemperatures = this.getTemperatures();
-        double[] tmpAiiOld = this.getAiiForTemperatures();
 
         double[] tmpAiiNew = new double[tmpAiiOld.length];
         double[] tmpAiiShift = new double[tmpAiiOld.length];
@@ -4035,7 +5298,6 @@ public final class StandardParticleInteractionData {
         LinkedList<String> tmpNewParticleSetFileLineList = new LinkedList<>();
 
         tmpNewParticleSetFileLineList.add("#    Rescale settings:");
-        tmpNewParticleSetFileLineList.add("#    Temperature factor     = " + String.valueOf(aTempFactor));
         tmpNewParticleSetFileLineList.add("#    Lower repulsion range  = " + String.valueOf(aLowerRepulsionRange));
         tmpNewParticleSetFileLineList.add("#    Charge offset          = " + String.valueOf(aChargeOffset));
         for (int i = 0; i < tmpTemperatures.length; i++) {
@@ -4103,7 +5365,6 @@ public final class StandardParticleInteractionData {
      * scaling factor for all (!) temperatures.
      * 
      * @param aParticleSetFileLineList Particle set file line list
-     * @param aTempFactor Temperature factor (see code)
      * @param aLowerRepulsionRange Lower repulsion range (see code)
      * @param aChargeOffset Charge offset (see code)
      * @return New particle set file line list or null if new list could not be
@@ -4111,7 +5372,6 @@ public final class StandardParticleInteractionData {
      */
     private LinkedList<String> rescaleRepulsionsWithGlobalScalingFactor(
         LinkedList<String> aParticleSetFileLineList, 
-        double aTempFactor, 
         double aLowerRepulsionRange, 
         double aChargeOffset
     ) {
@@ -4120,13 +5380,16 @@ public final class StandardParticleInteractionData {
             return null;
         }
         // </editor-fold>
-        // <editor-fold defaultstate="collapsed" desc="Rescale repulsions">
+        // <editor-fold defaultstate="collapsed" desc="Definitions">
         String tmpParticleInteractionsStartLine = String.format(ModelDefinitions.SECTION_START_TAG_FORMAT, ModelDefinitions.PARTICLE_INTERACTIONS_SECTION_TAG);
         String tmpParticleInteractionsEndLine = String.format(ModelDefinitions.SECTION_END_TAG_FORMAT, ModelDefinitions.PARTICLE_INTERACTIONS_SECTION_TAG);
-        
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Determine temperatures and old a(ii) for temperatures">
+        double[] tmpTemperatures = this.getTemperatures(aParticleSetFileLineList);
+        double[] tmpAiiOld = this.getAiiForTemperatures(aParticleSetFileLineList); 
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="Rescale repulsions">
         HashMap<String, Integer> tmpParticleToChargeMap = this.getParticleToChargeMap(aParticleSetFileLineList);
-        double[] tmpTemperatures = this.getTemperatures();
-        double[] tmpAiiOld = this.getAiiForTemperatures();
 
         double[] tmpAiiNew = new double[tmpAiiOld.length];
         double[] tmpAiiShift = new double[tmpAiiOld.length];
@@ -4190,7 +5453,6 @@ public final class StandardParticleInteractionData {
                 tmpIsInteractionsSectionStart = true;
             }
         }
-        
         // Scale a(ij) WITHOUT charged/charged pairs
         LinkedList<String> tmpScaledParticleSetFileLineList = new LinkedList<>();
 
@@ -4257,7 +5519,6 @@ public final class StandardParticleInteractionData {
         LinkedList<String> tmpNewParticleSetFileLineList = new LinkedList<>();
 
         tmpNewParticleSetFileLineList.add("#    Rescale settings:");
-        tmpNewParticleSetFileLineList.add("#    Temperature factor     = " + String.valueOf(aTempFactor));
         tmpNewParticleSetFileLineList.add("#    Lower repulsion range  = " + String.valueOf(aLowerRepulsionRange));
         tmpNewParticleSetFileLineList.add("#    Charge offset          = " + String.valueOf(aChargeOffset));
         tmpNewParticleSetFileLineList.add("#    - a(ij) shifted min = " + String.valueOf(tmpAijShiftedMin));
@@ -4487,7 +5748,6 @@ public final class StandardParticleInteractionData {
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="Read particle interaction and temperatures from particle set file in installation directory">
             // Initialize data structure (Pairs: 100x100 = 10000):
-            this.particlePairTemperatureToInteractionMap = new HashMap<>(10000);
             this.particlePairToBondLengthMap = new HashMap<>(10000);
             tmpItems = 
                 this.fileUtilityMethods.readJaggedStringArrayPartFromFile(
@@ -4495,8 +5755,9 @@ public final class StandardParticleInteractionData {
                     ModelDefinitions.LINE_PREFIX_TO_IGNORE, 
                     ModelDefinitions.PARTICLE_INTERACTIONS_SECTION_TAG
                 );
-            // Initialize data structure:
-            this.particlePairTemperatureToInteractionMap = new HashMap<String, String>(this.miscUtilityMethods.getNumberOfElementsOfJaggedArrayOfStrings(tmpItems));
+            // Initialize data structure
+            this.particlePairTemperatureToInteractionMap = 
+                new HashMap<String, String>(this.miscUtilityMethods.getNumberOfElementsOfJaggedArrayOfStrings(tmpItems));
             // First line (index 0) is temperature information for particles, first item is "Pair"
             this.temperatureStrings = new String[tmpItems[0].length - 1];
             this.minInteractionValueForTemperatures = new double[tmpItems[0].length - 1];
@@ -4506,7 +5767,6 @@ public final class StandardParticleInteractionData {
             for (int k = 1; k < tmpItems[0].length; k++) {
                 this.temperatureStrings[k - 1] = this.getTemperatureString(tmpItems[0][k]);
             }
-            Arrays.sort(this.temperatureStrings);
             // Second line (index 1) and following: Interactions a(ij)
             for (int i = 1; i < tmpItems.length; i++) {
                 String[] tmpParticles = ModelDefinitions.GENERAL_UNDERSCORE_PATTERN.split(tmpItems[i][0]);
@@ -4659,7 +5919,6 @@ public final class StandardParticleInteractionData {
     /**
      * Temperatures of particle set
      * 
-     * @param aParticleSetFileLineList Particle set file line list
      * @return Temperatures of particle set or null if non can be evaluated
      */
     private double[] getTemperatures() {
@@ -4674,12 +5933,61 @@ public final class StandardParticleInteractionData {
             return null;
         }
     }
+
+    /**
+     * Temperatures of particle set
+     * 
+     * @param aParticleSetFileLineList Particle set file line list
+     * @return Temperatures of particle set or null if non can be evaluated
+     */
+    private double[] getTemperatures(LinkedList<String> aParticleSetFileLineList) {
+        try {
+            // <editor-fold defaultstate="collapsed" desc="Definitions">
+            String tmpParticleInteractionsStartLine = 
+                String.format(ModelDefinitions.SECTION_START_TAG_FORMAT, ModelDefinitions.PARTICLE_INTERACTIONS_SECTION_TAG);
+            String tmpParticleInteractionsEndLine = 
+                String.format(ModelDefinitions.SECTION_END_TAG_FORMAT, ModelDefinitions.PARTICLE_INTERACTIONS_SECTION_TAG);
+            // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="Determine temperatures and old a(ii) for temperatures">
+            boolean tmpIsInteractionsSectionStart = false;
+            boolean tmpIsInteractionsSectionEnd = false;
+            double[] tmpTemperatures = null;
+            for (String tmpCurrentLine : aParticleSetFileLineList) {
+                if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleInteractionsEndLine)) {
+                    tmpIsInteractionsSectionEnd = true;
+                }
+                if (tmpIsInteractionsSectionStart && 
+                    !tmpIsInteractionsSectionEnd && 
+                    !tmpCurrentLine.trim().isEmpty() &&
+                    !tmpCurrentLine.startsWith(ModelDefinitions.LINE_PREFIX_TO_IGNORE)
+                ) {
+                    if (tmpCurrentLine.startsWith("Pair")) {
+                        // Corresponds to 
+                        // double[] tmpTemperatures = this.getTemperatures();
+                        // with aParticleSetFileLineList
+                        String[] tmpItems = this.stringUtilityMethods.splitAndTrim(tmpCurrentLine);
+                        tmpTemperatures = new double[tmpItems.length - 1];
+                        for (int i = 1; i < tmpItems.length; i++) {
+                            tmpTemperatures[i - 1] = Double.valueOf(tmpItems[i]);
+                        }
+                        break;
+                    }
+                }
+                if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleInteractionsStartLine)) {
+                    tmpIsInteractionsSectionStart = true;
+                }
+            }
+            return tmpTemperatures;
+            // </editor-fold>
+        } catch (Exception anException) {
+            ModelUtils.appendToLogfile(true, anException);
+            return null;
+        }
+    }
     
     /**
      * Diagonal repulsions a(ii) of particle set for all temperatures
      * 
-     * @param aParticleSetFileLineList Particle set file line list
-     * @param aParticleToChargeMap Particle-to-charge map
      * @return Diagonal repulsions a(ii) of particle set for all temperatures 
      * or null if non can be evaluated
      */
@@ -4695,6 +6003,120 @@ public final class StandardParticleInteractionData {
         } catch (Exception anException) {
             ModelUtils.appendToLogfile(true, anException);
             return null;
+        }
+    }
+
+    /**
+     * Diagonal repulsions a(ii) of particle set for all temperatures
+     * 
+     * @param aParticleSetFileLineList Particle set file line list
+     * @return Diagonal repulsions a(ii) of particle set for all temperatures 
+     * or null if non can be evaluated
+     */
+    private double[] getAiiForTemperatures(LinkedList<String> aParticleSetFileLineList) {
+        try {
+            // <editor-fold defaultstate="collapsed" desc="Definitions">
+            String tmpParticleInteractionsStartLine = 
+                String.format(ModelDefinitions.SECTION_START_TAG_FORMAT, ModelDefinitions.PARTICLE_INTERACTIONS_SECTION_TAG);
+            String tmpParticleInteractionsEndLine = 
+                String.format(ModelDefinitions.SECTION_END_TAG_FORMAT, ModelDefinitions.PARTICLE_INTERACTIONS_SECTION_TAG);
+            // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="Determine temperatures and old a(ii) for temperatures">
+            boolean tmpIsInteractionsSectionStart = false;
+            boolean tmpIsInteractionsSectionEnd = false;
+            double[] tmpAiiOld = null;
+            for (String tmpCurrentLine : aParticleSetFileLineList) {
+                if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleInteractionsEndLine)) {
+                    tmpIsInteractionsSectionEnd = true;
+                }
+                if (tmpIsInteractionsSectionStart && 
+                    !tmpIsInteractionsSectionEnd && 
+                    !tmpCurrentLine.trim().isEmpty() &&
+                    !tmpCurrentLine.startsWith(ModelDefinitions.LINE_PREFIX_TO_IGNORE) &&
+                    !tmpCurrentLine.startsWith("Pair")
+                ) {
+                    // Corresponds to 
+                    // double[] tmpAiiOld = this.getAiiForTemperatures(); 
+                    // with aParticleSetFileLineList
+                    String[] tmpItems = this.stringUtilityMethods.splitAndTrim(tmpCurrentLine);
+                    String[] tmpParticles = ModelDefinitions.GENERAL_UNDERSCORE_PATTERN.split(tmpItems[0]);
+                    if (tmpParticles[0].equals(tmpParticles[1])) {
+                        tmpAiiOld = new double[tmpItems.length - 1];
+                        for (int i = 1; i < tmpItems.length; i++) {
+                            tmpAiiOld[i - 1] = Double.valueOf(tmpItems[i]);
+                        }
+                        break;
+                    }
+                }
+                if (tmpCurrentLine.trim().equalsIgnoreCase(tmpParticleInteractionsStartLine)) {
+                    tmpIsInteractionsSectionStart = true;
+                }
+            }
+            return tmpAiiOld;
+            // </editor-fold>
+        } catch (Exception anException) {
+            ModelUtils.appendToLogfile(true, anException);
+            return null;
+        }
+    }
+    
+    /**
+     * Returns interaction a(ij) as String
+     *
+     * @param aParticlePairTemperatureToInteractionMap Maps particle pair and 
+     * temperature to interaction
+     * @param aParticle1 Particle 1 of pair
+     * @param aParticle2 Particle 2 of pair
+     * @param aTemperatureRepresentation Temperature representation
+     * @return Interaction a(ij) as String or null if interaction is not
+     * available
+     */
+    private String getInteraction(
+        HashMap<String, String> aParticlePairTemperatureToInteractionMap, 
+        String aParticle1, 
+        String aParticle2, 
+        String aTemperatureRepresentation
+    ) {
+        return aParticlePairTemperatureToInteractionMap.get(
+            this.getParticlePairTemperatureKey(
+                aParticle1, 
+                aParticle2, 
+                this.getTemperatureString(aTemperatureRepresentation)
+            )
+        );
+    }
+    
+    /**
+     * Add interaction a(ij) as String
+     * Note: No checks are performed!
+     *
+     * @param aParticlePairTemperatureToInteractionMap Maps particle pair and 
+     * temperature to interaction
+     * @param aParticle1 Particle 1 of pair
+     * @param aParticle2 Particle 2 of pair
+     * @param aTemperatureRepresentation Temperature representation
+     * @param anInteraction Interaction a(ij)
+     * @return True: Interactions a(ij) changed, false: Otherwise
+     * @throws IllegalArgumentException Thrown if an argument is illegal
+     */
+    private boolean addInteraction(
+        HashMap<String, String> aParticlePairTemperatureToInteractionMap, 
+        String aParticle1,
+        String aParticle2, 
+        String aTemperatureRepresentation, 
+        String anInteraction
+    ) {
+        String tmpParticlePairTemperatureKey = 
+            this.getParticlePairTemperatureKey(
+                aParticle1, 
+                aParticle2, 
+                this.getTemperatureString(aTemperatureRepresentation)
+            );
+        if (!aParticlePairTemperatureToInteractionMap.containsKey(tmpParticlePairTemperatureKey)) {
+            aParticlePairTemperatureToInteractionMap.put(tmpParticlePairTemperatureKey, anInteraction);
+            return true;
+        } else {
+            return false;
         }
     }
     // </editor-fold>

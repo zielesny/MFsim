@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2024  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -329,7 +329,21 @@ public class MainFrameController implements PropertyChangeListener {
             this.setHomePanelImage();
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="Set info label for job restart steps">
-            this.mainFrame.getStepsForRestartInfoLabel().setText(String.format(GuiMessage.get("MainFrame.stepsForRestartInfoLabel.text"), String.valueOf(Preferences.getInstance().getNumberOfAdditionalStepsForJobRestart())));
+            if (Preferences.getInstance().isVelocityInitializationForJobRestart()) {
+                this.mainFrame.getStepsForRestartInfoLabel().setText(
+                    String.format(
+                        GuiMessage.get("MainFrame.jobRestartInfoLabel.textWithVelocityInitialization"), 
+                        String.valueOf(Preferences.getInstance().getNumberOfAdditionalStepsForJobRestart())
+                    )
+                );
+            } else {
+                this.mainFrame.getStepsForRestartInfoLabel().setText(
+                    String.format(
+                        GuiMessage.get("MainFrame.jobRestartInfoLabel.textWithoutVelocityInitialization"), 
+                        String.valueOf(Preferences.getInstance().getNumberOfAdditionalStepsForJobRestart())
+                    )
+                );
+            }
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="Initialize models and related lists">
             // <editor-fold defaultstate="collapsed" desc="- Initialize job input list models and lists">
@@ -1936,21 +1950,43 @@ public class MainFrameController implements PropertyChangeListener {
     // <editor-fold defaultstate="collapsed" desc="Job execution related command methods">
     // <editor-fold defaultstate="collapsed" desc="- Actions">
     /**
-     * Edit number of steps for job restart
+     * Edit settings for job restart
      */
-    public void editNumberOfAdditionalStepsForJobRestart() {
+    public void editSettingsForJobRestart() {
         try {
-            ValueItemContainer tmpNumberOfAdditionalStepsForJobRestartValueItemContainer = Preferences.getInstance().getNumberOfAdditionalStepsForJobRestartValueItemContainer();
-            if (DialogValueItemEdit.hasChanged(GuiMessage.get("PreferencesJobRestartSettingsDialog.title"), tmpNumberOfAdditionalStepsForJobRestartValueItemContainer)) {
-                Preferences.getInstance().setEditablePreferences(tmpNumberOfAdditionalStepsForJobRestartValueItemContainer);
-                this.mainFrame.getStepsForRestartInfoLabel().setText(String.format(GuiMessage.get("MainFrame.stepsForRestartInfoLabel.text"), String.valueOf(Preferences.getInstance().getNumberOfAdditionalStepsForJobRestart())));
+            ValueItemContainer tmpSettingsForJobRestartValueItemContainer = 
+                Preferences.getInstance().geSettingsForJobRestartValueItemContainer();
+            if (DialogValueItemEdit.hasChanged(GuiMessage.get("PreferencesJobRestartSettingsDialog.title"), tmpSettingsForJobRestartValueItemContainer)) {
+                Preferences.getInstance().setEditablePreferences(tmpSettingsForJobRestartValueItemContainer);
+                if (Preferences.getInstance().isVelocityInitializationForJobRestart()) {
+                    this.mainFrame.getStepsForRestartInfoLabel().setText(
+                        String.format(
+                            GuiMessage.get("MainFrame.jobRestartInfoLabel.textWithVelocityInitialization"), 
+                            String.valueOf(Preferences.getInstance().getNumberOfAdditionalStepsForJobRestart())
+                        )
+                    );
+                } else {
+                    this.mainFrame.getStepsForRestartInfoLabel().setText(
+                        String.format(
+                            GuiMessage.get("MainFrame.jobRestartInfoLabel.textWithoutVelocityInitialization"), 
+                            String.valueOf(Preferences.getInstance().getNumberOfAdditionalStepsForJobRestart())
+                        )
+                    );
+                }
             }
         } catch (Exception anException) {
             ModelUtils.appendToLogfile(true, anException);
             // <editor-fold defaultstate="collapsed" desc="Message CommandExecutionFailed">
-            JOptionPane.showMessageDialog(null, String.format(GuiMessage.get("Error.CommandExecutionFailed"), "editNumberOfAdditionalStepsForJobRestart()", "MainFrameController"),
-                    GuiMessage.get("Error.ErrorNotificationTitle"), JOptionPane.ERROR_MESSAGE);
-
+            JOptionPane.showMessageDialog(
+                null, 
+                String.format(
+                    GuiMessage.get("Error.CommandExecutionFailed"), 
+                    "editSettingsForJobRestart()", 
+                    "MainFrameController"
+                ),
+                GuiMessage.get("Error.ErrorNotificationTitle"), 
+                JOptionPane.ERROR_MESSAGE
+            );
             // </editor-fold>
         }
     }
@@ -2082,6 +2118,7 @@ public class MainFrameController implements PropertyChangeListener {
                 tmpJobResult.setToBeRestarted(false);
                 // Set nsteps for restart
                 tmpJobResult.setAdditionalStepsForRestart(0);
+                tmpJobResult.setVelocityInitializationForRestart(false);
             }
             // Repaint: JobResult description changed since job is no longer "to be restarted"
             this.mainFrame.getSelectJobForRestartSelectionPanel().getList().repaint();
@@ -2245,6 +2282,7 @@ public class MainFrameController implements PropertyChangeListener {
                 tmpJobResult.setToBeRestarted(false);
                 // Set nsteps for restart
                 tmpJobResult.setAdditionalStepsForRestart(0);
+                tmpJobResult.setVelocityInitializationForRestart(false);
                 // Repaint: JobResult description changed since job is no longer "to be restarted"
                 this.mainFrame.getSelectJobForRestartSelectionPanel().getList().repaint();
 
@@ -2953,9 +2991,16 @@ public class MainFrameController implements PropertyChangeListener {
         try {
             if (GuiUtils.getYesNoDecision(GuiMessage.get("JobInputFilter.ClearFrameTitle"), GuiMessage.get("JobInputFilter.ClearMessage"))) {
                 MouseCursorManagement.getInstance().setWaitCursor();
-                if (Preferences.getInstance().clearJobInputFilter()) {
-                    this.fillJobInputRelatedListModels();
-                }
+                // The following code does NOT work if the workspace is changed,
+                // since Preferences.getInstance().clearJobInputFilter() always
+                // returns false in that case, so that the update is NOT 
+                // performed:
+                // if (Preferences.getInstance().clearJobInputFilter()) {
+                //     this.fillJobInputRelatedListModels();
+                // }
+                // Thus, always update:
+                Preferences.getInstance().clearJobInputFilter();
+                this.fillJobInputRelatedListModels();
             }
         } catch (Exception anException) {
             ModelUtils.appendToLogfile(true, anException);
@@ -2976,9 +3021,16 @@ public class MainFrameController implements PropertyChangeListener {
         try {
             if (GuiUtils.getYesNoDecision(GuiMessage.get("JobResultFilter.ClearFrameTitle"), GuiMessage.get("JobResultFilter.ClearMessage"))) {
                 MouseCursorManagement.getInstance().setWaitCursor();
-                if (Preferences.getInstance().clearJobResultFilter()) {
-                    this.fillJobResultRelatedListModels();
-                }
+                // The following code does NOT work if the workspace is changed,
+                // since Preferences.getInstance().clearJobResultFilter() always
+                // returns false in that case, so that the update is NOT 
+                // performed:
+                // if (Preferences.getInstance().clearJobResultFilter()) {
+                //     this.fillJobResultRelatedListModels();
+                // }
+                // Thus, always update:
+                Preferences.getInstance().clearJobResultFilter();
+                this.fillJobResultRelatedListModels();
             }
         } catch (Exception anException) {
             ModelUtils.appendToLogfile(true, anException);
@@ -3135,6 +3187,7 @@ public class MainFrameController implements PropertyChangeListener {
             aJobToBeRestarted.setToBeRestarted(true);
             // Set additional steps for restart
             aJobToBeRestarted.setAdditionalStepsForRestart(Preferences.getInstance().getNumberOfAdditionalStepsForJobRestart());
+            aJobToBeRestarted.setVelocityInitializationForRestart(Preferences.getInstance().isVelocityInitializationForJobRestart());
             // Repaint: JobResult description changed since job is now "to be restarted"
             this.mainFrame.getSelectJobForRestartSelectionPanel().getList().repaint();
             // Add job to jobExecutionListModel
@@ -3672,6 +3725,7 @@ public class MainFrameController implements PropertyChangeListener {
                     tmpJobResult.setToBeRestarted(false);
                     // Set nsteps for restart
                     tmpJobResult.setAdditionalStepsForRestart(0);
+                    tmpJobResult.setVelocityInitializationForRestart(false);
                     // Repaint: JobResult description changed since job is no longer "to be restarted"
                     this.mainFrame.getSelectJobForRestartSelectionPanel().getList().repaint();
 

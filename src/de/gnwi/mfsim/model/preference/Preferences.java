@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2024  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -704,6 +704,11 @@ public final class Preferences {
      * Number of steps for Job restart
      */
     private int numberOfAdditionalStepsForJobRestart;
+    
+    /**
+     * True: Velocities are initialized for Job restart, false: Otherwise
+     */
+    private boolean isVelocityInitializationForJobRestart;
 
     /**
      * Number of working JobResultExecution tasks.
@@ -1051,6 +1056,7 @@ public final class Preferences {
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Job restart settings">
         tmpVerticalPosition = this.addNumberOfAdditionalStepsForJobRestartValueItem(tmpValueItemContainer, tmpVerticalPosition);
+        tmpVerticalPosition = this.addVelocityInitializationForJobRestartValueItem(tmpValueItemContainer, tmpVerticalPosition);
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Job Result settings">
         tmpVerticalPosition = this.addJobResultSettingsEditablePreferencesValueItems(tmpValueItemContainer, tmpVerticalPosition);
@@ -1371,15 +1377,16 @@ public final class Preferences {
     }
 
     /**
-     * Returns ValueItemContainer with additional number of steps for Job restart
+     * Returns ValueItemContainer with editable preferences for Job restart
      * (may be returned after edit process with method setEditablePreferences())
      *
      * @return ValueItemContainer with editable preferences for job restart
      * settings
      */
-    public ValueItemContainer getNumberOfAdditionalStepsForJobRestartValueItemContainer() {
+    public ValueItemContainer geSettingsForJobRestartValueItemContainer() {
         ValueItemContainer tmpValueItemContainer = new ValueItemContainer(ModelDefinitions.PREFERENCE_EDITABLE_VALUE_ITEM_UPDATE);
-        this.addNumberOfAdditionalStepsForJobRestartValueItem(tmpValueItemContainer, 0);
+        int tmpVerticalPosition = this.addNumberOfAdditionalStepsForJobRestartValueItem(tmpValueItemContainer, 0);
+        this.addVelocityInitializationForJobRestartValueItem(tmpValueItemContainer, tmpVerticalPosition);
         return tmpValueItemContainer;
     }
 
@@ -1612,6 +1619,11 @@ public final class Preferences {
                     break;
                 case NUMBER_OF_STEPS_FOR_JOB_RESTART:
                     if (this.setNumberOfAdditionalStepsForJobRestart(tmpSingleValueItem.getValueAsInt())) {
+                        tmpHasChanged = true;
+                    }
+                    break;
+                case VELOCITY_INITIALIZATION_FOR_JOB_RESTART:
+                    if (this.setVelocityInitializationForJobRestart(tmpSingleValueItem.getValue().equals(ModelMessage.get("Preferences.JobRestartSettings.IsVelocityInitializationForJobRestart.True")))) {
                         tmpHasChanged = true;
                     }
                     break;
@@ -2296,6 +2308,8 @@ public final class Preferences {
             tmpRoot.addContent(new Element(PreferenceXmlName.NUMBER_OF_BONDS_FOR_PARALLELIZATION).addContent(Integer.toString(this.numberOfBondsforParallelization)));
             // this.numberOfStepsForJobRestart
             tmpRoot.addContent(new Element(PreferenceXmlName.NUMBER_OF_STEPS_FOR_JOB_RESTART).addContent(Integer.toString(this.numberOfAdditionalStepsForJobRestart)));
+            // this.isVelocityInitializationForJobRestart
+            tmpRoot.addContent(new Element(PreferenceXmlName.VELOCITY_INITIALIZATION_FOR_JOB_RESTART).addContent(Boolean.toString(this.isVelocityInitializationForJobRestart)));
             // this.simulationBoxMagnificationPercentage
             tmpRoot.addContent(new Element(PreferenceXmlName.SIMULATION_BOX_MAGNIFICATION_PERCENTAGE).addContent(Integer.toString(this.simulationBoxMagnificationPercentage)));
             // this.numberOfSpinSteps
@@ -5460,9 +5474,7 @@ public final class Preferences {
      * @return True: Value changed, false: Otherwise
      */
     public boolean setNumberOfAdditionalStepsForJobRestart(int aNumberOfAdditionalStepsForJobRestart) {
-
         boolean tmpHasChanged = false;
-
         // <editor-fold defaultstate="collapsed" desc="Set new value if changed">
         int tmpCorrectedValue = ModelUtils.correctIntegerValue(aNumberOfAdditionalStepsForJobRestart, ModelDefinitions.MINIMUM_NUMBER_OF_STEPS_FOR_JOB_RESTART,
                 ModelDefinitions.MAXIMUM_NUMBER_OF_ADDITIONAL_STEPS_FOR_JOB_RESTART);
@@ -5474,7 +5486,41 @@ public final class Preferences {
         // </editor-fold>
         return tmpHasChanged;
     }
+    // </editor-fold>
+    // <editor-fold defaultstate="collapsed" desc="- VelocityInitializationForJobRestart">
+    /**
+     * True: Velocities are initialized for Job restart, false: Otherwise
+     *
+     * @return True: Velocities are initialized for Job restart, false: 
+     * Otherwise
+     */
+    public boolean isVelocityInitializationForJobRestart() {
+        return this.isVelocityInitializationForJobRestart;
+    }
 
+    /**
+     * Default velocity initialization for Job restart
+     *
+     * @return Default velocity initialization for Job restart
+     */
+    public boolean getDefaultVelocityInitializationForJobRestart() {
+        return ModelDefinitions.DEFAULT_VELOCITY_INITIALIZATION_FOR_JOB_RESTART;
+    }
+
+    /**
+     * True: Velocities are initialized for Job restart, false: Otherwise
+     *
+     * @param aValue Value
+     * @return True: Value changed, false: Otherwise
+     */
+    public boolean setVelocityInitializationForJobRestart(boolean aValue) {
+        if (this.isVelocityInitializationForJobRestart != aValue) {
+            this.isVelocityInitializationForJobRestart = aValue;
+            return true;
+        } else {
+            return false;
+        }
+    }
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- SimulationBoxMagnificationPercentage">
     /**
@@ -9872,12 +9918,10 @@ public final class Preferences {
      */
     private int addNumberOfAdditionalStepsForJobRestartValueItem(ValueItemContainer aValueItemContainer, int aVerticalPosition) {
         String[] tmpNodeNames = new String[]{ModelMessage.get("Preferences.Root"), ModelMessage.get("Preferences.JobRestartSettings")};
-
         ValueItem tmpValueItem = this.getNumberOfAdditionalStepsForJobRestartValueItem();
         tmpValueItem.setNodeNames(tmpNodeNames);
         tmpValueItem.setVerticalPosition(aVerticalPosition++);
         aValueItemContainer.addValueItem(tmpValueItem);
-
         return aVerticalPosition;
     }
 
@@ -9896,7 +9940,56 @@ public final class Preferences {
         tmpValueItem.setValue(String.valueOf(this.numberOfAdditionalStepsForJobRestart));
         return tmpValueItem;
     }
+    // </editor-fold>
+    // <editor-fold defaultstate="collapsed" desc="-- Velocity initialization for Job restart value item return methods">
+    /**
+     * Adds value item for velocity initialization for Job restart to value 
+     * item container
+     *
+     * @param aValueItemContainer Value item container
+     * @param aVerticalPosition First vertical position
+     *
+     * @return Next vertical position
+     */
+    private int addVelocityInitializationForJobRestartValueItem(ValueItemContainer aValueItemContainer, int aVerticalPosition) {
+        String[] tmpNodeNames = 
+            new String[]{
+                ModelMessage.get("Preferences.Root"), 
+                ModelMessage.get("Preferences.JobRestartSettings")
+            };
+        ValueItem tmpValueItem = this.getVelocityInitializationForJobRestartValueItem();
+        tmpValueItem.setNodeNames(tmpNodeNames);
+        tmpValueItem.setVerticalPosition(aVerticalPosition++);
+        aValueItemContainer.addValueItem(tmpValueItem);
+        return aVerticalPosition;
+    }
 
+    /**
+     * Returns value item for this.isVelocityInitializationForJobRestart
+     *
+     * @return Value item for this.isVelocityInitializationForJobRestart
+     */
+    private ValueItem getVelocityInitializationForJobRestartValueItem() {
+        ValueItem tmpValueItem = new ValueItem();
+        tmpValueItem.setDefaultTypeFormat(
+            new ValueItemDataTypeFormat(
+                ModelMessage.get("Preferences.JobRestartSettings.IsVelocityInitializationForJobRestart.True"), 
+                new String[]{
+                    ModelMessage.get("Preferences.JobRestartSettings.IsVelocityInitializationForJobRestart.True"),
+                    ModelMessage.get("Preferences.JobRestartSettings.IsVelocityInitializationForJobRestart.False")
+                }
+            )
+        );
+        tmpValueItem.setName(PreferenceEditableEnum.VELOCITY_INITIALIZATION_FOR_JOB_RESTART.name());
+        tmpValueItem.setDescription(ModelMessage.get("Preferences.JobRestartSettings.IsVelocityInitializationForJobRestart.Description"));
+        tmpValueItem.setDisplayName(ModelMessage.get("Preferences.JobRestartSettings.IsVelocityInitializationForJobRestart"));
+        if (this.isVelocityInitializationForJobRestart) {
+            tmpValueItem.setValue(ModelMessage.get("Preferences.JobRestartSettings.IsVelocityInitializationForJobRestart.True"));
+        } else {
+            tmpValueItem.setValue(ModelMessage.get("Preferences.JobRestartSettings.IsVelocityInitializationForJobRestart.False"));
+        }
+        return tmpValueItem;
+    }
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="-- Job Result archive related value item return methods">
     /**
@@ -9926,7 +10019,6 @@ public final class Preferences {
         }
         tmpValueItem.setVerticalPosition(aVerticalPosition++);
         aValueItemContainer.addValueItem(tmpValueItem);
-
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Job Result archive file compression">
         tmpValueItem = new ValueItem();
@@ -10913,31 +11005,27 @@ public final class Preferences {
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="this.numberOfStepsForJobRestart">
         this.numberOfAdditionalStepsForJobRestart = this.getDefaultNumberOfAdditionalStepsForJobRestart();
-
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="this.isVelocityInitializationForJobRestart">
+        this.isVelocityInitializationForJobRestart = this.getDefaultVelocityInitializationForJobRestart();
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="this.simulationBoxMagnificationPercentage">
         this.simulationBoxMagnificationPercentage = this.getDefaultSimulationBoxMagnificationPercentage();
-
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="this.numberOfSpinSteps">
         this.numberOfSpinSteps = this.getDefaultNumberOfSpinSteps();
-
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="this.lastSelectedPath">
         this.lastSelectedPath = this.getDefaultLastSelectedPath();
-
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="this.mainFrameHeight">
         this.mainFrameHeight = this.getDefaultMainFrameHeight();
-
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="this.mainFrameWidth">
         this.mainFrameWidth = this.getDefaultMainFrameWidth();
-
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="this.dialogSlicerShowHeight">
         this.dialogSlicerShowHeight = this.getDefaultDialogSlicerShowHeight();
-
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="this.dialogSlicerShowWidth">
         this.dialogSlicerShowWidth = this.getDefaultDialogSlicerShowWidth();
@@ -11544,14 +11632,18 @@ public final class Preferences {
             if (tmpCurrentElement != null) {
                 this.numberOfAdditionalStepsForJobRestart = Integer.parseInt(tmpCurrentElement.getText());
             }
-
+            // </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="this.isVelocityInitializationForJobRestart">
+            tmpCurrentElement = anElement.getChild(PreferenceXmlName.VELOCITY_INITIALIZATION_FOR_JOB_RESTART);
+            if (tmpCurrentElement != null) {
+                this.isVelocityInitializationForJobRestart = Boolean.parseBoolean(tmpCurrentElement.getText());
+            }
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="this.simulationBoxMagnificationPercentage">
             tmpCurrentElement = anElement.getChild(PreferenceXmlName.SIMULATION_BOX_MAGNIFICATION_PERCENTAGE);
             if (tmpCurrentElement != null) {
                 this.simulationBoxMagnificationPercentage = Integer.parseInt(tmpCurrentElement.getText());
             }
-
             // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="this.numberOfSpinSteps">
             tmpCurrentElement = anElement.getChild(PreferenceXmlName.NUMBER_OF_SPIN_STEPS);

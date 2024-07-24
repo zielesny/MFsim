@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2024  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -638,15 +638,29 @@ public class JobResultExecutionTask implements Callable<Boolean> {
                     // Jdpd kernel will be used
                     if (this.jobResult.isRestarted()) {
                         int tmpAdditionalTimeStepNumber = this.jobResult.getAdditionalStepsForRestart();
+                        boolean tmpIsVelocityInitialization = this.jobResult.isVelocityInitializationForRestart();
                         String tmpRestartInfoFilePathname = this.getJdpdRestartInfoFilePathname(this.jobResult.getJobResultPath());
-                        tmpRestartInfo = new de.gnwi.jdpd.parameters.RestartInfo(tmpAdditionalTimeStepNumber, tmpRestartInfoFilePathname);
+                        // TODO: Implement anIsVelocityInitialization for job restart
+                        tmpRestartInfo = 
+                            new de.gnwi.jdpd.parameters.RestartInfo(
+                                tmpAdditionalTimeStepNumber, 
+                                tmpIsVelocityInitialization,
+                                tmpRestartInfoFilePathname
+                            );
                     }
                 } else {
                     // JdpdSP kernel will be used
                     if (this.jobResult.isRestarted()) {
                         int tmpAdditionalTimeStepNumber = this.jobResult.getAdditionalStepsForRestart();
+                        boolean tmpIsVelocityInitialization = this.jobResult.isVelocityInitializationForRestart();
                         String tmpRestartInfoFilePathname = this.getJdpdRestartInfoFilePathname(this.jobResult.getJobResultPath());
-                        tmpRestartInfoSP = new de.gnwi.jdpdsp.parameters.RestartInfo(tmpAdditionalTimeStepNumber, tmpRestartInfoFilePathname);
+                        // TODO: Implement anIsVelocityInitialization for job restart
+                        tmpRestartInfoSP = 
+                            new de.gnwi.jdpdsp.parameters.RestartInfo(
+                                tmpAdditionalTimeStepNumber,
+                                tmpIsVelocityInitialization,
+                                tmpRestartInfoFilePathname
+                            );
                     }
                 }
                 // </editor-fold>

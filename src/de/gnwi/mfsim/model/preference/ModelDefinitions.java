@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2024  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -44,7 +44,7 @@ public interface ModelDefinitions {
     /**
      * Version of application. NOTE: MUST match version pattern below!
      */
-    String APPLICATION_VERSION = "2.6.1.0";
+    String APPLICATION_VERSION = "2.6.5.0";
 
     /**
      * Minimum job input application version. NOTE: MUST match version pattern below!
@@ -529,7 +529,14 @@ public interface ModelDefinitions {
      * Maximum number of steps for Job restart
      */
     int MAXIMUM_NUMBER_OF_ADDITIONAL_STEPS_FOR_JOB_RESTART = 100000000;
-
+    // </editor-fold>
+    //
+    // <editor-fold defaultstate="collapsed" desc="-- Velocity initialization for Job restart">
+    /**
+     * Default velocity initialization for Job restart (True: Velocities are 
+     * initialized for Job restart, false: Otherwise)
+     */
+    boolean DEFAULT_VELOCITY_INITIALIZATION_FOR_JOB_RESTART = false;
     // </editor-fold>
     //
     // <editor-fold defaultstate="collapsed" desc="-- Delay for file operations in milliseconds">

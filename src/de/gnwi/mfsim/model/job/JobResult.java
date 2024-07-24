@@ -1,6 +1,6 @@
 /**
  * MFsim - Molecular Fragment DPD Simulation Environment
- * Copyright (C) 2023  Achim Zielesny (achim.zielesny@googlemail.com)
+ * Copyright (C) 2024  Achim Zielesny (achim.zielesny@googlemail.com)
  * 
  * Source code is available at <https://github.com/zielesny/MFsim>
  * 
@@ -135,6 +135,11 @@ public class JobResult implements Comparable<JobResult> {
      */
     private int additionalStepsForRestart;
 
+    /**
+     * True: Velocities are initialized for restart, false: Otherwise
+     */
+    private boolean isVelocityInitializationForRestart;
+    
     /**
      * Full path of result directory for this job
      */
@@ -1765,11 +1770,23 @@ public class JobResult implements Comparable<JobResult> {
                     // <editor-fold defaultstate="collapsed" desc="Job processing result is available">
                     if (this.isToBeRestarted) {
                         // <editor-fold defaultstate="collapsed" desc="Job is to be restarted">
-                        return String.format(ModelMessage.get("Format.JobResultDescriptionToStringToBeRestarted"), 
-                            this.description, this.jobProcessingResult.toRepresentation(),
-                            this.timestampExecutionEnd, 
-                            String.valueOf(this.additionalStepsForRestart)
-                        );
+                        if (this.isVelocityInitializationForRestart) {
+                            return String.format(
+                                ModelMessage.get("Format.JobResultDescriptionToStringToBeRestartedWithVelocityInit"), 
+                                this.description, 
+                                this.jobProcessingResult.toRepresentation(),
+                                this.timestampExecutionEnd, 
+                                String.valueOf(this.additionalStepsForRestart)
+                            );
+                        } else {
+                            return String.format(
+                                ModelMessage.get("Format.JobResultDescriptionToStringToBeRestartedWithoutVelocityInit"), 
+                                this.description, 
+                                this.jobProcessingResult.toRepresentation(),
+                                this.timestampExecutionEnd, 
+                                String.valueOf(this.additionalStepsForRestart)
+                            );
+                        }
                         // </editor-fold>
                     } else {
                         // <editor-fold defaultstate="collapsed" desc="Job is NOT to be restarted">
@@ -2188,6 +2205,26 @@ public class JobResult implements Comparable<JobResult> {
         this.additionalStepsForRestart = aNStepsForRestart;
     }
     // </editor-fold>
+    // <editor-fold defaultstate="collapsed" desc="- Velocity initialization for restart (get/set)">
+    /**
+     * True: Velocities are initialized for restart, false: Otherwise
+     *
+     * @return True: Velocities are initialized for restart, false: Otherwise
+     */
+    public boolean isVelocityInitializationForRestart() {
+        return this.isVelocityInitializationForRestart;
+    }
+
+    /**
+     * Set velocity initialization for restart
+     *
+     * @param anIsVelocityInitializationForRestart True: Velocities are 
+     * initialized for restart, false: Otherwise
+     */
+    public void setVelocityInitializationForRestart(boolean anIsVelocityInitializationForRestart) {
+        this.isVelocityInitializationForRestart = anIsVelocityInitializationForRestart;
+    }
+    // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="- Restarted (get/set)">
     /**
      * Returns if job is restarted
@@ -2207,7 +2244,21 @@ public class JobResult implements Comparable<JobResult> {
         this.isRestarted = anIsRestarted;
         if (this.isRestarted) {
             this.setToBeRestarted(false);
-            this.description = String.format(ModelMessage.get("Format.JobResultDescriptionRestart"), this.description, String.valueOf(this.additionalStepsForRestart));
+            if (this.isVelocityInitializationForRestart) {
+                this.description = 
+                    String.format(
+                        ModelMessage.get("Format.JobResultDescriptionRestartWithVelocityInitialization"), 
+                        this.description, 
+                        String.valueOf(this.additionalStepsForRestart)
+                    );
+            } else {
+                this.description = 
+                    String.format(
+                        ModelMessage.get("Format.JobResultDescriptionRestartWithoutVelocityInitialization"), 
+                        this.description, 
+                        String.valueOf(this.additionalStepsForRestart)
+                    );
+            }
         }
     }
 
@@ -2484,6 +2535,7 @@ public class JobResult implements Comparable<JobResult> {
         this.isStopped = false;
         this.jobProcessingResult = JobResultProcessingStatusEnum.NO_STATUS_DEFINED;
         this.additionalStepsForRestart = 0;
+        this.isVelocityInitializationForRestart = false;
         this.jobInputPath = "";
         this.jobResultPath = "";
         this.timestampExecutionEnd = "";
