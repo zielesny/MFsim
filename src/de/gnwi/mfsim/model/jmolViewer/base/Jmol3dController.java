@@ -22,6 +22,8 @@ package de.gnwi.mfsim.model.jmolViewer.base;
 import de.gnwi.mfsim.model.jmolViewer.command.IJmolCommands;
 import de.gnwi.mfsim.model.jmolViewer.Jmol3dPanel;
 import de.gnwi.mfsim.model.peptide.utils.Tools;
+import javajs.util.P4;
+
 import java.awt.AWTEvent;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -162,15 +164,19 @@ public abstract class Jmol3dController {
      */
     public Quat4d getRotation() {
         Quat4d tmpRotation = new Quat4d();
-        ArrayList tmpOrientationObject = (ArrayList) this.view.getJmolViewer().scriptWaitStatus("show orientation rotation",
-                "scriptEcho");
-        // Old code:
-        // String tmpQuaternionString = ((ArrayList) ((ArrayList) tmpOrientationObject.get(0)).get(0)).get(3).toString().replaceAll("\\{|\\}", "");
-        String tmpQuaternionString = StringUtils.replace(StringUtils.replace(((ArrayList) ((ArrayList) tmpOrientationObject.get(0)).get(0)).get(3).toString(), "{", ""), "}", "");
-        String[] tmpQuaternionTokens = tmpQuaternionString.split("\\s");
-        double[] tmpQuaternionData = {Double.parseDouble(tmpQuaternionTokens[0]), Double.parseDouble(tmpQuaternionTokens[1]),
-            Double.parseDouble(tmpQuaternionTokens[2]), Double.parseDouble(tmpQuaternionTokens[3])};
-        tmpRotation.set(tmpQuaternionData);
+        P4 quat = (P4) this.view.getJmolViewer().evaluateExpressionAsVariable("quaternion()").value;
+        tmpRotation.set(new double[] { quat.x, quat.y, quat.z, quat.w });
+
+//        ArrayList tmpOrientationObject = (ArrayList) this.view.getJmolViewer().scriptWaitStatus("show orientation rotation",
+//                "scriptEcho");
+//        // Old code:
+//        // String tmpQuaternionString = ((ArrayList) ((ArrayList) tmpOrientationObject.get(0)).get(0)).get(3).toString().replaceAll("\\{|\\}", "");
+//        String tmpQuaternionString = StringUtils.replace(StringUtils.replace(((ArrayList) ((ArrayList) tmpOrientationObject.get(0)).get(0)).get(3).toString(), "{", ""), "}", "");
+//        String[] tmpQuaternionTokens = tmpQuaternionString.split("\\s");
+//        double[] tmpQuaternionData = {Double.parseDouble(tmpQuaternionTokens[0]), Double.parseDouble(tmpQuaternionTokens[1]),
+//            Double.parseDouble(tmpQuaternionTokens[2]), Double.parseDouble(tmpQuaternionTokens[3])};
+//        
+//        tmpRotation.set(tmpQuaternionData);
         Quat4d tmpNomalizeToDpd = new Quat4d(Math.sin(Math.PI / 4.0), 0, 0, Math.cos(Math.PI / 4.0));
         tmpRotation.mul(tmpNomalizeToDpd);
         return tmpRotation;

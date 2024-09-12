@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/biojava3-core-3.0.8.jar"/>
+	<classpathentry kind="lib" path="lib/biojava3-structure-3.0.8.jar"/>
+	<classpathentry kind="lib" path="lib/commons-io-2.5.jar"/>
+	<classpathentry kind="lib" path="lib/commons-lang3-3.4.jar"/>
+	<classpathentry kind="lib" path="lib/commons-rng-client-api-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-rng-core-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-rng-sampling-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-rng-simple-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/gs-algo-1.3.jar"/>
+	<classpathentry kind="lib" path="lib/gs-core-1.3.jar"/>
+	<classpathentry kind="lib" path="lib/gs-ui-1.3.jar"/>
+	<classpathentry kind="lib" path="lib/Jama-1.0.3.jar"/>
+	<classpathentry kind="lib" path="lib/jcommon-1.0.9.jar"/>
+	<classpathentry kind="lib" path="lib/jdom-2.0.6.jar"/>
+	<classpathentry kind="lib" path="lib/Jdpd.jar"/>
+	<classpathentry kind="lib" path="lib/jfreechart-1.0.5.jar"/>
+	<classpathentry kind="lib" path="lib/Jmol.jar"/>
+	<classpathentry kind="lib" path="lib/junit-4.10.jar"/>
+	<classpathentry kind="lib" path="lib/Spices.jar"/>
+	<classpathentry kind="lib" path="lib/SpicesToGraphStream.jar"/>
+	<classpathentry kind="lib" path="lib/vecmath-1.5.2.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
